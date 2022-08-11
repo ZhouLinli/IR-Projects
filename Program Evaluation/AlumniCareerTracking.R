@@ -33,10 +33,18 @@ linkedin<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/GD5yrLinkedi
 ##see which sheet contain all the raw data
 excel_sheets("/Users/linlizhou/Documents/LASELL/alumnicareer/data/Merged Completions.xlsx")
 ##read that sheet
-ipeds.complete17f<-read_excel("/Users/linlizhou/Documents/LASELL/alumnicareer/data/Merged Completions.xlsx",sheet = "Merged_ALL")
-ipeds.complete18f<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/2018ipedsFComp_2017grad.xlsx.xlsx")
-
-
+ipeds.complete17f<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/2017ipedsFComp_2016grad.xlsx",sheet = "Merged_ALL")
+##see which sheet contain all the raw data
+excel_sheets("/Users/linlizhou/Documents/LASELL/data/completion/2018ipedsFComp_2017grad.xlsx.xlsx")
+##read that sheet
+ipeds.complete18f<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/2018ipedsFComp_2017grad.xlsx.xlsx",sheet="Merged")
+#select useful cols
+ipeds.complete17f<-ipeds.complete17f%>%select(`People Code ID`,Degree)%>%rename(PCID=`People Code ID`,degree=Degree)
+ipeds.complete18f<-ipeds.complete18f%>%select(people_code_id,degree)%>%rename(PCID=people_code_id)
+#merge 17f and 18f
+ipeds.complete<-merge(ipeds.complete17f,ipeds.complete18f)
+#remove used dataframe
+rm(ipeds.complete17f,ipeds.complete18f)
 
 
 

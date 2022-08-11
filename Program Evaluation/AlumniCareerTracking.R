@@ -1,4 +1,4 @@
-#8-10-2022 
+#8-10-2022  
 #in excel, I manually copied dashboard col names to survey col names
 #The manual process can be referred when automizing the process, see notes below:
 ##mostly col match and can simple copy and paste (i.e., rename survey col name using the dashboard name)

@@ -38,9 +38,9 @@ excel_sheets("/Users/linlizhou/Documents/LASELL/alumnicareer/data/Merged Complet
 ##read that sheet
 ipeds.complete17f<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/2017ipedsFComp_2016grad.xlsx",sheet = "Merged_ALL")
 ##see which sheet contain all the raw data
-excel_sheets("/Users/linlizhou/Documents/LASELL/data/completion/2018ipedsFComp_2017grad.xlsx.xlsx")
+excel_sheets("/Users/linlizhou/Documents/LASELL/data/completion/2018ipedsFComp_2017grad.clean.xlsx")
 ##read that sheet
-ipeds.complete18f<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/2018ipedsFComp_2017grad.xlsx.xlsx",sheet="Merged")
+ipeds.complete18f<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/2018ipedsFComp_2017grad.clean.xlsx")
 #select useful cols
 ipeds.complete17f<-ipeds.complete17f%>%select(`People Code ID`,Degree)%>%rename(PCID=`People Code ID`,degree=Degree)
 ipeds.complete18f<-ipeds.complete18f%>%select(people_code_id,degree)%>%rename(PCID=people_code_id)
@@ -76,7 +76,7 @@ survey<-survey%>%mutate(program.from.degree=case_when(
   Degree...3=="MSM"~"Degree Management",
   Degree...3=="MSSM"~"Degree Sport Management",
   Degree...3=="PMBA"~"Degree Business Administration",
-  Degree...3=="MSCJ"~"Degree Criminal Justice",
+  Degree...3=="MSCJ"~"Degree Criminal Justice"
 ))
 #check
 survey%>%group_by(program.from.degree)%>%count()#should find no NAs
@@ -93,7 +93,7 @@ linkedin<-linkedin%>%mutate(program.from.degree=case_when(
   Degree...3=="MSCJ"~"Degree Criminal Justice"
 ))
 #check
-linkedin%>%group_by(program.from.degree)%>%count()#should find no NAs
+linkedin%>%group_by(Degree...3,program.from.degree)%>%count()#should find no NAs
 
 
 

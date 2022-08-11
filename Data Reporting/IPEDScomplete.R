@@ -20,6 +20,20 @@ ipeds.complete18f%>%group_by(degree)%>%count()#no more conc
 
 
 #check trk (invalid code in degree)
-  ipeds.complete18f%>%filter(degree=="TRK")%>%group_by(curriculum)%>%count()
-#lookedup in powercampus, replace all INLICM and PRLICM in TRK as MEDMD
+ipeds.complete18f%>%filter(degree=="TRK")%>%group_by(curriculum)%>%count()
+#lookedup in powercampus, replace all INLICM in TRK as MEDMD
+ipeds.complete18f[ipeds.complete18f$curriculum=="INLICM",11]<-"MEDMD"
+#check
+ipeds.complete18f%>%filter(degree=="TRK")%>%group_by(curriculum)%>%count()#no more INLICM
+#lookedup in powercampus, replace all PRLICM in TRK as MEDMD
+ipeds.complete18f[ipeds.complete18f$curriculum=="PRLICM",11]<-"MEDMD"
+#check
+ipeds.complete18f%>%filter(degree=="TRK")%>%group_by(curriculum)%>%count()#no more prlicm
 #lookedup in powercampus, replace INLICE as MEDEL
+ipeds.complete18f[ipeds.complete18f$curriculum=="INLICE",11]<-"MEDEL"
+#check
+ipeds.complete18f%>%group_by(degree)%>%count()#no more TRK
+
+#Save the corrected degree codes file
+library(writexl)
+write_xlsx(ipeds.complete18f,"/Users/linlizhou/Documents/LASELL/data/completion/2018ipedsFComp_2017grad.xlsx.xlsx")

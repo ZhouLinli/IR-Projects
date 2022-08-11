@@ -1,0 +1,186 @@
+---
+title: "datafreeze"
+author: "Linli Zhou"
+date: '2022-07-19'
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, include = FALSE, warning=FALSE, message=FALSE)
+```
+
+```{r load data}
+####################Datamart data file########################
+library(readxl)
+summer2datamart<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/Test Run of Data Mart/Summer 2022/Test_run_datamart_summer_ses2_20220719_v2.xlsx")
+
+library(tidyverse)
+glimpse(summer2datamart)
+
+####################Registrar data file########################
+summer2registrar<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Summer/Summer II/UG Backup Data  Report - 2022-07-19T130244.851.xlsx")
+```
+
+
+```{r data filter}
+#filter enrolled students in datamart
+str_detect(names(summer2datamart),"ENR")#number 37 and 38 names are true #I NEED TO FIND A BETTER WAY TO AUTO/NOT EYEBALLING THE TRUE VALUES' CORRESPONDING NAMES
+names(summer2datamart)[37]#it is admit_enroll_time
+names(summer2datamart)[38]#it is ENROLL_SEP_DESC
+
+#investigate 37th name
+head(summer2datamart$ADMIT_ENROLL_TIME)
+summer2datamart%>%group_by(ADMIT_ENROLL_TIME)%>%count()#asked eric said no need to filter out not listed
+
+
+#investigate 38th name
+head(summer2datamart$ADMIT_ENROLL_TIME)
+summer2datamart%>%group_by(ENROLL_SEP_DESC)%>%count()
+
+#filter out Not Returning Personal
+summer2datamart<-summer2datamart%>%filter(ENROLL_SEP_DESC!="Not Returning Personal")
+```
+
+
+```{r data row match}
+#initial investigation of row numbers
+ncol(summer2registrar) #36 variable
+ncol(summer2datamart)#239 variable
+
+nrow(summer2registrar)#119row
+nrow(summer2datamart)#116row
+
+summer2registrar<-summer2registrar%>%filter(`People Code Id`!="NA")#117 row
+#it seems there is one registrar row that is not in datamart file
+
+#compare people id
+#to start, find id variable name 
+glimpse(summer2datamart)#the var name is PC_ID
+glimpse(summer2registrar)#the var name is `People Code Id`
+#I can sub_str "id" and AUTO find THE TRUE VALUES' CORRESPONDING NAMES
+
+#firstly, confirm that all the 116 datamart id are those in registrar id
+#find if one value in A file exist in B file
+ppid_d2r<-summer2datamart$PC_ID %in% summer2registrar$`People Code Id`#pre-define requirement: whether datamart id in registrar id
+summer2datamart$PC_ID[!ppid_d2r]#all damamart id that not fulfill the pre-defined requirement
+#nothong find
+
+#secondly, confirm that all the 117th registrar id is not in registrar id
+ppid_r2d<- summer2registrar$`People Code Id` %in% summer2datamart$PC_ID#pre-define requirement: whether registrar id in datamart id
+#all registrar id that not fulfill the pre-defined requirement
+# found one FALSE, which is registrar id that not in datamart
+
+#find the false value's corresponding registrar id
+summer2registrar$`People Code Id`[!ppid_r2d]#the missing id is P000057397
+
+subset(summer2registrar, `People Code Id`=="P000057397")  # exist in registrar #alternatively, summer2registrar[summer2registrar$`People Code Id`=="P000057397",]#data[row,col]
+subset(summer2datamart, PC_ID=="P000057397") #does not exist in datamart
+```
+
+PC_ID=="P000057397" does not exist in datamart.
+
+```{r filter out the one registrar id that do not exist in datamart}
+summer2registrar_116<-summer2registrar%>%filter(`People Code Id`!="P000057397")
+nrow(summer2registrar_116)
+nrow(summer2registrar)
+```
+
+
+
+
+
+```{r merge}
+#select corresponding variables in datamart to merge
+
+#merge
+summer2registrar_116<-rename(summer2registrar_116, PeopleID=`People Code Id`)
+summer2<-merge(x= summer2registrar_116,y= summer2datamart, by.x="PeopleID",by.y = "PC_ID") #only x name will be kept in merged file
+```
+
+
+```{r curriculum}
+#find names
+glimpse(summer2registrar_116$Curriculum)
+# To find the corresponding variable name, I eyeballed; but could use this code if I know it contains major in the variable name: names(summer2datamart)[str_detect(names(summer2datamart),"MAJOR")]
+glimpse(summer2datamart$MAJOR_1)
+
+#registrar's Curriculum and datamart's Major_1
+summer2%>%select(Curriculum,MAJOR_1)%>%mutate(diff=ifelse(Curriculum==MAJOR_1, "matched","not match")) %>%filter(diff=="not match")
+```
+
+
+```{r class level}
+#find names using separate file
+glimpse(summer2registrar_116$`Class level`)
+glimpse(summer2datamart$CLASS_LEVEL_CODE)
+#registrar's `Class level` and datamart's CLASS_LEVEL_CODE in merged data
+summer2%>%select(`Class level`,CLASS_LEVEL_CODE)%>%mutate(diff=ifelse(`Class level`==CLASS_LEVEL_CODE, "matched","not match")) %>%filter(diff=="not match")
+```
+
+
+```{r new/returning}
+#find names
+glimpse(summer2registrar_116$`College Attend`)
+glimpse(summer2datamart$COLLEGE_ATTEND_DESC)
+#list all unique values
+summer2registrar%>%group_by(`College Attend`)%>%count()#find 8 students coded as RET that should be RETS 
+summer2datamart%>%group_by(COLLEGE_ATTEND_DESC)%>%count()
+
+#recode in merged data
+summer2<-summer2%>%mutate(collegeattend_recode=case_when(
+  `College Attend`=="NEW"~"New Student",
+  `College Attend`=="RET"~"Returning Student",
+  `College Attend`=="RETS"~"Returning Student"
+))
+#check
+summer2%>%group_by(collegeattend_recode)%>%count()#looks right in merged data, ready to compare two columns
+
+#registrar's collegeattend_recode and datamart's COLLEGE_ATTEND_DESC in merged data
+summer2%>%select(collegeattend_recode, COLLEGE_ATTEND_DESC)%>%mutate(diff=ifelse(collegeattend_recode== COLLEGE_ATTEND_DESC, "matched","not match")) %>%filter(diff=="not match")
+
+```
+In the Registrar data, there are 8 students have RET code, which should be RETS code for column "College Attend".
+
+```{r res/commuter}
+#find names
+glimpse(summer2registrar_116$`Res/Comm`)
+glimpse(summer2datamart$RESIDENT_YN)
+#check unique values
+summer2registrar_116%>%group_by(`Res/Comm`)%>%count()
+summer2datamart%>%group_by(RESIDENT_YN)%>%count()
+#registrar's `Transfer YN` vs TRANSFER_YN in datamart in merged data
+summer2%>%select(`Transfer YN`, TRANSFER_YN)%>%mutate(diff=ifelse(`Transfer YN` == TRANSFER_YN, "matched","not match")) %>%filter(diff=="not match")
+```
+
+
+```{r transfer}
+#find names
+glimpse(summer2registrar_116$`Transfer YN`)
+glimpse(summer2datamart$TRANSFER_YN)
+#check unique values
+summer2registrar_116%>%group_by(`Transfer YN`)%>%count()
+summer2datamart%>%group_by(TRANSFER_YN)%>%count()
+#registrar's `Transfer YN` vs TRANSFER_YN in datamart in merged data
+summer2%>%select(`Transfer YN`, TRANSFER_YN)%>%mutate(diff=ifelse(`Transfer YN` == TRANSFER_YN, "matched","not match")) %>%filter(diff=="not match")
+```
+
+
+```{r credit}
+#find names - registrar
+names(summer2registrar_116)[str_detect(names(summer2registrar_116),"redits")]#find "Term Credits" "Cum Credits" to be possible names; asked eric saying I should use `Term Credits`
+glimpse(summer2registrar_116$`Term Credits`)
+
+
+
+
+#find names - datamart
+names(summer2datamart)[str_detect(names(summer2datamart),"CREDIT")]#find "CREDITS_EARNED_CUM" AND "TERM_CREDITS_EARNED" to be possible credits; TERM_CREDITS_EARNED sounds specific about the term; asked eric, saying I should use SESS_REG_CREDITS 
+glimpse(summer2datamart$SESS_REG_CREDITS)
+
+
+#registrar's `Term Credits` vs SESS_REG_CREDITS in datamart in merged data
+
+summer2%>%select(PeopleID, `Term Credits`, SESS_REG_CREDITS)%>%mutate(diff=ifelse(`Term Credits` == SESS_REG_CREDITS, "matched","not match")) %>%filter(diff=="not match")
+
+```
+

@@ -122,7 +122,11 @@ linkedin<-linkedin%>%mutate(program.from.degree=case_when(
 linkedin%>%group_by(Degree...3,program.from.degree)%>%count()#should find no NAs (after fixing the two na ppcid in powercampus)
 
 #complete all col value (degree and program cols) fill and col name matches, it's ready to do a rbind for survey and linkedin into dashboard historical data.
-#check
+
+
+
+##############check all different data files' cols names are exactly the same (necessary for rbind) #############
+#check survey-db names
 names(survey)[(names(survey) %in% names(db))=="FALSE"]#found all three survey col names that do not match 
 names(db)[(names(db) %in% names(survey))=="FALSE"]#found what those cols are supposed to be (to match db)
 #rename those unmatched
@@ -131,7 +135,13 @@ names(survey)[(names(survey) %in% names(db))=="FALSE"]<-names(db)[(names(db) %in
 names(survey)[(names(survey) %in% names(db))=="FALSE"]#none now
 
 
-names(linkedin)
+#check linkedin-db names
+names(linkedin)[(names(linkedin) %in% names(db))=="FALSE"]#found an extra
+names(db)[(names(db) %in% names(linkedin))=="FALSE"]#found none
+#rename, in this case, remove the extra col
+linkedin<-linkedin%>%select(-c(...64))
+#check
+names(linkedin)[(names(linkedin) %in% names(db))=="FALSE"]#none now
 
 
 

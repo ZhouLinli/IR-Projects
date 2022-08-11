@@ -1,4 +1,4 @@
-###########################################manual matching survey-dashboard data's col names r###############################
+#############manual matching survey-dashboard data's col names r######################
 #in excel, I manually copied dashboard col names to survey col names
 #The manual process can be referred when automizing the process, see notes below:
 ##mostly col match and can simple copy and paste (i.e., rename survey col name using the dashboard name)
@@ -20,11 +20,11 @@
 ########now I am filling in col2:3 using ipeds_completion report in 2017 fall for grads in 2016-2017 (same as vlookup in excel, but the datamart is too large to load I suppose)
 
 
-######################################################load r packages#########################################################
+####################################load r packages##########################################
 library(readxl)
 library(dplyr)
 
-######################################################read data files: grad alum 5yr#########################################################
+#########################read data files: grad alum 5yr####################################
 #dashboard data
 db<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/grad5y_historic.xlsx")
 #survey.data 
@@ -32,6 +32,9 @@ survey<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/GD5yrSurvey_cl
 #linkedin data
 linkedin<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/GD5yrLinkedin_clean.xlsx")
 
+
+
+##########read ipeds.complete data (2017Fall and 2018Fall) to find degree information #################
 #ipeds.complete17f data
 ##see which sheet contain all the raw data
 excel_sheets("/Users/linlizhou/Documents/LASELL/alumnicareer/data/Merged Completions.xlsx")
@@ -48,9 +51,10 @@ ipeds.complete18f<-ipeds.complete18f%>%select(people_code_id,degree)%>%rename(PC
 ipeds.complete<-full_join(ipeds.complete17f,ipeds.complete18f)
 #remove used dataframe
 rm(ipeds.complete17f,ipeds.complete18f)
+#ipeds.complete data created with pcid and degree cols
 
 
-########################################vlookup ipeds.complete for alum's degree#####################################################
+###################survey data degree: vlookup from ipeds.complete######################
 #match PCID and merge all cols
 survey<-left_join(survey,ipeds.complete)#got some duplicated
 survey<-survey[!duplicated(survey),]#removed duplicated
@@ -59,13 +63,35 @@ survey$Degree...3<-survey$degree
 #check
 survey%>%group_by(Degree...3)%>%count()#find all degrees
 #remove used cols from ipeds
-survey<-survey%>%select(-c(degree))
+survey<-survey%>%select(-c(degree,program.from.degree))
 #export the file
 library("writexl")
 write_xlsx(survey,"/Users/linlizhou/Documents/LASELL/data/alumni/GD5yrSurvey_clean.xlsx")
+#saved all degree values as a clean dataset
 
 
-########################################with degree, fill program values#####################################################
+###################linkedin data degree: vlookup from ipeds.complete degree#####################
+#match PCID and merge all cols
+linkedin<-left_join(linkedin,ipeds.complete)#got some duplicated
+linkedin<-linkedin[!duplicated(linkedin),]#removed duplicated
+#assign appended new cols (from ipeds) to the blank corresponding cols in linkedin
+linkedin$Degree...3<-linkedin$degree
+#check
+linkedin%>%group_by(Degree...3)%>%count()#2 degree is still na
+#investigate
+linkedin[is.na(linkedin$Degree...3),1]
+###################################################################################################################
+###found their PCID to look up in powercampus -- to do during work hour -- need remote computer to be turned on####
+##################################################################################################################
+
+#remove used cols from ipeds
+linkedin<-linkedin%>%select(-c(degree,program.from.degree))
+#export the file
+library("writexl")
+write_xlsx(linkedin,"/Users/linlizhou/Documents/LASELL/data/alumni/GD5yrSurvey_clean.xlsx")
+
+
+################with degree, fill program values####################################
 db%>%group_by(Degree...3,Program)%>%count()#got the list of degree - program pairs
 #recode program given degree, in survey
 survey<-survey%>%mutate(program.from.degree=case_when(
@@ -93,20 +119,19 @@ linkedin<-linkedin%>%mutate(program.from.degree=case_when(
   Degree...3=="MSCJ"~"Degree Criminal Justice"
 ))
 #check
-linkedin%>%group_by(Degree...3,program.from.degree)%>%count()#should find no NAs
+linkedin%>%group_by(Degree...3,program.from.degree)%>%count()#should find no NAs (after fixing the two na ppcid in powercampus)
+
+#complete all col value (degree and program cols) fill and col name matches, it's ready to do a rbind for survey and linkedin into dashboard historical data.
+#check
+names(survey)[(names(survey) %in% names(db))=="FALSE"]#found all three survey col names that do not match 
+names(db)[(names(db) %in% names(survey))=="FALSE"]#found what those cols are supposed to be (to match db)
+#rename those unmatched
+names(survey)[(names(survey) %in% names(db))=="FALSE"]<-names(db)[(names(db) %in% names(survey))=="FALSE"]#it turns out unrecognizable symbles can not be just copy and paste to assign, it needs to be done direclty to assign the two unmatched directly
+#check
+names(survey)[(names(survey) %in% names(db))=="FALSE"]#none now
 
 
-
-
-#complete all col value fill and col name matches, it's ready to do a rbind for survey and linkedin into dashboard historical data.
-
-
-
-
-ipeds.complete18f%>%filter(curriculum=="HSGJ")
-
-mscj
-
+names(linkedin)
 
 
 

@@ -1,4 +1,4 @@
-#8-10-2022  
+###########################################manual matching survey-dashboard data's col names r###############################
 #in excel, I manually copied dashboard col names to survey col names
 #The manual process can be referred when automizing the process, see notes below:
 ##mostly col match and can simple copy and paste (i.e., rename survey col name using the dashboard name)
@@ -22,8 +22,10 @@
 
 ######################################################read data files: grad alum 5yr#########################################################
 library(readxl)
+#dashboard data
+db<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/grad5y_historic.xlsx")
 #survey.data 
-survey<-readxl::read_exel("/Users/linlizhou/Documents/LASELL/alumnicareer/data/GD5yrSurvey_clean.xlsx")
+survey<-read_exel("/Users/linlizhou/Documents/LASELL/alumnicareer/data/GD5yrSurvey_clean.xlsx")
 #linkedin data
 linkedin<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/GD5yrLinkedin_clean.xlsx")
 
@@ -33,31 +35,39 @@ excel_sheets("/Users/linlizhou/Documents/LASELL/alumnicareer/data/Merged Complet
 ##read that sheet
 ipeds.complete<-read_excel("/Users/linlizhou/Documents/LASELL/alumnicareer/data/Merged Completions.xlsx",sheet = "Merged_ALL")
 
-########################################vloopup ipeds.complete for alum's degree and program#####################################################
+########################################vlookup ipeds.complete for alum's degree#####################################################
 #find the program and degree cols
 library(dplyr)
 ipeds.complete.gd<-ipeds.complete%>%filter(Program=="GRAD")
 ipeds.complete.gd%>%group_by(Degree)%>%count()#found degree col
-ipeds.complete.gd%>%group_by(Curriculum)%>%count()#similar but not exactly the program names
-ipeds.complete.gd%>%group_by(`CIP Description`)%>%count()#maybe this is the program names
+#ipeds.complete.gd%>%group_by(Curriculum)%>%count()#similar but not exactly the program names
+#ipeds.complete.gd%>%group_by(`CIP Description`)%>%count()#maybe this is the program names
+#later found out program names are directly recoded from degree names, instead of vlookuped
 
 #all useful information (from ipeds.complete) in one dataset
-ipeds.complete.gd<-ipeds.complete.gd%>%select(`People Code ID`,`CIP Description`,Degree)%>%rename(PCID=`People Code ID`)
-
+ipeds.complete.gd<-ipeds.complete.gd%>%select(`People Code ID`,Degree)%>%rename(PCID=`People Code ID`)
 #match PCID and merge all cols
 survey_m<-left_join(survey,ipeds.complete.gd)
-
 #assign appended new cols (from ipeds) to the blank corresponding cols in survey
-survey_m$Program<-survey_m$`CIP Description`
 survey_m$Degree...3<-survey_m$Degree
 #check
 head(survey_m$Degree...3)
-head(survey_m$Program)
-
 #remove used cols from ipeds
-survey.clean<-survey_m%>%select(-c(`CIP Description`,Degree))
-
+survey.clean<-survey_m%>%select(-c(Degree))
 #export the file
 library("writexl")
 write_xlsx(survey.clean,"/Users/linlizhou/Documents/LASELL/alumnicareer/data/GD5yrSurvey_clean.xlsx")
+
+########################################with degree, fill program values#####################################################
+
+
+
+
+
+
+
+
+
+
+
 

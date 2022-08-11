@@ -75,21 +75,37 @@ survey<-survey%>%mutate(program.from.degree=case_when(
   Degree...3=="MSC"~"Degree Communication",
   Degree...3=="MSM"~"Degree Management",
   Degree...3=="MSSM"~"Degree Sport Management",
-  Degree...3=="PMBA"~"Degree Business Administration"
+  Degree...3=="PMBA"~"Degree Business Administration",
+  Degree...3=="MSCJ"~"Degree Criminal Justice",
 ))
 #check
-survey%>%group_by(program.from.degree)%>%count()#10 NAs
-#investigate those NAs
-survey%>%group_by(Degree...3,program.from.degree)%>%count()
-#recode program given degree, in linkedin
+survey%>%group_by(program.from.degree)%>%count()#should find no NAs
+
+#do the same recode program process in linkedin
+linkedin<-linkedin%>%mutate(program.from.degree=case_when(
+  Degree...3=="CER"~"Certificate",
+  Degree...3=="MEDEL"~"Degree Elementary Education MED",
+  Degree...3=="MEDMD"~"Degree Moderate Disabilities",
+  Degree...3=="MSC"~"Degree Communication",
+  Degree...3=="MSM"~"Degree Management",
+  Degree...3=="MSSM"~"Degree Sport Management",
+  Degree...3=="PMBA"~"Degree Business Administration",
+  Degree...3=="MSCJ"~"Degree Criminal Justice"
+))
+#check
+linkedin%>%group_by(program.from.degree)%>%count()#should find no NAs
 
 
 
 
+#complete all col value fill and col name matches, it's ready to do a rbind for survey and linkedin into dashboard historical data.
 
 
 
 
+ipeds.complete18f%>%filter(curriculum=="HSGJ")
+
+mscj
 
 
 

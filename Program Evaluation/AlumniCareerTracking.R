@@ -144,8 +144,10 @@ linkedin<-linkedin%>%select(-c(...64))
 names(linkedin)[(names(linkedin) %in% names(db))=="FALSE"]#none now
 
 
-
-
+############append rows of different sources data into one file (with exact same cols names)#############
+db_full<-rbind(db,survey)%>%rbind(linkedin)
+#save
+write_xlsx(db_full,"/Users/linlizhou/Documents/LASELL/data/alumni/grad5y_full.xlsx")
 
 
 

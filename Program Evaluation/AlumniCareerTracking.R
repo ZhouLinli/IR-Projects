@@ -20,18 +20,20 @@
 ########now I am filling in col2:3 using ipeds_completion report in 2017 fall for grads in 2016-2017 (same as vlookup in excel, but the datamart is too large to load I suppose)
 
 
-#survey.data
-survey<-readxl::read_excel("/Users/linlizhou/Documents/LASELL/alumnicareer/data/GD5yrSurvey_clean.xlsx")
-
+######################################################read data files: grad alum 5yr#########################################################
+library(readxl)
+#survey.data 
+survey<-readxl::read_exel("/Users/linlizhou/Documents/LASELL/alumnicareer/data/GD5yrSurvey_clean.xlsx")
+#linkedin data
+linkedin<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/GD5yrLinkedin_clean.xlsx")
 
 #ipeds.complete data
-library(readxl)
-#see which sheet contain all the raw data
+##see which sheet contain all the raw data
 excel_sheets("/Users/linlizhou/Documents/LASELL/alumnicareer/data/Merged Completions.xlsx")
-#read that sheet
+##read that sheet
 ipeds.complete<-read_excel("/Users/linlizhou/Documents/LASELL/alumnicareer/data/Merged Completions.xlsx",sheet = "Merged_ALL")
 
-
+########################################vloopup ipeds.complete for alum's degree and program#####################################################
 #find the program and degree cols
 library(dplyr)
 ipeds.complete.gd<-ipeds.complete%>%filter(Program=="GRAD")

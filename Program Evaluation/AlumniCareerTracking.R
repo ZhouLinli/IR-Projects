@@ -25,29 +25,35 @@ library(readxl)
 #dashboard data
 db<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/grad5y_historic.xlsx")
 #survey.data 
-survey<-read_exel("/Users/linlizhou/Documents/LASELL/alumnicareer/data/GD5yrSurvey_clean.xlsx")
+survey<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/GD5yrSurvey_clean.xlsx")
 #linkedin data
 linkedin<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/GD5yrLinkedin_clean.xlsx")
 
-#ipeds.complete data
+#ipeds.complete17f data
 ##see which sheet contain all the raw data
 excel_sheets("/Users/linlizhou/Documents/LASELL/alumnicareer/data/Merged Completions.xlsx")
 ##read that sheet
-ipeds.complete<-read_excel("/Users/linlizhou/Documents/LASELL/alumnicareer/data/Merged Completions.xlsx",sheet = "Merged_ALL")
+ipeds.complete17f<-read_excel("/Users/linlizhou/Documents/LASELL/alumnicareer/data/Merged Completions.xlsx",sheet = "Merged_ALL")
+ipeds.complete18f<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/2018ipedsFComp_2017grad.xlsx.xlsx")
 
-########################################vlookup ipeds.complete for alum's degree#####################################################
+
+
+
+
+
+########################################vlookup ipeds.complete17f for alum's degree#####################################################
 #find the program and degree cols
 library(dplyr)
-ipeds.complete.gd<-ipeds.complete%>%filter(Program=="GRAD")
-ipeds.complete.gd%>%group_by(Degree)%>%count()#found degree col
-#ipeds.complete.gd%>%group_by(Curriculum)%>%count()#similar but not exactly the program names
-#ipeds.complete.gd%>%group_by(`CIP Description`)%>%count()#maybe this is the program names
+ipeds.complete17f.gd<-ipeds.complete17f%>%filter(Program=="GRAD")
+ipeds.complete17f.gd%>%group_by(Degree)%>%count()#found degree col
+#ipeds.complete17f.gd%>%group_by(Curriculum)%>%count()#similar but not exactly the program names
+#ipeds.complete17f.gd%>%group_by(`CIP Description`)%>%count()#maybe this is the program names
 #later found out program names are directly recoded from degree names, instead of vlookuped
 
-#all useful information (from ipeds.complete) in one dataset
-ipeds.complete.gd<-ipeds.complete.gd%>%select(`People Code ID`,Degree)%>%rename(PCID=`People Code ID`)
+#all useful information (from ipeds.complete17f) in one dataset
+ipeds.complete17f.gd<-ipeds.complete17f.gd%>%select(`People Code ID`,Degree)%>%rename(PCID=`People Code ID`)
 #match PCID and merge all cols
-survey_m<-left_join(survey,ipeds.complete.gd)
+survey_m<-left_join(survey,ipeds.complete17f.gd)
 #assign appended new cols (from ipeds) to the blank corresponding cols in survey
 survey_m$Degree...3<-survey_m$Degree
 #check
@@ -58,7 +64,62 @@ survey.clean<-survey_m%>%select(-c(Degree))
 library("writexl")
 write_xlsx(survey.clean,"/Users/linlizhou/Documents/LASELL/alumnicareer/data/GD5yrSurvey_clean.xlsx")
 
+########################################vlookup ipeds.complete18f for alum's degree#####################################################
+#find the program and degree cols
+library(dplyr)
+ipeds.complete18f<-ipeds.complete18f%>%filter(Program=="GRAD")
+ipeds.complete18f%>%group_by(Degree)%>%count()#found degree col
+#ipeds.complete18f%>%group_by(Curriculum)%>%count()#similar but not exactly the program names
+#ipeds.complete18f%>%group_by(`CIP Description`)%>%count()#maybe this is the program names
+#later found out program names are directly recoded from degree names, instead of vlookuped
+
+#all useful information (from ipeds.complete18f) in one dataset
+ipeds.complete18f<-ipeds.complete18f%>%select(`People Code ID`,Degree)%>%rename(PCID=`People Code ID`)
+#match PCID and merge all cols
+survey_m<-left_join(survey,ipeds.complete18f)
+#assign appended new cols (from ipeds) to the blank corresponding cols in survey
+survey_m$Degree...3<-survey_m$Degree
+#check
+head(survey_m$Degree...3)
+#remove used cols from ipeds
+survey.clean<-survey_m%>%select(-c(Degree))
+#export the file
+library("writexl")
+write_xlsx(survey.clean,"/Users/linlizhou/Documents/LASELL/alumnicareer/data/GD5yrSurvey_clean.xlsx")
+
+
+
+
+
+
+
+
+
+
 ########################################with degree, fill program values#####################################################
+db%>%group_by(Degree...3,Program)%>%count()#got the list of degree - program pairs
+#recode program given degree, in survey
+survey<-survey%>%mutate(program.from.degree=case_when(
+  Degree...3=="CER"~"Certificate",
+  Degree...3=="MEDEL"~"Degree Elementary Education MED",
+  Degree...3=="MEDMD"~"Degree Moderate Disabilities",
+  Degree...3=="MSC"~"Degree Communication",
+  Degree...3=="MSM"~"Degree Management",
+  Degree...3=="MSSM"~"Degree Sport Management",
+  Degree...3=="PMBA"~"Degree Business Administration"
+))
+#check
+survey%>%group_by(program.from.degree)%>%count()#15 NAs
+survey%>%group_by(Degree...3,program.from.degree)%>%count()#their degree are NA too
+survey$Program<-survey$
+#recode program given degree, in linkedin
+
+
+
+
+
+
+
 
 
 

@@ -23,6 +23,7 @@
 ####################################load r packages##########################################
 library(readxl)
 library(dplyr)
+library(writexl)
 
 #########################read data files: grad alum 5yr####################################
 #dashboard data
@@ -52,7 +53,8 @@ ipeds.complete<-full_join(ipeds.complete17f,ipeds.complete18f)
 #remove used dataframe
 rm(ipeds.complete17f,ipeds.complete18f)
 #ipeds.complete data created with pcid and degree cols
-
+#save
+write_xlsx(ipeds.complete,"/Users/linlizhou/Documents/LASELL/data/completion/17f18f.xlsx")
 
 ###################survey data degree: vlookup from ipeds.complete######################
 #match PCID and merge all cols

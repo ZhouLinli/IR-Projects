@@ -109,8 +109,8 @@ survey<-survey%>%mutate(Program=case_when(
 survey%>%group_by(Degree,Program)%>%count()#have 29 NAs
 #need to find the correct codes for those NAs, but remain NAs doesn't matter since they're not covered in historical codes
 
-
-
+#save the matched var data
+write_xlsx(survey,"/Users/linlizhou/Documents/LASELL/data/alumni/Gd6mSurvey_matchvars.xlsx")
 
 ###########################################################################
 ###################linkedin data: to match db cols########################
@@ -133,3 +133,5 @@ names(linkedin)[11]=names(db)[35]
 names(linkedin)[12]=names(db)[36]
 names(linkedin)[13]=names(db)[38]
 
+#save the matched var data
+write_xlsx(linkedin,"/Users/linlizhou/Documents/LASELL/data/alumni/Gd6mLinkedin_matchvar.xlsx")

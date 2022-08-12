@@ -8,8 +8,9 @@ library(writexl)
 db<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/Grad6m_historic.xlsx")
 #survey
 survey<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/Grad 6-month survey Results 2021.xlsx")
-ipeds.complete<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/17f18f.xlsx")
 
+###########################################################################
+######################survey data: to match db cols########################
 ######remove auto-generated survey cols (timestart, status, etc.)#######
 #find out the index
 names(survey)
@@ -46,7 +47,8 @@ names(survey)[names(survey)%in%names(db)=="FALSE"]
 #19 names not used - no match in db data - that's the best I can do, those 19 cols will remain in appended data as new cols
 
 
-#####vlookup program and degree
+#############matching survey degree info in ipeds.complete#######################
+#which year of ipeds.complete do we need:
 survey%>%group_by(Grad_date)%>%count()#it is 20-21 graduates
 #try 2021 fall ipeds.complete
 #check which sheet to read
@@ -88,4 +90,30 @@ survey<-left_join(survey,ipeds.complete,by=c("PC_ID"="People Code ID"))
 #assign the newly appended degree info (from ipeds.complete) to the correct exicted degree col
 survey$Degree.x<-survey$Degree.y
 survey<-survey%>%select(-Degree.y)
+#match names with db degree
+names(survey)[46]<-names(db)[3]
+#check
+names(survey)
+#now we have degree info in survey (successfully lookedup in ipeds.complete20/21f)
+
+#############################create program info based on degree################
+#recode based on the degree-program pairs in db data
+survey<-survey%>%mutate(Program=case_when(
+  Degree=="CER"~"Certificate",
+  Degree=="MEDEL"~"Degree Elementary Education MED",
+  Degree=="MEDMD"~"Degree Moderate Disabilities",
+  Degree=="MSC"~"Degree Communication",
+  Degree=="MSM"~"Degree Management",
+  Degree=="MSSM"~"Degree Sport Management",
+  Degree=="PMBA"~"Degree Business Administration",
+  Degree=="MSCJ"~"Degree Criminal Justice"
+))
+#check
+survey%>%group_by(Degree,Program)%>%count()#have 29 NAs
+
+
+
+
+###########################################################################
+###################linkedin data: to match db cols########################
 

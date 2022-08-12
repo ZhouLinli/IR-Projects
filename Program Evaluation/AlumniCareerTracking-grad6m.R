@@ -55,6 +55,12 @@ survey$PC_ID %in% ipeds.complete21f$textbox41#partially true
 #investigate those not true
 survey[survey$PC_ID %in% ipeds.complete21f$textbox41=="FALSE",c(3,4)]#maybe they're from 2020 graduate data, then needs to find ipeds.complete20f
 
+#try 2020 fall ipeds.complete
+ipeds.complete20f<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/2020Merged Completions.xlsx",sheet = "Merged")
+survey$PC_ID %in% ipeds.complete20f$`People Code ID`#only two true
+#then there might be students who did not receive degree (not in the complete dataset, but is in the survey)
+
+
 #########col f:g: employed/unemployed, employment status
 
 ####col r:s: salary recode, advancementatleastone

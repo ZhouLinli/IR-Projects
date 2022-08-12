@@ -47,6 +47,7 @@ names(survey)[names(survey)%in%names(db)=="FALSE"]
 
 
 #####vlookup program and degree
+survey%>%group_by(Grad_date)%>%count()
 
 #########col f:g: employed/unemployed, employment status
 

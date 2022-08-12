@@ -47,7 +47,13 @@ names(survey)[names(survey)%in%names(db)=="FALSE"]
 
 
 #####vlookup program and degree
-survey%>%group_by(Grad_date)%>%count()
+survey%>%group_by(Grad_date)%>%count()#it is 20-21 graduates
+#try 2021 fall ipeds.complete
+ipeds.complete21f<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/2021IPEDScompletions.xlsx",sheet = "Degrees - Combined")
+# - if find all pcid in survey for degree
+survey$PC_ID %in% ipeds.complete21f$textbox41#partially true
+#investigate those not true
+survey[survey$PC_ID %in% ipeds.complete21f$textbox41=="FALSE",c(3,4)]#maybe they're from 2020 graduate data, then needs to find ipeds.complete20f
 
 #########col f:g: employed/unemployed, employment status
 

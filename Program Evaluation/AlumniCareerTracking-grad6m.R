@@ -139,21 +139,15 @@ write_xlsx(linkedin,"/Users/linlizhou/Documents/LASELL/data/alumni/Gd6mLinkedin_
 
 ###########################################################################
 ###################try to merge linkedin, survey, db########################
-shared_names<-intersect(names(linkedin),names(survey))#10 shared names
-other_names_x<-linkedin%>%select(-shared_names[2:10])%>%names()#other names in linkedin, except pcid kept
-other_names_y<-survey%>%select(-shared_names[2:10])%>%names()#other names in survey, except pcid kept
+survey.linkedin_fj<-full_join(linkedin,survey)#matched 10 common cols, 
+#13+47-10=50
 
-shared_cols<-rbind(linkedin[,shared_names],survey[,shared_names])#shared cols between survey and linkedin appended succesfully
-other_cols<-merge(linkedin[,other_names_x],survey[,other_names_y],by="PC_ID",all=TRUE)#adding up all other cols
+#survey.linkedin_br<-bind_rows(linkedin,survey)#worked
+#survey.linkedin_rb<-rbind(linkedin,survey)#rbinds needs exact same col numbers and col names
+#survey.linkedin_mg<-merge(linkedin,survey)#must have "by=intersect"
+#survey.linkedin_mgby<-merge(linkedin,survey,by=intersect(names(linkedin),names(survey)),all = TRUE)#must have keep all
 
-survey.linkedin<-merge(shared_cols,other_cols,by="PC_ID",all=TRUE)
-rm(shared_cols,shared_names,other_cols,other_names_x,other_names_y)
+db.svy.lkn<-full_join(survey.linkedin_fj,db)#merged 29 matched variables
+#88+50-29=109
 
-
-survey.linkedin_fj<-full_join(linkedin,survey)#matched 10 common cols
-survey.linkedin<-merge(linkedin,survey,
-                       by=intersect(names(linkedin),names(survey)),
-                       all = TRUE )
-survey.linkedin<-bind_rows(linkedin,survey)
-#rbinds needs exact same col numbers and col names
-#full_join cannot auto-match same col names if not pass the same names to by
+#full_join(db,survey)#107 vars: 47+88-28=107; so there are 28 matched col between survey and db

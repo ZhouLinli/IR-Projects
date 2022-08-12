@@ -16,12 +16,17 @@ names(survey)
 survey<-survey%>%select(c(`First Name`,`Last Name`,`Invite Custom Field 1`,53:94))
 
 ###############view(data) check value for var correspondence#############
-#rename PCID
-survey<-survey%>%rename(PCID=`Invite Custom Field 1`)
-#rename a bunch more
+#rename prep
 names(db)#saved to an excel for quick index reference
 names(survey)#saved to an excel for quick index reference
-#employment match with what is your current employment status
+#view(data) side by side (eyeballing value) for var correspondence
+
+#rename
+names(survey)[3]<-names(db)[1]
+names(survey)[4]<-names(db)[85]
+names(survey)[5]<-names(db)[6]
+names(survey)[6]<-names(db)[7]
+names(survey)[16]<-names(db)[45]
 names(survey)[7]<-names(db)[4]
 names(survey)[8]<-names(db)[5]
 names(survey)[10]<-names(db)[20]
@@ -35,8 +40,10 @@ names(survey)[22]<-names(db)[42]
 names(survey)[34:37]<-names(db)[73:76]
 names(survey)[39:45]<-names(db)[77:83]
 
+#check what are not used in survey data
+names(survey)[names(survey)%in%names(db)=="FALSE"]
 
-
+#19 names not used - no match in db data - that's the best I can do, those 19 cols will remain in appended data as new cols
 
 
 #####vlookup program and degree

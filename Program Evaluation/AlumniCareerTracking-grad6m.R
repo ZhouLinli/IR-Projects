@@ -89,12 +89,3 @@ survey<-left_join(survey,ipeds.complete,by=c("PC_ID"="People Code ID"))
 survey$Degree.x<-survey$Degree.y
 survey<-survey%>%select(-Degree.y)
 
-#########col f:g: employed/unemployed, employment status
-
-####col r:s: salary recode, advancementatleastone
-####col as: atleastoneactivity
-####col -6:-1 datasource, survey, linkedin,gradedate,gradyear,employed/ed
-
-
-
-##########mutated cols using current cols#####

@@ -49,7 +49,7 @@ names(survey)[names(survey)%in%names(db)=="FALSE"]
 
 #############matching survey degree info in ipeds.complete#######################
 #which year of ipeds.complete do we need:
-survey%>%group_by(Grad_date)%>%count()#it is 20-21 graduates
+survey%>%group_by(GradYear)%>%count()#it is 20-21 graduates
 #try 2021 fall ipeds.complete
 #check which sheet to read
 excel_sheets("/Users/linlizhou/Documents/LASELL/data/completion/2021IPEDScompletions.xlsx")
@@ -87,10 +87,7 @@ rm(ipeds.complete20f,ipeds.complete21f)
 
 #can vlookup now by merging ipeds.complete with survey, but only those have a match in survey
 survey<-left_join(survey,ipeds.complete,by=c("PC_ID"="People Code ID"))
-#assign the newly appended degree info (from ipeds.complete) to the correct exicted degree col
-survey$Degree.x<-survey$Degree.y
-survey<-survey%>%select(-Degree.y)
-#match names with db degree
+#the newly appended degree match names with db degree
 names(survey)[46]<-names(db)[3]
 #check
 names(survey)
@@ -129,3 +126,10 @@ names(linkedin)
 names(linkedin)[1]=names(db)[1]
 names(linkedin)[5]=names(db)[85]
 names(linkedin)[6]=names(db)[86]
+names(linkedin)[8]=names(db)[4]
+names(linkedin)[9]=names(db)[22]
+names(linkedin)[10]=names(db)[20]
+names(linkedin)[11]=names(db)[35]
+names(linkedin)[12]=names(db)[36]
+names(linkedin)[13]=names(db)[38]
+

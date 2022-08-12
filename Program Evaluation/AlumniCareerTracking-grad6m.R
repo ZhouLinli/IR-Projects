@@ -24,7 +24,7 @@ names(survey)#saved to an excel for quick index reference
 
 #rename
 names(survey)[3]<-names(db)[1]
-names(survey)[4]<-names(db)[85]
+names(survey)[4]<-names(db)[86]#corrected from grad data to year - need to rerun
 names(survey)[5]<-names(db)[6]
 names(survey)[6]<-names(db)[7]
 names(survey)[16]<-names(db)[45]
@@ -110,10 +110,22 @@ survey<-survey%>%mutate(Program=case_when(
 ))
 #check
 survey%>%group_by(Degree,Program)%>%count()#have 29 NAs
+#need to find the correct codes for those NAs, but remain NAs doesn't matter since they're not covered in historical codes
 
 
 
 
 ###########################################################################
 ###################linkedin data: to match db cols########################
-
+#read data
+linkedin<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/Grad 6-month Population for LinkedIn.xlsx")
+#check names
+names(linkedin)#far too many names, after 13th are not variables
+#select existed cols
+linkedin<-linkedin%>%select(c(1:13))
+#copy names to be matched with db
+names(linkedin)
+#rename
+names(linkedin)[1]=names(db)[1]
+names(linkedin)[5]=names(db)[85]
+names(linkedin)[6]=names(db)[86]

@@ -148,8 +148,8 @@ survey.linkedin_fj<-full_join(linkedin,survey)#matched 10 common cols,
 #survey.linkedin_mgby<-merge(linkedin,survey,by=intersect(names(linkedin),names(survey)),all = TRUE)#must have keep all
 #IN CONCLUSION, FULL JOIN DO NOT NEED TO SPECIFY "BY" AND CAN AUTO-DETECT/MATCH/MERGE FOR SAME COL NAMES
 
-db.svy.lkn<-full_join(survey.linkedin_fj,db)#merged 29 matched variables
-#88+50-29=109
+db.svy.lkn<-full_join(db,survey.linkedin_fj)#merged 29 matched variables
+#88+50-29=109; db to be the first so that it followed the structure of db
 
 #full_join(db,survey)#107 vars: 47+88-28=107; so there are 28 matched col between survey and db
 

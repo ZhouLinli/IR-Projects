@@ -21,6 +21,8 @@ pop<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/Class of 2021 GR 
 pop<-pop%>%select(`Power Campus ID`,`Degree: Alumni Degree Name`)%>%rename(PCID="Power Campus ID")
 #merge
 survey<-left_join(survey,pop)
+#name of survey
+names(survey)
 
 ###########################################################################
 ###################linkedin data: to match survey cols########################
@@ -32,4 +34,19 @@ names(linkedin)#far too many names, after 13th are not variables
 linkedin<-linkedin%>%select(c(1:13))
 #copy names to be matched with db
 names(linkedin)
+#names(survey) vs names(linkedin) eyeballing matching
+names(linkedin)[1]=names(survey)[3]
+names(linkedin)[2]=names(survey)[1]
+names(linkedin)[3]=names(survey)[2]
+names(linkedin)[5]=names(survey)[4]
+names(linkedin)[7]=names(survey)[46]
+names(linkedin)[8]=names(survey)[7]
+names(linkedin)[9]=names(survey)[9]
+names(linkedin)[10]=names(survey)[10]
+names(linkedin)[11]=names(survey)[17]
+names(linkedin)[12]=names(survey)[19]
+names(linkedin)[13]=names(survey)[20]
 
+###########################################################################
+###################merge linkedin, survey#################################
+full_join(survey,linkedin)

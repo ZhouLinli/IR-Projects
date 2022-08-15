@@ -1,1 +1,1 @@
-# R codes for Institutional Research Projects using higher education student and program database.
+# R codes to clean, merge, and report higherEd data.

@@ -1,4 +1,9 @@
-#cleaning ipeds.complete18f data
+#16-17 graduates are in 2017 fall ipeds.complete report
+#17-18 graduates are in 2018 fall ipeds.compelte
+#20-21 graduates are in 2021 fall ipeds.complete
+
+library(readxl)
+####################################cleaning ipeds.complete18f data#######################################
 ##read data
 ipeds.complete18f<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/2018ipedsFComp_2017grad.xlsx.xlsx",sheet="Merged")
 
@@ -37,3 +42,10 @@ ipeds.complete18f%>%group_by(degree)%>%count()#no more TRK
 #Save the corrected degree codes file
 library(writexl)
 write_xlsx(ipeds.complete18f,"/Users/linlizhou/Documents/LASELL/data/completion/2018ipedsFComp_2017grad.xlsx.xlsx")
+
+
+
+
+
+
+

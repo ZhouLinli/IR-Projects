@@ -21,3 +21,15 @@ pop<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/Class of 2021 GR 
 pop<-pop%>%select(`Power Campus ID`,`Degree: Alumni Degree Name`)%>%rename(PCID="Power Campus ID")
 #merge
 survey<-left_join(survey,pop)
+
+###########################################################################
+###################linkedin data: to match survey cols########################
+#read data
+linkedin<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/Grad 6-month Population for LinkedIn.xlsx")
+#check names
+names(linkedin)#far too many names, after 13th are not variables
+#select existed cols
+linkedin<-linkedin%>%select(c(1:13))
+#copy names to be matched with db
+names(linkedin)
+

@@ -101,6 +101,8 @@ survey<-survey%>%mutate(Program=case_when(
   Degree=="MEDMD"~"Degree Moderate Disabilities",
   Degree=="MSC"~"Degree Communication",
   Degree=="MSM"~"Degree Management",
+  Degree=="MBA"~"Degree Management",
+  Degree=="MSHR"~"Degree Management",
   Degree=="MSSM"~"Degree Sport Management",
   Degree=="PMBA"~"Degree Business Administration",
   Degree=="MSCJ"~"Degree Criminal Justice"
@@ -108,6 +110,7 @@ survey<-survey%>%mutate(Program=case_when(
 #check
 survey%>%group_by(Degree,Program)%>%count()#have 29 NAs
 #need to find the correct codes for those NAs, but remain NAs doesn't matter since they're not covered in historical codes
+
 
 #save the matched var data
 write_xlsx(survey,"/Users/linlizhou/Documents/LASELL/data/alumni/Gd6mSurvey_matchvars.xlsx")
@@ -156,3 +159,11 @@ db.svy.lkn<-full_join(db,survey.linkedin_fj)#merged 29 matched variables
 #save full join
 write_xlsx(db.svy.lkn,"/Users/linlizhou/Documents/LASELL/data/alumni/grad6m_full.xlsx")
 
+
+###########################################################################
+###################clean the full join file########################
+##rename df for easier programming
+full<-db.svy.lkn
+rm(db.svy.lkn)
+#clean program col
+full%>%group_by(Program)%>%count()

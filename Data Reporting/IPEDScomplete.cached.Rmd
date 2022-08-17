@@ -63,7 +63,7 @@ grad21.22t<-grad21.22t%>%
 #merge to add race and gender
 ipeds.complete22f<-left_join(ipeds.complete22f,grad21.22t)%>%unique()#unique observations, remove duplicated
 #remove
-rm(grad21f,grad21sum,grad22spr)
+rm(grad21f,grad21sum,grad22spr,grad21.22t)
 
 #####reformat date#####
 class(ipeds.complete22f$gradd)#it's character
@@ -90,7 +90,21 @@ ipeds.complete21f<-ipeds.complete21f%>%select(textbox41,textbox14,DEGREE,major,`
 names(ipeds.complete21f)#do not have race and gender in raw data
 
 #####add race and gender####
+#read  data (from report manager-IR-Graduation Term Snapshot)
+grad20sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/20sum.csv")
+grad20f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/20f.csv")
+grad21spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/21spr.csv")
+#merge
+grad20.21t<-join_all(list(grad20sum,grad21spr,grad20f),type="full",match="first")#548 observations
+#rename for selected (race gender and pcid)
+grad20.21t<-grad20.21t%>%
+  select(people_code_id,Reporting_Ethnicity,gender)%>%
+  dplyr::rename(PCID=people_code_id,race=Reporting_Ethnicity)
 
+#merge to add race and gender
+ipeds.complete21f<-left_join(ipeds.complete21f,grad20.21t)%>%unique()#unique observations, remove duplicated
+#remove
+rm(grad20f,grad20sum,grad21spr,grad20.21t)
 
 ############################2020 fall ipeds.complete#
 #find the right sheet to read
@@ -103,7 +117,14 @@ ipeds.complete20f<-ipeds.complete20f%>% select(`People Code ID`,Program,Degree,C
 #check names - prep for merge
 names(ipeds.complete20f)#keep a cip description for later use
 
-
+#####add curriculum####
+#read  data (from report manager-IR-Graduation Term Snapshot)
+grad20sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/20sum.csv")
+grad20f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/20f.csv")
+grad21spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/21spr.csv")
+#merge
+grad20.21t<-join_all(list(grad20sum,grad21spr,grad20f),type="full",match="first")#548 observations
+#rename for selected (race gender and pcid)
 
 
 ############################2019 fall ipeds.complete

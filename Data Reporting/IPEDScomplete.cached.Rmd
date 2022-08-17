@@ -76,6 +76,9 @@ write_xlsx(ipeds.complete22f,"/Users/linlizhou/Documents/LASELL/data/completion/
 
 
 ```{r CACHED select var from annual, cache=TRUE}
+###########################2022 fall ipeds.complete
+ipeds.complete22f<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/2022IPEDScompletions.xlsx")
+
 ###########################2021 fall ipeds.complete
 #check which sheet to read
 excel_sheets("/Users/linlizhou/Documents/LASELL/data/completion/2021IPEDScompletions.xlsx")
@@ -85,6 +88,9 @@ ipeds.complete21f<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion
 ipeds.complete21f<-ipeds.complete21f%>%select(textbox41,textbox14,DEGREE,major,`Grad Date`)%>%dplyr::rename(PCID=textbox41,level=textbox14,degree=DEGREE,gradd=`Grad Date`)
 #check names - prep for merge
 names(ipeds.complete21f)#do not have race and gender in raw data
+
+#####add race and gender####
+
 
 ############################2020 fall ipeds.complete#
 #find the right sheet to read
@@ -96,6 +102,8 @@ ipeds.complete20f<-ipeds.complete20f%>% select(`People Code ID`,Program,Degree,C
   dplyr::rename(PCID=`People Code ID`, level=Program, degree=Degree, major=Curriculum, gradd=GradDate, race=Race, gender=Gender)
 #check names - prep for merge
 names(ipeds.complete20f)#keep a cip description for later use
+
+
 
 
 ############################2019 fall ipeds.complete

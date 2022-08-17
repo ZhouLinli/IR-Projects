@@ -6,7 +6,9 @@
 
 ###########################load R package###########################
 library(readxl)
+library(dplyr)
 library(plyr)#for join_all
+library(writexl)
 
 #################################################################
 ###################read, select/rename useful vars###############
@@ -28,9 +30,11 @@ excel_sheets("/Users/linlizhou/Documents/LASELL/data/completion/2020Merged Compl
 #read data
 ipeds.complete20f<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/2020Merged Completions.xlsx",sheet = "Merged")
 #select useful cols and rename (prep for merge)
-ipeds.complete20f<-ipeds.complete20f%>%select(`People Code ID`,Program,Degree,Curriculum,GradDate,`CIP description`,Race,Gender)%>%rename(PCID=`People Code ID`,level=Program,degree=Degree,major=Curriculum,gradd=GradDate,race=Race,gender=Gender)
+ipeds.complete20f<-ipeds.complete20f%>% select(`People Code ID`,Program,Degree,Curriculum,GradDate,Race,Gender) %>% 
+  rename(PCID=`People Code ID`, level=Program, degree=Degree, major=Curriculum, gradd=GradDate, race=Race, gender=Gender)
 #check names - prep for merge
 names(ipeds.complete20f)#keep a cip description for later use
+
 
 ############################2019 fall ipeds.complete
 #find the right sheet to read
@@ -50,7 +54,8 @@ excel_sheets("/Users/linlizhou/Documents/LASELL/data/completion/2018ipedsFComp_2
 #read data
 ipeds.complete18f<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/2018ipedsFComp_2017grad.clean.xlsx")
 #select useful cols and rename (prep for merge)
-ipeds.complete18f<-ipeds.complete18f%>%select(people_code_id,program,degree,curriculum,graduation_date,Race,gender)%>%rename(PCID=people_code_id,level=program,major=curriculum,gradd=graduation_date,race=Race)
+ipeds.complete18f<-ipeds.complete18f%>%select(people_code_id,program,degree,curriculum,graduation_date,Race,gender)%>%
+  rename(PCID=people_code_id,level=program,major=curriculum,gradd=graduation_date,race=Race)
 #check names - prep for merge
 names(ipeds.complete18f)
 
@@ -72,15 +77,56 @@ names(ipeds.complete17f)
 ############merge the above selected ipeds.compeltes#############
 #################################################################
 
+#########################explore the different functions using 17-20f data
+#rbind needs col of same length
+ncol(ipeds.complete17f)
+ncol(ipeds.complete18f)
+ncol(ipeds.complete19f)
+ncol(ipeds.complete20f)
+#rbind
+ipeds.complete<-rbind(ipeds.complete17f,ipeds.complete18f,ipeds.complete19f,ipeds.complete20f)#2421 observations
+#exactly the same with adding all rows
+nrow(ipeds.complete17f)+nrow(ipeds.complete18f)+nrow(ipeds.complete19f)+nrow(ipeds.complete20f)#2421 observations
+
+#rbind is the same with join by all matched cols
+ipeds.complete<-join_all(list(ipeds.complete17f,ipeds.complete18f,ipeds.complete19f,ipeds.complete20f),type="full",match="first")#2420 observations; closest to rbind
+
+#by=PCID limit to merge (turn into one) if find PCID in other dataset; match=first, only takes care of first match
+ipeds.complete<-join_all(list(ipeds.complete17f,ipeds.complete18f,ipeds.complete19f,ipeds.complete20f),by="PCID",type="full",match="first")#2368 observations
+#by=PCID limit to (turn into one) if find PCID in other dataset; match = all merge create a copy for all match
+ipeds.complete<-join_all(list(ipeds.complete17f,ipeds.complete18f,ipeds.complete19f,ipeds.complete20f),by="PCID",type="full",match="all")#2379 observations
+
+#########################use join all for merging 17-21f data
 ipeds.complete<-join_all(list(ipeds.complete17f,ipeds.complete18f,ipeds.complete19f,ipeds.complete20f,ipeds.complete21f),type="full",match="first")#3020 observations
+#save merged data
+write_xlsx(ipeds.complete,"/Users/linlizhou/Documents/LASELL/data/completion/17-21f.xlsx")
 
-ipeds.complete<-join_all(list(ipeds.complete17f,ipeds.complete18f,ipeds.complete19f,ipeds.complete20f,ipeds.complete21f),by="PCID",type="full",match="first")#2915 observations
 
-ipeds.complete<-rbind(ipeds.complete17f,ipeds.complete18f,ipeds.complete19f,ipeds.complete20f,ipeds.complete21f)#2915 observations
 
-nrow(ipeds.complete17f)+nrow(ipeds.complete18f)+nrow(ipeds.complete19f)+nrow(ipeds.complete20f)+nrow(ipeds.complete21f)#3021 observations
 
-####################################cleaning ipeds.complete18f data#######################################
+
+#################################################################
+######################cleaning ipeds.compeltes###################
+#################################################################
+
+####################################level
+ipeds.complete%>%group_by(level)%>%count()
+#print all unique values
+table(ipeds.complete$level)
+#if any na
+sum(is.na(ipeds.complete$level))
+####################################degree
+ipeds.complete%>%group_by(degree)%>%count()
+#print all unique values
+table(ipeds.complete$degree)
+#if any na
+sum(is.na(ipeds.complete$degree))
+#clean
+
+####################################major
+####################################gradd
+####################################race
+####################################gender
 
 
 #check conc (invalid code in degree)

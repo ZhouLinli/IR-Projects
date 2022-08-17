@@ -34,21 +34,22 @@ names(c(grad21.8,grad21.12,grad22.5))#needs rename
 #rename
 grad21.12<-grad21.12%>%
 select(textbox41,textbox14,DEGREE,major,textbox4)%>%
-  rename(PCID=textbox41,level=textbox14,degree=DEGREE,gradd=textbox4)
+  dplyr::rename(PCID=textbox41,level=textbox14,degree=DEGREE,gradd=textbox4)
 
 grad21.8<-grad21.8%>%
 select(textbox41,textbox14,DEGREE,major,textbox4)%>%
-  rename(PCID=textbox41,level=textbox14,degree=DEGREE,gradd=textbox4)
+  dplyr::rename(PCID=textbox41,level=textbox14,degree=DEGREE,gradd=textbox4)
 
 grad22.5<-grad22.5%>%
   select(textbox41,textbox14,DEGREE,major,textbox4)%>%
-  rename(PCID=textbox41,level=textbox14,degree=DEGREE,gradd=textbox4)
+  dplyr::rename(PCID=textbox41,level=textbox14,degree=DEGREE,gradd=textbox4)
 #join_all by full
 ipeds.complete22f<-join_all(list(grad21.8,grad21.12,grad22.5),type="full",match="first")#548 observations
 #check
 sum(sapply(list(grad21.12,grad21.8,grad22.5), nrow))#matched 548 observations
 #remove
 rm(grad21.12,grad21.8,grad22.5)
+#
 #save
 write_xlsx(ipeds.complete22f,"/Users/linlizhou/Documents/LASELL/data/completion/2022IPEDScompletions.xlsx")
 ```
@@ -61,7 +62,7 @@ excel_sheets("/Users/linlizhou/Documents/LASELL/data/completion/2021IPEDScomplet
 #read data
 ipeds.complete21f<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/2021IPEDScompletions.xlsx",sheet = "Degrees - Combined")
 #select useful cols and rename (prep for merge)
-ipeds.complete21f<-ipeds.complete21f%>%select(textbox41,textbox14,DEGREE,major,`Grad Date`)%>%rename(PCID=textbox41,level=textbox14,degree=DEGREE,gradd=`Grad Date`)
+ipeds.complete21f<-ipeds.complete21f%>%select(textbox41,textbox14,DEGREE,major,`Grad Date`)%>%dplyr::rename(PCID=textbox41,level=textbox14,degree=DEGREE,gradd=`Grad Date`)
 #check names - prep for merge
 names(ipeds.complete21f)#do not have race and gender in raw data
 
@@ -72,7 +73,7 @@ excel_sheets("/Users/linlizhou/Documents/LASELL/data/completion/2020Merged Compl
 ipeds.complete20f<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/2020Merged Completions.xlsx",sheet = "Merged")
 #select useful cols and rename (prep for merge)
 ipeds.complete20f<-ipeds.complete20f%>% select(`People Code ID`,Program,Degree,Curriculum,GradDate,Race,Gender) %>% 
-  rename(PCID=`People Code ID`, level=Program, degree=Degree, major=Curriculum, gradd=GradDate, race=Race, gender=Gender)
+  dplyr::rename(PCID=`People Code ID`, level=Program, degree=Degree, major=Curriculum, gradd=GradDate, race=Race, gender=Gender)
 #check names - prep for merge
 names(ipeds.complete20f)#keep a cip description for later use
 
@@ -83,7 +84,7 @@ excel_sheets("/Users/linlizhou/Documents/LASELL/data/completion/2019Merged Compl
 #read data
 ipeds.complete19f<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/2019Merged Completions.xlsm",sheet = "AllMerged")
 #select useful cols and rename (prep for merge)
-ipeds.complete19f<-ipeds.complete19f%>%select(people_code_id,program,degree,curriculum,graduation_date,Race,gender)%>%rename(PCID=people_code_id,level=program,major=curriculum,gradd=graduation_date,race=Race)
+ipeds.complete19f<-ipeds.complete19f%>%select(people_code_id,program,degree,curriculum,graduation_date,Race,gender)%>%dplyr::rename(PCID=people_code_id,level=program,major=curriculum,gradd=graduation_date,race=Race)
 #check names - prep for merge
 names(ipeds.complete19f)
 
@@ -96,7 +97,7 @@ excel_sheets("/Users/linlizhou/Documents/LASELL/data/completion/2018ipedsFComp_2
 ipeds.complete18f<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/2018ipedsFComp_2017grad.clean.xlsx")
 #select useful cols and rename (prep for merge)
 ipeds.complete18f<-ipeds.complete18f%>%select(people_code_id,program,degree,curriculum,graduation_date,Race,gender)%>%
-  rename(PCID=people_code_id,level=program,major=curriculum,gradd=graduation_date,race=Race)
+  dplyr::rename(PCID=people_code_id,level=program,major=curriculum,gradd=graduation_date,race=Race)
 #check names - prep for merge
 names(ipeds.complete18f)
 
@@ -107,7 +108,7 @@ excel_sheets("/Users/linlizhou/Documents/LASELL/data/completion/2017ipedsFComp_2
 #read data
 ipeds.complete17f<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/2017ipedsFComp_2016grad.xlsx",sheet = "Merged_ALL")
 #select useful cols and rename (prep for merge)
-ipeds.complete17f<-ipeds.complete17f%>%select(`People Code ID`,Program,Degree,Curriculum,`Graduation Date`,Race,Gender)%>%rename(PCID=`People Code ID`,level=Program,degree=Degree,major=Curriculum,gradd=`Graduation Date`,race=Race,gender=Gender)
+ipeds.complete17f<-ipeds.complete17f%>%select(`People Code ID`,Program,Degree,Curriculum,`Graduation Date`,Race,Gender)%>%dplyr::rename(PCID=`People Code ID`,level=Program,degree=Degree,major=Curriculum,gradd=`Graduation Date`,race=Race,gender=Gender)
 #check names - prep for merge
 names(ipeds.complete17f)
 ```
@@ -136,9 +137,10 @@ ipeds.complete<-join_all(list(ipeds.complete17f,ipeds.complete18f,ipeds.complete
 ```
 
 ```{r RERUN-joinall by full selected var}
-ipeds.complete<-join_all(list(ipeds.complete17f,ipeds.complete18f,ipeds.complete19f,ipeds.complete20f,ipeds.complete21f),type="full",match="first")#3020 observations
+ipeds.complete<-join_all(list(ipeds.complete17f,ipeds.complete18f,ipeds.complete19f,ipeds.complete20f,ipeds.complete21f,ipeds.complete22f),type="full",match="first")
+
 #save merged data
-write_xlsx(ipeds.complete,"/Users/linlizhou/Documents/LASELL/data/completion/17-21f.xlsx")
+write_xlsx(ipeds.complete,"/Users/linlizhou/Documents/LASELL/data/completion/17f-current.xlsx")
 ```
 
 

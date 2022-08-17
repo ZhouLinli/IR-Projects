@@ -130,6 +130,8 @@ write_xlsx(survey,"/Users/linlizhou/Documents/LASELL/data/alumni/Gd6mSurvey_matc
 
 
 
+
+
 ########################################################
 #############merge linkedin, survey, db ################
 ########################################################
@@ -150,14 +152,7 @@ db.svy.lkn<-full_join(db,survey.linkedin_fj)#merged 29 matched variables
 
 #save full join
 write_xlsx(db.svy.lkn,"/Users/linlizhou/Documents/LASELL/data/alumni/grad6m_full.xlsx")
+#created a dataset that match the original ("messy") historical data table
 
 
 
-###################################################################
-###################clean the full join file########################
-###################################################################
-##rename df for easier programming
-full<-db.svy.lkn
-rm(db.svy.lkn)
-#clean program col
-full%>%group_by(Program)%>%count()

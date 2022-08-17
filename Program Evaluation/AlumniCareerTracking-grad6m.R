@@ -5,7 +5,7 @@ library(writexl)
 
 #############################read data files##########################
 #dashbaord
-db<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/Grad6m_historic.xlsx")
+db<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/2021Grad6m_historic.xlsx")
 #survey
 survey<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/Grad 6-month survey Results 2021.xlsx")
 
@@ -85,19 +85,21 @@ write_xlsx(linkedin,"/Users/linlizhou/Documents/LASELL/data/alumni/2021Gd6mLinke
 ########################################################
 #####matching degree/rpgraom w/t ipeds.complete ########
 ########################################################
-
+#skip data manipulation and read saved file directly:
+#survey<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/2021Gd6mLinkedin_rename.xlsx")
 #############matching survey degree info in ipeds.complete#
 #which year of ipeds.complete do we need:
-survey%>%group_by(GradYear)%>%summarise(Count = n())#it is 20-21 graduates
+survey%>%dplyr::group_by(GradYear)%>%summarise(n = n())#it is 20-21 graduates
+count(survey$GradYear)
 # load ipeds.complete data
-ipeds.complete<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/17-21f.xlsx")
+ipeds.complete<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/17f-current.xlsx")
 # check if find all pcid in survey for degree
-survey$PC_ID %in% ipeds.complete$PCID#partially true
-#investigate those not true
-survey[survey$PC_ID %in% ipeds.complete$PCID=="FALSE",c(3,4)]#they are all from AY20-21, will need 22f for graduates of 20-21 (e.g.graduated in 2021/06)
+survey$PC_ID %in% ipeds.complete$PCID#all true
+#check if zero not in
+sum(survey$PC_ID %in% ipeds.complete$PCID=="FALSE")
 
 #can vlookup now by merging ipeds.complete with survey, but only those have a match in survey
-survey<-left_join(survey,ipeds.complete,by=c("PC_ID"="People Code ID"))
+survey<-left_join(survey,ipeds.complete,by=c("PC_ID"="PCID"))
 #the newly appended degree match names with db degree
 names(survey)[46]<-names(db)[3]
 #check

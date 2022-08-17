@@ -9,8 +9,12 @@ db<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/Grad6m_historic.xl
 #survey
 survey<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/Grad 6-month survey Results 2021.xlsx")
 
+
 ###########################################################################
-######################survey data: to match db cols########################
+##################renaming 2021 data based on db names#####################
+###########################################################################
+
+######################survey data: to match db cols
 ######remove auto-generated survey cols (timestart, status, etc.)#######
 #find out the index
 names(survey)
@@ -43,52 +47,13 @@ names(survey)[39:45]<-names(db)[77:83]
 
 #check what are not used in survey data
 names(survey)[names(survey)%in%names(db)=="FALSE"]
-
 #19 names not used - no match in db data - that's the best I can do, those 19 cols will remain in appended data as new cols
 
-
-#############matching survey degree info in ipeds.complete#######################
-#which year of ipeds.complete do we need:
-survey%>%group_by(GradYear)%>%count()#it is 20-21 graduates
-# load ipeds.complete data
-
-# check if find all pcid in survey for degree
-survey$PC_ID %in% ipeds.complete21f$textbox41#partially true
-#investigate those not true
-survey[survey$PC_ID %in% ipeds.complete21f$textbox41=="FALSE",c(3,4)]#maybe they're from 2020 graduate data, then needs to find ipeds.complete20f
-
-#can vlookup now by merging ipeds.complete with survey, but only those have a match in survey
-survey<-left_join(survey,ipeds.complete,by=c("PC_ID"="People Code ID"))
-#the newly appended degree match names with db degree
-names(survey)[46]<-names(db)[3]
-#check
-names(survey)
-#now we have degree info in survey (successfully lookedup in ipeds.complete20/21f)
-
-#############################create program info based on degree################
-#recode based on the degree-program pairs in db data
-survey<-survey%>%mutate(Program=case_when(
-  Degree=="CER"~"Certificate",
-  Degree=="MEDEL"~"Degree Elementary Education MED",
-  Degree=="MEDMD"~"Degree Moderate Disabilities",
-  Degree=="MSC"~"Degree Communication",
-  Degree=="MSM"~"Degree Management",
-  Degree=="MBA"~"Degree Management",
-  Degree=="MSHR"~"Degree Management",
-  Degree=="MSSM"~"Degree Sport Management",
-  Degree=="PMBA"~"Degree Business Administration",
-  Degree=="MSCJ"~"Degree Criminal Justice"
-))
-#check
-survey%>%group_by(Degree,Program)%>%count()#have 29 NAs
-#need to find the correct codes for those NAs, but remain NAs doesn't matter since they're not covered in historical codes
+#save renamed file
+write_xlsx(survey,"/Users/linlizhou/Documents/LASELL/data/alumni/2021Gd6mSurvey_renamed.xlsx")
 
 
-#save the matched var data
-write_xlsx(survey,"/Users/linlizhou/Documents/LASELL/data/alumni/Gd6mSurvey_matchvars.xlsx")
-
-###########################################################################
-###################linkedin data: to match db cols########################
+###################linkedin data: to match db cols
 #read data
 linkedin<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/Grad 6-month Population for LinkedIn.xlsx")
 #check names
@@ -109,11 +74,66 @@ names(linkedin)[12]=names(db)[36]
 names(linkedin)[13]=names(db)[38]
 
 #save the matched var data
-write_xlsx(linkedin,"/Users/linlizhou/Documents/LASELL/data/alumni/Gd6mLinkedin_matchvar.xlsx")
+write_xlsx(linkedin,"/Users/linlizhou/Documents/LASELL/data/alumni/2021Gd6mLinkedin_rename.xlsx")
 
 
-###########################################################################
-###################try to merge linkedin, survey, db########################
+
+
+
+
+
+########################################################
+#####matching degree/rpgraom w/t ipeds.complete ########
+########################################################
+
+#############matching survey degree info in ipeds.complete#
+#which year of ipeds.complete do we need:
+survey%>%group_by(GradYear)%>%summarise(Count = n())#it is 20-21 graduates
+# load ipeds.complete data
+ipeds.complete<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/17-21f.xlsx")
+# check if find all pcid in survey for degree
+survey$PC_ID %in% ipeds.complete$PCID#partially true
+#investigate those not true
+survey[survey$PC_ID %in% ipeds.complete$PCID=="FALSE",c(3,4)]#they are all from AY20-21, will need 22f for graduates of 20-21 (e.g.graduated in 2021/06)
+
+#can vlookup now by merging ipeds.complete with survey, but only those have a match in survey
+survey<-left_join(survey,ipeds.complete,by=c("PC_ID"="People Code ID"))
+#the newly appended degree match names with db degree
+names(survey)[46]<-names(db)[3]
+#check
+names(survey)
+#now we have degree info in survey (successfully lookedup in ipeds.complete20/21f)
+
+
+#############################create program info based on degree
+#recode based on the degree-program pairs in db data
+survey<-survey%>%mutate(Program=case_when(
+  Degree=="CER"~"Certificate",
+  Degree=="MEDEL"~"Degree Elementary Education MED",
+  Degree=="MEDMD"~"Degree Moderate Disabilities",
+  Degree=="MSC"~"Degree Communication",
+  Degree=="MSM"~"Degree Management",
+  Degree=="MBA"~"Degree Management",
+  Degree=="MSHR"~"Degree Management",
+  Degree=="MSSM"~"Degree Sport Management",
+  Degree=="PMBA"~"Degree Business Administration",
+  Degree=="MSCJ"~"Degree Criminal Justice"
+))
+#check
+survey%>%group_by(Degree,Program)%>%count()#have 29 NAs
+#need to find the correct codes for those NAs, but remain NAs doesn't matter since they're not covered in historical codes
+
+
+#save the matched (survey-ipeds) var data
+write_xlsx(survey,"/Users/linlizhou/Documents/LASELL/data/alumni/Gd6mSurvey_matchvars.xlsx")
+
+
+
+
+########################################################
+#############merge linkedin, survey, db ################
+########################################################
+
 survey.linkedin_fj<-full_join(linkedin,survey)#matched 10 common cols, 
 #13+47-10=50
 
@@ -132,8 +152,10 @@ db.svy.lkn<-full_join(db,survey.linkedin_fj)#merged 29 matched variables
 write_xlsx(db.svy.lkn,"/Users/linlizhou/Documents/LASELL/data/alumni/grad6m_full.xlsx")
 
 
-###########################################################################
+
+###################################################################
 ###################clean the full join file########################
+###################################################################
 ##rename df for easier programming
 full<-db.svy.lkn
 rm(db.svy.lkn)

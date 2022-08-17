@@ -14,7 +14,12 @@ library(readxl)
 library(dplyr)
 ```
 
-# Research question: 1.
+# Research question: 
+1. Postgrad Life Basic: 1) How many alumni are employed/unemployed/continue-ed across years? 2) What are the most popular title/degree and employers/institutions? 3) What are their average salary?
+
+2. Employ-ability/Continue-edu characteristics: 1) Which major/degree are most employable across years? 2) How demographic (gender, race) correlate with employment?
+
+3. What are alum's top interests in Lasell alum activities?
 
 ## Answer: 
 

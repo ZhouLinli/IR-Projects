@@ -724,9 +724,9 @@ tibble(
 ```
 
 Table \ref{tab.mdsc} shows what's included in Multidisciplinary Studies:
+
 ```{r show MDSC/Multidisciplineary Studies, include=TRUE}
 canvrp_ugg_match %>% filter(department=="Multidisciplinary Studies")%>%group_by(`Course ID`, `Course Name`)%>%count()%>%kable(caption = "Multidisciplinary Studies Courses \\label{tab.mdsc}") %>%kable_styling(latex_options = "HOLD_position")
 ```
-```
 
-
+Besides, we did not report programs and courses that has small number of observations. That exclusion help to protect students' privacy from possibly individual identifiable students data. Specifically, the following programs are omitted from this report: Service Learning (n=5), Individualized Studies (n=2), Academic Achievement Center (n=9), and WRT109 (n=1).

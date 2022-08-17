@@ -23,7 +23,14 @@ library(dplyr)
 
 ## Answer: 
 
-```{r load data}
-svy.5y
+```{r target data}
+#gd6m target data
+gd6m<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/2021Grad6m_historic.xlsx")
+#select vars for research questions
+gd6m<-gd6m%>%select(
+  PC_ID,
+  Degree,
+  
+)
 ```
 

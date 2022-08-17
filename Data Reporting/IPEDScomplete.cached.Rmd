@@ -21,6 +21,7 @@ library(readxl)
 library(dplyr)
 library(plyr)#for join_all
 library(writexl)
+library(lubridate)
 ```
 
 ```{r merge for annual}
@@ -49,7 +50,11 @@ ipeds.complete22f<-join_all(list(grad21.8,grad21.12,grad22.5),type="full",match=
 sum(sapply(list(grad21.12,grad21.8,grad22.5), nrow))#matched 548 observations
 #remove
 rm(grad21.12,grad21.8,grad22.5)
-#
+#reformat date
+class(ipeds.complete22f$gradd)#it's character
+#convert the mdy formated character to date format
+ipeds.complete22f$gradd<-mdy(ipeds.complete22f$gradd)
+class(ipeds.complete22f$gradd)#now it's date
 #save
 write_xlsx(ipeds.complete22f,"/Users/linlizhou/Documents/LASELL/data/completion/2022IPEDScompletions.xlsx")
 ```

@@ -57,7 +57,7 @@ library(readxl)
 #canvrp<-read_excel("S:/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/gradalign_working.xlsx")
 #for mac
 #canvrp<-read_excel("/Volumes/Faculty_Staff_Shares$/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/gradalign_working.xlsx")
-canvrp<-read_excel("/Users/linlizhou/Documents/LASELL/working on/gradalign_working.xlsx")
+canvrp<-read_excel("/Users/linlizhou/Documents/LASELL/data/progameval/gradalign_working.xlsx")
 ```
 
 ```{r dataset prep - poppulation&semester}
@@ -486,7 +486,7 @@ no_school_department_bar
 
 ```{r noschool description prep n}
 canvrp_ugg_match%>%filter(school=="No School"|school=="Writing Program")%>%
-  group_by(department)%>%count()
+  group_by(department)%>%dplyr::count()
 nhonors<-sum(canvrp_ugg_match$department=="Honors")
 nwriting<-sum(canvrp_ugg_match$department=="Writing")
 nfys<-sum(canvrp_ugg_match$department=="First Year Seminar")
@@ -526,10 +526,17 @@ writing_bar<-writing_pvttbl%>%
   theme_lz()+theme(legend.title = element_blank(),axis.text.x = element_blank())
 ```
 
+```{r FIX writing course prep n}
+canvrp_ugg_match%>%filter(school=="Writing Program")%>%
+  group_by(department)%>%count()
+nwrt101<-sum(canvrp_ugg_match$`Course ID`=="WRT101")
+nwrt102<-sum(canvrp_ugg_match$`Course ID`=="WRT102")
+```
+
 ```{r show writing bar, fig.cap="Grade Consistency in Writing Programs \\label{fig.writing}",fig.height=1,include=TRUE}
 writing_bar
 ```
-As shown in Figure \ref{fig.writing}, Writing 101 and 102 has similar exact match, but Writing 101 has 8% significant difference than Writing 102 which is 4%. 
+As shown in Figure \ref{fig.writing}, Writing 101 (n=342) and 102 (n=334) has similar exact match, but Writing 101 has 8% significant difference than Writing 102 which is 4%. 
 
 
 

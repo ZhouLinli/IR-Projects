@@ -106,6 +106,7 @@ ipeds.complete21f<-left_join(ipeds.complete21f,grad20.21t)%>%unique()#unique obs
 #remove
 rm(grad20f,grad20sum,grad21spr,grad20.21t)
 
+
 ############################2020 fall ipeds.complete#
 #find the right sheet to read
 #excel_sheets("/Users/linlizhou/Documents/LASELL/data/completion/2020Merged Completions.xlsx")
@@ -130,6 +131,11 @@ ipeds.complete20f<-grad19.20t%>%select(people_code_id,program,degree,major,gradu
 #remove
 rm(grad19.20t,grad19f,grad19sum,grad20spr)
 
+#####reformat date#####
+class(ipeds.complete20f$gradd)#it's character
+#convert the mdy formated character to date format
+ipeds.complete20f$gradd<-mdy_hms(ipeds.complete20f$gradd)
+class(ipeds.complete20f$gradd)#now it's date
 
 ############################2019 fall ipeds.complete
 #find the right sheet to read
@@ -171,22 +177,22 @@ names(ipeds.complete17f)
 ```{r explore merging functions}
 #########################explore the different functions using 17-20f data
 #rbind needs col of same length
-ncol(ipeds.complete17f)
-ncol(ipeds.complete18f)
-ncol(ipeds.complete19f)
-ncol(ipeds.complete20f)
+#ncol(ipeds.complete17f)
+#ncol(ipeds.complete18f)
+#ncol(ipeds.complete19f)
+#ncol(ipeds.complete20f)
 #rbind
-ipeds.complete<-rbind(ipeds.complete17f,ipeds.complete18f,ipeds.complete19f,ipeds.complete20f)#2421 observations
+#ipeds.complete<-rbind(ipeds.complete17f,ipeds.complete18f,ipeds.complete19f,ipeds.complete20f)#2421 observations
 #exactly the same with adding all rows
-nrow(ipeds.complete17f)+nrow(ipeds.complete18f)+nrow(ipeds.complete19f)+nrow(ipeds.complete20f)#2421 observations
+#nrow(ipeds.complete17f)+nrow(ipeds.complete18f)+nrow(ipeds.complete19f)+nrow(ipeds.complete20f)#2421 observations
 
 #rbind is the same with join by all matched cols
-ipeds.complete<-join_all(list(ipeds.complete17f,ipeds.complete18f,ipeds.complete19f,ipeds.complete20f),type="full",match="first")#2420 observations; closest to rbind
+#ipeds.complete<-join_all(list(ipeds.complete17f,ipeds.complete18f,ipeds.complete19f,ipeds.complete20f),type="full",match="first")#2420 observations; closest to rbind
 
 #by=PCID limit to merge (turn into one) if find PCID in other dataset; match=first, only takes care of first match
-ipeds.complete<-join_all(list(ipeds.complete17f,ipeds.complete18f,ipeds.complete19f,ipeds.complete20f),by="PCID",type="full",match="first")#2368 observations
+#ipeds.complete<-join_all(list(ipeds.complete17f,ipeds.complete18f,ipeds.complete19f,ipeds.complete20f),by="PCID",type="full",match="first")#2368 observations
 #by=PCID limit to (turn into one) if find PCID in other dataset; match = all merge create a copy for all match
-ipeds.complete<-join_all(list(ipeds.complete17f,ipeds.complete18f,ipeds.complete19f,ipeds.complete20f),by="PCID",type="full",match="all")#2379 observations
+#ipeds.complete<-join_all(list(ipeds.complete17f,ipeds.complete18f,ipeds.complete19f,ipeds.complete20f),by="PCID",type="full",match="all")#2379 observations
 ```
 
 ```{r RERUN-joinall by full selected var}

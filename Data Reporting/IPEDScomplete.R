@@ -11,7 +11,37 @@ library(plyr)#for join_all
 library(writexl)
 
 #################################################################
-###################read, select/rename useful vars###############
+#####################merge term for annual data##################
+#################################################################
+#read term data (from report manager-graduation-final list of graduates by term degree)
+grad21.8<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/2021.8.gradreport.csv")
+grad21.12<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/2021.12.gradreport.csv")
+grad22.5<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/2022.5.gradreport.csv")
+#check names
+names(c(grad21.8,grad21.12,grad22.5))#needs rename
+#rename
+grad21.12<-grad21.12%>%
+select(textbox41,textbox14,DEGREE,major,textbox4)%>%
+  rename(PCID=textbox41,level=textbox14,degree=DEGREE,gradd=textbox4)
+
+grad21.8<-grad21.8%>%
+select(textbox41,textbox14,DEGREE,major,textbox4)%>%
+  rename(PCID=textbox41,level=textbox14,degree=DEGREE,gradd=textbox4)
+
+grad22.5<-grad22.5%>%
+  select(textbox41,textbox14,DEGREE,major,textbox4)%>%
+  rename(PCID=textbox41,level=textbox14,degree=DEGREE,gradd=textbox4)
+#join_all by full
+ipeds.complete22f<-join_all(list(grad21.8,grad21.12,grad22.5),type="full",match="first")#548 observations
+#check
+sum(sapply(list(grad21.12,grad21.8,grad22.5), nrow))#matched 548 observations
+#remove
+rm(grad21.12,grad21.8,grad22.5)
+#save
+write_xlsx(ipeds.complete22f,"/Users/linlizhou/Documents/LASELL/data/completion/2022IPEDScompletions.xlsx")
+
+#################################################################
+#####read, select/rename useful vars from annual merged data#####
 #################################################################
 
 ###########################2021 fall ipeds.complete

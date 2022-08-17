@@ -78,49 +78,12 @@ write_xlsx(ipeds.complete22f,"/Users/linlizhou/Documents/LASELL/data/completion/
 
 ```{r CACHED select var from annual, cache=TRUE}
 ###########################2022 fall ipeds.complete
-ipeds.complete22f<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/2022IPEDScompletions.xlsx")
-
-###########################2021 fall ipeds.complete
-#check which sheet to read
-excel_sheets("/Users/linlizhou/Documents/LASELL/data/completion/2021IPEDScompletions.xlsx")
-#read data
-ipeds.complete21f<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/2021IPEDScompletions.xlsx",sheet = "Degrees - Combined")
-#select useful cols and rename (prep for merge)
-ipeds.complete21f<-ipeds.complete21f%>%select(textbox41,textbox14,DEGREE,major,`Grad Date`)%>%dplyr::rename(PCID=textbox41,level=textbox14,degree=DEGREE,gradd=`Grad Date`)
-#check names - prep for merge
-names(ipeds.complete21f)#do not have race and gender in raw data
-
-#####add race and gender####
+#####direclty use Graduation Term Snapshot which contains all cols (PCID,level,degree,major,gradd,race,gender) I wanted####
 #read  data (from report manager-IR-Graduation Term Snapshot)
+#AY20-21
 grad20sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/20sum.csv")
 grad20f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/20f.csv")
 grad21spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/21spr.csv")
-#merge
-grad20.21t<-join_all(list(grad20sum,grad21spr,grad20f),type="full",match="first")#548 observations
-#rename for selected (race gender and pcid)
-grad20.21t<-grad20.21t%>%
-  select(people_code_id,Reporting_Ethnicity,gender)%>%
-  dplyr::rename(PCID=people_code_id,race=Reporting_Ethnicity)
-
-#merge to add race and gender
-ipeds.complete21f<-left_join(ipeds.complete21f,grad20.21t)%>%unique()#unique observations, remove duplicated
-#remove
-rm(grad20f,grad20sum,grad21spr,grad20.21t)
-
-
-############################2020 fall ipeds.complete#
-#find the right sheet to read
-#excel_sheets("/Users/linlizhou/Documents/LASELL/data/completion/2020Merged Completions.xlsx")
-#read data
-#ipeds.complete20f<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/2020Merged Completions.xlsx",sheet = "Merged")
-#select useful cols and rename (prep for merge)
-#ipeds.complete20f<-ipeds.complete20f%>% select(`People Code ID`,Program,Degree,Curriculum,GradDate,Race,Gender) %>% 
- # dplyr::rename(PCID=`People Code ID`, level=Program, degree=Degree, major=Curriculum, gradd=GradDate, race=Race, gender=Gender)
-#check names - prep for merge
-#names(ipeds.complete20f)#keep a cip description for later use
-
-#####direclty use Graduation Term Snapshot which contains all cols (PCID,level,degree,major,gradd,race,gender) I wanted####
-#read  data (from report manager-IR-Graduation Term Snapshot)
 #AY19-20
 grad19sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/19sum.csv")
 grad19f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/19f.csv")
@@ -139,18 +102,47 @@ grad16f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdb
 grad17spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/17spr.csv")
 #merge
 ipeds.complete17.19f<-
-  join_all(list(grad19sum,grad20spr,grad19f,grad18sum,grad19spr,grad18f,grad17sum,grad18spr,grad17f,grad16sum,grad17spr,grad16f),
+  join_all(list(grad20sum,grad21spr,grad20f,
+                grad19sum,grad20spr,grad19f,
+                grad18sum,grad19spr,grad18f,
+                grad17sum,grad18spr,grad17f,
+                grad16sum,grad17spr,grad16f),
            type="full",match="first")%>%
   select(people_code_id,program,degree,major,graduation_date,Reporting_Ethnicity,gender)%>%
   dplyr::rename(PCID=people_code_id,level=program,gradd=graduation_date,race=Reporting_Ethnicity)
 #remove
-rm(grad19f,grad19sum,grad20spr,grad18f,grad18sum,grad19spr,grad17sum,grad18spr,grad17f,grad16sum,grad17spr,grad16f)
+rm(grad20sum,grad21spr,grad20f,
+   grad19f,grad19sum,grad20spr,
+   grad18f,grad18sum,grad19spr,
+   grad17sum,grad18spr,grad17f,
+   grad16sum,grad17spr,grad16f)
 
 #####reformat date#####
 class(ipeds.complete17.19f$gradd)#it's character
 #convert the mdy formated character to date format
 ipeds.complete17.19f$gradd<-mdy_hms(ipeds.complete17.19f$gradd)
 class(ipeds.complete17.19f$gradd)#now it's date
+
+###########################2021 fall ipeds.complete
+#check which sheet to read
+#excel_sheets("/Users/linlizhou/Documents/LASELL/data/completion/2021IPEDScompletions.xlsx")
+#read data
+#ipeds.complete21f<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/2021IPEDScompletions.xlsx",sheet = "Degrees - Combined")
+#select useful cols and rename (prep for merge)
+#ipeds.complete21f<-ipeds.complete21f%>%select(textbox41,textbox14,DEGREE,major,`Grad Date`)%>%dplyr::rename(PCID=textbox41,level=textbox14,degree=DEGREE,gradd=`Grad Date`)
+#check names - prep for merge
+#names(ipeds.complete21f)#do not have race and gender in raw data
+
+############################2020 fall ipeds.complete#
+#find the right sheet to read
+#excel_sheets("/Users/linlizhou/Documents/LASELL/data/completion/2020Merged Completions.xlsx")
+#read data
+#ipeds.complete20f<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/2020Merged Completions.xlsx",sheet = "Merged")
+#select useful cols and rename (prep for merge)
+#ipeds.complete20f<-ipeds.complete20f%>% select(`People Code ID`,Program,Degree,Curriculum,GradDate,Race,Gender) %>% 
+ # dplyr::rename(PCID=`People Code ID`, level=Program, degree=Degree, major=Curriculum, gradd=GradDate, race=Race, gender=Gender)
+#check names - prep for merge
+#names(ipeds.complete20f)#keep a cip description for later use
 
 ############################2019 fall ipeds.complete
 #find the right sheet to read
@@ -182,7 +174,6 @@ class(ipeds.complete17.19f$gradd)#now it's date
 #ipeds.complete17f<-ipeds.complete17f%>%select(`People Code ID`,Program,Degree,Curriculum,`Graduation Date`,Race,Gender)%>%dplyr::rename(PCID=`People Code ID`,level=Program,degree=Degree,major=Curriculum,gradd=`Graduation Date`,race=Race,gender=Gender)
 #check names - prep for merge
 #names(ipeds.complete17f)
-
 ```
 
 ```{r explore merging functions}

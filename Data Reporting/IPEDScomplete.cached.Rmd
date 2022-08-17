@@ -121,22 +121,36 @@ rm(grad20f,grad20sum,grad21spr,grad20.21t)
 
 #####direclty use Graduation Term Snapshot which contains all cols (PCID,level,degree,major,gradd,race,gender) I wanted####
 #read  data (from report manager-IR-Graduation Term Snapshot)
+#AY19-20
 grad19sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/19sum.csv")
 grad19f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/19f.csv")
 grad20spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/20spr.csv")
+#AY-18-19
+grad18sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/18sum.csv")
+grad18f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/18f.csv")
+grad19spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/19spr.csv")
+#AY17-18
+grad17sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/17sum.csv")
+grad17f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/17f.csv")
+grad18spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/18spr.csv")
+#AY16-17
+grad16sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/16sum.csv")
+grad16f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/16f.csv")
+grad17spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/17spr.csv")
 #merge
-grad19.20t<-join_all(list(grad19sum,grad20spr,grad19f),type="full",match="first")#548 observations
-#rename for selected cols
-ipeds.complete20f<-grad19.20t%>%select(people_code_id,program,degree,major,graduation_date,Reporting_Ethnicity,gender)%>%
+ipeds.complete17.19f<-
+  join_all(list(grad19sum,grad20spr,grad19f,grad18sum,grad19spr,grad18f,grad17sum,grad18spr,grad17f,grad16sum,grad17spr,grad16f),
+           type="full",match="first")%>%
+  select(people_code_id,program,degree,major,graduation_date,Reporting_Ethnicity,gender)%>%
   dplyr::rename(PCID=people_code_id,level=program,gradd=graduation_date,race=Reporting_Ethnicity)
 #remove
-rm(grad19.20t,grad19f,grad19sum,grad20spr)
+rm(grad19f,grad19sum,grad20spr,grad18f,grad18sum,grad19spr,grad17sum,grad18spr,grad17f,grad16sum,grad17spr,grad16f)
 
 #####reformat date#####
-class(ipeds.complete20f$gradd)#it's character
+class(ipeds.complete17.19f$gradd)#it's character
 #convert the mdy formated character to date format
-ipeds.complete20f$gradd<-mdy_hms(ipeds.complete20f$gradd)
-class(ipeds.complete20f$gradd)#now it's date
+ipeds.complete17.19f$gradd<-mdy_hms(ipeds.complete17.19f$gradd)
+class(ipeds.complete17.19f$gradd)#now it's date
 
 ############################2019 fall ipeds.complete
 #find the right sheet to read
@@ -147,26 +161,6 @@ class(ipeds.complete20f$gradd)#now it's date
 #ipeds.complete19f<-ipeds.complete19f%>%select(people_code_id,program,degree,curriculum,graduation_date,Race,gender)%>%dplyr::rename(PCID=people_code_id,level=program,major=curriculum,gradd=graduation_date,race=Race)
 #check names - prep for merge
 #names(ipeds.complete19f)
-
-#####direclty use Graduation Term Snapshot which contains all cols (PCID,level,degree,major,gradd,race,gender) I wanted####
-#read  data (from report manager-IR-Graduation Term Snapshot)
-grad18sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/18sum.csv")
-grad18f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/18f.csv")
-grad19spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/19spr.csv")
-#merge
-grad18.19t<-join_all(list(grad18sum,grad19spr,grad18f),type="full",match="first")#548 observations
-#rename for selected cols
-ipeds.complete19f<-grad18.19t%>%select(people_code_id,program,degree,major,graduation_date,Reporting_Ethnicity,gender)%>%
-  dplyr::rename(PCID=people_code_id,level=program,gradd=graduation_date,race=Reporting_Ethnicity)
-#remove
-rm(grad18.19t,grad18f,grad18sum,grad19spr)
-
-#####reformat date#####
-class(ipeds.complete19f$gradd)#it's character
-#convert the mdy formated character to date format
-ipeds.complete19f$gradd<-mdy_hms(ipeds.complete19f$gradd)
-class(ipeds.complete19f$gradd)#now it's date
-
 
 ############################2018 fall ipeds.complete
 #find the right sheet to read
@@ -179,27 +173,6 @@ class(ipeds.complete19f$gradd)#now it's date
 #check names - prep for merge
 #names(ipeds.complete18f)
 
-#####direclty use Graduation Term Snapshot which contains all cols (PCID,level,degree,major,gradd,race,gender) I wanted####
-#read  data (from report manager-IR-Graduation Term Snapshot)
-grad17sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/17sum.csv")
-grad17f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/17f.csv")
-grad18spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/18spr.csv")
-#merge
-grad17.18t<-join_all(list(grad17sum,grad18spr,grad17f),type="full",match="first")#548 observations
-#rename for selected cols
-ipeds.complete18f<-grad17.18t%>%select(people_code_id,program,degree,major,graduation_date,Reporting_Ethnicity,gender)%>%
-  dplyr::rename(PCID=people_code_id,level=program,gradd=graduation_date,race=Reporting_Ethnicity)
-#remove
-rm(grad17.18t,grad18f,grad17sum,grad18spr)
-
-#####reformat date#####
-class(ipeds.complete18f$gradd)#it's character
-#convert the mdy formated character to date format
-ipeds.complete18f$gradd<-mdy_hms(ipeds.complete18f$gradd)
-class(ipeds.complete18f$gradd)#now it's date
-
-
-
 ############################2017 fall ipeds.complete
 #find the right sheet to read
 #excel_sheets("/Users/linlizhou/Documents/LASELL/data/completion/2017ipedsFComp_2016grad.xlsx")
@@ -210,28 +183,7 @@ class(ipeds.complete18f$gradd)#now it's date
 #check names - prep for merge
 #names(ipeds.complete17f)
 
-
-#####direclty use Graduation Term Snapshot which contains all cols (PCID,level,degree,major,gradd,race,gender) I wanted####
-#read  data (from report manager-IR-Graduation Term Snapshot)
-grad16sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/16sum.csv")
-grad16f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/16f.csv")
-grad17spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/17spr.csv")
-#merge
-grad16.17t<-join_all(list(grad16sum,grad17spr,grad16f),type="full",match="first")#548 observations
-#rename for selected cols
-ipeds.complete17f<-grad16.17t%>%select(people_code_id,program,degree,major,graduation_date,Reporting_Ethnicity,gender)%>%
-  dplyr::rename(PCID=people_code_id,level=program,gradd=graduation_date,race=Reporting_Ethnicity)
-#remove
-rm(grad16.17t,grad17f,grad16sum,grad17spr)
-
-#####reformat date#####
-class(ipeds.complete17f$gradd)#it's character
-#convert the mdy formated character to date format
-ipeds.complete17f$gradd<-mdy_hms(ipeds.complete17f$gradd)
-class(ipeds.complete17f$gradd)#now it's date
 ```
-
-
 
 ```{r explore merging functions}
 #########################explore the different functions using 17-20f data

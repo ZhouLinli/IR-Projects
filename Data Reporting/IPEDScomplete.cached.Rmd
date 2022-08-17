@@ -108,23 +108,27 @@ rm(grad20f,grad20sum,grad21spr,grad20.21t)
 
 ############################2020 fall ipeds.complete#
 #find the right sheet to read
-excel_sheets("/Users/linlizhou/Documents/LASELL/data/completion/2020Merged Completions.xlsx")
+#excel_sheets("/Users/linlizhou/Documents/LASELL/data/completion/2020Merged Completions.xlsx")
 #read data
-ipeds.complete20f<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/2020Merged Completions.xlsx",sheet = "Merged")
+#ipeds.complete20f<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/2020Merged Completions.xlsx",sheet = "Merged")
 #select useful cols and rename (prep for merge)
-ipeds.complete20f<-ipeds.complete20f%>% select(`People Code ID`,Program,Degree,Curriculum,GradDate,Race,Gender) %>% 
-  dplyr::rename(PCID=`People Code ID`, level=Program, degree=Degree, major=Curriculum, gradd=GradDate, race=Race, gender=Gender)
+#ipeds.complete20f<-ipeds.complete20f%>% select(`People Code ID`,Program,Degree,Curriculum,GradDate,Race,Gender) %>% 
+ # dplyr::rename(PCID=`People Code ID`, level=Program, degree=Degree, major=Curriculum, gradd=GradDate, race=Race, gender=Gender)
 #check names - prep for merge
-names(ipeds.complete20f)#keep a cip description for later use
+#names(ipeds.complete20f)#keep a cip description for later use
 
-#####add curriculum####
+#####direclty use Graduation Term Snapshot which contains all cols (PCID,level,degree,major,gradd,race,gender) I wanted####
 #read  data (from report manager-IR-Graduation Term Snapshot)
-grad20sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/20sum.csv")
-grad20f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/20f.csv")
-grad21spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/21spr.csv")
+grad19sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/19sum.csv")
+grad19f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/19f.csv")
+grad20spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/20spr.csv")
 #merge
-grad20.21t<-join_all(list(grad20sum,grad21spr,grad20f),type="full",match="first")#548 observations
-#rename for selected (race gender and pcid)
+grad19.20t<-join_all(list(grad19sum,grad20spr,grad19f),type="full",match="first")#548 observations
+#rename for selected cols
+ipeds.complete20f<-grad19.20t%>%select(people_code_id,program,degree,major,graduation_date,Reporting_Ethnicity,gender)%>%
+  dplyr::rename(PCID=people_code_id,level=program,gradd=graduation_date,race=Reporting_Ethnicity)
+#remove
+rm(grad19.20t,grad19f,grad19sum,grad20spr)
 
 
 ############################2019 fall ipeds.complete

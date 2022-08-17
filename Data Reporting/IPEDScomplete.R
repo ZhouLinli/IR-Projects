@@ -129,6 +129,10 @@ sum(is.na(ipeds.complete$degree))
 ####################################gender
 
 
+
+#################################################################
+######################archive codes for cleaning "degree" values###################
+#################################################################
 #check conc (invalid code in degree)
 ipeds.complete18f%>%group_by(degree)%>%count()#here is where conc exists
 #list all curriculum under conc
@@ -160,22 +164,5 @@ ipeds.complete18f%>%filter(degree=="TRK")%>%group_by(curriculum)%>%count()#no mo
 ipeds.complete18f[ipeds.complete18f$curriculum=="INLICE",11]<-"MEDEL"
 #check
 ipeds.complete18f%>%group_by(degree)%>%count()#no more TRK
-
-#Save the corrected degree codes file
-library(writexl)
-write_xlsx(ipeds.complete18f,"/Users/linlizhou/Documents/LASELL/data/completion/2018ipedsFComp_2017grad.xlsx.xlsx")
-
-
-
-
-#prep merge ipeds.complete
-
-#want to merge col to col exactly append one to the other
-#then need to have exact same names:
-names(ipeds.complete21f)<-names(ipeds.complete20f)
-#merge
-ipeds.complete<-full_join(ipeds.complete20f,ipeds.complete21f)
-#remove used datasets
-rm(ipeds.complete20f,ipeds.complete21f)
 
 

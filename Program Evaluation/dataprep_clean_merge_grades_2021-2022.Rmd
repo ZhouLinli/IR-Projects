@@ -34,16 +34,20 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # set up: load data files
 library(readr) #for read_csv
-canvas21f<-read_csv("S:/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/1.grade_export_2021FallMain.csv")
+#read on windows path name is different
+#canvas21f<-read_csv("S:/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/1.grade_export_2021FallMain.csv")
+
+#read on mac
+canvas21f<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/1.grade_export_2021FallMain.csv")
 #read canvas data, read_csv read as a tibble ; read.csv as a regular data frame
-canvas21f1<-read_csv("S:/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/3.grade_export_2021Fall1.csv")
-canvas21f2<-read_csv("S:/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/4.grade_export_2021Fall2.csv")
-canvas21s<-read_csv("S:/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/2.grade_export_2022SpringMain.csv")
-canvas21s1<-read.csv("S:/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/grade_export_Spring1_2022.csv")
-canvas21s2<-read_csv("S:/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/grade_export_Spring2_2022.csv" )
-canvas21sm<-read_csv("S:/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/grade_export_SummerMain_2021.csv")
-canvas21sm1<-read_csv("S:/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/grade_export_Summer1_2021.csv")
-canvas21sm2<-read_csv("S:/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/grade_export_Summer2_2021.csv")
+canvas21f1<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/3.grade_export_2021Fall1.csv")
+canvas21f2<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/4.grade_export_2021Fall2.csv")
+canvas21s<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/2.grade_export_2022SpringMain.csv")
+canvas21s1<-read.csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/grade_export_Spring1_2022.csv")
+canvas21s2<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/grade_export_Spring2_2022.csv" )
+canvas21sm<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/grade_export_SummerMain_2021.csv")
+canvas21sm1<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/grade_export_Summer1_2021.csv")
+canvas21sm2<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/grade_export_Summer2_2021.csv")
 
 #check all names are the same before append
 names(canvas21f)
@@ -68,13 +72,21 @@ rm(canvas21f,canvas21f1,canvas21f2,canvas21s,canvas21s1,canvas21s2,canvas21sm,ca
 
 #read registar data
 library(readxl) #for read_excel
-registrar21<-read_excel("S:/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/2021-2022all.Student Info by Course and Fiscal Year.xlsx", skip=1)
+registrar21<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/2021-2022all.Student Info by Course and Fiscal Year.xlsx", skip=1)
 #skipped the first row because real column name starts from the second row
 
 #set up: view data
 library(dplyr) #for glimpse function
 glimpse(canvas21)
 glimpse(registrar21)
+
+#save merged canvas data and registrar data
+library(writexl)
+write_xlsx(canvas21,"/Users/linlizhou/Documents/LASELL/data/progameval/canvas.raw.20-21.csv")
+write_xlsx(registrar21,"/Users/linlizhou/Documents/LASELL/data/progameval/registrar20-21.xlsx")
+```
+
+```{r explore outliers}
 
 ```
 

@@ -75,17 +75,17 @@ nsc<-nsc%>%select(colA,colB,FIRST_NAME,MIDDLE_NAME,LAST_NAME,SUFFIX,BIRTHDATE,co
 
 ```{r archive codes}
 #add a col called T1
-nsc<-nsc%>%mutate(T1="D1",#Add the first col A header "T1" and its value "D1" indicating rows of data 
-                  `002158`="",#Add the second col B header school code and leave blank (ssn) for values in rows
-                  `I`=BIRTHDATE,#Add col G header institution initial capital I; colG values are birthdate
-                  ``=as.Date("20130101",format="%Y%m%d")#col H is blank header, with values of search date (earlist possible date that result may appear)
-                  )
+#nsc<-nsc%>%mutate(T1="D1",#Add the first col A header "T1" and its value "D1" indicating rows of data 
+                 # `002158`="",#Add the second col B header school code and leave blank (ssn) for values in rows
+               #   `I`=BIRTHDATE,#Add col G header institution initial capital I; colG values are birthdate
+                #  ``=as.Date("20130101",format="%Y%m%d")#col H is blank header, with values of search date (earlist possible date that result may appear)
+              #    )
 #rename the other cols
-nsc%>%rename(`00`=FIRST_NAME,#the third col C header is the branch code, while the row values are first names in col c (3rd col)
-             `Lasell University`=MIDDLE_NAME,#Add the fourth col (col D) with school name, and extract the first letter for middle initials
-             `20200820`=LAST_NAME,#cold E header: file creation date, colE values: last name as the values
-             SE=SUFFIX,#col F header is query option, SE is subsequent enrollment; col F values are suffix
-             )
+#nsc%>%rename(`00`=FIRST_NAME,#the third col C header is the branch code, while the row values are first names in col c (3rd col)
+            # `Lasell University`=MIDDLE_NAME,#Add the fourth col (col D) with school name, and extract the first letter for middle initials
+             #`20200820`=LAST_NAME,#cold E header: file creation date, colE values: last name as the values
+             #SE=SUFFIX,#col F header is query option, SE is subsequent enrollment; col F values are suffix
+             #)
 
 ```
 

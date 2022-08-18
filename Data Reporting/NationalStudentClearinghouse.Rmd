@@ -1,0 +1,91 @@
+---
+title: "Clearinghouse"
+author: "Linli Zhou"
+date: "2022-08-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readxl)
+```
+
+```{r read data files and explore data sources}
+#NSC needs First Name, Last Name, DOB, Search date, school code, PCID
+
+# Graduates Population: IR  Final List of Graduates By Date Range-Including Certs contains all graduates data in one click
+grad13.22<-read.csv("/Users/linlizhou/Downloads/Final List of Graduates By Date Range-Including Certs.csv")
+#need to find date of birth info
+dtm<-read_excel("/Volumes/lasellshare-1/Faculty_Staff_Shares$/IR/Datamart Files/DataMart To Date/Final Datamart up to Date 07202022.xlsx")
+
+#check if all graduates are in the dtm file
+sum((grad13.22$textbox41 %in% dtm$PC_ID)==FALSE)#2525 not found
+grad13.22[(grad13.22$textbox41 %in% dtm$PC_ID)==FALSE,]%>%group_by(program1)%>%count()#Missings are all GRAD and 22 PS
+
+ug13.22<-grad13.22[(grad13.22$textbox41 %in% dtm$PC_ID)==TRUE,]#only keep those that can find a match
+```
+
+
+```{r select and reformat dmt}
+#select useful cols from datamart
+dtm_s<-dtm%>%select(PC_ID,FIRST_NAME,MIDDLE_NAME,LAST_NAME,SUFFIX,BIRTHDATE)#subset of dtm -- created a new df name, since the original file takes too long to read -- better to keep it in the enviornment rather than reread it each time wanting to change the subset
+
+###reofrmat the data
+#extract first letter of middle initial
+dtm_s$MIDDLE_NAME<-substr(dtm_s$MIDDLE_NAME,1,1)#start and stop on the first character of the string -- extract first letter of initials
+#replace na with empty string
+dtm_s$MIDDLE_NAME<-dtm_s$MIDDLE_NAME%>%replace(is.na(dtm_s$MIDDLE_NAME),"")#remove NA values as blank
+
+#replace na with empty string
+dtm_s$SUFFIX<-dtm_s$SUFFIX%>%replace(is.na(dtm_s$SUFFIX),"")#remove NA values as blank
+```
+
+
+```{r merge}
+#match dtm cols with graduates population and save it as an initial nsc df
+nsc<-left_join(ug13.22,dtm_s,by=c("textbox41"="PC_ID"))%>%unique()
+```
+
+
+```{r prep/mutate and lay out col needed}
+names(nsc)
+#colC:firstname
+#colD:middleinitial
+#colE:lastname
+#colF:suffix
+#colG:dateofbirth
+#colL:pcid
+
+#student informtion: from row 2- nrow
+nsc<-nsc%>%mutate(colA="D1",#meaning "data rows"
+                  colB="",#omit ssn
+                  colH="20130101",#search date (ealiest possible date in expected result)
+                  colI="",#leave blank
+                  colJ="002158",#schoolcode
+                  colK="00"#branch code
+                  )
+```
+
+
+```{r select col}
+nsc<-nsc%>%select(colA,colB,FIRST_NAME,MIDDLE_NAME,LAST_NAME,SUFFIX,BIRTHDATE,colH,colI,colJ,colK,textbox41)%>%unique()
+```
+
+
+```{r archive codes}
+#add a col called T1
+nsc<-nsc%>%mutate(T1="D1",#Add the first col A header "T1" and its value "D1" indicating rows of data 
+                  `002158`="",#Add the second col B header school code and leave blank (ssn) for values in rows
+                  `I`=BIRTHDATE,#Add col G header institution initial capital I; colG values are birthdate
+                  ``=as.Date("20130101",format="%Y%m%d")#col H is blank header, with values of search date (earlist possible date that result may appear)
+                  )
+#rename the other cols
+nsc%>%rename(`00`=FIRST_NAME,#the third col C header is the branch code, while the row values are first names in col c (3rd col)
+             `Lasell University`=MIDDLE_NAME,#Add the fourth col (col D) with school name, and extract the first letter for middle initials
+             `20200820`=LAST_NAME,#cold E header: file creation date, colE values: last name as the values
+             SE=SUFFIX,#col F header is query option, SE is subsequent enrollment; col F values are suffix
+             )
+
+```
+

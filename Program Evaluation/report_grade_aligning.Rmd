@@ -694,7 +694,7 @@ As shown in Figure \ref{fig:hist}, the canvas-registrar grade consistency for gr
 
 ## Method: Preparation for Data Analysis
 
-To make the grades comparable, we convert grades in Canvas (i.e., numeric grade in scale of 0-100) and Registrar's Office (i.e.,letter grade in scale of A-F) to GPA grades (i.e. numeric grade in scale of 0-4.0). Figure \ref{fig:conversion} shows the distribution of grades in the Canvas and Registrar system before and after conversion.
+To make the grades comparable, we convert grades in Canvas (i.e., numeric grade in scale of 0-110) and Registrar's Office (i.e.,letter grade in scale of A-F) to GPA grades (i.e. numeric grade in scale of 0-4.0). Figure \ref{fig:conversion} shows the distribution of grades in the Canvas and Registrar system before and after conversion.
 
 ```{r prep convert grade scale}
 p1<-canvrp%>%ggplot(aes(x=`current score`,y=canvasgpa))+

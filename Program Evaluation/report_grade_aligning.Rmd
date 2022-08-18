@@ -725,7 +725,7 @@ tibble(
 ```
 
 
-For grades that are excluded from this analysis, \ref{tab:outlier} is a description of the number of scores that are excluded from analysis.
+For grades that are excluded from this analysis, Table \ref{tab:outlier} is a description of the number of scores that are excluded from analysis.
 
 Besides, we did not report programs and courses that has small number of observations. That exclusion help to protect students' privacy from possibly individual identifiable students data. Specifically, the following programs are omitted from this report: Service Learning (n=5), Individualized Studies (n=2), Academic Achievement Center (n=9), and WRT109 (n=1).
 ```{r}

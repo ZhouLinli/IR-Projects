@@ -96,7 +96,20 @@ names(nsc)<-c(
 ```
 
 ```{r trailer row}
+#check if header is the first row, or not counted in row
+head(nsc)#header is not count as a row, then the ultimate row needs to add 1 for the header row
 
+#col
+ncol(nsc)#12 cols
+
+#make the trailer row of nsc file
+nsc[nrow(nsc) + 1,] = c("T1",#indicate trailer row
+                        nrow(nsc)+1,#row count + header row
+                        #add the rest of col to make it 12 cols (col values are empty values)
+                        "", "", "", "", "", "", "", "", "", ""
+                        )
+
+tail(nsc)
 ```
 
 

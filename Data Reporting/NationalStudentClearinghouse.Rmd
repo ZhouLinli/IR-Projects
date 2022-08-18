@@ -9,6 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(readxl)
+library(writexl)
 ```
 
 ```{r read data files and explore data sources}
@@ -68,8 +69,34 @@ nsc<-nsc%>%mutate(colA="D1",#meaning "data rows"
 ```
 
 
-```{r select col}
+```{r select col - student info/detail rows/section completed}
 nsc<-nsc%>%select(colA,colB,FIRST_NAME,MIDDLE_NAME,LAST_NAME,SUFFIX,BIRTHDATE,colH,colI,colJ,colK,textbox41)%>%unique()
+#the student information section (data section) completed
+
+#save student info/detail rows
+write.csv(nsc,"/Users/linlizhou/Documents/LASELL/data/completion/NSCug13-22.csv")
+```
+
+```{r header row}
+#rename the current names and turn it into the nsc guideline's header row
+names(nsc)<-c(
+  "H1",#colA start of the header row
+  "002158",#colB school code
+  "00",#colC branch code
+  "Lasell University",#colD school name
+  "20220820",#colE file creation date
+  "SE",#colF query option, "Subsequent enrollment", prior attendance, declined admissions, longitudinal cohort
+  "I",#colG institution first initial capital
+  "",#colH
+  "",#colI
+  "",#colJ
+  "",#colK
+  ""#colL
+)
+```
+
+```{r trailer row}
+
 ```
 
 

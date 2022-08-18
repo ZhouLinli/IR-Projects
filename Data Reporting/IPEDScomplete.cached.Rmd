@@ -9,13 +9,6 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)#echo is codes
 ```
 
-```{r ipeds notes}
-#16-17 graduates are in 2017 fall ipeds.complete report
-#17-18 graduates are in 2018 fall ipeds.compelte
-#19-20 graduates are in 2020 fall ipeds.compelte
-#20-21 graduates are in 2021 fall ipeds.complete
-```
-
 ```{r load r package}
 library(readxl)
 library(dplyr)
@@ -25,61 +18,13 @@ library(lubridate)
 library(stringr)
 ```
 
-```{r merge for annual}
-#####################ipeds.complete2022fall
-
-#######basic cols: pcid,level,degree,major,gradd#####
-#read term data (from report manager-IR-Final List of Graduates By Degree Term)
-grad21.8<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/2021.8.gradreport.csv")
-grad21.12<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/2021.12.gradreport.csv")
-grad22.5<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/2022.5.gradreport.csv")
-
-#check names
-names(c(grad21.8,grad21.12,grad22.5))#needs rename
-
-#merge first (since all have same names)
-ipeds.complete22f<-join_all(list(grad21.8,grad21.12,grad22.5),type="full",match="first")#548 observations
-#check
-sum(sapply(list(grad21.12,grad21.8,grad22.5), nrow))#matched 548 observations
-
-#then rename (rename the merged dataset can avoid rename each separately)
-ipeds.complete22f<-ipeds.complete22f%>%
-select(textbox41,textbox14,DEGREE,major,textbox4)%>%
-  dplyr::rename(PCID=textbox41,level=textbox14,degree=DEGREE,gradd=textbox4)#have the basic cols, missing race and gender
-#remove
-rm(grad21.12,grad21.8,grad22.5)
-
-######find race and gender cols#####
-#read  data (from report manager-IR-Graduation Term Snapshot Including Certs and Double Majors)
+```{r CACHED select var from annual, cache=TRUE}
+#####direclty use Graduation Term Snapshot which contains all cols (PCID,level,degree,major,gradd,race,gender) I wanted####
+#read  data (from report manager-IR-Graduation Term Snapshot)
+#AY21-22
 grad21sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/21sum.csv")
 grad21f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/21f.csv")
 grad22spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/22spr.csv")
-#merge
-grad21.22t<-join_all(list(grad21sum,grad22spr,grad21f),type="full",match="first")#548 observations
-#rename for selected (race gender and pcid)
-grad21.22t<-grad21.22t%>%
-  select(people_code_id,Race,gender)%>%
-  dplyr::rename(PCID=people_code_id,race=Race)
-
-#merge to add race and gender
-ipeds.complete22f<-left_join(ipeds.complete22f,grad21.22t)%>%unique()#unique observations, remove duplicated
-#remove
-rm(grad21f,grad21sum,grad22spr,grad21.22t)
-
-#####reformat date#####
-class(ipeds.complete22f$gradd)#it's character
-#convert the mdy formated character to date format
-ipeds.complete22f$gradd<-mdy(ipeds.complete22f$gradd)
-class(ipeds.complete22f$gradd)#now it's date
-#save
-write_xlsx(ipeds.complete22f,"/Users/linlizhou/Documents/LASELL/data/completion/2022IPEDScompletions.xlsx")
-```
-
-
-```{r CACHED select var from annual, cache=TRUE}
-###########################2022 fall ipeds.complete
-#####direclty use Graduation Term Snapshot which contains all cols (PCID,level,degree,major,gradd,race,gender) I wanted####
-#read  data (from report manager-IR-Graduation Term Snapshot)
 #AY20-21
 grad20sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/20sum.csv")
 grad20f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/20f.csv")
@@ -101,8 +46,9 @@ grad16sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.gr
 grad16f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/16f.csv")
 grad17spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/17spr.csv")
 #merge
-ipeds.complete17.19f<-
-  join_all(list(grad20sum,grad21spr,grad20f,
+ipeds.complete16_crt<-
+  join_all(list(grad21sum,grad22spr,grad21f,
+                grad20sum,grad21spr,grad20f,
                 grad19sum,grad20spr,grad19f,
                 grad18sum,grad19spr,grad18f,
                 grad17sum,grad18spr,grad17f,
@@ -111,18 +57,137 @@ ipeds.complete17.19f<-
   select(people_code_id,program,degree,major,graduation_date,Reporting_Ethnicity,gender)%>%
   dplyr::rename(PCID=people_code_id,level=program,gradd=graduation_date,race=Reporting_Ethnicity)
 #remove
-rm(grad20sum,grad21spr,grad20f,
+rm(grad21sum,grad22spr,grad21f,
+   grad20sum,grad21spr,grad20f,
    grad19f,grad19sum,grad20spr,
    grad18f,grad18sum,grad19spr,
    grad17sum,grad18spr,grad17f,
    grad16sum,grad17spr,grad16f)
 
 #####reformat date#####
-class(ipeds.complete17.19f$gradd)#it's character
+class(ipeds.complete16_crt$gradd)#it's character
 #convert the mdy formated character to date format
-ipeds.complete17.19f$gradd<-mdy_hms(ipeds.complete17.19f$gradd)
-class(ipeds.complete17.19f$gradd)#now it's date
+ipeds.complete16_crt$gradd<-mdy_hms(ipeds.complete16_crt$gradd)
+class(ipeds.complete16_crt$gradd)#now it's date
 
+#save merged data
+write_xlsx(ipeds.complete16_crt,"/Users/linlizhou/Documents/LASELL/data/completion/16-current.xlsx")
+```
+
+```{r refining ipeds.compeltes}
+#########level: Graduate Students, Undergraduate Students######
+ipeds.complete16_crt%>%group_by(level)%>%dplyr::count()
+#recode level
+ipeds.complete16_crt$level<-ipeds.complete16_crt$level%>%recode(GRAD="Graduate Students",Graduate="Graduate Students",UNDER="Undergraduate Students",Undergraduate="Undergraduate Students")
+#remove non gd/ug
+ipeds.complete16_crt<-ipeds.complete16_crt%>%filter(level=="Graduate Students" | level== "Undergraduate Students")
+#check
+ipeds.complete16_crt%>%group_by(level)%>%dplyr::count()#level only contains Graduate Students, Undergraduate Students now
+
+#########degree########
+ipeds.complete16_crt%>%group_by(degree)%>%dplyr::count()#20 degrees, seems alright
+
+######major########
+list<-ipeds.complete16_crt%>%group_by(major)%>%dplyr::count()
+
+ipeds.complete16_crt$major<-str_trim(ipeds.complete16_crt$major)#remove space at the end of major values
+ipeds.complete16_crt$major<-ipeds.complete16_crt$major%>%
+  recode(`Athletic Training MSAT`="Athletic Training",
+         `Business Administration 2`="Business Administration",
+         `Elementary Education MED`="Elementary Education",
+         `Hospitality and Event Management`="Hospitality Management",
+         `Initial Licensure MED`="Initial Licensure",
+         `Initial Licensure MD`="Initial Licensure",
+         `SecEduc & Applied Math`="Secondary Education",
+         `Elementary Education and Applied Math`="Elementary Education",
+         `Secondary Education and Applied Math`="Secondary Education")
+
+####mutate a school col#####
+ipeds.complete16_crt<-ipeds.complete16_crt%>%mutate(school=case_when(
+  major=="Accounting"~"School of Business",
+major=="Applied Forensic Science"~"School of Health Sciences",
+major=="Applied Mathematics"~"School of Health Sciences",
+major=="Arts Management"~"School of Business",
+major=="Athletic Training"~"School of Health Sciences",
+major=="Biology"~"School of Health Sciences",
+major=="Business Administration"~"School of Business",
+major=="Business Management"~"School of Business",
+major=="Communication"~"School of Communication & the Arts",
+major=="Creative Writing GR"~"School of Communication & the Arts",
+major=="Criminal Justice"~"School of Humanities, Education, Justice & Social Sciences",
+major=="Curriculum, Leadership & Inclusion"~"School of Humanities, Education, Justice & Social Sciences",
+major=="Cybersecurity"~"School of Health Sciences",
+major=="Data Analytics"~"School of Health Sciences",
+major=="Early Childhood Education"~"School of Humanities, Education, Justice & Social Sciences",
+major=="Elementary Education"~"School of Humanities, Education, Justice & Social Sciences",
+major=="English"~"School of Humanities, Education, Justice & Social Sciences",
+major=="Entrepreneurship"~"School of Business",
+major=="Environmental Studies"~"School of Health Sciences",
+major=="Event Management"~"School of Business",
+major=="Exercise Science"~"School of Health Sciences",
+major=="Fashion and Retail Merchandising"~"School of Fashion",
+major=="Fashion Communication & Promotion"~"School of Fashion",
+major=="Fashion Design and Production"~"School of Fashion",
+major=="Finance"~"School of Business",
+major=="Fitness Management"~"School of Business",
+major=="Global Engagement"~"School of Business",
+major=="Global Studies"~"School of Humanities, Education, Justice & Social Sciences",
+major=="Graphic Design"~"School of Communication & the Arts",
+major=="Health Communication"~"School of Health Sciences",
+major=="Health Science"~"School of Health Sciences",
+major=="History"~"School of Humanities, Education, Justice & Social Sciences",
+major=="Hospitality Management"~"School of Business",
+major=="Human Resources Management"~"School of Business",
+major=="Human Services"~"School of Humanities, Education, Justice & Social Sciences",
+major=="Humanities"~"School of Humanities, Education, Justice & Social Sciences",
+major=="IDS Curriculum & Instruction"~"School of Humanities, Education, Justice & Social Sciences",
+major=="IDS Early Childhood Education"~"School of Humanities, Education, Justice & Social Sciences",
+major=="IDS Forensic Criminology"~"School of Health Sciences",
+major=="IDS Individualized"~"Individualized Studies",
+major=="IDS Studio Arts"~"School of Communication & the Arts",
+major=="Information Technology"~"School of Health Sciences",
+major=="Initial Licensure"~"School of Health Sciences",
+major=="Integrated Marketing Communication"~"School of Business",
+major=="International Business"~"School of Business",
+major=="Law and Public Affairs"~"School of Humanities, Education, Justice & Social Sciences",
+major=="Legal Studies"~"School of Humanities, Education, Justice & Social Sciences",
+major=="Management"~"School of Business",
+major=="Marketing"~"School of Business",
+major=="Moderate Disabilities"~"School of Humanities, Education, Justice & Social Sciences",
+major=="Non Profit Management"~"School of Business",
+major=="Nutrition for Human Performance"~"School of Health Sciences",
+major=="Professional Licensure MD"~"School of Health Sciences",
+major=="Project Management"~"School of Business",
+major=="Psychology"~"School of Humanities, Education, Justice & Social Sciences",
+major=="Public Relations MS Concentration"~"School of Humanities, Education, Justice & Social Sciences",
+major=="Rehabilitation Science"~"School of Health Sciences",
+major=="Resort and Casino Management"~"School of Business",
+major=="Secondary Education"~"School of Humanities, Education, Justice & Social Sciences",
+major=="Secondary Education and English"~"School of Humanities, Education, Justice & Social Sciences",
+major=="Secondary Education and History"~"School of Humanities, Education, Justice & Social Sciences",
+major=="Sociology"~"School of Humanities, Education, Justice & Social Sciences",
+major=="Sport Leadership"~"School of Business",
+major=="Sport Management"~"School of Business"
+))
+
+########gradd########
+ipeds.complete16_crt%>%group_by(gradd)%>%dplyr::count()
+ipeds.complete16_crt$gradd<-format(ipeds.complete16_crt$gradd, format = "%Y")#keep year only
+
+######race########
+ipeds.complete16_crt%>%group_by(race)%>%dplyr::count()
+######gender########
+ipeds.complete16_crt%>%group_by(gender)%>%dplyr::count()
+ipeds.complete16_crt$gender<-ipeds.complete16_crt$gender%>%recode(
+  `F`="Female",
+ `M`="Male",
+  `U`="Unknown"
+)
+```
+
+
+
+```{r archive codes}
 ###########################2021 fall ipeds.complete
 #check which sheet to read
 #excel_sheets("/Users/linlizhou/Documents/LASELL/data/completion/2021IPEDScompletions.xlsx")
@@ -197,73 +262,40 @@ class(ipeds.complete17.19f$gradd)#now it's date
 #ipeds.complete<-join_all(list(ipeds.complete17f,ipeds.complete18f,ipeds.complete19f,ipeds.complete20f),by="PCID",type="full",match="all")#2379 observations
 ```
 
-```{r RERUN-joinall by full selected var}
-ipeds.complete<-join_all(list(ipeds.complete17f,ipeds.complete18f,ipeds.complete19f,ipeds.complete20f,ipeds.complete21f,ipeds.complete22f),type="full",match="first")
 
-#save merged data
-write_xlsx(ipeds.complete,"/Users/linlizhou/Documents/LASELL/data/completion/17f-current.xlsx")
-```
-
-
-```{r cleaning ipeds.completes}
-#################################################################
-######################refining ipeds.compeltes###################
-#################################################################
-
-#################level
-ipeds.complete%>%group_by(level)%>%dplyr::count()
-#recode level
-ipeds.complete$level<-ipeds.complete$level%>%recode(GRAD="Graduate Students",Graduate="Graduate Students",UNDER="Undergraduate Students",Undergraduate="Undergraduate Students")
-#remove non gd/ug
-ipeds.complete<-ipeds.complete%>%filter(level=="Graduate Students" | level== "Undergraduate Students")
-#check
-ipeds.complete%>%group_by(level)%>%dplyr::count()
-
-#################degree
-ipeds.complete%>%group_by(degree)%>%dplyr::count()
-
-
-####################################major
-ipeds.complete%>%group_by(major)%>%dplyr::count()
-str_trim()
-####################################gradd
-####################################race
-####################################gender
-
-
-
+```{r archive cleaning codes}
 #################################################################
 ######################archive codes for cleaning "degree" values###################
 #################################################################
 #check conc (invalid code in degree)
-ipeds.complete18f%>%group_by(degree)%>%count()#here is where conc exists
+#ipeds.complete18f%>%group_by(degree)%>%count()#here is where conc exists
 #list all curriculum under conc
-ipeds.complete18f%>%filter(degree=="CONC")%>%group_by(curriculum)%>%count()
+#ipeds.complete18f%>%filter(degree=="CONC")%>%group_by(curriculum)%>%count()
 
 #replace conc with the correct degree by looking the student up in powercampus
 ##powercampus lookup results show that we need to replace all CONC with MSM expect HSGJ as MSCJ
 ###replace HSGJ with MSCJ
-ipeds.complete18f[ipeds.complete18f$curriculum=="HSGJ",11]<-"MSCJ"#no headers/var names anymore so must use 11 as index
+#ipeds.complete18f[ipeds.complete18f$curriculum=="HSGJ",11]<-"MSCJ"#no headers/var names anymore so must use 11 as index
 #check
-ipeds.complete18f%>%filter(degree=="CONC")%>%group_by(curriculum)%>%count()#no more hsgj
+#ipeds.complete18f%>%filter(degree=="CONC")%>%group_by(curriculum)%>%count()#no more hsgj
 ###replace all other CONC with MSM
-ipeds.complete18f[ipeds.complete18f$degree=="CONC",11]<-"MSM"
+#ipeds.complete18f[ipeds.complete18f$degree=="CONC",11]<-"MSM"
 #check
-ipeds.complete18f%>%group_by(degree)%>%count()#no more conc
+#ipeds.complete18f%>%group_by(degree)%>%count()#no more conc
 
 
 #check trk (invalid code in degree)
-ipeds.complete18f%>%filter(degree=="TRK")%>%group_by(curriculum)%>%count()
+#ipeds.complete18f%>%filter(degree=="TRK")%>%group_by(curriculum)%>%count()
 #lookedup in powercampus, replace all INLICM in TRK as MEDMD
-ipeds.complete18f[ipeds.complete18f$curriculum=="INLICM",11]<-"MEDMD"
+#ipeds.complete18f[ipeds.complete18f$curriculum=="INLICM",11]<-"MEDMD"
 #check
-ipeds.complete18f%>%filter(degree=="TRK")%>%group_by(curriculum)%>%count()#no more INLICM
+#ipeds.complete18f%>%filter(degree=="TRK")%>%group_by(curriculum)%>%count()#no more INLICM
 #lookedup in powercampus, replace all PRLICM in TRK as MEDMD
-ipeds.complete18f[ipeds.complete18f$curriculum=="PRLICM",11]<-"MEDMD"
+#ipeds.complete18f[ipeds.complete18f$curriculum=="PRLICM",11]<-"MEDMD"
 #check
-ipeds.complete18f%>%filter(degree=="TRK")%>%group_by(curriculum)%>%count()#no more prlicm
+#ipeds.complete18f%>%filter(degree=="TRK")%>%group_by(curriculum)%>%count()#no more prlicm
 #lookedup in powercampus, replace INLICE as MEDEL
-ipeds.complete18f[ipeds.complete18f$curriculum=="INLICE",11]<-"MEDEL"
+#ipeds.complete18f[ipeds.complete18f$curriculum=="INLICE",11]<-"MEDEL"
 #check
-ipeds.complete18f%>%group_by(degree)%>%count()#no more TRK
+#ipeds.complete18f%>%group_by(degree)%>%count()#no more TRK
 ```

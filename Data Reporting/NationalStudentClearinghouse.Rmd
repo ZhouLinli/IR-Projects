@@ -40,10 +40,15 @@ dtm_s$MIDDLE_NAME<-dtm_s$MIDDLE_NAME%>%replace(is.na(dtm_s$MIDDLE_NAME),"")#remo
 
 #replace na with empty string
 dtm_s$SUFFIX<-dtm_s$SUFFIX%>%replace(is.na(dtm_s$SUFFIX),"")#remove NA values as blank
+
+#reformat birthdate
+dtm_s$BIRTHDATE<-as.character(dtm_s$BIRTHDATE)
+#replace-with emplty string
+dtm_s$BIRTHDATE<-gsub("-","",dtm_s$BIRTHDATE)
 ```
 
 
-```{r merge}
+```{r inital nsc: match useful col}
 #match dtm cols with graduates population and save it as an initial nsc df
 nsc<-left_join(ug13.22,dtm_s,by=c("textbox41"="PC_ID"))%>%unique()
 ```
@@ -61,10 +66,10 @@ names(nsc)
 #student informtion: from row 2- nrow
 nsc<-nsc%>%mutate(colA="D1",#meaning "data rows"
                   colB="",#omit ssn
-                  colH="20130101",#search date (ealiest possible date in expected result)
+                  colH=as.character("20130101"),#search date (ealiest possible date in expected result)
                   colI="",#leave blank
-                  colJ="002158",#schoolcode
-                  colK="00"#branch code
+                  colJ=as.character("002158"),#schoolcode, must be as character, unless the 00 will be 0
+                  colK=as.character("00")#branch code, must be as character, unless the 00 will be omitted
                   )
 ```
 
@@ -72,9 +77,6 @@ nsc<-nsc%>%mutate(colA="D1",#meaning "data rows"
 ```{r select col - student info/detail rows/section completed}
 nsc<-nsc%>%select(colA,colB,FIRST_NAME,MIDDLE_NAME,LAST_NAME,SUFFIX,BIRTHDATE,colH,colI,colJ,colK,textbox41)%>%unique()
 #the student information section (data section) completed
-
-#save student info/detail rows
-write.csv(nsc,"/Users/linlizhou/Documents/LASELL/data/completion/NSCug13-22.csv")
 ```
 
 ```{r header row}
@@ -100,17 +102,41 @@ names(nsc)<-c(
 head(nsc)#header is not count as a row, then the ultimate row needs to add 1 for the header row
 
 #col
-ncol(nsc)#12 cols
+ncol(nsc)#12 cols -- needs 12 col to append rows
 
 #make the trailer row of nsc file
-nsc[nrow(nsc) + 1,] = c("T1",#indicate trailer row
-                        nrow(nsc)+1,#row count + header row
-                        #add the rest of col to make it 12 cols (col values are empty values)
-                        "", "", "", "", "", "", "", "", "", ""
-                        )
+nsc_final<-nsc%>% rbind(c("T1",#indicate trailer row
+                        nrow(nsc)+2,#row count + header row + the row itself
+                        "", #add the rest of col to make it 12 cols (col values are empty values)
+                        "", #4th
+                        "", #5th
+                        "", #6th
+                        "", #7th birth date - but is character class via as.character and gsub the "-"
+                        "", #8th search date - but is character class via as.character when creating it
+                        "", #9th
+                        "", #10th
+                        "", #11th
+                        ""#12th
+                        ))
+#I did not use nsc[nrow(nsc) + 1,] = c(...) becasue that would add one row each time I run it
+#new variable nsc_final won't be loop in the nsc+1; all that's affect will be nsc itself -- static predefined df; and new version is not called nsc but nsc_final so nsc won't be keep adding a row (only the preset nsc back in the code again) when codes are run
 
-tail(nsc)
+tail(nsc_final,1) # n(student)=3292 + header row + added trailer row = 3294
 ```
+
+```{r output nsc_final}
+#save file as tab delimited file
+#name the file with school code
+write.table(nsc_final, #df to be saved
+            "/Users/linlizhou/Documents/LASELL/data/completion/NSC002158.txt", 
+            #name of result file must be .txt for tab separated/delimited text file 
+            sep = "\t", #for tab-separated value
+            quote = FALSE, #without quotes
+            col.names = TRUE, #print out headers as first row
+            row.names = FALSE #so that the row numbers are not printed out
+            )
+```
+
 
 
 ```{r archive codes}

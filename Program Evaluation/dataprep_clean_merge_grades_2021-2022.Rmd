@@ -87,6 +87,7 @@ write_xlsx(registrar21,"/Users/linlizhou/Documents/LASELL/data/progameval/regist
 ```
 
 ```{r explore outliers}
+canvas21%>%filter(`current score`>100)%>%group_by(course)%>%summarise(count=n())%>%arrange(desc(count))
 
 ```
 

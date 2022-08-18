@@ -183,6 +183,9 @@ ipeds.complete16_crt$gender<-ipeds.complete16_crt$gender%>%recode(
  `M`="Male",
   `U`="Unknown"
 )
+
+#save cleaned data
+write_xlsx(ipeds.complete16_crt,"/Users/linlizhou/Documents/LASELL/data/completion/16-current.xlsx")
 ```
 
 

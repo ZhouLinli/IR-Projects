@@ -4,10 +4,10 @@ title: "Report for Students' GPA Alignment between Canvas and Registrar in 2021-
 author: "Office of Institutional Research"
 date: "`r Sys.Date()`"
 output:
-  pdf_document: default
   word_document:
     fig_width: 7
     fig_height: 3
+  pdf_document: default
 always_allow_html: yes
 mainfont: Helvetica
 editor_options:

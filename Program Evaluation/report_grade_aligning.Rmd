@@ -713,6 +713,7 @@ library(ggpubr)
 ggarrange(p1,p2)
 ```
 
+## Grades that included and excluded from the analysis
 We used Table \ref{tab:convert} to convert scores and grades.
 
 ```{r convert table, include=TRUE}
@@ -723,10 +724,25 @@ tibble(
   "Canvas score"=c("93-110","90~93","87~90","83-87","80~83","77~80","73~77","70~73","67~70","63~67","59~63","0-59"))%>% kable(caption = "Converting GPA Scales \\label{tab:convert}") %>%kable_styling(latex_options = "HOLD_position")
 ```
 
+
+For grades that are excluded from this analysis, \ref{tab:outlier} is a description of the number of scores that are excluded from analysis.
+
+Besides, we did not report programs and courses that has small number of observations. That exclusion help to protect students' privacy from possibly individual identifiable students data. Specifically, the following programs are omitted from this report: Service Learning (n=5), Individualized Studies (n=2), Academic Achievement Center (n=9), and WRT109 (n=1).
+```{r}
+#read raw data
+canvas21<-read_excel("/Users/linlizhou/Documents/LASELL/data/progameval/canvas.raw.20-21.xlsx")
+outliertb<-canvas21%>%filter(`current score`>100)%>%group_by(course)%>%summarise(`Grades>110`=n())%>%arrange(desc(`Grades>110`))
+library(gridExtra)
+```
+
+```{r outlier table, include=TRUE}
+tibble(outliertb)%>% kable(caption = "Outlier Grades and Corresponding Courses \\label{tab:outlier}") %>%kable_styling(latex_options = "HOLD_position")
+```
+
+## A few more explanation of Codes
 Table \ref{tab.mdsc} shows what's included in Multidisciplinary Studies:
 
 ```{r show MDSC/Multidisciplineary Studies, include=TRUE}
 canvrp_ugg_match %>% filter(department=="Multidisciplinary Studies")%>%group_by(`Course ID`, `Course Name`)%>%count()%>%kable(caption = "Multidisciplinary Studies Courses \\label{tab.mdsc}") %>%kable_styling(latex_options = "HOLD_position")
 ```
 
-Besides, we did not report programs and courses that has small number of observations. That exclusion help to protect students' privacy from possibly individual identifiable students data. Specifically, the following programs are omitted from this report: Service Learning (n=5), Individualized Studies (n=2), Academic Achievement Center (n=9), and WRT109 (n=1).

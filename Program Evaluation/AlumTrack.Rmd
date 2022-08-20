@@ -149,6 +149,38 @@ writexl::write_xlsx(ug6m_m,"/Users/linlizhou/Documents/LASELL/data/alumni/ug6m_m
 rm(ug6m,ug6m_s,linkedin,survey)
 ```
 
+## UG 5year
+
+```{r read data}
+#read historical data
+excel_sheets("/Users/linlizhou/Documents/LASELL/data/alumni/ug5y/db.xlsx")
+ug5y<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/ug5y/db.xlsx",sheet = "Data")
+
+#select vars
+ug5y<-ug5y%>%select(PC_ID,WorkStatus,Organization,AnnualSalary,starts_with("Interest_"),-names(ug5y)[27])
+
+names(ug5y)<-c("PCID","Employment","Employer","Income",names(gd6m_m)[6:15])#names align with other (excep it does not have title)
+
+#####survey
+#read data 
+survey<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/ug5y/survey.xlsx")
+#names
+names(survey)
+survey<-survey%>%select(
+  `Invite Custom Field 1`,
+  names(survey)[54],#employment work status
+  names(survey)[71],#employer
+  names(survey)[70],#title
+  names(survey)[74],#income
+  names(survey)[136:139],
+  names(survey)[141:146]
+)
+
+names(survey)<-names(gd6m_m)
+
+####linkedin
+
+```
 
 
 ## GD 5 year

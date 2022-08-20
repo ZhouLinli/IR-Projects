@@ -140,7 +140,9 @@ gd6m_m$Employment<-gd6m_m$Employment%>%recode(
   "U"="Unknown","NA"="Unknown",
   "N"="Unemployed","No"="Unemployed")
 #check
-gd6m_m%>%group_by(Employment)%>%count()
+gd6m_m%>%group_by(Employment)%>%count()#NA cannot be recoed
+#rename NA with subset 
+gd6m_m$Employment[is.na(gd6m_m$Employment)]="Unknown"#recheck looks right
 ```
 
 

@@ -66,6 +66,8 @@ gd6m_s<-gd6m%>%select(
   Employed_income...30, #INCOME CAT VAR
   starts_with("Interest_")#INTEREST VAR
 )
+#check col number
+ncol(gd6m_s)
 
 #select survey to be survey_s
 survey_s<-survey%>%select(
@@ -76,6 +78,16 @@ survey_s<-survey%>%select(
   Employed_income,
   starts_with("Interest_")
   )
+#check col number
+ncol(survey_s)
+
+#select linkedin to be linkedin_s
+linkedin_s<-linkedin%>%select(
+  PC_ID,
+  Employment,
+  Employment_Organization,
+  Employment_JobTitle
+)
 ```
 
 ```{r interest var mutate}

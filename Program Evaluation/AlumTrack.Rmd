@@ -17,7 +17,7 @@ library(dplyr)
 # Research question: 
 1. Postgrad Life Basic: 1) How many alumni are employed/unemployed/continue-ed across years? 2) What are the most popular title/degree and employers/institutions?
 
-- variables needed: 1) un/employed +employer/title; 2) not/continue-ed+institution/degree
+- variables needed: 1) EMPLOYED, TITLE, EMPLOYER; 2) not/continue-ed+institution/degree
 - data source: 1) historical.data append with survey and linkedin; 2)clearinghouse
 
 2. Employ-ability/Continue-edu characteristics: 1) Which major/degree are most employable across years? 2) How demographic (gender, race) correlate with employment?
@@ -27,7 +27,7 @@ library(dplyr)
 
 3. What are alum's top interests in Lasell alum activities?
 
-- variables needed: activities
+- variables needed: INTEREST
 - data source: historical.data append with survey
 
 # Data Prep 
@@ -40,6 +40,7 @@ library(dplyr)
 excel_sheets("/Users/linlizhou/Documents/LASELL/data/alumni/2021Grad6m_historic.xlsx")#only one sheet
 #read data
 gd6m<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/2021Grad6m_historic.xlsx")
+
 #transform data (THE INTEREST COL)
 gd6m<-gd6m%>%mutate(interest=case_when(
   Interest_AlumnCareerNetwork=="Alumni Career Network"~"Career Network",
@@ -60,13 +61,12 @@ Interest_Recreational=="Recreational programs (kayaking, hiking, etc.)" ~ "Socia
    ))
 
 #select vars for research questions
-gd6m<-gd6m%>%select(
-  PC_ID,
-  `Employed/Ed`,
-  Employment_Organization,
-  Employment_JobTitle,
-  Employed_income...30,
-  `Average Salary`
+gd6m_s<-gd6m%>%select(
+  PC_ID, 
+  `Employed/Ed`, #EMPLOYED VAR
+  Employment_Organization, #EMPLOYER VAR
+  Employment_JobTitle, #TITLE VAR
+  `Average Salary` ##INCOME VAR
 )
 ```
 

@@ -66,6 +66,8 @@ gd6m_s<-gd6m%>%select(
   Employed_income...30, #INCOME CAT VAR
   starts_with("Interest_")#INTEREST VAR
 )
+#rename for consistency across all df
+names(gd6m_s)<-c("PCID","Employment","Employer","Title","Income",names(gd6m_s)[6:15])
 #check col number
 ncol(gd6m_s)
 
@@ -78,6 +80,8 @@ survey_s<-survey%>%select(
   Employed_income,
   starts_with("Interest_")
   )
+#rename for consistency across all df
+names(survey_s)<-c("PCID","Employment","Employer","Title","Income",names(survey_s)[6:15])
 #check col number
 ncol(survey_s)
 
@@ -88,11 +92,23 @@ linkedin_s<-linkedin%>%select(
   Employment_Organization,
   Employment_JobTitle
 )
+#rename for consistency across all df
+names(linkedin_s)<-c("PCID","Employment","Employer","Title")
+```
+
+```{r join_all}
+#check rows
+nrow(gd6m_s)+nrow(survey_s)+nrow(linkedin_s)#1404 rows
+#join_all by all common cols
+gd6m_m<-plyr::join_all(list(gd6m_s,survey_s,linkedin_s),type="full",match="all")#1404 rows; must use list(dfs)
+
+#rm unused cols
+rm(gd6m,gd6m_s,survey,survey_s,linkedin,linkedin_s)
 ```
 
 ```{r interest var mutate}
-#transform data (THE INTEREST COL)
-gd6m<-gd6m%>%mutate(interest=case_when(
+#combine multi-col into one INTEREST var
+gd6m_m<-gd6m_m%>%mutate(Interest=case_when(
   Interest_AlumnCareerNetwork=="Alumni Career Network"~"Career Network",
   
   Interest_JobPosts=="Posting jobs or internships listings for Lasell students"~"Post Jobs",
@@ -109,16 +125,22 @@ Interest_Recreational=="Recreational programs (kayaking, hiking, etc.)" ~ "Socia
   
    Interest_AcademicCultural=="Academic/Cultural (lectures, theater, etc.)" ~ "Academic/Cultural"
    ))
+
+#remove all "Interest_" subcols and only keep Interest (mutated conclusive col)
+gd6m_m<-gd6m_m%>%select(-starts_with("Interest_"))
 ```
 
 
-```{r employed recode}
+```{r recode}
 #inspect and clean (recode)
-gd6m_s%>%group_by(`Employed/Ed`)%>%count()
+gd6m_m%>%group_by(Employment)%>%count()
 #recode employed
-gd6m_s$`Employed/Ed`<-gd6m_s$`Employed/Ed`%>%recode("U"="Unknown","Y"="Employed","N"="unemployed")
+gd6m_m$Employment<-gd6m_m$Employment%>%recode(
+  "FT"="Employed","Intern"="Employed","PT"="Employed","Self"="Employed","Temp"="Employed","Y"="Employed","Yes"="Employed",
+  "U"="Unknown","NA"="Unknown",
+  "N"="Unemployed","No"="Unemployed")
 #check
-gd6m_s%>%group_by(`Employed/Ed`)%>%count()
+gd6m_m%>%group_by(Employment)%>%count()
 ```
 
 

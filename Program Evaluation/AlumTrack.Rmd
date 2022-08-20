@@ -32,17 +32,10 @@ library(dplyr)
 
 # Data Prep 
 
-## IPEDS.Complete
 
-```{r ipeds for merge clean df}
-ipeds.16crt<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/16-current.xlsx")
+## GD Alumni 6 month
 
-```
-
-
-## Grad Alumni 6 month
-
-```{r read data}
+```{r read gd6m data}
 #gd6m target data
 #find sheet
 excel_sheets("/Users/linlizhou/Documents/LASELL/data/alumni/2021Grad6m_historic.xlsx")#only one sheet
@@ -56,7 +49,7 @@ survey<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/2021Gd6mSurvey
 linkedin<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/2021Gd6mLinkedin_rename.xlsx")
 ```
 
-```{r select vars}
+```{r gd6m-select vars}
 #select gd6m vars to be gd6m_s 
 gd6m_s<-gd6m%>%select(
   PC_ID, 
@@ -71,7 +64,7 @@ names(gd6m_s)<-c("PCID","Employment","Employer","Title","Income",names(gd6m_s)[6
 #check col number
 ncol(gd6m_s)
 
-#select survey to be survey_s
+######select survey to be survey_s
 survey_s<-survey%>%select(
   PC_ID,
   `Employment/Unemployed`,
@@ -85,7 +78,7 @@ names(survey_s)<-c("PCID","Employment","Employer","Title","Income",names(survey_
 #check col number
 ncol(survey_s)
 
-#select linkedin to be linkedin_s
+#######select linkedin to be linkedin_s
 linkedin_s<-linkedin%>%select(
   PC_ID,
   Employment,
@@ -96,15 +89,74 @@ linkedin_s<-linkedin%>%select(
 names(linkedin_s)<-c("PCID","Employment","Employer","Title")
 ```
 
-```{r join_all}
+```{r gd6m-join_all}
 #check rows
 nrow(gd6m_s)+nrow(survey_s)+nrow(linkedin_s)#1404 rows
 #join_all by all common cols
 gd6m_m<-plyr::join_all(list(gd6m_s,survey_s,linkedin_s),type="full",match="all")#1404 rows; must use list(dfs)
-
+#save
+writexl::write_xlsx(gd6m_m,"/Users/linlizhou/Documents/LASELL/data/alumni/gd6m_merged.xlsx")
 #rm unused cols
 rm(gd6m,gd6m_s,survey,survey_s,linkedin,linkedin_s)
 ```
+
+## UG 6 month
+
+```{r read ug6m}
+#####ug6m data
+#which is data sheet
+excel_sheets("/Users/linlizhou/Documents/LASELL/data/alumni/ug6m/bd.xlsx")
+#read data
+ug6m<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/ug6m/bd.xlsx",sheet = "AllData")
+
+#check names
+names(ug6m)
+#select
+ug6m_s<-ug6m%>%select(PCID,Status,names(ug6m)[12:13],names(ug6m)[18],names(ug6m)[42:45],names(ug6m)[47:52])#omit 46th which is peer network
+#investigate names to prep rename
+names(ug6m_s)
+names(gd6m_m)[6:15]
+#rename to match other datasets (for later alrge merge)
+names(ug6m_s)<-c("PCID","Employment","Employer","Title","Income",names(gd6m_m)[6:15])
+#check again looks aligned with gd6m_m
+
+
+######survey data
+#read data
+#select data
+
+######linkedin data
+#read data
+#select var
+
+
+######merge
+```
+
+
+
+## GD 5 year
+```{r read gd5yr data and select var}
+gd5yr<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/grad5y_full.xlsx")
+
+#source to gradyear
+names(gd5yr)
+
+#inspect data fullness
+gd5yr%>%group_by(GradYear)%>%count()
+
+#select
+gd5yr<-gd5yr%>%select(
+  PCID,`Employed/UnEmployed`,
+)
+```
+
+
+# Merged Data Cleaning
+
+
+
+
 
 ```{r interest var mutate}
 #combine multi-col into one INTEREST var
@@ -144,7 +196,10 @@ gd6m_m$Employment<-gd6m_m$Employment%>%recode(
 gd6m_m%>%group_by(Employment)%>%count()#NA cannot be recoed
 #rename NA with subset 
 gd6m_m$Employment[is.na(gd6m_m$Employment)]="Unknown"#recheck looks right
+```
 
+
+```{r recode income}
 ######inspect income
 gd6m_m%>%group_by(Income)%>%count()#observe "to" and "-" interchangabily
 #replace to with -
@@ -163,7 +218,12 @@ gd6m_m$Income[is.na(gd6m_m$Income)]="Unknown"#recheck looks right
 ```
 
 
+## Add IPEDS.Complete
 
+```{r ipeds for merge clean df}
+ipeds.16crt<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/16-current.xlsx")
+
+```
 
 
 

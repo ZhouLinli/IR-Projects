@@ -131,19 +131,38 @@ gd6m_m<-gd6m_m%>%select(-starts_with("Interest_"))
 ```
 
 
-```{r recode}
-#inspect and clean (recode)
+```{r recode employment}
+######inspect employment
 gd6m_m%>%group_by(Employment)%>%count()
 #recode employed
 gd6m_m$Employment<-gd6m_m$Employment%>%recode(
   "FT"="Employed","Intern"="Employed","PT"="Employed","Self"="Employed","Temp"="Employed","Y"="Employed","Yes"="Employed",
   "U"="Unknown","NA"="Unknown",
   "N"="Unemployed","No"="Unemployed")
+
 #check
 gd6m_m%>%group_by(Employment)%>%count()#NA cannot be recoed
 #rename NA with subset 
 gd6m_m$Employment[is.na(gd6m_m$Employment)]="Unknown"#recheck looks right
+
+######inspect income
+gd6m_m%>%group_by(Income)%>%count()#observe "to" and "-" interchangabily
+#replace to with -
+gd6m_m$Income<-gsub("to","-",gd6m_m$Income)
+
+#recode other out of the "to" pattern 
+gd6m_m$Income<-gd6m_m$Income%>%recode(
+  "$90,000 or over"="$90,000 - $99,999",
+  "Prefer not - state"="Unknown",
+  "I prefer not - state"="Unknown"
+)
+
+#recode NA
+gd6m_m$Income[is.na(gd6m_m$Income)]="Unknown"#recheck looks right
+
 ```
+
+
 
 
 

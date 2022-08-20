@@ -179,7 +179,23 @@ survey<-survey%>%select(
 names(survey)<-names(gd6m_m)
 
 ####linkedin
+#which sheet to read
+excel_sheets("/Users/linlizhou/Documents/LASELL/data/alumni/ug5y/linkedin.xlsx")
+#read data
+linkedin<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/ug5y/linkedin.xlsx",sheet = "Sheet1")
 
+#select var
+linkedin<-linkedin%>%select(`Power Campus ID`,`Employed (FT/PT)`,Employer,Title)%>%rename("PCID"=`Power Campus ID`,"Employment"=`Employed (FT/PT)`)
+#check
+names(linkedin)
+
+######merge
+ug5y_m<-plyr::join_all(list(ug5y,survey,linkedin),type="full",match="first")#602 observation
+
+#save
+writexl::write_xlsx(ug5y_m,"/Users/linlizhou/Documents/LASELL/data/alumni/ug5y_merged.xlsx")
+#rm
+rm(ug5y,linkedin,survey)
 ```
 
 

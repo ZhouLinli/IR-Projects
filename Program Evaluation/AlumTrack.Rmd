@@ -142,6 +142,9 @@ names(linkedin)
 
 ######merge
 ug6m_m<-plyr::join_all(list(ug6m_s,survey,linkedin),type="full",match="first")#602 observation
+
+#save
+writexl::write_xlsx(ug6m_m,"/Users/linlizhou/Documents/LASELL/data/alumni/ug6m_merged.xlsx")
 #rm
 rm(ug6m,ug6m_s,linkedin,survey)
 ```

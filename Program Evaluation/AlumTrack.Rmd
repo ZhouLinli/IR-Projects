@@ -20,27 +20,65 @@ library(dplyr)
 - variables needed: 1) EMPLOYED, TITLE, EMPLOYER; 2) not/continue-ed+institution/degree
 - data source: 1) historical.data append with survey and linkedin; 2)clearinghouse
 
-2. Employ-ability/Continue-edu characteristics: 1) Which major/degree are most employable across years? 2) How demographic (gender, race) correlate with employment?
-
-- variables needed: school/major/degree, gender/race
-- data source: ipeds.complete.16-current
-
-3. What are alum's top interests in Lasell alum activities?
+2. What are alum's top interests in Lasell alum activities?
 
 - variables needed: INTEREST
 - data source: historical.data append with survey
 
+3. Employ-ability/Continue-edu characteristics: 1) Which major/degree are most employable across different years for grad and undergrad? 2) How demographic (gender, race) correlate with employment?
+
+- variables needed: level/gradyear,school/major/degree, gender/race
+- data source: ipeds.complete.16-current
+
 # Data Prep 
+
+## IPEDS.Complete
+
+```{r ipeds for merge clean df}
+ipeds.16crt<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/16-current.xlsx")
+
+```
+
 
 ## Grad Alumni 6 month
 
-```{r target data}
+```{r read data}
 #gd6m target data
 #find sheet
 excel_sheets("/Users/linlizhou/Documents/LASELL/data/alumni/2021Grad6m_historic.xlsx")#only one sheet
-#read data
+#read historical data
 gd6m<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/2021Grad6m_historic.xlsx")
 
+#read survey data
+survey<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/2021Gd6mSurvey_renamed.xlsx")
+
+#read linkedin data
+linkedin<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/2021Gd6mLinkedin_rename.xlsx")
+```
+
+```{r select vars}
+#select gd6m vars to be gd6m_s 
+gd6m_s<-gd6m%>%select(
+  PC_ID, 
+  `Employed/Ed`, #EMPLOYED VAR
+  Employment_Organization, #EMPLOYER VAR
+  Employment_JobTitle, #TITLE VAR
+  Employed_income...30, #INCOME CAT VAR
+  starts_with("Interest_")#INTEREST VAR
+)
+
+#select survey to be survey_s
+survey_s<-survey%>%select(
+  PC_ID,
+  `Employment/Unemployed`,
+  Employment_Organization,
+  Employment_JobTitle,
+  Employed_income,
+  starts_with("Interest_")
+  )
+```
+
+```{r interest var mutate}
 #transform data (THE INTEREST COL)
 gd6m<-gd6m%>%mutate(interest=case_when(
   Interest_AlumnCareerNetwork=="Alumni Career Network"~"Career Network",
@@ -59,14 +97,18 @@ Interest_Recreational=="Recreational programs (kayaking, hiking, etc.)" ~ "Socia
   
    Interest_AcademicCultural=="Academic/Cultural (lectures, theater, etc.)" ~ "Academic/Cultural"
    ))
-
-#select vars for research questions
-gd6m_s<-gd6m%>%select(
-  PC_ID, 
-  `Employed/Ed`, #EMPLOYED VAR
-  Employment_Organization, #EMPLOYER VAR
-  Employment_JobTitle, #TITLE VAR
-  `Average Salary` ##INCOME VAR
-)
 ```
+
+
+```{r employed recode}
+#inspect and clean (recode)
+gd6m_s%>%group_by(`Employed/Ed`)%>%count()
+#recode employed
+gd6m_s$`Employed/Ed`<-gd6m_s$`Employed/Ed`%>%recode("U"="Unknown","Y"="Employed","N"="unemployed")
+#check
+gd6m_s%>%group_by(`Employed/Ed`)%>%count()
+```
+
+
+
 

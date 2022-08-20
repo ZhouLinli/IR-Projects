@@ -94,6 +94,7 @@ names(linkedin_s)<-c("PCID","Employment","Employer","Title")
 nrow(gd6m_s)+nrow(survey_s)+nrow(linkedin_s)#1404 rows
 #join_all by all common cols
 gd6m_m<-plyr::join_all(list(gd6m_s,survey_s,linkedin_s),type="full",match="all")#1404 rows; must use list(dfs)
+
 #save
 writexl::write_xlsx(gd6m_m,"/Users/linlizhou/Documents/LASELL/data/alumni/gd6m_merged.xlsx")
 #rm unused cols
@@ -123,14 +124,26 @@ names(ug6m_s)<-c("PCID","Employment","Employer","Title","Income",names(gd6m_m)[6
 
 ######survey data
 #read data
+excel_sheets("/Users/linlizhou/Documents/LASELL/data/alumni/ug6m/survey.xlsx")
+survey<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/ug6m/survey.xlsx",sheet = "Sheet1")
 #select data
+survey<-survey%>%select(PCID,Status,names(survey)[12:13],names(survey)[18],names(survey)[42:45],names(survey)[47:52])
+#rename to match other datasets (for later alrge merge)
+names(survey)<-c("PCID","Employment","Employer","Title","Income",names(gd6m_m)[6:15])
+#check again looks aligned with gd6m_m
 
 ######linkedin data
 #read data
+linkedin<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/ug6m/linkedin.xlsx")
 #select var
-
+linkedin<-linkedin%>%select(`Power Campus ID`,`Employed (FT/PT)`,Employer,Title)%>%rename("PCID"=`Power Campus ID`,"Employment"=`Employed (FT/PT)`)
+#check
+names(linkedin)
 
 ######merge
+ug6m_m<-plyr::join_all(list(ug6m_s,survey,linkedin),type="full",match="first")#602 observation
+#rm
+rm(ug6m,ug6m_s,linkedin,survey)
 ```
 
 

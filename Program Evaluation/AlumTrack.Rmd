@@ -101,6 +101,23 @@ writexl::write_xlsx(gd6m_m,"/Users/linlizhou/Documents/LASELL/data/alumni/gd6m_m
 rm(gd6m,gd6m_s,survey,survey_s,linkedin,linkedin_s)
 ```
 
+## GD 5 year
+```{r read gd5yr data and select var}
+gd5yr<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/grad5y_full.xlsx")
+
+gd5yr<-gd5yr%>%select(
+  PCID, 
+  `Employed/UnEmployed`, #EMPLOYED VAR
+  `Employer Name`, #EMPLOYER VAR
+  Title, #TITLE VAR
+  names(gd5yr)[17], #INCOME CAT VAR
+  names(gd5yr)[46:49],
+  names(gd5yr)[51:56]#INTEREST VAR
+)
+#rename for consistency across all df
+names(gd5yr)<-names(gd6m_m)
+```
+
 ## UG 6 month
 
 ```{r read ug6m}
@@ -199,32 +216,24 @@ rm(ug5y,linkedin,survey)
 ```
 
 
-## GD 5 year
-```{r read gd5yr data and select var}
-gd5yr<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/grad5y_full.xlsx")
+#Merge and Clean Large Dataset
 
-#source to gradyear
-names(gd5yr)
-
-#inspect data fullness
-gd5yr%>%group_by(GradYear)%>%count()
-
-#select
-gd5yr<-gd5yr%>%select(
-  PCID,`Employed/UnEmployed`,
-)
+```{r mutate 5y/6m col}
+#add col to indicate the focus of outcome in each dataset
+gd5yr<-gd5yr%>%mutate("Outcome Type"="5-Year Outcome")
+ug5y_m<-ug5y_m%>%mutate("Outcome Type"="5-Year Outcome")
+gd6m_m<-gd6m_m%>%mutate("Outcome Type"="6-Month Outcome")
+ug6m_m<-ug6m_m%>%mutate("Outcome Type"="6-Month Outcome")
 ```
 
+```{r merge large dataset}
+#merge
+alum<-plyr::join_all(list(gd5yr,gd6m_m,ug5y_m,ug6m_m),type="full")
+```
 
-# Merged Data Cleaning
-
-
-
-
-
-```{r interest var mutate}
+```{r interest var -mutate based on other col}
 #combine multi-col into one INTEREST var
-gd6m_m<-gd6m_m%>%mutate(Interest=case_when(
+alum<-alum%>%mutate(Interest=case_when(
   Interest_AlumnCareerNetwork=="Alumni Career Network"~"Career Network",
   
   Interest_JobPosts=="Posting jobs or internships listings for Lasell students"~"Post Jobs",
@@ -243,41 +252,41 @@ Interest_Recreational=="Recreational programs (kayaking, hiking, etc.)" ~ "Socia
    ))
 
 #remove all "Interest_" subcols and only keep Interest (mutated conclusive col)
-gd6m_m<-gd6m_m%>%select(-starts_with("Interest_"))
+alum<-alum%>%select(-starts_with("Interest_"))
 ```
 
 
 ```{r recode employment}
 ######inspect employment
-gd6m_m%>%group_by(Employment)%>%count()
+alum%>%group_by(Employment)%>%count()
 #recode employed
-gd6m_m$Employment<-gd6m_m$Employment%>%recode(
+alum$Employment<-alum$Employment%>%recode(
   "FT"="Employed","Intern"="Employed","PT"="Employed","Self"="Employed","Temp"="Employed","Y"="Employed","Yes"="Employed",
   "U"="Unknown","NA"="Unknown",
   "N"="Unemployed","No"="Unemployed")
 
 #check
-gd6m_m%>%group_by(Employment)%>%count()#NA cannot be recoed
+alum%>%group_by(Employment)%>%count()#NA cannot be recoed
 #rename NA with subset 
-gd6m_m$Employment[is.na(gd6m_m$Employment)]="Unknown"#recheck looks right
+alum$Employment[is.na(alum$Employment)]="Unknown"#recheck looks right
 ```
 
 
 ```{r recode income}
 ######inspect income
-gd6m_m%>%group_by(Income)%>%count()#observe "to" and "-" interchangabily
+alum%>%group_by(Income)%>%count()#observe "to" and "-" interchangabily
 #replace to with -
-gd6m_m$Income<-gsub("to","-",gd6m_m$Income)
+alum$Income<-gsub("to","-",alum$Income)
 
 #recode other out of the "to" pattern 
-gd6m_m$Income<-gd6m_m$Income%>%recode(
+alum$Income<-alum$Income%>%recode(
   "$90,000 or over"="$90,000 - $99,999",
   "Prefer not - state"="Unknown",
   "I prefer not - state"="Unknown"
 )
 
 #recode NA
-gd6m_m$Income[is.na(gd6m_m$Income)]="Unknown"#recheck looks right
+alum$Income[is.na(alum$Income)]="Unknown"#recheck looks right
 
 ```
 

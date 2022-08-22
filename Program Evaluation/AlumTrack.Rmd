@@ -107,21 +107,28 @@ rm(gd6m,gd6m_s,survey,survey_s,linkedin,linkedin_s)
 ```
 
 
+
 ## GD 5 year
 ```{r read gd5yr full data and select/rename var}
+#read data
 gd5yr<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/grad5y_full.xlsx")
-
-gd5yr<-gd5yr%>%select(
+#names
+names(gd5yr)
+gd5yr_s<-gd5yr%>%select(
   PCID, 
-  `Employed/UnEmployed`, #EMPLOYED VAR
+  names(gd5yr)[8], #EMPLOYED VAR
+  names(gd5yr)[9],#full/part time
   `Employer Name`, #EMPLOYER VAR
   Title, #TITLE VAR
   names(gd5yr)[17], #INCOME CAT VAR
-  names(gd5yr)[46:49],
+  `Further Education`,#add EDUCATION var
+  names(gd5yr)[30], #add INSTITUTION var
+  Degree...31, # add DEGREE var
+  names(gd5yr)[46:49],#INTEREST VAR
   names(gd5yr)[51:56]#INTEREST VAR
 )
 #rename for consistency across all df
-names(gd5yr)<-names(gd6m_m)
+names(gd5yr_s)<-names(gd6m_m)
 ```
 
 ## UG 6 month

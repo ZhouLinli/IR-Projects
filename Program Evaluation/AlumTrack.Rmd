@@ -63,31 +63,35 @@ gd6m_s<-gd6m%>%select(
   starts_with("Interest_")#INTEREST VAR
 )
 #rename for consistency across all df
-names(gd6m_s)<-c("PCID","Employment","Employer","Title","Income","Continue Education","Institution","Degree", names(gd6m_s)[6:15])
+names(gd6m_s)<-c("PCID","Employment","Employer","Title","Income","Continue Education","Institution","Degree", names(gd6m)[73:82])
 
 ######survey
 survey_s<-survey%>%select(
   PC_ID,
-  `Employment/Unemployed`,
+  `Employment Recode`,# changed to original var containing schooling info
   Employment_Organization,
   Employment_JobTitle,
   Employed_income,
+  Education_attendance, #add EDUCATION VAR
+  Education_institution, #add INSTITUTION VAR
+  Education_Degree,#add DEGREE VAR
   starts_with("Interest_")
   )
 #rename for consistency across all df
-names(survey_s)<-c("PCID","Employment","Employer","Title","Income",names(survey_s)[6:15])
-#check col number
-ncol(survey_s)
+names(survey_s)<-c("PCID","Employment","Employer","Title","Income","Continue Education","Institution","Degree", names(gd6m)[73:82])
 
 #######select linkedin to be linkedin_s
 linkedin_s<-linkedin%>%select(
   PC_ID,
   Employment,
   Employment_Organization,
-  Employment_JobTitle
+  Employment_JobTitle,
+  Education_attendance, #add EDUCATION VAR
+  Education_institution, #add INSTITUTION VAR
+  Education_Degree,#add DEGREE VAR
 )
 #rename for consistency across all df
-names(linkedin_s)<-c("PCID","Employment","Employer","Title")
+names(linkedin_s)<-c("PCID","Employment","Employer","Title","Continue Education","Institution","Degree")
 ```
 
 ```{r merge gd6m}
@@ -101,6 +105,7 @@ writexl::write_xlsx(gd6m_m,"/Users/linlizhou/Documents/LASELL/data/alumni/gd6m_m
 #rm unused cols
 rm(gd6m,gd6m_s,survey,survey_s,linkedin,linkedin_s)
 ```
+
 
 ## GD 5 year
 ```{r read gd5yr full data and select/rename var}

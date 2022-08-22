@@ -38,33 +38,34 @@ library(dplyr)
 ```{r read gd6m data}
 #gd6m target data
 #find sheet
-excel_sheets("/Users/linlizhou/Documents/LASELL/data/alumni/2021Grad6m_historic.xlsx")#only one sheet
+excel_sheets("/Users/linlizhou/Documents/LASELL/data/alumni/gd6m/2021Grad6m_historic.xlsx")#only one sheet
 #read historical data
-gd6m<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/2021Grad6m_historic.xlsx")
+gd6m<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/gd6m/2021Grad6m_historic.xlsx")
 
 #read survey data
-survey<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/2021Gd6mSurvey_renamed.xlsx")
+survey<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/gd6m/2021Gd6mSurvey_renamed.xlsx")
 
 #read linkedin data
-linkedin<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/2021Gd6mLinkedin_rename.xlsx")
+linkedin<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/gd6m/2021Gd6mLinkedin_rename.xlsx")
 ```
 
 ```{r gd6m-select vars}
-#select gd6m vars to be gd6m_s 
+#######historical data 
 gd6m_s<-gd6m%>%select(
   PC_ID, 
-  `Employed/Ed`, #EMPLOYED VAR
+  Employment, #EMPLOYED VAR -- changed to original var containing schooling info
   Employment_Organization, #EMPLOYER VAR
   Employment_JobTitle, #TITLE VAR
   Employed_income...30, #INCOME CAT VAR
+  Education_attendance, #add EDUCATION VAR
+  Education_institution, #add INSTITUTION VAR
+  Education_Degree,#add DEGREE VAR
   starts_with("Interest_")#INTEREST VAR
 )
 #rename for consistency across all df
-names(gd6m_s)<-c("PCID","Employment","Employer","Title","Income",names(gd6m_s)[6:15])
-#check col number
-ncol(gd6m_s)
+names(gd6m_s)<-c("PCID","Employment","Employer","Title","Income","Continue Education","Institution","Degree", names(gd6m_s)[6:15])
 
-######select survey to be survey_s
+######survey
 survey_s<-survey%>%select(
   PC_ID,
   `Employment/Unemployed`,
@@ -89,7 +90,7 @@ linkedin_s<-linkedin%>%select(
 names(linkedin_s)<-c("PCID","Employment","Employer","Title")
 ```
 
-```{r gd6m-join_all}
+```{r merge gd6m}
 #check rows
 nrow(gd6m_s)+nrow(survey_s)+nrow(linkedin_s)#1404 rows
 #join_all by all common cols
@@ -102,7 +103,7 @@ rm(gd6m,gd6m_s,survey,survey_s,linkedin,linkedin_s)
 ```
 
 ## GD 5 year
-```{r read gd5yr data and select var}
+```{r read gd5yr full data and select/rename var}
 gd5yr<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/grad5y_full.xlsx")
 
 gd5yr<-gd5yr%>%select(
@@ -120,13 +121,25 @@ names(gd5yr)<-names(gd6m_m)
 
 ## UG 6 month
 
-```{r read ug6m}
+```{r read data}
 #####ug6m data
 #which is data sheet
 excel_sheets("/Users/linlizhou/Documents/LASELL/data/alumni/ug6m/bd.xlsx")
 #read data
 ug6m<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/ug6m/bd.xlsx",sheet = "AllData")
 
+######survey data
+#read data
+excel_sheets("/Users/linlizhou/Documents/LASELL/data/alumni/ug6m/survey.xlsx")
+survey<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/ug6m/survey.xlsx",sheet = "Sheet1")
+
+######linkedin data
+#read data
+linkedin<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/ug6m/linkedin.xlsx")
+```
+
+```{r select var and rename}
+#####ug6m data
 #check names
 names(ug6m)
 #select
@@ -140,9 +153,6 @@ names(ug6m_s)<-c("PCID","Employment","Employer","Title","Income",names(gd6m_m)[6
 
 
 ######survey data
-#read data
-excel_sheets("/Users/linlizhou/Documents/LASELL/data/alumni/ug6m/survey.xlsx")
-survey<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/ug6m/survey.xlsx",sheet = "Sheet1")
 #select data
 survey<-survey%>%select(PCID,Status,names(survey)[12:13],names(survey)[18],names(survey)[42:45],names(survey)[47:52])
 #rename to match other datasets (for later alrge merge)
@@ -150,13 +160,14 @@ names(survey)<-c("PCID","Employment","Employer","Title","Income",names(gd6m_m)[6
 #check again looks aligned with gd6m_m
 
 ######linkedin data
-#read data
-linkedin<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/ug6m/linkedin.xlsx")
 #select var
 linkedin<-linkedin%>%select(`Power Campus ID`,`Employed (FT/PT)`,Employer,Title)%>%rename("PCID"=`Power Campus ID`,"Employment"=`Employed (FT/PT)`)
 #check
 names(linkedin)
+```
 
+
+```{r merge ug6m}
 ######merge
 ug6m_m<-plyr::join_all(list(ug6m_s,survey,linkedin),type="full",match="first")#602 observation
 
@@ -173,14 +184,26 @@ rm(ug6m,ug6m_s,linkedin,survey)
 excel_sheets("/Users/linlizhou/Documents/LASELL/data/alumni/ug5y/db.xlsx")
 ug5y<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/ug5y/db.xlsx",sheet = "Data")
 
-#select vars
-ug5y<-ug5y%>%select(PC_ID,WorkStatus,Organization,AnnualSalary,starts_with("Interest_"),-names(ug5y)[27])
-
-names(ug5y)<-c("PCID","Employment","Employer","Income",names(gd6m_m)[6:15])#names align with other (excep it does not have title)
-
 #####survey
 #read data 
 survey<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/ug5y/survey.xlsx")
+
+####linkedin
+#which sheet to read
+excel_sheets("/Users/linlizhou/Documents/LASELL/data/alumni/ug5y/linkedin.xlsx")
+#read data
+linkedin<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/ug5y/linkedin.xlsx",sheet = "Sheet1")
+```
+
+
+```{r select var and rename}
+##### historical data
+#select vars
+ug5y<-ug5y%>%select(PC_ID,WorkStatus,Organization,AnnualSalary,starts_with("Interest_"),-names(ug5y)[27])
+#rename
+names(ug5y)<-c("PCID","Employment","Employer","Income",names(gd6m_m)[6:15])#names align with other (excep it does not have title)
+
+#####survey
 #names
 names(survey)
 survey<-survey%>%select(
@@ -192,20 +215,18 @@ survey<-survey%>%select(
   names(survey)[136:139],
   names(survey)[141:146]
 )
-
+#rename
 names(survey)<-names(gd6m_m)
 
 ####linkedin
-#which sheet to read
-excel_sheets("/Users/linlizhou/Documents/LASELL/data/alumni/ug5y/linkedin.xlsx")
-#read data
-linkedin<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/ug5y/linkedin.xlsx",sheet = "Sheet1")
-
-#select var
+#select var and rename
 linkedin<-linkedin%>%select(`Power Campus ID`,`Employed (FT/PT)`,Employer,Title)%>%rename("PCID"=`Power Campus ID`,"Employment"=`Employed (FT/PT)`)
 #check
 names(linkedin)
+```
 
+
+```{r merge ug5y}
 ######merge
 ug5y_m<-plyr::join_all(list(ug5y,survey,linkedin),type="full",match="first")#602 observation
 
@@ -335,9 +356,10 @@ writexl::write_xlsx(alum.m,"/Users/linlizhou/Documents/LASELL/data/alumni/alum.x
 
 ```{r set up}
 library(shiny)
-####data import
 
-####VERY IMPORTANT: best practice is to have your .csv or other data file in the same directory as your .r file for the shiny app
+#####DO NOT set your working directory in this app. This is will cause a problem when you try to upload the app online.
+
+####data import: best practice is to have your .csv or other data file in the same directory as your .r file for the shiny app
 ```
 
 ```{r UI}
@@ -345,13 +367,31 @@ ui <- fluidPage(#start fluidPage
     titlePanel("Old Faithful Geyser Data"),# title
     sidebarLayout(#layout
       
-      sidebarPanel(sliderInput(
-        "bins", # Slider: waiting for input of number of bins to define bins
-        "Number of bins:",#Slider title
-        min = 1, max = 50,value = 30)),#Slider appearance
-      
-      mainPanel(plotOutput("distPlot")))# mainpanel:a plot output named as defined in server
+#side appearance (input place)
+sidebarPanel(
+  
+#####option 1-one value input  
+  sliderInput(
+    inputId="bins", # Slider: waiting for input of number of bins to define bins
+    label="Number of bins:",#Slider title
+    min = 1, max = 50, value = 30, sep="")    ),#Slider appearance, end of sliderInput
+
+#####option 2-multiple value input
+  checkboxGroupInput(#checkbox input
+    inputId="checked_groups",#Input: waiting for input of checked boxes
+    label="Which groups do you want to display?",#Slider title
+    choices=c("a","b","c"),selected=c("a","b","c")  ),#Slider appearance; end of checkboxGroupInput
+
+#main appearance (output place)
+mainPanel(plotOutput("distPlot"))# the plot will be defined in server
+    
+  ) #end of sidebar layout
     )#end of fluidPage
+```
+
+```{r}
+    inputPanel(
+      )
 ```
 
 
@@ -372,7 +412,9 @@ hist(x, breaks = bins, col = 'darkgray', border = 'white')
 #start plot
 ggplot(
   #select the target variable given the UI input
-  filter(dat,TargetVariable==input$my_cong),
+  filter(dat,TargetVariable==input$my_cong),#single-option
+  #filter(dat, Group %in% input$checked_groups)#check box
+  
   #define the plot aesethics, #end plot + #a way to display  
   aes(x=Ideology,color=Party,fill=Party)  )+ geom_density(alpha=.5) 
 

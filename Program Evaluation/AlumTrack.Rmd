@@ -64,7 +64,7 @@ gd6m_s<-gd6m%>%select(
   starts_with("Interest_")#INTEREST VAR
 )
 #rename for consistency across all df
-names(gd6m_s)<-c("PCID","Employment","Full/Part Time","Employer","Title","Income","Continue Education","Institution","Degree", names(gd6m)[73:82])
+names(gd6m_s)<-c("PCID","Employment","Full/Part Time","Employer","Title","Income","Further Education","Institution","Degree", names(gd6m)[73:82])
 
 ######survey
 survey_s<-survey%>%select(
@@ -93,7 +93,7 @@ linkedin_s<-linkedin%>%select(
   Education_Degree,#add DEGREE VAR
 )
 #rename for consistency across all df
-names(linkedin_s)<-c("PCID","Employment","Employer","Title","Continue Education","Institution","Degree")
+names(linkedin_s)<-c("PCID","Employment","Employer","Title","Further Education","Institution","Degree")
 
 #check employment
 linkedin_s%>%group_by(Employment)%>%count()

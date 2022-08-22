@@ -53,7 +53,8 @@ linkedin<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/gd6m/2021Gd6
 #######historical data 
 gd6m_s<-gd6m%>%select(
   PC_ID, 
-  Employment, #EMPLOYED VAR -- changed to original var containing schooling info
+  `Employment Recode`, #EMPLOYED VAR -- changed to original var containing schooling info
+  Employment, #placeholder for full/part time
   Employment_Organization, #EMPLOYER VAR
   Employment_JobTitle, #TITLE VAR
   Employed_income...30, #INCOME CAT VAR
@@ -63,12 +64,13 @@ gd6m_s<-gd6m%>%select(
   starts_with("Interest_")#INTEREST VAR
 )
 #rename for consistency across all df
-names(gd6m_s)<-c("PCID","Employment","Employer","Title","Income","Continue Education","Institution","Degree", names(gd6m)[73:82])
+names(gd6m_s)<-c("PCID","Employment","Full/Part Time","Employer","Title","Income","Continue Education","Institution","Degree", names(gd6m)[73:82])
 
 ######survey
 survey_s<-survey%>%select(
   PC_ID,
   `Employment Recode`,# changed to original var containing schooling info
+  Employment,# full/part time
   Employment_Organization,
   Employment_JobTitle,
   Employed_income,
@@ -78,7 +80,7 @@ survey_s<-survey%>%select(
   starts_with("Interest_")
   )
 #rename for consistency across all df
-names(survey_s)<-c("PCID","Employment","Employer","Title","Income","Continue Education","Institution","Degree", names(gd6m)[73:82])
+names(survey_s)<-names(gd6m_s)
 
 #######select linkedin to be linkedin_s
 linkedin_s<-linkedin%>%select(
@@ -92,6 +94,14 @@ linkedin_s<-linkedin%>%select(
 )
 #rename for consistency across all df
 names(linkedin_s)<-c("PCID","Employment","Employer","Title","Continue Education","Institution","Degree")
+
+#check employment
+linkedin_s%>%group_by(Employment)%>%count()
+#mutate full/part time
+linkedin_s<-linkedin_s%>%mutate(`Full/Part Time`=case_when(
+  Employment=="FT"~"Full Time",
+  Employment=="PT"~"Part Time"
+))
 ```
 
 ```{r merge gd6m}

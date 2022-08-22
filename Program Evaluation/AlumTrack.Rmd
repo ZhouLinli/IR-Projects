@@ -219,6 +219,8 @@ rm(ug5y,linkedin,survey)
 #Merge and Clean Large Dataset
 
 ```{r mutate 5y/6m col}
+#read data
+
 #add col to indicate the focus of outcome in each dataset
 gd5yr<-gd5yr%>%mutate("Outcome Type"="5-Year Outcome")
 ug5y_m<-ug5y_m%>%mutate("Outcome Type"="5-Year Outcome")
@@ -257,6 +259,8 @@ alum<-alum%>%select(-starts_with("Interest_"))
 
 
 ```{r recode employment}
+#need to revise employement var selection; changed the recoded one to the orginal one -- so that we can make a both employed and continue add value type
+
 ######inspect employment
 alum%>%group_by(Employment)%>%count()
 #recode employed
@@ -265,8 +269,15 @@ alum$Employment<-alum$Employment%>%recode(
   "U"="Unknown","NA"="Unknown",
   "N"="Unemployed","No"="Unemployed")
 
+#recode using case_when (mutate same variable name to replace the origional Employment)
+alum<-alum%>%mutate(Employment=case_when(
+  Employment %in% c("Additional Eduation","Additional Education","Edu","Further Ed","n/a","Other","UNK","Unknown") ~ "Unknown",
+  Employment %in% c("Contract","Emp","EmpEdu","employed","Employed","Freelance","Internship") ~ "Employed",
+  Employment %in% c("No Emp No Edu","Unemployed")~"Unemployed"
+))
+
 #check
-alum%>%group_by(Employment)%>%count()#NA cannot be recoed
+alum%>%group_by(Employment)%>%count()#NA cannot be recoded
 #rename NA with subset 
 alum$Employment[is.na(alum$Employment)]="Unknown"#recheck looks right
 ```
@@ -280,7 +291,13 @@ alum$Income<-gsub("to","-",alum$Income)
 
 #recode other out of the "to" pattern 
 alum$Income<-alum$Income%>%recode(
+   "$100,000 or over" = ">$100,000","$100,000 or more" = ">$100,000",
   "$90,000 or over"="$90,000 - $99,999",
+  "$80,000 or over"= "$80,000 - $89,999",
+  "Less than $40,000"="$30,000 - $39,999",
+  "$20,000 - $29,999"="Less than $30,000",
+  "$24,999 or less"="Less than $30,000",
+  "Less than $20,000"= "Less than $30,000",
   "Prefer not - state"="Unknown",
   "I prefer not - state"="Unknown"
 )
@@ -288,6 +305,12 @@ alum$Income<-alum$Income%>%recode(
 #recode NA
 alum$Income[is.na(alum$Income)]="Unknown"#recheck looks right
 
+#check
+alum%>%group_by(Income)%>%count()
+```
+
+```{r save large dataset}
+writexl::write_xlsx(alum,"/Users/linlizhou/Documents/LASELL/data/alumni/alum.xlsx")
 ```
 
 
@@ -296,6 +319,7 @@ alum$Income[is.na(alum$Income)]="Unknown"#recheck looks right
 ```{r ipeds for merge clean df}
 ipeds.16crt<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/16-current.xlsx")
 
+alum.m<-plyr::join_all(list(alum,ipeds.16crt),type="left")
 ```
 
 

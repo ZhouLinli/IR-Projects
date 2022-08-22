@@ -325,4 +325,65 @@ writexl::write_xlsx(alum.m,"/Users/linlizhou/Documents/LASELL/data/alumni/alum.x
 ```
 
 
+# Static Graphs
+
+```{r}
+
+```
+
+# Shiny
+
+```{r set up}
+library(shiny)
+####data import
+
+####VERY IMPORTANT: best practice is to have your .csv or other data file in the same directory as your .r file for the shiny app
+```
+
+```{r UI}
+ui <- fluidPage(#start fluidPage
+    titlePanel("Old Faithful Geyser Data"),# title
+    sidebarLayout(#layout
+      
+      sidebarPanel(sliderInput(
+        "bins", # Slider: waiting for input of number of bins to define bins
+        "Number of bins:",#Slider title
+        min = 1, max = 50,value = 30)),#Slider appearance
+      
+      mainPanel(plotOutput("distPlot")))# mainpanel:a plot output named as defined in server
+    )#end of fluidPage
+```
+
+
+```{r Server}
+server <- function(input, output) {
+  output$distPlot <- #define the output$name, call in UI
+    renderPlot({#start defining plot
+      
+#####option 1- bin histogram
+# select the target variable as list      
+x    <- dat[, 2]
+# inputed number of bins (e.g. number break into n+1 parts for n bins).
+bins <- seq(min(x), max(x), length.out = input$bins + 1)
+# draw histogram with the specified number of bins
+hist(x, breaks = bins, col = 'darkgray', border = 'white')
+
+######option 2-ggplot
+#start plot
+ggplot(
+  #select the target variable given the UI input
+  filter(dat,TargetVariable==input$my_cong),
+  #define the plot aesethics, #end plot + #a way to display  
+  aes(x=Ideology,color=Party,fill=Party)  )+ geom_density(alpha=.5) 
+
+      })#end of defining plot
+    }#end of function
+```
+
+
+```{r Run Shiny}
+# Run the application 
+shinyApp(ui = ui, server = server)
+
+```
 

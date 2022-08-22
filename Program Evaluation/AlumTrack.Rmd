@@ -309,17 +309,19 @@ alum$Income[is.na(alum$Income)]="Unknown"#recheck looks right
 alum%>%group_by(Income)%>%count()
 ```
 
-```{r save large dataset}
-writexl::write_xlsx(alum,"/Users/linlizhou/Documents/LASELL/data/alumni/alum.xlsx")
-```
-
 
 ## Add IPEDS.Complete
 
 ```{r ipeds for merge clean df}
+#read ipeds data (prepared with PCID, level, degree, major, gradate, race, gender, school)
 ipeds.16crt<-read_excel("/Users/linlizhou/Documents/LASELL/data/completion/16-current.xlsx")
-
+#merge to alum.m large dataset
 alum.m<-plyr::join_all(list(alum,ipeds.16crt),type="left")
+```
+
+
+```{r save large dataset}
+writexl::write_xlsx(alum.m,"/Users/linlizhou/Documents/LASELL/data/alumni/alum.xlsx")
 ```
 
 

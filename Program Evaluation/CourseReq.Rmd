@@ -48,6 +48,7 @@ crs.tbl<-readHTMLTable(pg,stringsAsFactors = FALSE)%>%as_tibble() #a tibble of 3
 names(crs.tbl)="course" #rename tibble from NULL to "course" so that I can call it by its name without causing error
 df<-crs.tbl$course#finally got a dataframe of 3 vars
 crs<-df$`Course Code`#character not a list
+crs.df<-data.frame(Section=crs)%>%filter(!grepl("School",Section),!grepl("Core Courses",Section))
 ```
 
 

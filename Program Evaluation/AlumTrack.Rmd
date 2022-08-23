@@ -360,18 +360,17 @@ alum<-alum%>%select(-starts_with("Interest_"))
 
 ```{r recode employment}
 #inspect employment
-alum%>%group_by(Employment)%>%count()
+alum%>%group_by(Employment)%>%count() #%>%tail(14) to look at the tails
 
 #recode using case_when (mutate same variable name to replace the origional Employment)
-alum<-alum%>%mutate(Employment_2=case_when(
+alum<-alum%>%mutate(Employment=case_when(
+  stringr::str_detect(alum$Employment, "^[Ee][Mm][Pp]")~ "Employed",#start with emp no matter upper/lower case
+  stringr::str_detect(alum$Employment, "^[Ii]ntern")~ "Employed",#start with emp no matter upper/lower case
+  Employment %in% c("Contract","Freelance","Internship","FT","PT","Self","Temp","Yes") ~ "Employed",
+  
   Employment %in% c("Additional Eduation","Additional Education","Edu","Further Ed","n/a","Other","UNK","Unknown") ~ "Unknown",
-  Employment %in% c("Contract","Freelance","Internship") ~ "Employed",
-  str_detect(alum$Employment, "^[Ee][Mm][Pp]")~ "Employed",#start with emp no matter upper/lower case
-  Employment %in% c("No Emp No Edu","Unemployed")~"Unemployed"
-))
-
-#check
-alum%>%group_by(Employment,Employment_2)%>%count()#NA cannot be recoded
+  
+  Employment %in% c("No Emp No Edu","Unemployed","Neither employed nor pursing further study","No","Pursuing further study only, not employed")~"Unemployed"))
 #rename NA with subset 
 alum$Employment[is.na(alum$Employment)]="Unknown"#recheck looks right
 ```

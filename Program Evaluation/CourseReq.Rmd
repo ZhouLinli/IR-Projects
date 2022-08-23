@@ -975,12 +975,15 @@ dat.major<-plyr::join_all(list(dat.major,new.crs.df),type = "full")#add to 954
 ######keep core course and recode
 #recode using case_when (new var= old var name)
 dat.major<-
-  dat.major%>%mutate(`Radio and Video Production`=case_when(
-   # `Radio and Video Production`=="C"~"Core", #hide for not-existing major
-    Section %in% crs.df$Section[1:length(crs.df$Section)] ~"Required"))#%>%group_by(`Radio and Video Production`)%>%count()#check directly after mutate, before assign it to df
+  dat.major%>%mutate(`RadioVideoProdu`=case_when(
+   # `RadioVideoProdu`=="C"~"Core", #hide for not-existing major
+    Section %in% crs.df$Section[1:length(crs.df$Section)] ~"Required"))#%>%group_by(`RadioVideoProdu`)%>%count()#check directly after mutate, before assign it to df
 
 #check
-dat.major%>%group_by(`Radio and Video Production`)%>%count()#non-existing major
+dat.major%>%group_by(`RadioVideoProdu`)%>%count()#non-existing major
+
+#rename
+dat.major<-dat.major%>%rename(`Radio and Video Production`=RadioVideoProdu)#using rename to add the major name as is
 ```
 
 

@@ -142,7 +142,7 @@ crs.df<-data.frame(Section=crs.tbl$value)
 new.crs.df<-crs.df%>%filter((crs.df$Section %in% dat.major$Section ) == FALSE)
 
 #append new.df with dat.major
-dat.major<-plyr::join_all(list(dat.major,new.crs.df),type = "full")#change from 947 to 948 with appended rows BUSS407
+dat.major<-plyr::join_all(list(dat.major,new.crs.df),type = "full")#no change 948
 ```
 
 ```{r keep core course and recode using crs.df}
@@ -152,6 +152,47 @@ dat.major%>%group_by(`Event Management`)%>%count()
 dat.major<-
   dat.major%>%mutate(`Event Management`=case_when(
     `Event Management`=="C"~"Core",
-    Section %in% crs.df$Section[1:18] ~"Required",
-    Section %in% crs.df$Section[19:29] ~"Elective"))#%>%group_by(`Event Management`)%>%count()#check directly after mutate, before assign it to df
+    Section %in% crs.df$Section[1:20] ~"Required",
+    Section %in% crs.df$Section[21:35] ~"Elective"))#%>%group_by(`Event Management`)%>%count()#check directly after mutate, before assign it to df
+```
+
+
+## Finance
+
+```{r html-`Finance`}
+#read html and parse it into R readable contents
+pg<-read_html("https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-/finance-21-22.html#tab-2")
+#look at it (a list object that contains the tree-like structure)
+pg
+#search using css class as nodes
+pg %>% html_nodes(".mp-modal")%>%html_text()#we must add a . before the class name
+```
+
+
+```{r find the right texts in html}
+#read the table within html contents and save it as a tibble
+crs.tbl<-pg %>% html_nodes(".mp-modal")%>%html_text()%>%as_tibble() #a tibble of 30 observation of 1 var
+
+#make data frame with named col
+crs.df<-data.frame(Section=crs.tbl$value)
+#now we got the list of all html courses
+```
+
+```{r append new courses using crs.df}
+#inspect - filter out not in the dat.major courese and new those courese as new.crs.df; remove the last label patterns using filter grepl
+new.crs.df<-crs.df%>%filter((crs.df$Section %in% dat.major$Section ) == FALSE)
+
+#append new.df with dat.major
+dat.major<-plyr::join_all(list(dat.major,new.crs.df),type = "full")#no change 948
+```
+
+```{r keep core course and recode using crs.df}
+#investigate
+dat.major%>%group_by(`Finance`)%>%count()
+#recode using case_when (new var= old var name)
+dat.major<-
+  dat.major%>%mutate(`Finance`=case_when(
+    `Finance`=="C"~"Core",
+    Section %in% crs.df$Section[1:20] ~"Required",
+    Section %in% crs.df$Section[21:35] ~"Elective"))#%>%group_by(`Finance`)%>%count()#check directly after mutate, before assign it to df
 ```

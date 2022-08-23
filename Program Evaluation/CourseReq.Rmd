@@ -120,7 +120,7 @@ dat.major<-
 
 ```{r html-`Event Management`}
 #read html and parse it into R readable contents
-pg<-read_html("https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-/Event-Management-21-22.html#tab-2")
+pg<-read_html("https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-/event-management21-22.html#tab-2")
 #look at it (a list object that contains the tree-like structure)
 pg
 #search using css class as nodes

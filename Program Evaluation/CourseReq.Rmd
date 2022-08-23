@@ -2508,9 +2508,9 @@ major.list<-c("Accounting",
 
 ```{r}
 #check any character not match
-major.list[(major.list%in%major.col)==FALSE]
-"Radio and Video Production" %in% major.col
+major.list[(major.list%in%major.col)==FALSE]#none, all major list from web are mutated into the dat.major df
+
 #select
-dat.48major<-dat.major%>%select(major.list[1:20],`Radio and Video Production`)
+dat.48major<-dat.major%>%select(Section,`Course Title`,major.list[1:length(major.list)])
 ```
 

@@ -34,10 +34,39 @@ dat.major<-dat.major[!is.na(dat.major$Section),]#removed last several NA rows, c
 
 ## Accounting
 
+```{r}
+library(RCurl)
+library(XML)
+#read html and parse it into R readable contents
+pg<-htmlParse(getURL("https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-/accounting-21-22.html"))
+#look at all names and counts of names
+summary(pg)
+#read the table within html contents and save it as a tibble
+crs.tbl<-readHTMLTable(pg,stringsAsFactors = FALSE)%>%as_tibble() #a tibble of 30 observation of 1 var 
+
+#make a course list
+names(crs.tbl)="course" #rename tibble from NULL to "course" so that I can call it by its name without causing error
+df<-crs.tbl$course#finally got a dataframe of 3 vars
+crs<-df$`Course Code`#character not a list
+
+#inspect
+crs[(crs %in% dat.major$Section ) == FALSE]
+#append not-existed section
+
+```
+
+
 ```{r keep core course}
 #investigate
 dat.major%>%group_by(Accounting)%>%count()
-dat.major$Accounting<-recode(dat.major$Accounting,
-                        )
+#recode using case_when (new var= old var name)
+dat.major<-
+  dat.major%>%mutate(Accounting=case_when(
+    Accounting=="C"~"Core",
+    Section %in% c(crs[2:11],crs[13:23]) ~"Required",
+    Section %in% crs[25:29] ~"Elective"
+  ))%>%group_by(Accounting)%>%count()#check directly after mutate, before assign it to df
+
+dat.major$Accounting<-recode(dat.major$Accounting, C="Core",E=NA,X=NA)
 ```
 

@@ -34,7 +34,7 @@ dat.major<-dat.major[!is.na(dat.major$Section),]#removed last several NA rows, c
 
 ## Accounting
 
-```{r}
+```{r html-accounting}
 library(RCurl)
 library(XML)
 #read html and parse it into R readable contents
@@ -42,17 +42,25 @@ pg<-htmlParse(getURL("https://www.lasell.edu/academics/academic-catalog-21-22/un
 #look at all names and counts of names
 summary(pg)
 #read the table within html contents and save it as a tibble
-crs.tbl<-readHTMLTable(pg,stringsAsFactors = FALSE)%>%as_tibble() #a tibble of 30 observation of 1 var 
+crs.tbl<-readHTMLTable(pg,stringsAsFactors = FALSE)%>%as_tibble() #a tibble of 30 observation of 1 var
 
 #make a course list
 names(crs.tbl)="course" #rename tibble from NULL to "course" so that I can call it by its name without causing error
 df<-crs.tbl$course#finally got a dataframe of 3 vars
 crs<-df$`Course Code`#character not a list
+```
 
+
+```{r append new courses}
 #inspect
-crs[(crs %in% dat.major$Section ) == FALSE]
-#append not-existed section
-#8-23-download latest section abbreaviations and full names from report manager and check if all crs in that latest section list
+new.crs<-crs[(crs %in% dat.major$Section ) == FALSE]
+#make new coureses a tibble to be appended
+#new.df<-data.frame(Section=c(new.crs[2:6],new.crs[8:12],new.crs[14:15]))#needs to eye ball which are coursese
+#make all values in col called Section, then remove with patterns using filter grepl
+new.df<-data.frame(Section=new.crs)%>%filter(!grepl("School",Section),!grepl("Choose",Section),!grepl("Core Courses",Section))
+
+#append new.df with dat.major
+dat.major<-plyr::join_all(list(dat.major,new.df),type = "full")#change from 935 to 947 with appended rows
 ```
 
 

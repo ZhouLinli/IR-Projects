@@ -1675,11 +1675,11 @@ dat.major%>%group_by(`Public and Community Health`)%>%count()#non-existing major
 
 
 
-## Public and Community Health
+## Criminal Justice
 
-```{r html-`Public and Community Health`}
+```{r html-`Criminal Justice`}
 #read html and parse it into R readable contents
-pg<-read_html("https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-/public-and-community-health-21-22.html#tab-2")
+pg<-read_html("https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-/criminal-justice-21-22.html#tab-2")
 #look at it (a list object that contains the tree-like structure)
 pg
 #search using css class as nodes
@@ -1705,11 +1705,684 @@ dat.major<-plyr::join_all(list(dat.major,new.crs.df),type = "full")#add to 954
 ######keep core course and recode
 #recode using case_when (new var= old var name)
 dat.major<-
-  dat.major%>%mutate(`Public and Community Health`=case_when(
-   # `Public and Community Health`=="C"~"Core", #hide for not-existing major
-    Section %in% crs.df$Section[1:16] ~"Required",
-    Section %in% crs.df$Section[17:length(crs.df$Section)] ~"Elective"))#%>%group_by(`Public and Community Health`)%>%count()#check directly after mutate, before assign it to df
+  dat.major%>%mutate(`Criminal Justice`=case_when(
+   # `Criminal Justice`=="C"~"Core", #hide for not-existing major
+    Section %in% crs.df$Section[1:17] ~"Required",
+    Section %in% crs.df$Section[18:length(crs.df$Section)] ~"Elective"))#%>%group_by(`Criminal Justice`)%>%count()#check directly after mutate, before assign it to df
 
 #check
-dat.major%>%group_by(`Public and Community Health`)%>%count()#non-existing major
+dat.major%>%group_by(`Criminal Justice`)%>%count()#non-existing major
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Early Childhood Education
+
+```{r html-`Early Childhood Education`}
+#read html and parse it into R readable contents
+pg<-read_html("https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-/education21-22/early-childhood-education-(pre-kindergarten-grade-2)-21-22.html#tab-2")
+#look at it (a list object that contains the tree-like structure)
+pg
+#search using css class as nodes
+pg %>% html_nodes(".mp-modal")%>%html_text()#we must add a . before the class name
+
+#### find the right texts in html
+#read the table within html contents and save it as a tibble
+crs.tbl<-pg %>% html_nodes(".mp-modal")%>%html_text()%>%as_tibble() #a tibble of 30 observation of 1 var
+
+#make data frame with named col
+crs.df<-data.frame(Section=crs.tbl$value)
+#now we got the list of all html courses
+```
+
+```{r append and mutate/recode}
+######append new coureses
+#inspect - filter out not in the dat.major courese and new those courese as new.crs.df; remove the last label patterns using filter grepl
+new.crs.df<-crs.df%>%filter((crs.df$Section %in% dat.major$Section ) == FALSE)
+
+#append new.df with dat.major
+dat.major<-plyr::join_all(list(dat.major,new.crs.df),type = "full")#add to 954
+
+######keep core course and recode
+#recode using case_when (new var= old var name)
+dat.major<-
+  dat.major%>%mutate(`Early Childhood Education`=case_when(
+   # `Early Childhood Education`=="C"~"Core", #hide for not-existing major
+    Section %in% crs.df$Section[1:23] ~"Required",
+    Section %in% crs.df$Section[24:length(crs.df$Section)] ~"Elective"))#%>%group_by(`Early Childhood Education`)%>%count()#check directly after mutate, before assign it to df
+
+#check
+dat.major%>%group_by(`Early Childhood Education`)%>%count()#non-existing major
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Elementary Education
+
+```{r html-`Elementary Education`}
+#read html and parse it into R readable contents
+pg<-read_html("https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-/education21-22/elementary-education-(grades-1-6)21-22.html#tab-2")
+#look at it (a list object that contains the tree-like structure)
+pg
+#search using css class as nodes
+pg %>% html_nodes(".mp-modal")%>%html_text()#we must add a . before the class name
+
+#### find the right texts in html
+#read the table within html contents and save it as a tibble
+crs.tbl<-pg %>% html_nodes(".mp-modal")%>%html_text()%>%as_tibble() #a tibble of 30 observation of 1 var
+
+#make data frame with named col
+crs.df<-data.frame(Section=crs.tbl$value)
+#now we got the list of all html courses
+```
+
+```{r append and mutate/recode}
+######append new coureses
+#inspect - filter out not in the dat.major courese and new those courese as new.crs.df; remove the last label patterns using filter grepl
+new.crs.df<-crs.df%>%filter((crs.df$Section %in% dat.major$Section ) == FALSE)
+
+#append new.df with dat.major
+dat.major<-plyr::join_all(list(dat.major,new.crs.df),type = "full")#add to 954
+
+######keep core course and recode
+#recode using case_when (new var= old var name)
+dat.major<-
+  dat.major%>%mutate(`Elementary Education`=case_when(
+   # `Elementary Education`=="C"~"Core", #hide for not-existing major
+    Section %in% crs.df$Section[1:23] ~"Required",
+    Section %in% crs.df$Section[24:length(crs.df$Section)] ~"Elective"))#%>%group_by(`Elementary Education`)%>%count()#check directly after mutate, before assign it to df
+
+#check
+dat.major%>%group_by(`Elementary Education`)%>%count()#non-existing major
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Secondary Education and English
+
+```{r html-`Secondary Education and English`}
+#read html and parse it into R readable contents
+pg<-read_html("https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-/education21-22/secondary-education-major-(grades-5-12)-and-english-major-21-22.html#tab-2")
+#look at it (a list object that contains the tree-like structure)
+pg
+#search using css class as nodes
+pg %>% html_nodes(".mp-modal")%>%html_text()#we must add a . before the class name
+
+#### find the right texts in html
+#read the table within html contents and save it as a tibble
+crs.tbl<-pg %>% html_nodes(".mp-modal")%>%html_text()%>%as_tibble() #a tibble of 30 observation of 1 var
+
+#make data frame with named col
+crs.df<-data.frame(Section=crs.tbl$value)
+#now we got the list of all html courses
+```
+
+```{r append and mutate/recode}
+######append new coureses
+#inspect - filter out not in the dat.major courese and new those courese as new.crs.df; remove the last label patterns using filter grepl
+new.crs.df<-crs.df%>%filter((crs.df$Section %in% dat.major$Section ) == FALSE)
+
+#append new.df with dat.major
+dat.major<-plyr::join_all(list(dat.major,new.crs.df),type = "full")#add to 954
+
+######keep core course and recode
+#recode using case_when (new var= old var name)
+dat.major<-
+  dat.major%>%mutate(`Secondary Education and English`=case_when(
+   # `Secondary Education and English`=="C"~"Core", #hide for not-existing major
+    Section %in% crs.df$Section[1:20] ~"Required",
+    Section %in% crs.df$Section[21:length(crs.df$Section)] ~"Elective"))#%>%group_by(`Secondary Education and English`)%>%count()#check directly after mutate, before assign it to df
+
+#check
+dat.major%>%group_by(`Secondary Education and English`)%>%count()#non-existing major
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Secondary Education and History
+
+```{r html-`Secondary Education and History`}
+#read html and parse it into R readable contents
+pg<-read_html("https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-/education21-22/secondary-education-major-(grades-5-12)and-history-major-21-22.html#tab-2")
+#look at it (a list object that contains the tree-like structure)
+pg
+#search using css class as nodes
+pg %>% html_nodes(".mp-modal")%>%html_text()#we must add a . before the class name
+
+#### find the right texts in html
+#read the table within html contents and save it as a tibble
+crs.tbl<-pg %>% html_nodes(".mp-modal")%>%html_text()%>%as_tibble() #a tibble of 30 observation of 1 var
+
+#make data frame with named col
+crs.df<-data.frame(Section=crs.tbl$value)
+#now we got the list of all html courses
+```
+
+```{r append and mutate/recode}
+######append new coureses
+#inspect - filter out not in the dat.major courese and new those courese as new.crs.df; remove the last label patterns using filter grepl
+new.crs.df<-crs.df%>%filter((crs.df$Section %in% dat.major$Section ) == FALSE)
+
+#append new.df with dat.major
+dat.major<-plyr::join_all(list(dat.major,new.crs.df),type = "full")#add to 954
+
+######keep core course and recode
+#recode using case_when (new var= old var name)
+dat.major<-
+  dat.major%>%mutate(`Secondary Education and History`=case_when(
+   # `Secondary Education and History`=="C"~"Core", #hide for not-existing major
+    Section %in% c(crs.df$Section[1:9],crs.df$Section[17:length(crs.df$Section)]) ~"Required",
+    Section %in% crs.df$Section[10:16] ~"Elective"))#%>%group_by(`Secondary Education and History`)%>%count()#check directly after mutate, before assign it to df
+
+#check
+dat.major%>%group_by(`Secondary Education and History`)%>%count()#non-existing major
+```
+
+
+
+
+
+
+
+
+
+
+
+## Education Curriculum and Instruction
+
+```{r html-`Education Curriculum and Instruction`}
+#read html and parse it into R readable contents
+pg<-read_html("https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-/education21-22/interdisciplinary-studies-education-curriculum-and-instruction-21-22.html#tab-2")
+#look at it (a list object that contains the tree-like structure)
+pg
+#search using css class as nodes
+pg %>% html_nodes(".mp-modal")%>%html_text()#we must add a . before the class name
+
+#### find the right texts in html
+#read the table within html contents and save it as a tibble
+crs.tbl<-pg %>% html_nodes(".mp-modal")%>%html_text()%>%as_tibble() #a tibble of 30 observation of 1 var
+
+#make data frame with named col
+crs.df<-data.frame(Section=crs.tbl$value)
+#now we got the list of all html courses
+```
+
+```{r append and mutate/recode}
+######append new coureses
+#inspect - filter out not in the dat.major courese and new those courese as new.crs.df; remove the last label patterns using filter grepl
+new.crs.df<-crs.df%>%filter((crs.df$Section %in% dat.major$Section ) == FALSE)
+
+#append new.df with dat.major
+dat.major<-plyr::join_all(list(dat.major,new.crs.df),type = "full")#add to 954
+
+######keep core course and recode
+#recode using case_when (new var= old var name)
+dat.major<-
+  dat.major%>%mutate(`Education Curriculum and Instruction`=case_when(
+   # `Education Curriculum and Instruction`=="C"~"Core", #hide for not-existing major
+    Section %in% crs.df$Section[1:15] ~"Required",
+    Section %in% crs.df$Section[16:length(crs.df$Section)] ~"Elective"))#%>%group_by(`Education Curriculum and Instruction`)%>%count()#check directly after mutate, before assign it to df
+
+#check
+dat.major%>%group_by(`Education Curriculum and Instruction`)%>%count()#non-existing major
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## English
+
+```{r html-`English`}
+#read html and parse it into R readable contents
+pg<-read_html("https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-/english-21-22.html#tab-2")
+#look at it (a list object that contains the tree-like structure)
+pg
+#search using css class as nodes
+pg %>% html_nodes(".mp-modal")%>%html_text()#we must add a . before the class name
+
+#### find the right texts in html
+#read the table within html contents and save it as a tibble
+crs.tbl<-pg %>% html_nodes(".mp-modal")%>%html_text()%>%as_tibble() #a tibble of 30 observation of 1 var
+
+#make data frame with named col
+crs.df<-data.frame(Section=crs.tbl$value)
+#now we got the list of all html courses
+```
+
+```{r append and mutate/recode}
+######append new coureses
+#inspect - filter out not in the dat.major courese and new those courese as new.crs.df; remove the last label patterns using filter grepl
+new.crs.df<-crs.df%>%filter((crs.df$Section %in% dat.major$Section ) == FALSE)
+
+#append new.df with dat.major
+dat.major<-plyr::join_all(list(dat.major,new.crs.df),type = "full")#add to 954
+
+######keep core course and recode
+#recode using case_when (new var= old var name)
+dat.major<-
+  dat.major%>%mutate(`English`=case_when(
+   # `English`=="C"~"Core", #hide for not-existing major
+    Section %in% crs.df$Section[1:6] ~"Required",
+    Section %in% crs.df$Section[7:length(crs.df$Section)] ~"Elective"))#%>%group_by(`English`)%>%count()#check directly after mutate, before assign it to df
+
+#check
+dat.major%>%group_by(`English`)%>%count()#non-existing major
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Global Studies
+
+```{r html-`Global Studies`}
+#read html and parse it into R readable contents
+pg<-read_html("https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-/global-studies-21-22.html#tab-2")
+#look at it (a list object that contains the tree-like structure)
+pg
+#search using css class as nodes
+pg %>% html_nodes(".mp-modal")%>%html_text()#we must add a . before the class name
+
+#### find the right texts in html
+#read the table within html contents and save it as a tibble
+crs.tbl<-pg %>% html_nodes(".mp-modal")%>%html_text()%>%as_tibble() #a tibble of 30 observation of 1 var
+
+#make data frame with named col
+crs.df<-data.frame(Section=crs.tbl$value)
+#now we got the list of all html courses
+```
+
+```{r append and mutate/recode}
+######append new coureses
+#inspect - filter out not in the dat.major courese and new those courese as new.crs.df; remove the last label patterns using filter grepl
+new.crs.df<-crs.df%>%filter((crs.df$Section %in% dat.major$Section ) == FALSE)
+
+#append new.df with dat.major
+dat.major<-plyr::join_all(list(dat.major,new.crs.df),type = "full")#add to 954
+
+######keep core course and recode
+#recode using case_when (new var= old var name)
+dat.major<-
+  dat.major%>%mutate(`Global Studies`=case_when(
+   # `Global Studies`=="C"~"Core", #hide for not-existing major
+    Section %in% crs.df$Section[1:13] ~"Required",
+    Section %in% crs.df$Section[14:length(crs.df$Section)] ~"Elective"))#%>%group_by(`Global Studies`)%>%count()#check directly after mutate, before assign it to df
+
+#check
+dat.major%>%group_by(`Global Studies`)%>%count()#non-existing major
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## History
+
+```{r html-`History`}
+#read html and parse it into R readable contents
+pg<-read_html("https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-/history-21-22.html#tab-2")
+#look at it (a list object that contains the tree-like structure)
+pg
+#search using css class as nodes
+pg %>% html_nodes(".mp-modal")%>%html_text()#we must add a . before the class name
+
+#### find the right texts in html
+#read the table within html contents and save it as a tibble
+crs.tbl<-pg %>% html_nodes(".mp-modal")%>%html_text()%>%as_tibble() #a tibble of 30 observation of 1 var
+
+#make data frame with named col
+crs.df<-data.frame(Section=crs.tbl$value)
+#now we got the list of all html courses
+```
+
+```{r append and mutate/recode}
+######append new coureses
+#inspect - filter out not in the dat.major courese and new those courese as new.crs.df; remove the last label patterns using filter grepl
+new.crs.df<-crs.df%>%filter((crs.df$Section %in% dat.major$Section ) == FALSE)
+
+#append new.df with dat.major
+dat.major<-plyr::join_all(list(dat.major,new.crs.df),type = "full")#add to 954
+
+######keep core course and recode
+#recode using case_when (new var= old var name)
+dat.major<-
+  dat.major%>%mutate(`History`=case_when(
+   # `History`=="C"~"Core", #hide for not-existing major
+    Section %in% crs.df$Section[1:8] ~"Required",
+    Section %in% crs.df$Section[9:length(crs.df$Section)] ~"Elective"))#%>%group_by(`History`)%>%count()#check directly after mutate, before assign it to df
+
+#check
+dat.major%>%group_by(`History`)%>%count()#non-existing major
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Law and Public Affairs
+
+```{r html-`Law and Public Affairs`}
+#read html and parse it into R readable contents
+pg<-read_html("https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-/law-and-public-affairs-21-22.html#tab-2")
+#look at it (a list object that contains the tree-like structure)
+pg
+#search using css class as nodes
+pg %>% html_nodes(".mp-modal")%>%html_text()#we must add a . before the class name
+
+#### find the right texts in html
+#read the table within html contents and save it as a tibble
+crs.tbl<-pg %>% html_nodes(".mp-modal")%>%html_text()%>%as_tibble() #a tibble of 30 observation of 1 var
+
+#make data frame with named col
+crs.df<-data.frame(Section=crs.tbl$value)
+#now we got the list of all html courses
+```
+
+```{r append and mutate/recode}
+######append new coureses
+#inspect - filter out not in the dat.major courese and new those courese as new.crs.df; remove the last label patterns using filter grepl
+new.crs.df<-crs.df%>%filter((crs.df$Section %in% dat.major$Section ) == FALSE)
+
+#append new.df with dat.major
+dat.major<-plyr::join_all(list(dat.major,new.crs.df),type = "full")#add to 954
+
+######keep core course and recode
+#recode using case_when (new var= old var name)
+dat.major<-
+  dat.major%>%mutate(`Law and Public Affairs`=case_when(
+   # `Law and Public Affairs`=="C"~"Core", #hide for not-existing major
+    Section %in% crs.df$Section[1:17] ~"Required",
+    Section %in% crs.df$Section[18:length(crs.df$Section)] ~"Elective"))#%>%group_by(`Law and Public Affairs`)%>%count()#check directly after mutate, before assign it to df
+
+#check
+dat.major%>%group_by(`Law and Public Affairs`)%>%count()#non-existing major
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Legal Studies
+
+```{r html-`Legal Studies`}
+#read html and parse it into R readable contents
+pg<-read_html("https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-/legal-studies-21-22.html#tab-2")
+#look at it (a list object that contains the tree-like structure)
+pg
+#search using css class as nodes
+pg %>% html_nodes(".mp-modal")%>%html_text()#we must add a . before the class name
+
+#### find the right texts in html
+#read the table within html contents and save it as a tibble
+crs.tbl<-pg %>% html_nodes(".mp-modal")%>%html_text()%>%as_tibble() #a tibble of 30 observation of 1 var
+
+#make data frame with named col
+crs.df<-data.frame(Section=crs.tbl$value)
+#now we got the list of all html courses
+```
+
+```{r append and mutate/recode}
+######append new coureses
+#inspect - filter out not in the dat.major courese and new those courese as new.crs.df; remove the last label patterns using filter grepl
+new.crs.df<-crs.df%>%filter((crs.df$Section %in% dat.major$Section ) == FALSE)
+
+#append new.df with dat.major
+dat.major<-plyr::join_all(list(dat.major,new.crs.df),type = "full")#add to 954
+
+######keep core course and recode
+#recode using case_when (new var= old var name)
+dat.major<-
+  dat.major%>%mutate(`Legal Studies`=case_when(
+   # `Legal Studies`=="C"~"Core", #hide for not-existing major
+    Section %in% crs.df$Section[1:13] ~"Required",
+    Section %in% crs.df$Section[14:length(crs.df$Section)] ~"Elective"))#%>%group_by(`Legal Studies`)%>%count()#check directly after mutate, before assign it to df
+
+#check
+dat.major%>%group_by(`Legal Studies`)%>%count()#non-existing major
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Psychology
+
+```{r html-`Psychology`}
+#read html and parse it into R readable contents
+pg<-read_html("https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-/psychology-21-22.html#tab-2")
+#look at it (a list object that contains the tree-like structure)
+pg
+#search using css class as nodes
+pg %>% html_nodes(".mp-modal")%>%html_text()#we must add a . before the class name
+
+#### find the right texts in html
+#read the table within html contents and save it as a tibble
+crs.tbl<-pg %>% html_nodes(".mp-modal")%>%html_text()%>%as_tibble() #a tibble of 30 observation of 1 var
+
+#make data frame with named col
+crs.df<-data.frame(Section=crs.tbl$value)
+#now we got the list of all html courses
+```
+
+```{r append and mutate/recode}
+######append new coureses
+#inspect - filter out not in the dat.major courese and new those courese as new.crs.df; remove the last label patterns using filter grepl
+new.crs.df<-crs.df%>%filter((crs.df$Section %in% dat.major$Section ) == FALSE)
+
+#append new.df with dat.major
+dat.major<-plyr::join_all(list(dat.major,new.crs.df),type = "full")#add to 954
+
+######keep core course and recode
+#recode using case_when (new var= old var name)
+dat.major<-
+  dat.major%>%mutate(`Psychology`=case_when(
+   # `Psychology`=="C"~"Core", #hide for not-existing major
+    Section %in% crs.df$Section[1:13] ~"Required",
+    Section %in% crs.df$Section[14:length(crs.df$Section)] ~"Elective"))#%>%group_by(`Psychology`)%>%count()#check directly after mutate, before assign it to df
+
+#check
+dat.major%>%group_by(`Psychology`)%>%count()#non-existing major
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Sociology
+
+```{r html-`Sociology`}
+#read html and parse it into R readable contents
+pg<-read_html("https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-/sociology-21-22.html#tab-2")
+#look at it (a list object that contains the tree-like structure)
+pg
+#search using css class as nodes
+pg %>% html_nodes(".mp-modal")%>%html_text()#we must add a . before the class name
+
+#### find the right texts in html
+#read the table within html contents and save it as a tibble
+crs.tbl<-pg %>% html_nodes(".mp-modal")%>%html_text()%>%as_tibble() #a tibble of 30 observation of 1 var
+
+#make data frame with named col
+crs.df<-data.frame(Section=crs.tbl$value)
+#now we got the list of all html courses
+```
+
+```{r append and mutate/recode}
+######append new coureses
+#inspect - filter out not in the dat.major courese and new those courese as new.crs.df; remove the last label patterns using filter grepl
+new.crs.df<-crs.df%>%filter((crs.df$Section %in% dat.major$Section ) == FALSE)
+
+#append new.df with dat.major
+dat.major<-plyr::join_all(list(dat.major,new.crs.df),type = "full")#add to 954
+
+######keep core course and recode
+#recode using case_when (new var= old var name)
+dat.major<-
+  dat.major%>%mutate(`Sociology`=case_when(
+   # `Sociology`=="C"~"Core", #hide for not-existing major
+    Section %in% crs.df$Section[1:13] ~"Required",
+    Section %in% crs.df$Section[14:length(crs.df$Section)] ~"Elective"))#%>%group_by(`Sociology`)%>%count()#check directly after mutate, before assign it to df
+
+#check
+dat.major%>%group_by(`Sociology`)%>%count()#non-existing major
 ```

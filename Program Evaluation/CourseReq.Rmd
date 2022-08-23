@@ -11,6 +11,8 @@ library(readxl)
 library(tidyverse)
 library(stringr)
 library(writexl)
+library(RCurl)
+library(XML)
 ```
 
 # Set Up Data
@@ -35,8 +37,6 @@ dat.major<-dat.major[!is.na(dat.major$Section),]#removed last several NA rows, c
 ## Accounting
 
 ```{r html-accounting}
-library(RCurl)
-library(XML)
 #read html and parse it into R readable contents
 pg<-htmlParse(getURL("https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-/accounting-21-22.html"))
 #look at all names and counts of names
@@ -71,5 +71,44 @@ dat.major<-
     Accounting=="C"~"Core",
     Section %in% crs.df$Section[1:21] ~"Required",
     Section %in% crs.df$Section[23:27] ~"Elective"))#%>%group_by(Accounting)%>%count()#check directly after mutate, before assign it to df
+```
+
+## Entrepreneurship
+
+```{r html-Entrepreneurship}
+#read html and parse it into R readable contents
+pg<-htmlParse(getURL("https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-/Entrepreneurship-21-22.html"))
+#look at all names and counts of names
+summary(pg)
+#read the table within html contents and save it as a tibble
+crs.tbl<-readHTMLTable(pg,stringsAsFactors = FALSE)%>%as_tibble() #a tibble of 30 observation of 1 var
+
+#make a course list
+names(crs.tbl)="course" #rename tibble from NULL to "course" so that I can call it by its name without causing error
+df<-crs.tbl$course#finally got a dataframe of 3 vars
+
+#needs to confirm if the last item is blank, if yes, select the 1:length-1 for crs
+crs<-df$`Course Code`[1:length(df$`Course Code`)-1]#character not a list; remove the last item -- which is a blank row
+crs.df<-data.frame(Section=crs)%>%filter(!grepl("School",Section),!grepl("Core Courses",Section))#remove first two lables that separate all requried courese
+#now we got the list of all html courses (with a label separator between required vs elective courses)
+```
+
+```{r append new courses using crs.df}
+#inspect - filter out not in the dat.major courese and new those courese as new.crs.df; remove the last label patterns using filter grepl
+new.crs.df<-crs.df%>%filter((crs.df$Section %in% dat.major$Section ) == FALSE)%>%filter(!grepl("Choose",Section))#we got a list of all new courses
+
+#append new.df with dat.major
+dat.major<-plyr::join_all(list(dat.major,new.crs.df),type = "full")#change from 935 to 947 with appended rows
+```
+
+```{r keep core course and recode using crs.df}
+#investigate
+dat.major%>%group_by(Entrepreneurship)%>%count()
+#recode using case_when (new var= old var name)
+dat.major<-
+  dat.major%>%mutate(Entrepreneurship=case_when(
+    Entrepreneurship=="C"~"Core",
+    Section %in% crs.df$Section[1:21] ~"Required",
+    Section %in% crs.df$Section[23:27] ~"Elective"))#%>%group_by(Entrepreneurship)%>%count()#check directly after mutate, before assign it to df
 ```
 

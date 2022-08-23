@@ -141,6 +141,8 @@ gd5yr_s<-gd5yr%>%select(
 names(gd5yr_s)<-names(gd6m_m)
 ```
 
+
+
 ## UG 6 month
 
 ```{r read data}
@@ -158,6 +160,8 @@ survey<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/ug6m/survey.xl
 ######linkedin data
 #read data
 linkedin<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/ug6m/linkedin.xlsx")
+#rm
+rm(gd5yr)
 ```
 
 ```{r select var and rename}
@@ -165,27 +169,50 @@ linkedin<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/ug6m/linkedi
 #check names
 names(ug6m)
 #select
-ug6m_s<-ug6m%>%select(PCID,Status,names(ug6m)[12:13],names(ug6m)[18],names(ug6m)[42:45],names(ug6m)[47:52])#omit 46th which is peer network
-#investigate names to prep rename
-names(ug6m_s)
-names(gd6m_m)[6:15]
+ug6m_s<-ug6m%>%select(PCID,
+                      names(ug6m)[9:10],#employment and ft/pt
+                      names(ug6m)[12:13],#employer and title
+                      names(ug6m)[18],#income
+                      names(ug6m)[25],#further edu
+                      names(ug6m)[27:28],#institution and degree
+                      names(ug6m)[42:45],
+                      names(ug6m)[47:52])#omit 46th which is peer network
 #rename to match other datasets (for later alrge merge)
-names(ug6m_s)<-c("PCID","Employment","Employer","Title","Income",names(gd6m_m)[6:15])
-#check again looks aligned with gd6m_m
+names(ug6m_s)<-names(gd6m_m)
 
 
 ######survey data
 #select data
-survey<-survey%>%select(PCID,Status,names(survey)[12:13],names(survey)[18],names(survey)[42:45],names(survey)[47:52])
+survey<-survey%>%select(PCID,
+                      names(ug6m)[9:10],#employment and ft/pt
+                      names(ug6m)[12:13],#employer and title
+                      names(ug6m)[18],#income
+                      names(ug6m)[25],#further edu
+                      names(ug6m)[27:28],#institution and degree
+                      names(ug6m)[42:45],
+                      names(ug6m)[47:52])#omit 46th which is peer network
 #rename to match other datasets (for later alrge merge)
-names(survey)<-c("PCID","Employment","Employer","Title","Income",names(gd6m_m)[6:15])
-#check again looks aligned with gd6m_m
+names(survey)<-names(gd6m_m)
+
 
 ######linkedin data
 #select var
-linkedin<-linkedin%>%select(`Power Campus ID`,`Employed (FT/PT)`,Employer,Title)%>%rename("PCID"=`Power Campus ID`,"Employment"=`Employed (FT/PT)`)
-#check
-names(linkedin)
+linkedin<-linkedin%>%select(`Power Campus ID`,
+                            `Employed (FT/PT)`,
+                            Employer,
+                            Title,
+                            `Pursuing Additional Ed (FT/PT)`,
+                            Institution,
+                            Degree
+                            )%>%
+  rename("PCID"=`Power Campus ID`,"Employment"=`Employed (FT/PT)`,"Further Education"=`Pursuing Additional Ed (FT/PT)`)
+#check employment
+linkedin%>%group_by(Employment)%>%count()
+#mutate full/part time
+linkedin<-linkedin%>%mutate(`Full/Part Time`=case_when(
+  Employment=="FT"~"Full Time",
+  Employment=="PT"~"Part Time"
+))
 ```
 
 
@@ -198,6 +225,8 @@ writexl::write_xlsx(ug6m_m,"/Users/linlizhou/Documents/LASELL/data/alumni/ug6m_m
 #rm
 rm(ug6m,ug6m_s,linkedin,survey)
 ```
+
+
 
 ## UG 5year
 

@@ -380,6 +380,10 @@ alum%>%group_by(Employment)%>%count()#NA cannot be recoded
 alum$Employment[is.na(alum$Employment)]="Unknown"#recheck looks right
 ```
 
+```{r}
+
+```
+
 
 ```{r recode income}
 ######inspect income

@@ -434,6 +434,20 @@ writexl::write_xlsx(alum.m,"/Users/linlizhou/Documents/LASELL/data/alumni/alum.x
 ```
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Static Graphs
 
 ```{r}

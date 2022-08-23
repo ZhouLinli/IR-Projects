@@ -13,6 +13,13 @@ library(stringr)
 library(writexl)
 ```
 
+```{r load data}
+#which sheet
+excel_sheets("/Users/linlizhou/Documents/LASELL/data/enrollment/All Course Requirements.xlsx")
+#read data
+data<-read_excel("/Users/linlizhou/Documents/LASELL/data/enrollment/All Course Requirements.xlsx",sheet = "Data")
+```
+
 ```{r}
 
 ```

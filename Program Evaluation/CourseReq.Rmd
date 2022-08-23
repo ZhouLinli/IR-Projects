@@ -13,6 +13,7 @@ library(stringr)
 library(writexl)
 ```
 
+# Set Up Data
 ```{r load data}
 #which sheet
 excel_sheets("/Users/linlizhou/Documents/LASELL/data/enrollment/All Course Requirements.xlsx")
@@ -20,7 +21,23 @@ excel_sheets("/Users/linlizhou/Documents/LASELL/data/enrollment/All Course Requi
 data<-read_excel("/Users/linlizhou/Documents/LASELL/data/enrollment/All Course Requirements.xlsx",sheet = "Data")
 ```
 
-```{r}
+```{r select major}
+#remove mutated summary col 3-6; remove minors
+dat.major<-data%>%select(-names(data)[3:6],-ends_with("Minor"))
 
+#remove NA rows in section
+dat.major<-dat.major[!is.na(dat.major$Section),]#removed last several NA rows, change from 941 to 935 row
+```
+
+
+# 43 Majors
+
+## Accounting
+
+```{r keep core course}
+#investigate
+dat.major%>%group_by(Accounting)%>%count()
+dat.major$Accounting<-recode(dat.major$Accounting,
+                        )
 ```
 

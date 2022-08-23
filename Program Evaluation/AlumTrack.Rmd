@@ -250,19 +250,29 @@ linkedin<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/ug5y/linkedi
 ```{r select var and rename}
 ##### historical data
 #select vars
-ug5y<-ug5y%>%select(PC_ID,WorkStatus,Organization,AnnualSalary,starts_with("Interest_"),-names(ug5y)[27])
+ug5y<-ug5y%>%select(PC_ID,
+                    WorkStatus,#Employment
+                    Employmenthours,#FT/PT
+                    Organization,#employer
+                    AnnualSalary,#income
+                    `Attending_Post-GradEd`,#Further ed
+                    Education_Degree,#degree
+                    starts_with("Interest_"),-names(ug5y)[27])
 #rename
-names(ug5y)<-c("PCID","Employment","Employer","Income",names(gd6m_m)[6:15])#names align with other (excep it does not have title)
+names(ug5y)<-c("PCID","Employment","Full/Part Time","Employer","Income","Further Education","Degree",names(gd6m_m)[10:19])#names align with other 
 
 #####survey
 #names
 names(survey)
 survey<-survey%>%select(
-  `Invite Custom Field 1`,
+  `Invite Custom Field 1`,#PCID
   names(survey)[54],#employment work status
+  `Please describe your employment status:`,#ft/pt
   names(survey)[71],#employer
   names(survey)[70],#title
   names(survey)[74],#income
+  names(survey)[128:129],#further education, institution
+  names(survey)[133],#degree
   names(survey)[136:139],
   names(survey)[141:146]
 )
@@ -271,9 +281,22 @@ names(survey)<-names(gd6m_m)
 
 ####linkedin
 #select var and rename
-linkedin<-linkedin%>%select(`Power Campus ID`,`Employed (FT/PT)`,Employer,Title)%>%rename("PCID"=`Power Campus ID`,"Employment"=`Employed (FT/PT)`)
-#check
-names(linkedin)
+linkedin<-linkedin%>%select(`Power Campus ID`,
+                            `Employed (FT/PT)`,
+                            Employer,
+                            Title,
+                            `Pursuing Additional Ed (FT/PT)`,
+                            Institution,
+                            Degree
+                            )%>%
+  rename("PCID"=`Power Campus ID`,"Employment"=`Employed (FT/PT)`,"Further Education"=`Pursuing Additional Ed (FT/PT)`)
+#check employment
+linkedin%>%group_by(Employment)%>%count()
+#mutate full/part time
+linkedin<-linkedin%>%mutate(`Full/Part Time`=case_when(
+  Employment=="FT"~"Full Time",
+  Employment=="PT"~"Part Time"
+))
 ```
 
 

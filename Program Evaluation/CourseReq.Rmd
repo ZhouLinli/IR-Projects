@@ -62,17 +62,6 @@ new.crs.df<-crs.df%>%filter((crs.df$Section %in% dat.major$Section ) == FALSE)%>
 dat.major<-plyr::join_all(list(dat.major,new.df),type = "full")#change from 935 to 947 with appended rows
 ```
 
-```{r append new courses using crs list}
-#inspect
-#->new.crs<-crs[(crs %in% dat.major$Section ) == FALSE]
-#make new coureses a tibble to be appended
-#new.df<-data.frame(Section=c(new.crs[2:6],new.crs[8:12],new.crs[14:15]))#needs to eye ball which are coursese
-#make all values in col called Section, then remove with patterns using filter grepl
-#->new.df<-data.frame(Section=new.crs)%>%filter(!grepl("School",Section),!grepl("Choose",Section),!grepl("Core Courses",Section))
-#append new.df with dat.major
-#->dat.major<-plyr::join_all(list(dat.major,new.df),type = "full")#change from 935 to 947 with appended rows
-```
-
 
 ```{r keep core course and recode using crs.df}
 #investigate

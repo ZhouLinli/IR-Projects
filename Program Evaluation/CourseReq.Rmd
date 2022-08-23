@@ -168,6 +168,7 @@ pg
 pg %>% html_nodes(".mp-modal")%>%html_text()#we must add a . before the class name
 ```
 
+
 ```{r find the right texts in html}
 #read the table within html contents and save it as a tibble
 crs.tbl<-pg %>% html_nodes(".mp-modal")%>%html_text()%>%as_tibble() #a tibble of 30 observation of 1 var
@@ -194,6 +195,7 @@ dat.major<-
    # `Business-Management`=="C"~"Core", #hide for not-existing major
     Section %in% crs.df$Section[1:18] ~"Required",
     Section %in% crs.df$Section[19:length(crs.df$Section)] ~"Elective"))#%>%group_by(`Business-Management`)%>%count()#check directly after mutate, before assign it to df
+<<<<<<< HEAD
 ```
 
 ## Esports-and-Gaming-Management
@@ -283,4 +285,3 @@ dat.major<-
 
 #check
 dat.major%>%group_by(`Corporate-Finance`)%>%count()
-```

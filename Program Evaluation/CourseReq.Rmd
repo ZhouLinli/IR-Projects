@@ -157,9 +157,9 @@ dat.major<-
 ```
 
 
-## Business-Management
+## Business Management
 
-```{r html-`Business-Management`}
+```{r html-`Business Management`}
 #read html and parse it into R readable contents
 pg<-read_html("https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-/business-management-21-22.html#tab-2")
 #look at it (a list object that contains the tree-like structure)
@@ -188,13 +188,13 @@ dat.major<-plyr::join_all(list(dat.major,new.crs.df),type = "full")#no change 94
 
 ```{r keep core course and recode using crs.df}
 #investigate
-dat.major%>%group_by(`Business-Management`)%>%count()#non-existing major
+dat.major%>%group_by(`Business Management`)%>%count()#non-existing major
 #recode using case_when (new var= old var name)
 dat.major<-
-  dat.major%>%mutate(`Business-Management`=case_when(
-   # `Business-Management`=="C"~"Core", #hide for not-existing major
+  dat.major%>%mutate(`Business Management`=case_when(
+   # `Business Management`=="C"~"Core", #hide for not-existing major
     Section %in% crs.df$Section[1:18] ~"Required",
-    Section %in% crs.df$Section[19:length(crs.df$Section)] ~"Elective"))#%>%group_by(`Business-Management`)%>%count()#check directly after mutate, before assign it to df
+    Section %in% crs.df$Section[19:length(crs.df$Section)] ~"Elective"))#%>%group_by(`Business Management`)%>%count()#check directly after mutate, before assign it to df
 ```
 
 
@@ -204,9 +204,9 @@ dat.major<-
 
 
 
-## Esports-and-Gaming-Management
+## Esports and Gaming Management
 
-```{r html-`Esports-and-Gaming-Management`}
+```{r html-`Esports and Gaming Management`}
 #read html and parse it into R readable contents
 pg<-read_html("https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-/esports-and-gaming-management-21-22.html#tab-2")
 #look at it (a list object that contains the tree-like structure)
@@ -234,13 +234,13 @@ dat.major<-plyr::join_all(list(dat.major,new.crs.df),type = "full")#add to 954
 ######keep core course and recode
 #recode using case_when (new var= old var name)
 dat.major<-
-  dat.major%>%mutate(`Esports-and-Gaming-Management`=case_when(
-   # `Esports-and-Gaming-Management`=="C"~"Core", #hide for not-existing major
+  dat.major%>%mutate(`Esports and Gaming Management`=case_when(
+   # `Esports and Gaming Management`=="C"~"Core", #hide for not-existing major
     Section %in% crs.df$Section[1:19] ~"Required",
-    Section %in% crs.df$Section[20:length(crs.df$Section)] ~"Elective"))#%>%group_by(`Esports-and-Gaming-Management`)%>%count()#check directly after mutate, before assign it to df
+    Section %in% crs.df$Section[20:length(crs.df$Section)] ~"Elective"))#%>%group_by(`Esports and Gaming Management`)%>%count()#check directly after mutate, before assign it to df
 
 #check
-dat.major%>%group_by(`Esports-and-Gaming-Management`)%>%count()#non-existing major
+dat.major%>%group_by(`Esports and Gaming Management`)%>%count()#non-existing major
 ```
 
 
@@ -252,9 +252,9 @@ dat.major%>%group_by(`Esports-and-Gaming-Management`)%>%count()#non-existing maj
 
 
 
-## Corporate-Finance
+## Corporate Finance
 
-```{r html-`Corporate-Finance`}
+```{r html-`Corporate Finance`}
 #read html and parse it into R readable contents
 pg<-read_html("https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-/finance-21-22/corporate-finance21-22.html#tab-2")
 #look at it (a list object that contains the tree-like structure)
@@ -282,12 +282,12 @@ dat.major<-plyr::join_all(list(dat.major,new.crs.df),type = "full")#add to 954
 ######keep core course and recode
 #recode using case_when (new var= old var name)
 dat.major<-
-  dat.major%>%mutate(`Corporate-Finance`=case_when(
-   # `Corporate-Finance`=="C"~"Core", #hide for not-existing major
-    Section %in% crs.df$Section[1:length(crs.df$Section)] ~"Required"))#%>%group_by(`Corporate-Finance`)%>%count()#check directly after mutate, before assign it to df
+  dat.major%>%mutate(`Corporate Finance`=case_when(
+   # `Corporate Finance`=="C"~"Core", #hide for not-existing major
+    Section %in% crs.df$Section[1:length(crs.df$Section)] ~"Required"))#%>%group_by(`Corporate Finance`)%>%count()#check directly after mutate, before assign it to df
 
 #check
-dat.major%>%group_by(`Corporate-Finance`)%>%count()#non-existing major
+dat.major%>%group_by(`Corporate Finance`)%>%count()#non-existing major
 ```
 
 
@@ -300,9 +300,9 @@ dat.major%>%group_by(`Corporate-Finance`)%>%count()#non-existing major
 
 
 
-## Personal-Finance
+## Personal Finance
 
-```{r html-`Personal-Finance`}
+```{r html-`Personal Finance`}
 #read html and parse it into R readable contents
 pg<-read_html("https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-/finance-21-22/personal-finance-21-22.html#tab-2")
 #look at it (a list object that contains the tree-like structure)
@@ -330,12 +330,12 @@ dat.major<-plyr::join_all(list(dat.major,new.crs.df),type = "full")#add to 954
 ######keep core course and recode
 #recode using case_when (new var= old var name)
 dat.major<-
-  dat.major%>%mutate(`Personal-Finance`=case_when(
-   # `Personal-Finance`=="C"~"Core", #hide for not-existing major
-    Section %in% crs.df$Section[1:length(crs.df$Section)] ~"Required"))#%>%group_by(`Personal-Finance`)%>%count()#check directly after mutate, before assign it to df
+  dat.major%>%mutate(`Personal Finance`=case_when(
+   # `Personal Finance`=="C"~"Core", #hide for not-existing major
+    Section %in% crs.df$Section[1:length(crs.df$Section)] ~"Required"))#%>%group_by(`Personal Finance`)%>%count()#check directly after mutate, before assign it to df
 
 #check
-dat.major%>%group_by(`Personal-Finance`)%>%count()#non-existing major
+dat.major%>%group_by(`Personal Finance`)%>%count()#non-existing major
 ```
 
 

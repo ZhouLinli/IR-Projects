@@ -47,25 +47,34 @@ crs.tbl<-readHTMLTable(pg,stringsAsFactors = FALSE)%>%as_tibble() #a tibble of 3
 #make a course list
 names(crs.tbl)="course" #rename tibble from NULL to "course" so that I can call it by its name without causing error
 df<-crs.tbl$course#finally got a dataframe of 3 vars
-crs<-df$`Course Code`#character not a list
-crs.df<-data.frame(Section=crs)%>%filter(!grepl("School",Section),!grepl("Core Courses",Section))
+
+#needs to confirm if the last item is blank, if yes, select the 1:length-1 for crs
+crs<-df$`Course Code`[1:length(df$`Course Code`)-1]#character not a list; remove the last item -- which is a blank row
+crs.df<-data.frame(Section=crs)%>%filter(!grepl("School",Section),!grepl("Core Courses",Section))#remove first two lables that separate all requried courese
+#now we got the list of all html courses (with a label separator between required vs elective courses)
 ```
 
-
-```{r append new courses}
-#inspect
-new.crs<-crs[(crs %in% dat.major$Section ) == FALSE]
-#make new coureses a tibble to be appended
-#new.df<-data.frame(Section=c(new.crs[2:6],new.crs[8:12],new.crs[14:15]))#needs to eye ball which are coursese
-#make all values in col called Section, then remove with patterns using filter grepl
-new.df<-data.frame(Section=new.crs)%>%filter(!grepl("School",Section),!grepl("Choose",Section),!grepl("Core Courses",Section))
+```{r append new courses using crs.df}
+#inspect - filter out not in the dat.major courese and new those courese as new.crs.df; remove the last label patterns using filter grepl
+new.crs.df<-crs.df%>%filter((crs.df$Section %in% dat.major$Section ) == FALSE)%>%filter(!grepl("Choose",Section))#we got a list of all new courses
 
 #append new.df with dat.major
 dat.major<-plyr::join_all(list(dat.major,new.df),type = "full")#change from 935 to 947 with appended rows
 ```
 
+```{r append new courses using crs list}
+#inspect
+#->new.crs<-crs[(crs %in% dat.major$Section ) == FALSE]
+#make new coureses a tibble to be appended
+#new.df<-data.frame(Section=c(new.crs[2:6],new.crs[8:12],new.crs[14:15]))#needs to eye ball which are coursese
+#make all values in col called Section, then remove with patterns using filter grepl
+#->new.df<-data.frame(Section=new.crs)%>%filter(!grepl("School",Section),!grepl("Choose",Section),!grepl("Core Courses",Section))
+#append new.df with dat.major
+#->dat.major<-plyr::join_all(list(dat.major,new.df),type = "full")#change from 935 to 947 with appended rows
+```
 
-```{r keep core course}
+
+```{r keep core course and recode using crs.df}
 #investigate
 dat.major%>%group_by(Accounting)%>%count()
 #recode using case_when (new var= old var name)

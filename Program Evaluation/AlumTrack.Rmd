@@ -375,8 +375,20 @@ alum<-alum%>%mutate(Employment=case_when(
 alum$Employment[is.na(alum$Employment)]="Unknown"#recheck looks right
 ```
 
-```{r}
+```{r recode FT/PT}
+#inspect FT/PT
+alum%>%group_by(`Full/Part Time`)%>%count() %>%tail(18) #to look at the tails
 
+#recode using case_when (mutate same variable name to replace the origional Employment)
+alum<-
+  alum%>%mutate(`Full/Part Time`=case_when(
+    grepl(paste(c("full time|full-time|Full time|Full Time|FT"), collapse="|"), alum$`Full/Part Time` ) == TRUE ~ "Full time",
+    stringr::str_detect(alum$`Full/Part Time`, "^[Ff]ull")~ "Full time",
+  grepl("part time|part-time|Part Time|PT", alum$`Full/Part Time`) == TRUE ~ "Part time",
+  stringr::str_detect(alum$`Full/Part Time`, "^[Pp]art")~ "Part time"))#%>%group_by(`Full/Part Time`,ft)%>%count()%>%tail(18) to check directly
+
+#rename NA with subset 
+alum$`Full/Part Time`[is.na(alum$`Full/Part Time`)]="Unknown"#recheck looks right
 ```
 
 

@@ -1000,6 +1000,62 @@ dat.major%>%group_by(`Radio and Video Production`)%>%count()#non-existing major
 
 
 
+
+
+
+
+
+## Sport Communication
+
+```{r html-`Sport Communication`}
+#read html and parse it into R readable contents
+pg<-read_html("https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-/sport-communication-21-22.html#tab-2")
+#look at it (a list object that contains the tree-like structure)
+pg
+#search using css class as nodes
+pg %>% html_nodes(".mp-modal")%>%html_text()#we must add a . before the class name
+
+#### find the right texts in html
+#read the table within html contents and save it as a tibble
+crs.tbl<-pg %>% html_nodes(".mp-modal")%>%html_text()%>%as_tibble() #a tibble of 30 observation of 1 var
+
+#make data frame with named col
+crs.df<-data.frame(Section=crs.tbl$value)
+#now we got the list of all html courses
+```
+
+```{r append and mutate/recode}
+######append new coureses
+#inspect - filter out not in the dat.major courese and new those courese as new.crs.df; remove the last label patterns using filter grepl
+new.crs.df<-crs.df%>%filter((crs.df$Section %in% dat.major$Section ) == FALSE)
+
+#append new.df with dat.major
+dat.major<-plyr::join_all(list(dat.major,new.crs.df),type = "full")#add to 954
+
+######keep core course and recode
+#recode using case_when (new var= old var name)
+dat.major<-
+  dat.major%>%mutate(`Sport Communication`=case_when(
+   # `Sport Communication`=="C"~"Core", #hide for not-existing major
+    Section %in% crs.df$Section[1:20] ~"Required",
+    Section %in% crs.df$Section[21:length(crs.df$Section)] ~"Elective"))#%>%group_by(`Sport Communication`)%>%count()#check directly after mutate, before assign it to df
+
+#check
+dat.major%>%group_by(`Sport Communication`)%>%count()#non-existing major
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Fashion Media and Marketing
 
 ```{r html-`Fashion Media and Marketing`}
@@ -1944,9 +2000,9 @@ dat.major%>%group_by(`Secondary Education and History`)%>%count()#non-existing m
 
 
 
-## Education Curriculum and Instruction
+## Education, Curriculum and Instruction
 
-```{r html-`Education Curriculum and Instruction`}
+```{r html-`Education, Curriculum and Instruction`}
 #read html and parse it into R readable contents
 pg<-read_html("https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-/education21-22/interdisciplinary-studies-education-curriculum-and-instruction-21-22.html#tab-2")
 #look at it (a list object that contains the tree-like structure)
@@ -1974,13 +2030,13 @@ dat.major<-plyr::join_all(list(dat.major,new.crs.df),type = "full")#add to 954
 ######keep core course and recode
 #recode using case_when (new var= old var name)
 dat.major<-
-  dat.major%>%mutate(`Education Curriculum and Instruction`=case_when(
-   # `Education Curriculum and Instruction`=="C"~"Core", #hide for not-existing major
+  dat.major%>%mutate(`Education, Curriculum and Instruction`=case_when(
+   # `Education, Curriculum and Instruction`=="C"~"Core", #hide for not-existing major
     Section %in% crs.df$Section[1:15] ~"Required",
-    Section %in% crs.df$Section[16:length(crs.df$Section)] ~"Elective"))#%>%group_by(`Education Curriculum and Instruction`)%>%count()#check directly after mutate, before assign it to df
+    Section %in% crs.df$Section[16:length(crs.df$Section)] ~"Elective"))#%>%group_by(`Education, Curriculum and Instruction`)%>%count()#check directly after mutate, before assign it to df
 
 #check
-dat.major%>%group_by(`Education Curriculum and Instruction`)%>%count()#non-existing major
+dat.major%>%group_by(`Education, Curriculum and Instruction`)%>%count()#non-existing major
 ```
 
 
@@ -2386,3 +2442,72 @@ dat.major<-
 #check
 dat.major%>%group_by(`Sociology`)%>%count()#non-existing major
 ```
+
+
+
+
+# Clean Column Names
+
+```{r define majors vs col names}
+#define col names
+major.col<-colnames(dat.major)
+#define major list (from website: https://www.lasell.edu/academics/academic-catalog-21-22/undergraduate-catalog-21-22/programs-of-study-.html)
+major.list<-c("Accounting",
+"Business Management",
+"Entrepreneurship",
+"Esports and Gaming Management",
+"Event Management",
+"Finance",
+"Corporate Finance",
+"Personal Finance",
+"Hospitality Management",
+"Human Resource Management",
+"Marketing",
+"Professional Sales",
+"Resort and Casino Management",
+"Sport Management",
+"Supply Chain Management",
+"Communication",
+"Entertainment Media",
+"Graphic Design",
+"Journalism",
+"Public Relations",
+"Radio and Video Production",
+"Sport Communication",
+"Fashion Media and Marketing",
+"Fashion Design and Production",
+"Fashion Merchandising and Management",
+"Applied Mathematics",
+"Biochemistry",
+"Biology",
+"Cybersecurity",
+"Data Analytics",
+"Exercise Science",
+"Fitness Management",
+"Forensic Science",
+"Health Science",
+"Public and Community Health",
+"Criminal Justice",
+"Early Childhood Education",
+"Elementary Education",
+"Secondary Education and English",
+"Secondary Education and History",
+"Education, Curriculum and Instruction",
+"English",
+"Global Studies",
+"History",
+"Law & Public Affairs",
+"Legal Studies",
+"Psychology",
+"Sociology")%>%as.vector()
+
+```
+
+```{r}
+#check any character not match
+major.list[(major.list%in%major.col)==FALSE]
+"Radio and Video Production" %in% major.col
+#select
+dat.48major<-dat.major%>%select(major.list[1:20],`Radio and Video Production`)
+```
+

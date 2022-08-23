@@ -59,9 +59,8 @@ crs.df<-data.frame(Section=crs)%>%filter(!grepl("School",Section),!grepl("Core C
 new.crs.df<-crs.df%>%filter((crs.df$Section %in% dat.major$Section ) == FALSE)%>%filter(!grepl("Choose",Section))#we got a list of all new courses
 
 #append new.df with dat.major
-dat.major<-plyr::join_all(list(dat.major,new.df),type = "full")#change from 935 to 947 with appended rows
+dat.major<-plyr::join_all(list(dat.major,new.crs.df),type = "full")#change from 935 to 947 with appended rows
 ```
-
 
 ```{r keep core course and recode using crs.df}
 #investigate
@@ -70,10 +69,7 @@ dat.major%>%group_by(Accounting)%>%count()
 dat.major<-
   dat.major%>%mutate(Accounting=case_when(
     Accounting=="C"~"Core",
-    Section %in% c(crs[2:11],crs[13:23]) ~"Required",
-    Section %in% crs[25:29] ~"Elective"
-  ))%>%group_by(Accounting)%>%count()#check directly after mutate, before assign it to df
-
-dat.major$Accounting<-recode(dat.major$Accounting, C="Core",E=NA,X=NA)
+    Section %in% crs.df$Section[1:21] ~"Required",
+    Section %in% crs.df$Section[23:27] ~"Elective"))#%>%group_by(Accounting)%>%count()#check directly after mutate, before assign it to df
 ```
 

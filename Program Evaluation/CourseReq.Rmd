@@ -2506,11 +2506,15 @@ major.list<-c("Accounting",
 
 ```
 
-```{r}
+```{r select col using major.list}
 #check any character not match
 major.list[(major.list%in%major.col)==FALSE]#none, all major list from web are mutated into the dat.major df
 
 #select
 dat.48major<-dat.major%>%select(Section,`Course Title`,major.list[1:length(major.list)])
+```
+
+```{r}
+dat.48major[is.na(dat.48major$`Course Title`),1]
 ```
 

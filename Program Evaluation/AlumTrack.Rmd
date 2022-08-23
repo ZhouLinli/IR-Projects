@@ -328,6 +328,8 @@ ug6m_m<-ug6m_m%>%mutate("Outcome Type"="6-Month Outcome")
 alum<-plyr::join_all(list(gd5yr_s,gd6m_m,ug5y_m,ug6m_m),type="full")
 #remove
 rm(gd5yr_s,gd6m_m,ug6m_m,ug5y_m)
+#save
+writexl::write_xlsx(alum,"/Users/linlizhou/Documents/LASELL/data/alumni/alum_raw.xlsx")
 ```
 
 # Clean Large Dataset
@@ -357,25 +359,19 @@ alum<-alum%>%select(-starts_with("Interest_"))
 
 
 ```{r recode employment}
-#need to revise employement var selection; changed the recoded one to the orginal one -- so that we can make a both employed and continue add value type
-
-######inspect employment
+#inspect employment
 alum%>%group_by(Employment)%>%count()
-#recode employed
-alum$Employment<-alum$Employment%>%recode(
-  "FT"="Employed","Intern"="Employed","PT"="Employed","Self"="Employed","Temp"="Employed","Y"="Employed","Yes"="Employed",
-  "U"="Unknown","NA"="Unknown",
-  "N"="Unemployed","No"="Unemployed")
 
 #recode using case_when (mutate same variable name to replace the origional Employment)
-alum<-alum%>%mutate(Employment=case_when(
+alum<-alum%>%mutate(Employment_2=case_when(
   Employment %in% c("Additional Eduation","Additional Education","Edu","Further Ed","n/a","Other","UNK","Unknown") ~ "Unknown",
-  Employment %in% c("Contract","Emp","EmpEdu","employed","Employed","Freelance","Internship") ~ "Employed",
+  Employment %in% c("Contract","Freelance","Internship") ~ "Employed",
+  str_detect(alum$Employment, "^[Ee][Mm][Pp]")~ "Employed",#start with emp no matter upper/lower case
   Employment %in% c("No Emp No Edu","Unemployed")~"Unemployed"
 ))
 
 #check
-alum%>%group_by(Employment)%>%count()#NA cannot be recoded
+alum%>%group_by(Employment,Employment_2)%>%count()#NA cannot be recoded
 #rename NA with subset 
 alum$Employment[is.na(alum$Employment)]="Unknown"#recheck looks right
 ```

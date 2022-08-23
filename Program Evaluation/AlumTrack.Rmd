@@ -311,13 +311,13 @@ rm(ug5y,linkedin,survey)
 ```
 
 
-#Merge and Clean Large Dataset
+# Merge
 
 ```{r mutate 5y/6m col}
 #read data
 
 #add col to indicate the focus of outcome in each dataset
-gd5yr<-gd5yr%>%mutate("Outcome Type"="5-Year Outcome")
+gd5yr_s<-gd5yr_s%>%mutate("Outcome Type"="5-Year Outcome")
 ug5y_m<-ug5y_m%>%mutate("Outcome Type"="5-Year Outcome")
 gd6m_m<-gd6m_m%>%mutate("Outcome Type"="6-Month Outcome")
 ug6m_m<-ug6m_m%>%mutate("Outcome Type"="6-Month Outcome")
@@ -325,9 +325,12 @@ ug6m_m<-ug6m_m%>%mutate("Outcome Type"="6-Month Outcome")
 
 ```{r merge large dataset}
 #merge
-alum<-plyr::join_all(list(gd5yr,gd6m_m,ug5y_m,ug6m_m),type="full")
+alum<-plyr::join_all(list(gd5yr_s,gd6m_m,ug5y_m,ug6m_m),type="full")
+#remove
+rm(gd5yr_s,gd6m_m,ug6m_m,ug5y_m)
 ```
 
+# Clean Large Dataset
 ```{r interest var -mutate based on other col}
 #combine multi-col into one INTEREST var
 alum<-alum%>%mutate(Interest=case_when(

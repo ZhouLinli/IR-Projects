@@ -52,7 +52,7 @@ crs<-df$`Course Code`#character not a list
 #inspect
 crs[(crs %in% dat.major$Section ) == FALSE]
 #append not-existed section
-
+#8-23-download latest section abbreaviations and full names from report manager and check if all crs in that latest section list
 ```
 
 

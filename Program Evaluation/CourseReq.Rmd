@@ -143,6 +143,28 @@ crs.df<-data.frame(Section=crs.tbl$value)
 #now we got the list of all html courses
 ```
 
+
+
+```{r make a section-title df}
+###make a list of titles
+my.title<-c()#initialize a empty list
+for (i in 1:(nrow(crs.df)+10) )  {#must (any calculation)  #depends on the number (i.e., n) of category/label in the table on web, there would needs to be n+nrow to look at
+  my.title[[i]]<-#have to use [[]] to indicate the list index
+    pg%>%html_nodes(
+    xpath=paste0("/html/body/div[1]/main/div/div/div[1]/div/div/div/div[2]/div[1]/table/tbody/tr[",i,"]/td[2]"#paste the xpath using i
+      )) %>% html_text()# print out corresponding text to nodes
+  i<-i+1 #add one to go to next index
+}
+#check
+my.title
+#remove empty and null -- using any letters
+my.title<-my.title[str_detect(my.title,"[A-Z][a-z]")]
+
+########mutate title into crs.df
+crs.df<-
+  crs.df%>%mutate(`Course Title`=my.title)
+```
+
 ```{r append new courses using crs.df}
 #inspect - filter out not in the dat.major courese and new those courese as new.crs.df; remove the last label patterns using filter grepl
 new.crs.df<-crs.df%>%filter((crs.df$Section %in% dat.major$Section ) == FALSE)
@@ -181,6 +203,27 @@ crs.tbl<-pg %>% html_nodes(".mp-modal")%>%html_text()%>%as_tibble() #a tibble of
 #make data frame with named col
 crs.df<-data.frame(Section=crs.tbl$value)
 #now we got the list of all html courses
+```
+
+
+```{r make a section-title df}
+###make a list of titles
+my.title<-c()#initialize a empty list
+for (i in 1:(nrow(crs.df)+10) )  {#must (any calculation)  #depends on the number (i.e., n) of category/label in the table on web, there would needs to be n+nrow to look at
+  my.title[[i]]<-#have to use [[]] to indicate the list index
+    pg%>%html_nodes(
+    xpath=paste0("/html/body/div[1]/main/div/div/div[1]/div/div/div/div[2]/div[1]/table/tbody/tr[",i,"]/td[2]"#paste the xpath using i
+      )) %>% html_text()# print out corresponding text to nodes
+  i<-i+1 #add one to go to next index
+}
+#check
+my.title
+#remove empty and null -- using any letters
+my.title<-my.title[str_detect(my.title,"[A-Z][a-z]")]
+
+########mutate title into crs.df
+crs.df<-
+  crs.df%>%mutate(`Course Title`=my.title)
 ```
 
 ```{r append new courses using crs.df}
@@ -222,6 +265,27 @@ crs.tbl<-pg %>% html_nodes(".mp-modal")%>%html_text()%>%as_tibble() #a tibble of
 #make data frame with named col
 crs.df<-data.frame(Section=crs.tbl$value)
 #now we got the list of all html courses
+```
+
+
+```{r make a section-title df}
+###make a list of titles
+my.title<-c()#initialize a empty list
+for (i in 1:(nrow(crs.df)+10) )  {#must (any calculation)  #depends on the number (i.e., n) of category/label in the table on web, there would needs to be n+nrow to look at
+  my.title[[i]]<-#have to use [[]] to indicate the list index
+    pg%>%html_nodes(
+    xpath=paste0("/html/body/div[1]/main/div/div/div[1]/div/div/div/div[2]/div[1]/table/tbody/tr[",i,"]/td[2]"#paste the xpath using i
+      )) %>% html_text()# print out corresponding text to nodes
+  i<-i+1 #add one to go to next index
+}
+#check
+my.title
+#remove empty and null -- using any letters
+my.title<-my.title[str_detect(my.title,"[A-Z][a-z]")]
+
+########mutate title into crs.df
+crs.df<-
+  crs.df%>%mutate(`Course Title`=my.title)
 ```
 
 ```{r append new courses using crs.df}
@@ -271,6 +335,27 @@ crs.df<-data.frame(Section=crs.tbl$value)
 #now we got the list of all html courses
 ```
 
+
+```{r make a section-title df}
+###make a list of titles
+my.title<-c()#initialize a empty list
+for (i in 1:(nrow(crs.df)+10) )  {#must (any calculation)  #depends on the number (i.e., n) of category/label in the table on web, there would needs to be n+nrow to look at
+  my.title[[i]]<-#have to use [[]] to indicate the list index
+    pg%>%html_nodes(
+    xpath=paste0("/html/body/div[1]/main/div/div/div[1]/div/div/div/div[2]/div[1]/table/tbody/tr[",i,"]/td[2]"#paste the xpath using i
+      )) %>% html_text()# print out corresponding text to nodes
+  i<-i+1 #add one to go to next index
+}
+#check
+my.title
+#remove empty and null -- using any letters
+my.title<-my.title[str_detect(my.title,"[A-Z][a-z]")]
+
+########mutate title into crs.df
+crs.df<-
+  crs.df%>%mutate(`Course Title`=my.title)
+```
+
 ```{r append and mutate/recode}
 ######append new coureses
 #inspect - filter out not in the dat.major courese and new those courese as new.crs.df; remove the last label patterns using filter grepl
@@ -317,6 +402,27 @@ crs.tbl<-pg %>% html_nodes(".mp-modal")%>%html_text()%>%as_tibble() #a tibble of
 #make data frame with named col
 crs.df<-data.frame(Section=crs.tbl$value)
 #now we got the list of all html courses
+```
+
+
+```{r make a section-title df}
+###make a list of titles
+my.title<-c()#initialize a empty list
+for (i in 1:(nrow(crs.df)+10) )  {#must (any calculation)  #depends on the number (i.e., n) of category/label in the table on web, there would needs to be n+nrow to look at
+  my.title[[i]]<-#have to use [[]] to indicate the list index
+    pg%>%html_nodes(
+    xpath=paste0("/html/body/div[1]/main/div/div/div[1]/div/div/div/div[2]/div[1]/table/tbody/tr[",i,"]/td[2]"#paste the xpath using i
+      )) %>% html_text()# print out corresponding text to nodes
+  i<-i+1 #add one to go to next index
+}
+#check
+my.title
+#remove empty and null -- using any letters
+my.title<-my.title[str_detect(my.title,"[A-Z][a-z]")]
+
+########mutate title into crs.df
+crs.df<-
+  crs.df%>%mutate(`Course Title`=my.title)
 ```
 
 ```{r append and mutate/recode}

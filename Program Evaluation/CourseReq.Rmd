@@ -3462,7 +3462,7 @@ dat.major%>%group_by(`Sociology`)%>%count()#non-existing major
 
 
 
-# Clean Column Names (select only col/major in the web major list)
+# Select only col in the web major list
 
 ```{r define majors vs col names}
 #define col names
@@ -3528,11 +3528,15 @@ dat.48major<-dat.major%>%select(Section,`Course Title`,major.list[1:length(major
 ```
 
 
-
-# Course Title for Newly Added Course IDs
-
-```{r}
-#check
+```{r check and save}
+#check Course Title for Newly Added Course IDs
 dat.48major[is.na(dat.48major$`Course Title`),1]#all courses have a title now
+
+#check
+str(dat.48major)
+summary(dat.48major)
+#save
+write_xlsx(dat.48major,"/Users/linlizhou/Documents/LASELL/data/enrollment/21-22CourseRequirements.xlsx")
+
 ```
 

@@ -435,6 +435,14 @@ writexl::write_xlsx(alum.m,"/Users/linlizhou/Documents/LASELL/data/alumni/alum.x
 
 
 
+# Cleaning Alum Data
+
+```{r}
+alum<-read_excel("/Users/linlizhou/Documents/LASELL/data/alumni/alum.xlsx")
+
+```
+
+
 
 
 

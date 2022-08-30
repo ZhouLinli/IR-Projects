@@ -1,8 +1,10 @@
 ---
-title: "CMarinInterview"
+title: "CMarinExcercise"
 author: "Linli Zhou"
 date: "2022-08-29"
-output: html_document
+output: 
+  html_document:
+  keep_md: true
 ---
 
 

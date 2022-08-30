@@ -92,7 +92,7 @@ ggplot(aes(x=Level,y=percent(prt,digit=0),fill=Method))+
     scale_fill_manual(values = c(mycolors[3],mycolors[2],mycolors[1]), name="Placement Methods")+#change legend color, lable, and title
   scale_y_continuous(breaks = seq(0, 0.3, by = 0.1) ,labels = scales::percent)+#present y axis label as percentage
   #geom_text_repel(aes(label= ifelse(Grade2System==4,paste(round(100*prt, 0), "%", sep=""),"")),size=3)+
-  labs(x = "English Course Level", y = "", title="Students Percentage in English Courses by Placement Methods")+
+  labs(x = "English Course Level", y = "", title="Students in Different English Courses by Placement Methods")+
    theme(axis.text.y=element_blank())
 ```
 
@@ -110,7 +110,7 @@ ggplot(aes(x=Level,y=percent(prt,digit=0),fill=Method))+
     scale_fill_manual(values = c(mycolors[3],mycolors[2],mycolors[1]), name="Placement Methods")+#change legend color, lable, and title
   scale_y_continuous(breaks = seq(0, 0.3, by = 0.1) ,labels = scales::percent)+#present y axis label as percentage
   #geom_text_repel(aes(label= ifelse(Grade2System==4,paste(round(100*prt, 0), "%", sep=""),"")),size=3)+
-  labs(x = "English Course Level", y = "", title="Students Percentage in English Courses by Placement Methods for Different Racial Groups")+
+  labs(x = "English Course Level", y = "", title="Students in Different English Courses by Placement Methods for Different Racial Groups")+
   theme(panel.grid.major.y = element_line(colour = "grey95"))
 ```
 

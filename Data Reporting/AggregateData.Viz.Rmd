@@ -1,0 +1,142 @@
+---
+title: "CMarinInterview"
+author: "Linli Zhou"
+date: "2022-08-29"
+output: html_document
+---
+```{r setup color}
+library(ggplot2)
+
+mycolors<-c("#13294b","#5c88da","#69b3e7","#fcb53b","#6C6F70","#641F45")
+scale_color_manual(values=mycolors)
+
+theme_lz <- function(){ 
+    font <- "Helvetica"   #assign font family up front
+    theme_minimal() %+replace%    #replace elements already strips axis lines, 
+    theme(
+      panel.grid.major = element_blank(),    #strip major gridlines
+      panel.grid.minor = element_blank(),    #strip minor gridlines
+      plot.title = element_text(family = font, size = 9, face = 'bold',hjust = 0.5, vjust = 2),
+      axis.title = element_text(family = font, size = 9), 
+      axis.text = element_text(family = font, size = 9), 
+      axis.text.x = element_text(family = font, size = 9, margin = margin(t=5,b=10)),
+      axis.ticks = element_blank(),          #strip axis ticks
+      
+      legend.title = element_blank(),
+      legend.text = element_text(family = font, size=7),
+      legend.position="right",
+      
+      strip.text = element_text(family = font, size = 9, margin = margin(t=5,b=10)),#move up is + 1
+      strip.background = element_blank()
+    )}
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(tidyverse)
+library(writexl)
+library(openxlsx)
+library(formattable)#for percent function
+library(ggrepel)
+```
+
+```{r load data}
+data<-read_excel("/Users/linlizhou/Documents/LASELL/CMarinExcercise.xlsx",sheet = "raw")
+```
+
+```{r long data}
+#transform pivot table into one observation each row
+data.l<-pivot_longer(data,cols = `Fall 2015 (placement test)`:`Fall 2019 (AB705)`,names_to = "Term.Method",values_to = "NumberPlacement")
+```
+
+```{r separate col}
+#Year col
+data.l<-data.l%>%mutate(Year=case_when(
+  Term.Method=="Fall 2015 (placement test)"~"2015",
+  Term.Method=="Fall 2016 (placement test)"~"2016",
+  Term.Method=="Fall 2017 (Multiple measures)"~"2017",
+  Term.Method=="Fall 2018 (Multiple measures)"~"2018",
+  Term.Method=="Fall 2019 (AB705)"~"2019"
+))
+
+#method col
+data.l<-data.l%>%mutate(Method=case_when(
+  Term.Method=="Fall 2015 (placement test)"~"Placement test",
+  Term.Method=="Fall 2016 (placement test)"~"Placement test",
+  Term.Method=="Fall 2017 (Multiple measures)"~"Multiple measures",
+  Term.Method=="Fall 2018 (Multiple measures)"~"Multiple measures",
+  Term.Method=="Fall 2019 (AB705)"~"AB705"
+))
+
+#save raw and tidy sheets in the same excel workbook
+write.xlsx(list("tidy"=data.l,"raw"=data), file="/Users/linlizhou/Documents/LASELL/CMarinExcercise.xlsx")
+```
+
+```{r level by method}
+#if only mapping level and method, then only aggregate by the two; add race but not map it will cause sum to be smaller
+aggregate(data.l$NumberPlacement,by=list(Level=data.l$Course,Method=data.l$Method),FUN="sum")%>%
+  #add up by level and method
+mutate(prt=x/sum(x))%>%#turn add up number into percentage
+  ggplot(aes(x=Level,y=percent(prt,digit=0),fill=Method))+
+   geom_bar(stat="identity",position=position_dodge(),width = 0.8)+
+    scale_fill_manual(values = c(mycolors[1],mycolors[2],mycolors[3]), labels=c("AB705 (2019)","Multiple Measures (2017/18)","Placement Test (2015/16)"), name="Placement Methods")+#change legend color, lable, and title
+  scale_y_continuous(breaks = seq(0, 0.3, by = 0.1) ,labels = scales::percent)+#present y axis label as percentage
+  #geom_text_repel(aes(label= ifelse(Grade2System==4,paste(round(100*prt, 0), "%", sep=""),"")),size=3)+
+  labs(x = "English Course Level", y = "Percentage of Students", title="Students Percentage in English Courses by Placement Methods")+
+  theme_lz()+theme(panel.grid.major.y = element_line(colour = "grey95"))
+```
+
+```{r}
+
+```
+
+
+
+```{r}
+pvt.tbl<-data.l%>%group_by(Method,Course,NumberPlacement,Race)%>%mutate(prt=NumberPlacement/sum(data.l$NumberPlacement)) #create a pivot table including all variables that will be used in plot
+sum(pvt.tbl$prt)#check equals to 1
+  
+pvt.tbl%>%
+  ggplot(aes(x=factor(Method), y=percent(prt,digit=0), fill=Course))+ 
+  geom_bar(stat="identity",position=position_dodge(),width = 0.8)+
+  facet_grid(~Race)
+
+pvt.tbl%>%
+  ggplot(aes(x=factor(Course), y=percent(prt,digit=0), fill=Method))+ 
+  geom_bar(stat="identity",position=position_dodge(),width = 0.8)+#made the overall chart for comparing methods
+  
+  
+pvt.tbl%>%
+  ggplot(aes(x=factor(Course), y=percent(prt,digit=0), fill=Method))+ 
+  geom_bar(stat="identity",position=position_dodge(),width = 0.8)+
+  facet_grid(~Race)+theme_lz()+
+  scale_y_continuous(breaks = seq(0, 0.08, by = 0.02) ,labels = scales::percent)+#present y axis label as percentage
+  labs(x = "English Course Level", y = "Percentage of Students", title="Students Percentage in English Courses by Placement Methods for Difference Racial Groups")+
+  theme(panel.grid.major.y = element_line(colour = "grey95"))
+```
+
+
+
+```{r}
+#method 1 percentages
+data.l%>% filter()
+
+pvt.tbl<-data.l%>%select(Method,Course,NumberPlacement)%>%group_by(Method,Course)%>%mutate(prt=NumberPlacement/sum(data.l$NumberPlacement)) #create a pivot table including all variables that will be used in plot
+sum(pvt.tbl$prt)#check equals to 1
+sum(pvt.tbl$NumberPlacement)
+
+pvt.tbl%>%
+  ggplot(aes(x=factor(Course), y=percent(prt,digit=0), fill=Method))+ 
+  geom_bar(stat="identity",position=position_dodge(),width = 0.8)+#made the overall chart for comparing methods
+  #scale_fill_manual(values = c(mycolors[2],mycolors[3]), labels=c("Canvas","Registrar"), name="Methods")+#change legend color, lable, and title
+  scale_y_continuous(breaks = seq(0, 0.08, by = 0.02) ,labels = scales::percent)+#present y axis label as percentage
+  #geom_text_repel(aes(label= ifelse(Grade2System==4,paste(round(100*prt, 0), "%", sep=""),"")),size=3)+
+  labs(x = "English Course Level", y = "Percentage of Students", title="Students Percentage in English Courses by Placement Methods")+
+  theme_lz()+theme(panel.grid.major.y = element_line(colour = "grey95"))
+```
+
+
+
+
+

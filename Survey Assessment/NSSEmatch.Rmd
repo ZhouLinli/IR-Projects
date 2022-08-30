@@ -1,0 +1,55 @@
+---
+title: "NSSE"
+author: "Linli Zhou"
+date: "2022-08-30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, include = TRUE, warning=FALSE, message=FALSE, fig.align = "center") #display code along with its results
+library(haven)
+library(readxl)
+library(tidyverse)
+library(writexl)
+```
+
+## Purpose
+
+This project compared NSSE result from freshmen in 2018 who become senior in 2022. I did a merge-and-match first, then visualize each matched students' change in terms of NSSE survey results.
+
+```{r load data}
+#2018 data
+nsse18<-read_excel("/Users/linlizhou/Documents/LASELL/data/NSSE_report/data/MergedData_15&18.xlsx",sheet = "2018")
+#2022 data
+nsse22.sav<-read_sav("/Users/linlizhou/Documents/LASELL/data/NSSE_report/data/NSSE22 Data (Lasell).sav")
+#save as excel for better readability
+write_xlsx(nsse22.sav,"/Users/linlizhou/Documents/LASELL/data/NSSE_report/data/NSSE22 Data (Lasell).xlsx")
+#using tibble from excel
+nsse22<-read_excel("/Users/linlizhou/Documents/LASELL/data/NSSE_report/data/NSSE22 Data (Lasell).xlsx")
+```
+
+```{r find vars of interest}
+#find pcid
+grep("[Ii][Dd]",names(nsse22),value=TRUE)#find student id
+nsse22$studentid
+
+#find codebook
+sjlabelled::get_label(nsse22.sav)
+
+#select variable of interest in nsse22 (select and rename at the same time)
+nsse22.s<-nsse22%>%select("PCID"="studentid","Higher-Order Learning"="HO", "Reflective and Integrative Learning"="RI","Learning Strategies"="LS","Quantitative Reasoning"="QR","Collaborative Learning"="CL","Discussions with Diverse Others"="DD","Student-Faculty Interaction"="SF","Effective Teaching Practices"="ET","Quality of Interactions"="QI","Supportive Environment"="SE")
+
+
+#select var of interest in nsse18
+nsse18.s<-nsse18[names(nsse18)[1:11]]
+#after glancing the data, we now the first 11 col names are the same vars
+names(nsse18.s)<-names(nsse22.s)
+```
+
+```{r match}
+ns1822<-inner_join(x=nsse22.s,y=nsse18.s,by="PCID",suffix=c(".18",".22"))#zero match of PCID
+ns1822<-merge(x=nsse22.s,y=nsse18.s,by="PCID",suffix=c(".18",".22"))#zero match of PCID
+```
+
+
+

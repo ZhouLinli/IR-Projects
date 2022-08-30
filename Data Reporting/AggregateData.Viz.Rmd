@@ -34,7 +34,7 @@ theme_lz <- function(){
       axis.text.x = element_text(family = font, size = 9, margin = margin(t=5,b=10)),
       axis.ticks = element_blank(),          #strip axis ticks
       
-      legend.title = element_blank(),
+      legend.title = element_text(family = font, size=9),
       legend.text = element_text(family = font, size=7),
       legend.position="right",
       
@@ -90,6 +90,21 @@ mutate(prt=x/sum(x))%>%#turn add up number into percentage
 ```
 
 
+```{r facet race}
+#if only mapping level and method, then only aggregate by the two; add race but not map it will cause sum to be smaller
+aggregate(data.l$NumberPlacement,by=list(Race=data.l$Race,Level=data.l$Course,Method=data.l$Method),FUN="sum")%>%
+  #add up by level and method
+mutate(prt=x/sum(x))%>%#turn add up number into percentage
+  ggplot(aes(x=Level,y=percent(prt,digit=0),fill=Method))+
+   geom_bar(stat="identity",position=position_dodge(),width = 0.8)+
+  facet_wrap(~Race)+
+  theme_lz()+
+    scale_fill_manual(values = c(mycolors[1],mycolors[2],mycolors[3]), labels=c("AB705 (2019)","Multiple Measures (2017/18)","Placement Test (2015/16)"), name="Placement Methods")+#change legend color, lable, and title
+  scale_y_continuous(breaks = seq(0, 0.2, by = 0.05) ,labels = scales::percent)+#present y axis label as percentage
+  #geom_text_repel(aes(label= ifelse(Grade2System==4,paste(round(100*prt, 0), "%", sep=""),"")),size=3)+
+  labs(x = "English Course Level", y = "", title="Students Percentage in English Courses by Placement Methods for Different Races")+
+  theme(panel.grid.major.y = element_line(colour = "grey95"))
+```
 
 
 

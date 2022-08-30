@@ -8,53 +8,23 @@ output:
 ---
 
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, include = TRUE, warning=FALSE, message=FALSE, fig.align = "center") #display code along with its results
-library(readxl)
-library(tidyverse)
-library(writexl)
-library(openxlsx)
-library(formattable)#for percent function
-library(ggrepel)
-```
 
-```{r setup color, include=FALSE}
-library(ggplot2)
 
-mycolors<-c("#13294b","#5c88da","#69b3e7","#fcb53b","#6C6F70","#641F45")
-scale_color_manual(values=mycolors)
 
-theme_lz <- function(){ 
-    font <- "Helvetica"   #assign font family up front
-    theme_minimal() %+replace%    #replace elements already strips axis lines, 
-    theme(
-      panel.grid.major = element_blank(),    #strip major gridlines
-      panel.grid.minor = element_blank(),    #strip minor gridlines
-      plot.title = element_text(family = font, size = 9, face = 'bold',hjust = 0.5, vjust = 2),
-      axis.title = element_text(family = font, size = 9), 
-      axis.text = element_text(family = font, size = 9), 
-      axis.text.x = element_text(family = font, size = 9, margin = margin(t=5,b=10)),
-      axis.ticks = element_blank(),          #strip axis ticks
-      
-      legend.title = element_text(family = font, size=9),
-      legend.text = element_text(family = font, size=7),
-      legend.position="right",
-      
-      strip.text = element_text(family = font, size = 9, margin = margin(t=5,b=10)),#move up is + 1
-      strip.background = element_blank()
-    )}
-```
 
-```{r load data}
+
+```r
 data<-read_excel("/Users/linlizhou/Documents/LASELL/CMarinExcercise.xlsx",sheet = "raw")
 ```
 
-```{r long data}
+
+```r
 #transform pivot table into one observation each row
 data.l<-pivot_longer(data,cols = `Fall 2015 (placement test)`:`Fall 2019 (AB705)`,names_to = "Term.Method",values_to = "NumberPlacement")
 ```
 
-```{r separate col}
+
+```r
 #Year col
 data.l<-data.l%>%mutate(Year=case_when(
   Term.Method=="Fall 2015 (placement test)"~"2015",
@@ -77,12 +47,14 @@ data.l<-data.l%>%mutate(Method=case_when(
 write.xlsx(list("tidy"=data.l,"raw"=data), file="/Users/linlizhou/Documents/LASELL/CMarinExcercise.xlsx")
 ```
 
-```{r order of methods}
+
+```r
 data.l$Method=factor(data.l$Method, levels=c("Placement test","Multiple measures","AB705"),labels=c("Placement Test (2015/16)","Multiple Measures (2017/18)","AB705 (2019)")) #recode the levels  
 ```
 
 
-```{r within method-group, include=TRUE}
+
+```r
 aggregate(data.l$NumberPlacement,by=list(Method=data.l$Method,Level=data.l$Course),FUN="sum")%>%#aggragated table with all vars needed
   group_by(Method)%>%mutate(prt=x/sum(x)) %>% #group by whatever is going to be the larger groups (adds up to 100%)
 ggplot(aes(x=Level,y=percent(prt,digit=0),fill=Method))+
@@ -96,10 +68,13 @@ ggplot(aes(x=Level,y=percent(prt,digit=0),fill=Method))+
    theme(axis.text.y=element_blank())
 ```
 
+<img src="AggregateData.Viz_files/figure-html/within method-group-1.png" style="display: block; margin: auto;" />
 
 
 
-```{r within method-group by race, include=TRUE}
+
+
+```r
 aggregate(data.l$NumberPlacement,by=list(Method=data.l$Method,Level=data.l$Course, Race=data.l$Race),FUN="sum")%>%#aggragated table with all vars needed
   group_by(Method)%>%mutate(prt=x/sum(x)) %>% #group by whatever is going to be the larger groups (adds up to 100%)
 ggplot(aes(x=Level,y=percent(prt,digit=0),fill=Method))+
@@ -113,4 +88,6 @@ ggplot(aes(x=Level,y=percent(prt,digit=0),fill=Method))+
   labs(x = "English Course Level", y = "", title="Students Percentage in English Courses by Placement Methods")+
   theme(panel.grid.major.y = element_line(colour = "grey95"))
 ```
+
+<img src="AggregateData.Viz_files/figure-html/within method-group by race-1.png" style="display: block; margin: auto;" />
 

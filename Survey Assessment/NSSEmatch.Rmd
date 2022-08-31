@@ -7,11 +7,13 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, include = TRUE, warning=FALSE, message=FALSE, fig.align = "center") #display code along with its results
+#options(digits=2)#set digit displayed in knitted file (AFTER KNITTED)
 library(haven)
 library(readxl)
 library(tidyverse)
 library(writexl)
 library(ggrepel)
+library(kableExtra)
 ```
 
 ```{r setup color, include=FALSE}
@@ -96,19 +98,62 @@ ns1822<-merge(x=nsse22.s,y=nsse18.s,by="PCID",suffix=c(".18",".22"))#zero match 
 ns1822<-full_join(x=nsse22.s,y=nsse18.s)#383=212+171
 ```
 
-```{r first year 18-22}
-ns1822%>%group_by(Year,Class)%>%summarise(score=mean(`Higher-Order Learning`,na.rm=T))%>%mutate(prt=score/sum(score))%>%
+```{r compare 18-22 by class for HO}
+ns1822%>%group_by(Year,Class)%>%
+  summarise(score=mean(`Higher-Order Learning`,na.rm=T))%>%#claculate mean of HO by group
   ggplot(aes(x=factor(Class),y=score,fill=factor(Class)))+#make class a factor to display as categorical var properly
   geom_bar(stat="identity",position = position_dodge(),width=.8)+
   geom_text_repel(aes(label=round(score,digits=0)),color="black",size=4,position= position_nudge())+
   facet_wrap(~Year)+
-  theme_lz()+
+  theme_lz()+#rm legend, axis
   scale_fill_manual(values = c(mycolors[2],mycolors[1]), name="Class")
 ```
 
 
 
+```{r table}
+ns1822%>%group_by(Year,Class)%>%
+  summarise(`Higher-Order Learning`=mean(`Higher-Order Learning`,na.rm=T),
+           `Reflective and Integrative Learning`=mean(`Reflective and Integrative Learning`,na.rm=T),
+            `Learning Strategies`=mean(`Learning Strategies`,na.rm=T),
+            `Quantitative Reasoning`=mean(`Quantitative Reasoning`,na.rm=T),
+            `Collaborative Learning`=mean(`Collaborative Learning`,na.rm=T),
+            `Discussions with Diverse Others`=mean(`Discussions with Diverse Others`,na.rm=T),
+            `Student-Faculty Interaction`=mean(`Student-Faculty Interaction`,na.rm=T),
+            `Effective Teaching Practices`=mean(`Effective Teaching Practices`,na.rm=T),
+            `Quality of Interactions`=mean(`Quality of Interactions`,na.rm=T),
+            `Supportive Environment`=mean(`Supportive Environment`,na.rm=T)
+            )%>%
+  kable(caption = "Mean of NSSE Indicators \\label{tab:mean}") %>%
+  kable_styling(latex_options = "HOLD_position")
+  
+```
 
+```{r calcualte margin of error}
+#formula is: margin of error = z score * sigma/ sqrt(n)
+#moe for ho
+sd(nsse18.s$`Higher-Order Learning`,na.rm=T)/sqrt(nrow(nsse18.s[!is.na(nsse18.s$`Higher-Order Learning`),]))*1.96
+
+sd(nsse18.s$`Reflective and Integrative Learning`,na.rm=T)/sqrt(nrow(nsse18.s[!is.na(nsse18.s$`Reflective and Integrative Learning`),]))*1.96
+
+sd(nsse18.s$`Learning Strategies`,na.rm=T)/sqrt(nrow(nsse18.s[!is.na(nsse18.s$`Learning Strategies`),]))*1.96
+
+sd(nsse18.s$`Quantitative Reasoning`,na.rm=T)/sqrt(nrow(nsse18.s[!is.na(nsse18.s$`Quantitative Reasoning`),]))*1.96
+
+sd(nsse18.s$`Collaborative Learning`,na.rm=T)/sqrt(nrow(nsse18.s[!is.na(nsse18.s$`Collaborative Learning`),]))*1.96
+
+sd(nsse18.s$`Discussions with Diverse Others`,na.rm=T)/sqrt(nrow(nsse18.s[!is.na(nsse18.s$`Discussions with Diverse Others`),]))*1.96
+
+
+moe<-function(x) {
+  sd(x,na.rm=T)/sqrt(nrow(nsse18.s[!is.na(x),]))*1.96
+}
+
+moe(nsse18.s$`Student-Faculty Interaction`)
+moe(nsse22.s$`Effective Teaching Practices`)
+
+#tapply(list(nsse18.s[3:12]),moe())
+```
 
 
 

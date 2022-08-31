@@ -18,14 +18,19 @@ library(writexl)
 This project compared NSSE result from freshmen in 2018 who become senior in 2022. I did a merge-and-match first, then visualize each matched students' change in terms of NSSE survey results.
 
 ```{r load data}
-#2018 data
-nsse18<-read_excel("/Users/linlizhou/Documents/LASELL/data/NSSE_report/data/MergedData_15&18.xlsx",sheet = "2018")
 #2022 data
 nsse22.sav<-read_sav("/Users/linlizhou/Documents/LASELL/data/NSSE_report/data/NSSE22 Data (Lasell).sav")
 #save as excel for better readability
 write_xlsx(nsse22.sav,"/Users/linlizhou/Documents/LASELL/data/NSSE_report/data/NSSE22 Data (Lasell).xlsx")
 #using tibble from excel
 nsse22<-read_excel("/Users/linlizhou/Documents/LASELL/data/NSSE_report/data/NSSE22 Data (Lasell).xlsx")
+
+#2018 data
+nsse18.sav<-read_sav("/Users/linlizhou/Documents/LASELL/data/NSSE_report/data/NSSE18 Data (Lasell College).sav")
+#save as excel for better readability
+write_xlsx(nsse18.sav,"/Users/linlizhou/Documents/LASELL/data/NSSE_report/data/NSSE18 Data (Lasell).xlsx")
+#using tibble from excel
+nsse18<-read_excel("/Users/linlizhou/Documents/LASELL/data/NSSE_report/data/NSSE18 Data (Lasell).xlsx")
 ```
 
 ```{r find vars of interest}
@@ -41,20 +46,61 @@ nsse22$IRclass[1:5]
 lable<-sjlabelled::get_label(nsse22.sav)
 lable["IRclass"]#Institution-reported: Class level
 
+
 #select variable of interest in nsse22 (select and rename using lable from sav)
-nsse22.s<-nsse22%>%select("PCID"="studentid","Class"="IRclass","Higher-Order Learning"="HO", "Reflective and Integrative Learning"="RI","Learning Strategies"="LS","Quantitative Reasoning"="QR","Collaborative Learning"="CL","Discussions with Diverse Others"="DD","Student-Faculty Interaction"="SF","Effective Teaching Practices"="ET","Quality of Interactions"="QI","Supportive Environment"="SE")
+nsse22.s<-nsse22%>%select("PCID"="studentid","Class"="IRclass","Higher-Order Learning"="HO", "Reflective and Integrative Learning"="RI","Learning Strategies"="LS","Quantitative Reasoning"="QR","Collaborative Learning"="CL","Discussions with Diverse Others"="DD","Student-Faculty Interaction"="SF","Effective Teaching Practices"="ET","Quality of Interactions"="QI","Supportive Environment"="SE")%>%
+  mutate(Year="2022")#prep for merge to distinguish data from 2022
 
 
-#select var of interest in nsse18
-nsse18.s<-nsse18[names(nsse18)[1:11]]
-#after glancing the data, we now the first 11 col names are the same vars
-names(nsse18.s)<-names(nsse22.s)
+#do the same for nsse18 (since they have the same structure each year)#only studentID in 18 is different from studentid in 22
+nsse18.s<-nsse18%>%select("PCID"="studentID","Class"="IRclass","Higher-Order Learning"="HO", "Reflective and Integrative Learning"="RI","Learning Strategies"="LS","Quantitative Reasoning"="QR","Collaborative Learning"="CL","Discussions with Diverse Others"="DD","Student-Faculty Interaction"="SF","Effective Teaching Practices"="ET","Quality of Interactions"="QI","Supportive Environment"="SE")%>%
+  mutate(Year="2018")#prep for merge to distinguish data from 2018
+
 ```
 
-```{r match}
+```{r no match}
 ns1822<-inner_join(x=nsse22.s,y=nsse18.s,by="PCID",suffix=c(".18",".22"))#zero match of PCID
 ns1822<-merge(x=nsse22.s,y=nsse18.s,by="PCID",suffix=c(".18",".22"))#zero match of PCID
 ```
+
+```{r general comparison using full dataset}
+ns1822<-full_join(x=nsse22.s,y=nsse18.s)#383=212+171
+```
+
+```{r first year 18-22}
+ns1822%>%group_by(Year,Class)%>%summarise(score=mean(`Higher-Order Learning`,na.rm=T))%>%mutate(prt=score/sum(score))%>%
+  ggplot(aes(x=Year,y=score,fill=factor(Class)))+#make class a factor to display as categorical var properly
+  geom_bar(stat="identity",position = "stack",width=0.8)+
+  geom_text_repel(aes(label=round(score,digits=0)),color="white",size=4,position="identity")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

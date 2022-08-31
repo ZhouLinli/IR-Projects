@@ -31,13 +31,18 @@ nsse22<-read_excel("/Users/linlizhou/Documents/LASELL/data/NSSE_report/data/NSSE
 ```{r find vars of interest}
 #find pcid
 grep("[Ii][Dd]",names(nsse22),value=TRUE)#find student id
-nsse22$studentid
+nsse22$studentid[1:5]
+
+#find class
+grep("class",names(nsse22),value=TRUE)#find student id
+nsse22$IRclass[1:5]
 
 #find codebook
-sjlabelled::get_label(nsse22.sav)
+lable<-sjlabelled::get_label(nsse22.sav)
+lable["IRclass"]#Institution-reported: Class level
 
-#select variable of interest in nsse22 (select and rename at the same time)
-nsse22.s<-nsse22%>%select("PCID"="studentid","Higher-Order Learning"="HO", "Reflective and Integrative Learning"="RI","Learning Strategies"="LS","Quantitative Reasoning"="QR","Collaborative Learning"="CL","Discussions with Diverse Others"="DD","Student-Faculty Interaction"="SF","Effective Teaching Practices"="ET","Quality of Interactions"="QI","Supportive Environment"="SE")
+#select variable of interest in nsse22 (select and rename using lable from sav)
+nsse22.s<-nsse22%>%select("PCID"="studentid","Class"="IRclass","Higher-Order Learning"="HO", "Reflective and Integrative Learning"="RI","Learning Strategies"="LS","Quantitative Reasoning"="QR","Collaborative Learning"="CL","Discussions with Diverse Others"="DD","Student-Faculty Interaction"="SF","Effective Teaching Practices"="ET","Quality of Interactions"="QI","Supportive Environment"="SE")
 
 
 #select var of interest in nsse18

@@ -11,7 +11,36 @@ library(haven)
 library(readxl)
 library(tidyverse)
 library(writexl)
+library(ggrepel)
 ```
+
+```{r setup color, include=FALSE}
+library(ggplot2)
+
+mycolors<-c("#13294b","#5c88da","#69b3e7","#fcb53b","#6C6F70","#641F45")
+scale_color_manual(values=mycolors)
+
+theme_lz <- function(){ 
+    font <- "Helvetica"   #assign font family up front
+    theme_minimal() %+replace%    #replace elements already strips axis lines, 
+    theme(
+      panel.grid.major = element_blank(),    #strip major gridlines
+      panel.grid.minor = element_blank(),    #strip minor gridlines
+      plot.title = element_text(family = font, size = 9, face = 'bold',hjust = 0.5, vjust = 2),
+      axis.title = element_blank(), 
+      axis.text = element_blank(), 
+      axis.text.x = element_text(family = font, size = 9, margin = margin(t=5,b=10)),
+      axis.ticks = element_blank(),          #strip axis ticks
+      
+      legend.title = element_text(family = font, size=9),
+      legend.text = element_blank(),
+      legend.position="none",
+      
+      strip.text = element_text(family = font, size = 9, margin = margin(t=5,b=10)),#move up is + 1
+      strip.background = element_blank()
+    )}
+```
+
 
 ## Purpose
 
@@ -69,9 +98,12 @@ ns1822<-full_join(x=nsse22.s,y=nsse18.s)#383=212+171
 
 ```{r first year 18-22}
 ns1822%>%group_by(Year,Class)%>%summarise(score=mean(`Higher-Order Learning`,na.rm=T))%>%mutate(prt=score/sum(score))%>%
-  ggplot(aes(x=Year,y=score,fill=factor(Class)))+#make class a factor to display as categorical var properly
-  geom_bar(stat="identity",position = "stack",width=0.8)+
-  geom_text_repel(aes(label=round(score,digits=0)),color="white",size=4,position="identity")
+  ggplot(aes(x=factor(Class),y=score,fill=factor(Class)))+#make class a factor to display as categorical var properly
+  geom_bar(stat="identity",position = position_dodge(),width=.8)+
+  geom_text_repel(aes(label=round(score,digits=0)),color="black",size=4,position= position_nudge())+
+  facet_wrap(~Year)+
+  theme_lz()+
+  scale_fill_manual(values = c(mycolors[2],mycolors[1]), name="Class")
 ```
 
 

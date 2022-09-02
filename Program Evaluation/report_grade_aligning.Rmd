@@ -727,7 +727,7 @@ tibble(
 ```
 
 
-For grades that are excluded from this analysis, Table \ref{tab:outlier} is a description of the number of scores that are excluded from analysis.
+For grades that are excluded from this analysis, Table \ref{tab:outlier} is a description of the number of scores that are excluded from analysis (table hidden).
 
 Besides, we did not report programs and courses that has small number of observations. That exclusion help to protect students' privacy from possibly individual identifiable students data. Specifically, the following programs are omitted from this report: Service Learning (n=5), Individualized Studies (n=2), Academic Achievement Center (n=9), and WRT109 (n=1).
 ```{r}
@@ -742,7 +742,7 @@ tibble(outliertb)%>% kable(caption = "Outlier Grades and Corresponding Courses \
 ```
 
 ## A few more explanation of Codes
-Table \ref{tab.mdsc} shows what's included in Multidisciplinary Studies:
+Table \ref{tab.mdsc} shows what's included in Multidisciplinary Studies: table hidden
 
 ```{r show MDSC/Multidisciplineary Studies}
 canvrp_ugg_match %>% filter(department=="Multidisciplinary Studies")%>%group_by(`Course ID`, `Course Name`)%>%count()%>%kable(caption = "Multidisciplinary Studies Courses \\label{tab.mdsc}") %>%kable_styling(latex_options = "HOLD_position")

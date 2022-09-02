@@ -737,14 +737,14 @@ outliertb<-canvas21%>%filter(`current score`>100)%>%group_by(course)%>%summarise
 library(gridExtra)
 ```
 
-```{r outlier table, include=TRUE}
+```{r outlier table}
 tibble(outliertb)%>% kable(caption = "Outlier Grades and Corresponding Courses \\label{tab:outlier}") %>%kable_styling(latex_options = "HOLD_position")
 ```
 
 ## A few more explanation of Codes
 Table \ref{tab.mdsc} shows what's included in Multidisciplinary Studies:
 
-```{r show MDSC/Multidisciplineary Studies, include=TRUE}
+```{r show MDSC/Multidisciplineary Studies}
 canvrp_ugg_match %>% filter(department=="Multidisciplinary Studies")%>%group_by(`Course ID`, `Course Name`)%>%count()%>%kable(caption = "Multidisciplinary Studies Courses \\label{tab.mdsc}") %>%kable_styling(latex_options = "HOLD_position")
 ```
 

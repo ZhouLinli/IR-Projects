@@ -116,16 +116,25 @@ data%>%filter(Department %in% topdep[[1]]) %>%
 
 ```{r dep n>30}
 #make department count as ndep
-ndep<-data%>%group_by(Department)%>%summarise(cnt=n_distinct(ID))%>%arrange(-cnt)
+ndep<-data%>%group_by(Department)%>%summarise(cnt=n_distinct(ID))%>%arrange(-cnt)#
 #four groups based on department count
 ndep[ndep$cnt>30,]%>%str() #11 large departments
 ndep[ndep$cnt%in%seq(11,30,by=1),]%>%str()#22 medium departments
 ndep[ndep$cnt%in%seq(2,10,by=1),]%>%str()#12 small departments
 ndep[ndep$cnt==1,]%>%str()#7 tiny departments
-#first group n>30
+
+#order based on tenure prt
+dep.order<-data%>%group_by(Department,`Tenure Status`)%>%
+  summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%
+  filter(`Tenure Status`=="Tenure Line")%>%arrange(-prt)%>%
+  mutate(dep.f=factor(Department))
+
+#first group n>30, 11 large departments
 data%>%filter(Department %in% ndep[ndep$cnt>30,1]$Department ) %>%
   group_by(Department,`Tenure Status`)%>%
-  summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%arrange(-prt)
+  summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%
+  ggplot(aes(x=Department,y=prt,fill=`Tenure Status`))+geom_bar(stat = "identity")+
+  scale_x_discrete(limits = dep.order$dep.f[dep.order$dep.f %in% ndep[ndep$cnt>30,1]$Department])
 ```
 
 

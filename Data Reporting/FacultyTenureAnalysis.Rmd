@@ -116,7 +116,7 @@ data%>%filter(Department %in% topdep[[1]]) %>%
 ```{r dep n>30}
 ndep<-data%>%group_by(Department)%>%summarise(cnt=n_distinct(ID))%>%arrange(-cnt)
 
-data%>%filter(Department %in% as.list(ndep[ndep$cnt>30,1]) ) %>%
+data%>%filter(Department %in% ndep[ndep$cnt>30,1]$Department ) %>%
   group_by(Department,`Tenure Status`)%>%
   summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%arrange(-prt)
 ```

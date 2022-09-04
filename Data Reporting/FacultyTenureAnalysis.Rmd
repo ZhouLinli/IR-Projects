@@ -76,9 +76,9 @@ data%>%group_by(Year, `Tenure Status`)%>%
   theme_lz()+
   scale_y_continuous(breaks = seq(.4,.6,by=.05),labels = scales::percent)+
   labs(title="Tenured Status by Year",x="Year",y="")+
-   scale_color_manual(values = c(mycolors[5],mycolors[2]),labels=c("Non-tenure","Tenure"),name="")+
+   scale_color_discrete(labels=c("Non-tenure","Tenure"),name="")+
   theme(axis.text.y=element_blank())
-#scale_color_manual(values = c("Non-tenure"=mycolors[4],"Tenure"=mycolors[1]),name="")
+#scale_color_discrete(values = c("Non-tenure"=mycolors[4],"Tenure"=mycolors[1]),name="")
 #geom_bar(stat = "identity", position=position_dodge())
 ```
 
@@ -89,9 +89,9 @@ data%>%group_by(Year, `Tenure Status`)%>%summarise(cnt=n())%>%mutate(prt=percent
   
   theme_lz()+
   scale_y_continuous(breaks = seq(.4,.6,by=.05),labels = scales::percent)+
-  labs(title="",x="Year",y="")+
-   scale_color_manual(values = c(mycolors[4],mycolors[2]),labels=c("Non-tenure","Tenure"),name="")
-#scale_color_manual(values = c("Non-tenure"=mycolors[4],"Tenure"=mycolors[1]),name="")
+  labs(title="",x="Year",y="",fill="")+
+   scale_color_discrete(labels=c("Non-tenure","Tenure"),name="")
+#scale_color_discrete(values = c("Non-tenure"=mycolors[4],"Tenure"=mycolors[1]),name="")
 #geom_bar(stat = "identity", position=position_dodge())
 ```
 
@@ -102,7 +102,7 @@ data%>% filter(Rank=="Professor"|Rank=="Assistant Professor"| Rank=="Associate P
 ggplot(aes(fill=factor(`Tenure Status`),x=factor(Rank),y=prt))+
   geom_bar(stat = "identity",position = position_dodge())+
   geom_text(aes(label=prt),position=position_dodge(.9),vjust=1.5,color="white",fontface="bold")+theme_lz()+
-  scale_fill_manual(values=c(mycolors[5],mycolors[2]),labels=c("Non-tenure","Tenure"),name="")+
+  scale_fill_discrete(labels=c("Non-tenure","Tenure"),name="")+
   labs(x="",y="",title="Tenured Status by Rank")
 ```
 
@@ -143,7 +143,7 @@ data%>%filter(Department %in% ndep[ndep$cnt>30,1]$Department ) %>%
   theme_lz()+geom_text(aes(label=prt),fontface="bold",position = position_stack(),hjust=1)+
   coord_flip()+theme(axis.text.x = element_blank())+
   theme(axis.text.y=element_text(size = 9))+
-  scale_fill_manual(values=c(mycolors[5],mycolors[2]),labels=c("Non-tenure","Tenure"),name="")+
+  scale_fill_discrete(labels=c("Non-tenure","Tenure"),name="")+
   labs(x="",y="", title="Tenure for Large Departments (>30 faculty)")
 ```
 

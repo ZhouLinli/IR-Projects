@@ -1,0 +1,107 @@
+---
+title: "FacultyTenure"
+author: "Linli Zhou"
+date: "2022-09-03"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, include = TRUE)
+library(readxl)
+library(tidyverse)
+```
+
+```{r load data}
+data<-read_excel("/Users/linlizhou/Documents/LASELL/Faculty Data for Analyst Candidates.xlsx")
+```
+
+```{r}
+theme_lz <- function(){ 
+    font <- "Helvetica"   #assign font family up front
+    theme_minimal() %+replace%    #replace elements already strips axis lines, 
+    theme(
+      panel.grid.major = element_blank(),    #strip major gridlines
+      panel.grid.minor = element_blank(),    #strip minor gridlines
+      plot.title = element_text(family = font, size = 9, face = 'bold',hjust = 0.5, vjust = 2),
+      axis.title = element_text(family = font, size = 9), 
+      axis.text = element_text(family = font, size = 9), 
+      axis.text.x = element_text(family = font, size = 9, margin = margin(t=5,b=10)),
+      axis.ticks = element_blank(),          #strip axis ticks
+      axis.text.y=element_blank(),
+      legend.title = element_text(family = font, size=9),
+      legend.text = element_text(family = font, size=7),
+      legend.position="right",
+      
+      strip.text = element_text(family = font, size = 9, margin = margin(t=5,b=10)),#move up is + 1
+      strip.background = element_blank()
+    )}
+mycolors<-c("#13294b","#5c88da","#69b3e7","#da291c","#641F45","#fcb53b","#6C6F70")#1-3blue,4-5red,6yellow,7grey
+```
+
+
+# Research questions
+
+- Who/what job titles are those tenured/non tenured 
+- Prt of each job title that tenured = tenured in job1/ all people in job1
+
+- T/NT prt (out of all T/NT total in each year) by year
+- T/NT prt (out of all T/NT total in each department) by department
+
+
+- Gender equity: female tenured/ all female vs male
+- Gender equity by department: in department 1, calcualte male-female prt gap, then rank
+
+- Racial equity: tenured in race1/ all people in race1
+- Gender equity by department: in department 1, calcualte white-black prt gap, then rank
+
+```{r clean}
+#remove duplicated rows
+data<-unique(data)#from 4003 to 3984 observations
+#remove duplicated ID/persons
+unique(data$ID)%>%length()#1147 unique ID
+data%>% group_by(ID) %>% summarise(cnt=n()) %>%arrange(-cnt) %>%filter(cnt>1) #815 duplicated IDs
+
+```
+
+Tenured percentage has been increased since 2016 from 40% to 44% in 2021, with 2020 being the highest 45%. Non-tenured faculty percentage has been decreased from 60% to 56%, with 2020 being the lowest 55%. There are still 12% less tenured faculty than non tenured. 
+
+```{r unique TvsN across year}
+data%>%group_by(Year, `Tenure Status`)%>%
+  summarise(cnt=n_distinct(ID))%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits=0))%>%
+  ggplot(aes(color=factor(`Tenure Status`),x=factor(Year),y=prt,group=factor(`Tenure Status`)))+geom_line()+
+  geom_text(aes(label=prt),fontface="bold")+
+  theme_lz()+
+  scale_y_continuous(breaks = seq(.4,.6,by=.05),labels = scales::percent)+
+  labs(title="Tenured Status by Year",x="Year",y="")+
+   scale_color_manual(values = c(mycolors[5],mycolors[2]),labels=c("Non-tenure","Tenure"),name="")+
+  theme(axis.text.y=element_blank())
+#scale_color_manual(values = c("Non-tenure"=mycolors[4],"Tenure"=mycolors[1]),name="")
+#geom_bar(stat = "identity", position=position_dodge())
+```
+
+```{r TvsN across year, include=FALSE}
+data%>%group_by(Year, `Tenure Status`)%>%summarise(cnt=n())%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits=0))%>%
+  ggplot(aes(color=factor(`Tenure Status`),x=factor(Year),y=prt,group=factor(`Tenure Status`)))+geom_line()+
+  geom_text(aes(label=prt))+
+  
+  theme_lz()+
+  scale_y_continuous(breaks = seq(.4,.6,by=.05),labels = scales::percent)+
+  labs(title="",x="Year",y="")+
+   scale_color_manual(values = c(mycolors[4],mycolors[2]),labels=c("Non-tenure","Tenure"),name="")
+#scale_color_manual(values = c("Non-tenure"=mycolors[4],"Tenure"=mycolors[1]),name="")
+#geom_bar(stat = "identity", position=position_dodge())
+```
+
+```{r}
+data%>% filter(Rank=="Professor"|Rank=="Assistant Professor"| Rank=="Associate Professor")%>%
+  group_by(Rank,`Tenure Status`)%>%summarise(cnt=n_distinct(ID))%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits=0))%>%
+ggplot(aes(fill=factor(`Tenure Status`),x=factor(Rank),y=prt))+
+  geom_bar(stat = "identity",position = position_dodge())+
+  geom_text(aes(label=prt),position=position_dodge(.9),vjust=1.5,color="white",fontface="bold")+theme_lz()+
+  scale_fill_manual(values=c(mycolors[5],mycolors[2]),labels=c("Non-tenure","Tenure"),name="")+
+  labs(x="",y="",title="Tenured Status by Rank")
+```
+
+
+
+

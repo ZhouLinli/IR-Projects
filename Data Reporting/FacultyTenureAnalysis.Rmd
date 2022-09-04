@@ -115,6 +115,9 @@ data%>%filter(Department %in% topdep[[1]]) %>%
 
 ```{r dep n>30}
 ndep<-data%>%group_by(Department)%>%summarise(cnt=n_distinct(ID))%>%arrange(-cnt)
+ndep[ndep$cnt>30,]
+ndep[ndep$cnt%in%seq(10,30,by=1),]
+ndep[ndep$cnt<10,]
 
 data%>%filter(Department %in% ndep[ndep$cnt>30,1]$Department ) %>%
   group_by(Department,`Tenure Status`)%>%

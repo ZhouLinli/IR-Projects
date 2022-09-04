@@ -121,7 +121,15 @@ data%>%filter(Department %in% topdep[[1]]) %>%
 #make department count as ndep
 ndep<-data%>%group_by(Department)%>%summarise(cnt=n_distinct(ID))%>%arrange(-cnt)#
 #four groups based on department count
+ndep[ndep$cnt>30,]%>%str() #11 giant departments
+ndep[ndep$cnt%in%seq(21,30,by=1),]%>%str() #13 large departments
+ndep[ndep$cnt%in%seq(5,20,by=1),]%>%str()#14 medium departments
+ndep[ndep$cnt<5,]%>%str()#14 small departments
+
 ndep[ndep$cnt>20,]%>%str() #24 large departments
+
+ndep[ndep$cnt>30,]%>%str() #11 giant departments
+ndep[ndep$cnt%in%seq(21,30,by=1),]%>%str() #13 large departments
 ndep[ndep$cnt%in%seq(5,20,by=1),]%>%str()#14 medium departments
 ndep[ndep$cnt<5,]%>%str()#14 small departments
 
@@ -151,6 +159,35 @@ data%>%filter(Department %in% ndep[ndep$cnt>20,1]$Department ) %>%
   theme(axis.text.y=element_text(size = 9))+
   scale_fill_discrete(labels=c("Non-tenure","Tenure"),name="")+
   labs(x="",y="", title="Tenure for Large Departments (>20 faculty)")
+```
+
+```{r dep n>30}
+#first group n>30, 11 giant departments
+data%>%filter(Department %in% ndep[ndep$cnt>30,1]$Department ) %>%
+  group_by(Department,`Tenure Status`)%>%
+  summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%
+  ggplot(aes(x=Department,y=prt,fill=`Tenure Status`))+geom_bar(stat = "identity")+
+  scale_x_discrete(limits = dep.order[(dep.order %in% ndep[ndep$cnt>30,1]$Department)==TRUE])+
+  theme_lz()+geom_text(aes(label=prt),position = position_stack(),hjust=1,color="white")+
+  coord_flip()+theme(axis.text.x = element_blank())+
+  theme(axis.text.y=element_text(size = 9))+
+  scale_fill_discrete(labels=c("Non-tenure","Tenure"),name="")+
+  labs(x="",y="", title="Tenure for Giant Departments (>30 faculty)")
+```
+
+```{r dep n21-30}
+#13 large departments
+data%>%filter(Department %in% ndep[ndep$cnt%in%seq(21,30,by=1),1]$Department ) %>%
+  group_by(Department,`Tenure Status`)%>%
+  summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%
+  ggplot(aes(x=Department,y=prt,fill=`Tenure Status`))+geom_bar(stat = "identity")+
+  scale_x_discrete(limits = dep.order[dep.order %in% 
+                                              ndep[ndep$cnt%in%seq(21,30,by=1),1]$Department 
+                                            ])+
+  theme_lz()+geom_text(aes(label=prt),position = position_stack(),hjust=1, color="white")+
+  coord_flip()+theme(axis.text.x = element_blank())+
+  theme(axis.text.y=element_text(size = 9))+
+  labs(x="",y="",title=str_wrap("Tenure for Large Departments (21-30 faculty)",35))
 ```
 
 ```{r dep n5-20}

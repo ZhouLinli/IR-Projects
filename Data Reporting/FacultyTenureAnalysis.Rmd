@@ -33,7 +33,8 @@ theme_lz <- function(){
       axis.text.y=element_blank(),
       legend.title = element_text(family = font, size=9),
       legend.text = element_text(family = font, size=7),
-      legend.position="right",
+      legend.position="bottom",
+      legend.direction = "horizontal",
       
       strip.text = element_text(family = font, size = 9, margin = margin(t=5,b=10)),#move up is + 1
       strip.background = element_blank()

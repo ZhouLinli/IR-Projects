@@ -125,10 +125,16 @@ ndep[ndep$cnt>20,]%>%str() #24 large departments
 ndep[ndep$cnt%in%seq(5,20,by=1),]%>%str()#14 medium departments
 ndep[ndep$cnt<5,]%>%str()#14 small departments
 
-#order based on tenure prt
+#order based on tenure prt -- exclude those without any tenure
 dep.order<-data%>%group_by(Department,`Tenure Status`)%>%
   summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%
   filter(`Tenure Status`=="Tenure Line")%>%arrange(prt)%>%
+  mutate(dep.f=factor(Department))
+
+#order based on non tenure
+dep.order<-data%>%group_by(Department,`Tenure Status`)%>%
+  summarise(cnt=n())%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%
+  filter(`Tenure Status`=="Non Tenure")%>%arrange(-prt)%>%
   mutate(dep.f=factor(Department))
 ```
 

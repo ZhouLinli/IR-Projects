@@ -9,6 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE, include = TRUE)
 library(readxl)
 library(tidyverse)
+library(formattable)
 ```
 
 ```{r load data}
@@ -67,7 +68,7 @@ Tenured percentage has been increased since 2016 from 40% to 44% in 2021, with 2
 
 ```{r unique TvsN across year}
 data%>%group_by(Year, `Tenure Status`)%>%
-  summarise(cnt=n_distinct(ID))%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits=0))%>%
+  summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%
   ggplot(aes(color=factor(`Tenure Status`),x=factor(Year),y=prt,group=factor(`Tenure Status`)))+geom_line()+
   geom_text(aes(label=prt),fontface="bold")+
   theme_lz()+
@@ -80,7 +81,7 @@ data%>%group_by(Year, `Tenure Status`)%>%
 ```
 
 ```{r TvsN across year, include=FALSE}
-data%>%group_by(Year, `Tenure Status`)%>%summarise(cnt=n())%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits=0))%>%
+data%>%group_by(Year, `Tenure Status`)%>%summarise(cnt=n())%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%
   ggplot(aes(color=factor(`Tenure Status`),x=factor(Year),y=prt,group=factor(`Tenure Status`)))+geom_line()+
   geom_text(aes(label=prt))+
   
@@ -92,9 +93,10 @@ data%>%group_by(Year, `Tenure Status`)%>%summarise(cnt=n())%>%mutate(prt=formatt
 #geom_bar(stat = "identity", position=position_dodge())
 ```
 
-```{r}
+Assistant Professor has 64% Tenured status, 4% higher than Professor and 6% higher than Associate Professor. 
+```{r tenure by rank}
 data%>% filter(Rank=="Professor"|Rank=="Assistant Professor"| Rank=="Associate Professor")%>%
-  group_by(Rank,`Tenure Status`)%>%summarise(cnt=n_distinct(ID))%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits=0))%>%
+  group_by(Rank,`Tenure Status`)%>%summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%
 ggplot(aes(fill=factor(`Tenure Status`),x=factor(Rank),y=prt))+
   geom_bar(stat = "identity",position = position_dodge())+
   geom_text(aes(label=prt),position=position_dodge(.9),vjust=1.5,color="white",fontface="bold")+theme_lz()+
@@ -102,6 +104,22 @@ ggplot(aes(fill=factor(`Tenure Status`),x=factor(Rank),y=prt))+
   labs(x="",y="",title="Tenured Status by Rank")
 ```
 
+
+```{r top n dep}
+topdep<-data%>%group_by(Department)%>%summarise(cnt=n_distinct(ID))%>%arrange(-cnt)%>%head()
+
+data%>%filter(Department %in% topdep[[1]]) %>%
+  group_by(Department,`Tenure Status`)%>%
+  summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%arrange(-prt)
+```
+
+```{r dep n>30}
+ndep<-data%>%group_by(Department)%>%summarise(cnt=n_distinct(ID))%>%arrange(-cnt)
+
+data%>%filter(Department %in% as.list(ndep[ndep$cnt>30,1]) ) %>%
+  group_by(Department,`Tenure Status`)%>%
+  summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%arrange(-prt)
+```
 
 
 

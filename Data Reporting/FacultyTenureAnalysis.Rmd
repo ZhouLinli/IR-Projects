@@ -126,16 +126,16 @@ ndep[ndep$cnt%in%seq(5,20,by=1),]%>%str()#14 medium departments
 ndep[ndep$cnt<5,]%>%str()#14 small departments
 
 #order based on tenure prt -- exclude those without any tenure
-dep.order<-data%>%group_by(Department,`Tenure Status`)%>%
+dep.order.t<-data%>%group_by(Department,`Tenure Status`)%>%
   summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%
   filter(`Tenure Status`=="Tenure Line")%>%arrange(prt)%>%
   mutate(dep.f=factor(Department))
 
-#order based on non tenure
-dep.order<-data%>%group_by(Department,`Tenure Status`)%>%
-  summarise(cnt=n())%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%
-  filter(`Tenure Status`=="Non Tenure")%>%arrange(-prt)%>%
-  mutate(dep.f=factor(Department))
+#excluded in order
+order.exclude<-data[( data$Department %in% dep.order.t$dep.f ) == FALSE,] %>%group_by(Department)%>%
+  summarise(cnt=n_distinct(ID)) %>% arrange(cnt) %>% mutate(dep.xf=factor(Department))
+
+dep.order<-c(order.exclude$dep.xf,dep.order.t$dep.f)
 ```
 
 
@@ -145,7 +145,7 @@ data%>%filter(Department %in% ndep[ndep$cnt>20,1]$Department ) %>%
   group_by(Department,`Tenure Status`)%>%
   summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%
   ggplot(aes(x=Department,y=prt,fill=`Tenure Status`))+geom_bar(stat = "identity")+
-  scale_x_discrete(limits = dep.order$dep.f[dep.order$dep.f %in% ndep[ndep$cnt>20,1]$Department])+
+  scale_x_discrete(limits = dep.order[(dep.order %in% ndep[ndep$cnt>20,1]$Department)==TRUE])+
   theme_lz()+geom_text(aes(label=prt),position = position_stack(),hjust=1,color="white")+
   coord_flip()+theme(axis.text.x = element_blank())+
   theme(axis.text.y=element_text(size = 9))+
@@ -159,7 +159,7 @@ data%>%filter(Department %in% ndep[ndep$cnt%in%seq(5,20,by=1),1]$Department ) %>
   group_by(Department,`Tenure Status`)%>%
   summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%
   ggplot(aes(x=Department,y=prt,fill=`Tenure Status`))+geom_bar(stat = "identity")+
-  scale_x_discrete(limits = dep.order$dep.f[dep.order$dep.f %in% 
+  scale_x_discrete(limits = dep.order[dep.order %in% 
                                               ndep[ndep$cnt%in%seq(5,20,by=1),1]$Department 
                                             ])+
   theme_lz()+geom_text(aes(label=prt),position = position_stack(),hjust=1, color="white")+
@@ -170,12 +170,12 @@ data%>%filter(Department %in% ndep[ndep$cnt%in%seq(5,20,by=1),1]$Department ) %>
 
 
 ```{r dep n<5}
-#22 medium departments
+#14 medium departments
 data%>%filter(Department %in% ndep[ndep$cnt<5,1]$Department ) %>%
   group_by(Department,`Tenure Status`)%>%
   summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%
   ggplot(aes(x=Department,y=prt,fill=`Tenure Status`))+geom_bar(stat = "identity")+
-  scale_x_discrete(limits = dep.order$dep.f[dep.order$dep.f %in% 
+  scale_x_discrete(limits = dep.order[dep.order %in% 
                                               ndep[ndep$cnt<5,1]$Department 
                                             ])+
   theme_lz()+geom_text(aes(label=prt),position = position_stack(),hjust=1, color="white")+
@@ -185,4 +185,7 @@ data%>%filter(Department %in% ndep[ndep$cnt<5,1]$Department ) %>%
 ```
 
 
+```{r investigate}
+
+```
 

@@ -143,8 +143,23 @@ data%>%filter(Department %in% ndep[ndep$cnt>30,1]$Department ) %>%
   theme_lz()+geom_text(aes(label=prt),fontface="bold",position = position_stack(),hjust=1)+
   coord_flip()+theme(axis.text.x = element_blank())+
   theme(axis.text.y=element_text(size = 9))+
+  scale_fill_manual(values=c(mycolors[5],mycolors[2]),labels=c("Non-tenure","Tenure"),name="")+
+  labs(x="",y="", title="Tenure for Large Departments (>30 faculty)")
+```
+
+```{r dep n11-30}
+#22 medium departments
+data%>%filter(Department %in% ndep[ndep$cnt%in%seq(11,30,by=1),1]$Department ) %>%
+  group_by(Department,`Tenure Status`)%>%
+  summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%
+  ggplot(aes(x=Department,y=prt,fill=`Tenure Status`))+geom_bar(stat = "identity")+
+  scale_x_discrete(limits = dep.order$dep.f[dep.order$dep.f %in% 
+                                              ndep[ndep$cnt%in%seq(11,30,by=1),1]$Department 
+                                            ])+
+  theme_lz()+geom_text(aes(label=prt),fontface="bold",position = position_stack(),hjust=1)+
+  coord_flip()+theme(axis.text.x = element_blank())+
+  theme(axis.text.y=element_text(size = 9))+
   labs(x="",y="")
-  
 ```
 
 

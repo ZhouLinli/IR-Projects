@@ -1,9 +1,10 @@
 ---
-title: "FacultyTenureTrends"
+title: "FacultyTenure"
 author: "Linli Zhou"
-date: "`r Sys.Date()`"
-output: ioslides_presentation
-runtime: shiny
+date: "2022-09-03"
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}

@@ -183,7 +183,7 @@ dep.order<-c(order.exclude$dep.xf,dep.order.t$dep.f)
 ```
 
 
-```{r dep n>20}
+```{r dep n>20, fig.height=6}
 #first group n>20, 24 large departments
 data%>%filter(Department %in% ndep[ndep$cnt>20,1]$Department ) %>%
   group_by(Department,`Tenure Status`)%>%

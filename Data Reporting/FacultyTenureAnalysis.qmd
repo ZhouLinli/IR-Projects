@@ -15,9 +15,14 @@ data<-read_excel("/Users/linlizhou/Documents/LASELL/Faculty Data for Analyst Can
 
 # Agenda
 
-- Tenure status by year
-- Tenure status by demography (rank, sex, race)
-- Tenure status for small, medium, and large department
+1. Tenure status by year
+  + How has the proportion of tenure-line and non-tenure-line faculty changed over time?
+
+2. Tenure status by demography (rank, race, sex)
+  + How has the proportion of tenure-line faculty in certain rank, racial, or sex groups changed over time?
+
+3. Tenure status for small, medium, and large department
+  + How has the proportion of tenure-line and non-tenure-line faculty changed over time for different departments?
 
 ```{r clean, results='hide'}
 #remove duplicated rows
@@ -49,7 +54,7 @@ scale_color_discrete(labels=c("Non-tenure","Tenure"),name="")+
 theme(axis.text.y=element_blank())
 ```
 
-# Faculty Characteristics: Rank
+# Historical Trends Breakdown: Faculty Rank
 
 ::: notes
 - 2017-2019 is a period for the largest jump of tenured proportion, 13% for AiP and 11% for P. AoP has less jump, and on the contry, experienced a large drop of 6% from 2019 to 2021.
@@ -71,7 +76,7 @@ geom_text_repel(aes(label=prt),fontface="bold",size=6.5)+
 scale_y_continuous(breaks = seq(.55,.75,by=.1),labels = scales::percent)+
 scale_color_discrete(name="")+
 theme_lz_ppt()+theme(axis.text.y=element_blank())+
-labs(title="Tenured Faculty by Rank",x="",y="")
+labs(title="Tenured Faculty of Different Ranks",x="",y="")
 ```
 
 ```{r none/tenure by rank, fig.width=8, include=FALSE}
@@ -88,14 +93,23 @@ labs(x="",y="",title="Overall Tenured Status by Rank")
 #Assistant Professor has 64% Tenured status, 4% higher than Professor and 6% higher than Associate Professor.
 ```
 
-# Faculty Characteristics: Race/Ethnicity
+# Historical Trends Breakdown: Race
 
 ::: notes
-- White faculty has a stable tenured proportion range within 42-50%
-- Asian faculty also has a stable tenured proportion within 32-46%, but proportion is constantly lower than white faculty each year. The largest differences are 8% and 10% in 2017 and 2019.
-- International faculty has the lowest tenured proportion of 20% in 2016, but the proportion jumped to 50% in 2018 and 2021.
-- Hispanic faculty has increased tenured proportion from 33% in 2016 to 59% in 2020, and 55% in 2021, both are the highest among all racial groups in those two years. 
-- Black faculty tenured proportion dropped from 50% in 2017 to 20% in 2018, but has been increasing by 7% each year to 44% in 2020 and kept stable at 45% in 2021.
+- White faculties have the most stable tenured proportion -- within the 42-48% range. 
+- Asian faculties experienced two dropped in 2018 and 2020 and only has 31-32% tenured proportion. The tenured proportion increased from 31% to 51% in 2021.
+- Smaller racial groups have below 30% tenured proportions before 2018. However, their tenured proportion has been increasing since 2018 and reached 46-48% in 2021. 
+
+Omitted details:
+- 2017 and 2018 are years that most groups experienced drops except Hispanic faculties. International faculties dropped 7% in 2017 and Black faculties dropped 13% in 2018.  
+- Hispanic faculties' tenured proportion has been increasing from 25% in 2016 to 59% in 2020. However, it dropped to 46% and become close to other groups. 
+
+
+
+
+- International faculties have the lowest tenured proportion of 20% in 2016, but the proportion jumped to 50% in 2018 and 2021.
+- Hispanic faculties have increased tenured proportion from 33% in 2016 to 59% in 2020, and 55% in 2021, both are the highest among all racial groups in those two years. 
+- Black faculties' tenured proportion dropped from 50% in 2017 to 20% in 2018, but has been increasing by 7% each year to 44% in 2020 and kept stable at 45% in 2021.
 ::: 
 
 ```{r facet two race bulk group,fig.width=15}
@@ -125,7 +139,7 @@ geom_text_repel(aes(label=prt),size=5)+
 scale_y_continuous(breaks = seq(.2,1,by=.2),labels = scales::percent)+
 theme_lz_ppt()+theme(axis.text.y=element_text(size=12))+theme(panel.grid.major.y = element_line(color = "grey95"), panel.grid.minor.y = element_line(color = "grey95"))+#theme(legend.position = "right", legend.direction = "vertical")+
   guides(color = guide_legend(nrow = 1, byrow = TRUE))+
-labs(title=str_wrap("Tenured Faculty by Racial Groups",80),x="",y="")
+labs(title=str_wrap("Tenured Faculty in Different Racial Groups",80),x="",y="")
 ```
 
 
@@ -161,10 +175,10 @@ labs(title=str_wrap("Tenured Faculty in Small Racial Groups (n<80)",40),x="",y="
 gridExtra::grid.arrange(g1race,g2race, ncol = 2)
 ```
 
-# Faculty Characteristics: Legal Sex
+# Historical Trends Breakdown: Legal Sex in Different Race
 
 ::: notes
-
+Hispanic and White faculties have a consistent gender gap with male faculties have higher tenured proportion than female faculties.
 ::: 
 
 ```{r tenured trend by sex in different race, fig.width=15}
@@ -179,7 +193,7 @@ scale_y_continuous(breaks = seq(.2,.8,by=.2),labels = scales::percent)+
 #scale_x_discrete(labels=c())
 scale_color_discrete(name="")+
 theme_lz_ppt()+theme(axis.text.y=element_text(size=12))+theme(panel.grid.major.y = element_line(color = "grey95"))+
-labs(title="Tenured Faculty by Legal Sex and Racial Groups",x="",y="")
+labs(title="Gender Gaps for Tenured Faculty",x="",y="")
 ```
 
 
@@ -204,14 +218,8 @@ geom_bar(stat = "identity",position = position_dodge())+
 geom_text(aes(label=prt),position=position_dodge(.9),vjust=1.5,color="white",fontface="bold", size = 9)+theme_lz_ppt()+
 scale_fill_discrete(labels=c("Non-tenure","Tenure"),name="")+
 labs(x="",y="",title="Tenured Status by Legal Sex")
-#Male faculty has 8% more tenured rate than female faculty.
+#Male faculties have 8% more tenured rate than female faculty.
 ```
-
-
-
-::: notes
-Faculty from two or more races has the highest tenured rate, 50%. Hispanic and White faculty have 39% tenured rate. Asian has 38%, African American has 36%, and International has the lowest 34% tenured rate.
-::: 
 
 ```{r tenure-by-race}
 #set order
@@ -237,6 +245,8 @@ ggplot(aes(fill=factor(`Tenure Status`),y=factor(`Race/Ethnicity`),x=prt))+
   scale_y_discrete(limits=race.order$race.f)+
 
   theme(axis.text.x = element_blank(),axis.text.y = element_text(size = 20))
+
+#Faculty from two or more races has the highest tenured rate, 50%. Hispanic and White faculty have 39% tenured rate. Asian has 38%, African American has 36%, and International has the lowest 34% tenured rate.
 ```
 
 

@@ -38,27 +38,27 @@ panel.grid.major = element_blank(), #strip major gridlines
 
 panel.grid.minor = element_blank(), #strip minor gridlines
 
-plot.title = element_text(family = font, size = 14, face = 'bold',hjust = 0.5, vjust = 2),
+plot.title = element_text(family = font, size = 18, face = 'bold',hjust = 0.5, vjust = 2),
 
-axis.title = element_text(family = font, size = 12),
+axis.title = element_text(family = font, size = 16),
 
-axis.text = element_text(family = font, size = 12),
+axis.text = element_text(family = font, size = 16),
 
-axis.text.x = element_text(family = font, size = 12, margin = margin(t=5,b=10)),
+axis.text.x = element_text(family = font, size = 16, margin = margin(t=5,b=10)),
 
 axis.ticks = element_blank(), #strip axis ticks
 
 axis.text.y=element_blank(),
 
-legend.title = element_text(family = font, size = 12),
+legend.title = element_text(family = font, size = 16),
 
-legend.text = element_text(family = font, size = 12),
+legend.text = element_text(family = font, size = 16),
 
 legend.position="bottom",
 
 legend.direction = "horizontal",
 
-strip.text = element_text(family = font, size = 12, margin = margin(t=5,b=10)),#move up is + 1
+strip.text = element_text(family = font, size = 16, margin = margin(t=5,b=10)),#move up is + 1
 
 strip.background = element_blank()
 
@@ -151,7 +151,7 @@ scale_color_discrete(labels=c("Non-tenure","Tenure"),name="")
 Assistant Professor has 64% Tenured status, 4% higher than Professor and 6% higher than Associate Professor.
 ::: 
 
-```{r tenure by rank, fig.width=5}
+```{r tenure by rank, fig.width=6}
 
 data%>% filter(Rank=="Professor"|Rank=="Assistant Professor"| Rank=="Associate Professor")%>%
 
@@ -174,7 +174,7 @@ labs(x="",y="",title="Tenured Status by Rank")
 Male faculty has 8% more tenured rate than female faculty.
 ::: 
 
-```{r tenure by sex, fig.width=3}
+```{r tenure by sex, fig.width=4}
 
 data%>% filter(`Legal Sex`!="Unreported") %>% group_by(`Legal Sex`,`Tenure Status`)%>% summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%
 
@@ -219,7 +219,7 @@ ggplot(aes(fill=factor(`Tenure Status`),y=factor(`Race/Ethnicity`),x=prt))+
 
   scale_y_discrete(limits=race.order$race.f)+
 
-  theme(axis.text.x = element_blank(),axis.text.y = element_text(size = 12))
+  theme(axis.text.x = element_blank(),axis.text.y = element_text(size = 16))
 ```
 
 
@@ -284,7 +284,7 @@ order.exclude<-data[( data$Department %in% dep.order.t$dep.f ) == FALSE,] %>%gro
 dep.order<-c(order.exclude$dep.xf,dep.order.t$dep.f)
 ```
 
-```{r dep n>20, fig.height=6}
+```{r dep n>20, fig.height=8}
 #first group n>20, 24 large departments
 
 data%>%filter(Department %in% ndep[ndep$cnt>20,1]$Department ) %>%
@@ -301,7 +301,7 @@ data%>%filter(Department %in% ndep[ndep$cnt>20,1]$Department ) %>%
 
   coord_flip()+theme(axis.text.x = element_blank())+
 
-  theme(axis.text.y=element_text(size = 12))+
+  theme(axis.text.y=element_text(size = 16))+
 
   scale_fill_discrete(labels=c("Non-tenure","Tenure"),name="")+
 
@@ -325,7 +325,7 @@ data%>%filter(Department %in% ndep[ndep$cnt>30,1]$Department ) %>%
 
   coord_flip()+theme(axis.text.x = element_blank())+
 
-  theme(axis.text.y=element_text(size = 12))+
+  theme(axis.text.y=element_text(size = 16))+
 
   scale_fill_discrete(labels=c("Non-tenure","Tenure"),name="")+
 
@@ -353,7 +353,7 @@ data%>%filter(Department %in% ndep[ndep$cnt%in%seq(21,30,by=1),1]$Department ) %
 
   coord_flip()+theme(axis.text.x = element_blank())+
 
-  theme(axis.text.y=element_text(size = 12))+
+  theme(axis.text.y=element_text(size = 16))+
 
   labs(x="",y="",title=str_wrap("Tenure for Large Departments (21-30 faculty)",35))
 ```
@@ -379,7 +379,7 @@ data%>%filter(Department %in% ndep[ndep$cnt%in%seq(5,20,by=1),1]$Department ) %>
 
   coord_flip()+theme(axis.text.x = element_blank())+
 
-  theme(axis.text.y=element_text(size = 12))+
+  theme(axis.text.y=element_text(size = 16))+
 
   labs(x="",y="",title=str_wrap("Tenure for Medium-size Departments (5-20 faculty)",35))
 ```
@@ -405,7 +405,7 @@ data%>%filter(Department %in% ndep[ndep$cnt<5,1]$Department ) %>%
 
   coord_flip()+theme(axis.text.x = element_blank())+
 
-  theme(axis.text.y=element_text(size = 12))+
+  theme(axis.text.y=element_text(size = 16))+
 
   labs(x="",y="",title=str_wrap("Tenure for Medium-size Departments (<5 faculty)",35))
 ```

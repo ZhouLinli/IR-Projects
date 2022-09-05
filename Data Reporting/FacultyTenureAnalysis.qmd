@@ -91,32 +91,36 @@ labs(x="",y="",title="Overall Tenured Status by Rank")
 # Faculty Characteristics: Race/Ethnicity
 
 ::: notes
-- White tenured faculty proportion stable in range 42-48%
-- Asian and Internal 
+- White faculty has a stable tenured proportion range within 42-50%
+- Asian faculty also has a stable tenured proportion within 32-46%, but proportion is constantly lower than white faculty each year. The largest differences are 8% and 10% in 2017 and 2019.
+- International faculty has the lowest tenured proportion of 20% in 2016, but the proportion jumped to 50% in 2018 and 2021.
+- Hispanic faculty has increased tenured proportion from 33% in 2016 to 59% in 2020, and 55% in 2021, both are the highest among all racial groups in those two years. 
+- Black faculty tenured proportion dropped from 50% in 2017 to 20% in 2018, but has been increasing by 7% each year to 44% in 2020 and kept stable at 45% in 2021.
 ::: 
 
 ```{r facet two race bulk group,fig.width=15}
 #race count
-nrace<-data%>% filter(`Race/Ethnicity`!=c("Unreported",NA))%>%group_by(`Race/Ethnicity`)%>%count()%>%arrange(-n)%>%mutate(race=factor(`Race/Ethnicity`))
+nrace<-data%>% filter( !(`Race/Ethnicity`%in% c("Unreported", "Two or More Races",NA)))%>%filter(`Tenure Status`=="Tenure Line")%>%
+  group_by(`Race/Ethnicity`)%>%count()%>%arrange(-n)%>%mutate(race=factor(`Race/Ethnicity`))
 
 #create two bulk group and pivot table
-racepvt<-data%>%filter(`Race/Ethnicity`!=c("Unreported",NA))%>%mutate(RaceGroup=case_when(
-  `Race/Ethnicity` %in% nrace$`Race/Ethnicity`[1:3] ~ "Larger Racial Group",
-  `Race/Ethnicity` %in% nrace$`Race/Ethnicity`[4:6] ~ "Smaller Racial Group",))%>%
+racepvt<-data%>%filter( !(`Race/Ethnicity`%in% c("Unreported", "Two or More Races",NA)))%>%mutate(RaceGroup=case_when(
+  `Race/Ethnicity` %in% nrace$`Race/Ethnicity`[1:2] ~ "Larger Racial Group",
+  `Race/Ethnicity` %in% nrace$`Race/Ethnicity`[3:5] ~ "Smaller Racial Group",))%>%
 #pivot table  
   group_by(Year, `Race/Ethnicity`,RaceGroup,`Tenure Status`)%>%#2016 male as a group -> proportions of (non) tenure for all male professors in 2016
 summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%filter(`Tenure Status`=="Tenure Line")
 
 #max/min data label
-#max.min<-racepvt%>%select(`Race/Ethnicity`,prt)%>%group_by(`Race/Ethnicity`)%>%summarise(max=max(prt),min=min(prt))
+#max.min<-racepvt%>%select(`Race/Ethnicity`,prt)%>%group_by(`Race/Ethnicity`)%>%summarise(max=max(prt),min=min(prt))%>%arrange(min)
   
 #plot
 racepvt%>%ggplot(aes(x=factor(Year),y=prt,color=factor(`Race/Ethnicity`),linetype=factor(`Race/Ethnicity`),group=factor(`Race/Ethnicity`)))+geom_line()+
-  scale_color_manual(name="",limits=nrace$race, values = c("black","blue","chartreuse3","darkgoldenrod","brown1","deeppink4"),labels=c("White","Asian","International","Hispanic","Black","Muti-races"))+  
-  scale_linetype_manual(name="",limits=nrace$race, values = c("solid","longdash","twodash","solid","longdash","twodash"),labels=c("White","Asian","International","Hispanic","Black","Muti-races"))+
-  facet_wrap(~RaceGroup,labeller=labeller(RaceGroup= c(`Larger Racial Group`="Larger Racial Groups (n>80)", `Smaller Racial Group`="Smaller Racial Groups (n<80)") ) )+
+  scale_color_manual(name="",limits=nrace$race, values = c("black","blue","chartreuse3","darkgoldenrod","brown1"),labels=c("White","Asian","International","Hispanic","Black"))+  
+  scale_linetype_manual(name="",limits=nrace$race, values = c("solid","longdash","twodash","solid","longdash"),labels=c("White","Asian","International","Hispanic","Black"))+
+  facet_wrap(~RaceGroup,labeller=labeller(RaceGroup= c(`Larger Racial Group`="Larger Racial Groups (Tenured Faculty>100)", `Smaller Racial Group`="Smaller Racial Groups (10<Tenured Faculty<100)") ) )+
   
-#geom_text_repel(aes(label=prt),fontface="bold",size=5)+
+geom_text_repel(aes(label=prt),size=5)+
 #themes
 scale_y_continuous(breaks = seq(.2,1,by=.2),labels = scales::percent)+
 theme_lz_ppt()+theme(axis.text.y=element_text(size=12))+theme(panel.grid.major.y = element_line(color = "grey95"), panel.grid.minor.y = element_line(color = "grey95"))+#theme(legend.position = "right", legend.direction = "vertical")+

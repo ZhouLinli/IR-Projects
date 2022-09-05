@@ -154,7 +154,7 @@ labs(title="Gender Gaps for Tenure-line Faculty",x="",y="")
 
 # Departmental Tenure Status
 
-```{r dep groups}
+```{r dep order}
 #order based on tenure prt -- exclude those without any tenure
 dep.order.t<-data%>%group_by(Department,`Tenure Status`)%>%
   summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%
@@ -166,6 +166,26 @@ order.exclude<-data[( data$Department %in% dep.order.t$dep.f ) == FALSE,] %>%gro
 #full order based on prt of tenured
 dep.order<-c(order.exclude$dep.xf,dep.order.t$dep.f)
 ```
+
+
+```{r function trend.dep}
+mylist<-c("Heller")
+
+data%>%filter(Department %in% mylist ) %>%
+  group_by(Year,Department,`Tenure Status`)%>%
+  summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%
+    filter(`Tenure Status`=="Tenure Line")%>%
+  
+  ggplot(aes(x=Year,y=prt,color=Department,group=Department))+geom_line()+
+  scale_color_discrete(limits = dep.order[dep.order %in% mylist])+
+  scale_y_continuous(labels=scales::percent_format(accuracy = 1))+
+  theme_lz_ppt()+theme(axis.text.y=element_text(size=18))+theme(panel.grid.major.y = element_line(color = "grey95"))+
+  labs(x="",y="",title=str_wrap("Selected Departments' Historical Trends of Tenure-Line Faculty Proportion",40))
+```
+
+
+
+
 
 
 ```{r function plot.dep}

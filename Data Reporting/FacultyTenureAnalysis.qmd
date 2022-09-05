@@ -66,12 +66,16 @@ Omitted details below:
 data%>% filter(Rank=="Professor"|Rank=="Assistant Professor"| Rank=="Associate Professor")%>%
   group_by(Year, Rank,`Tenure Status`)%>%#2016 professor as a group -> proportions of (non) tenure for all professors in 2016
 summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%filter(`Tenure Status`=="Tenure Line")%>%
+  
 #plot
-ggplot(aes(color=factor(Rank),x=factor(Year),y=prt,group=factor(Rank)))+geom_line()+
+ggplot(aes(color=factor(Rank),linetype=factor(Rank),x=factor(Year),y=prt,group=factor(Rank)))+geom_line()+
 geom_text_repel(aes(label=prt),fontface="bold",size=6.5)+
+  
 #themes
 scale_y_continuous(breaks = seq(.55,.75,by=.1),labels = scales::percent)+
 scale_color_discrete(name="")+
+scale_linetype_discrete(name="")+
+ 
 theme_lz_ppt()+theme(axis.text.y=element_blank())+
 labs(title="Tenure-line Faculty of Different Ranks",x="",y="")
 ```

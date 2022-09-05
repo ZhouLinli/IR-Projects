@@ -91,13 +91,17 @@ labs(x="",y="",title="Overall Tenured Status by Rank")
 # Faculty Characteristics: Race/Ethnicity
 
 ::: notes
-
+- White tenured faculty proportion stable in range 42-48%
+- Asian and Internal 
 ::: 
 
-```{r tenured trend by race top 3}
+```{r tenured trend by race, fig.width=18}
 #race count
 nrace<-data%>% filter(`Race/Ethnicity`!=c("Unreported",NA))%>%group_by(`Race/Ethnicity`)%>%count()%>%arrange(-n)%>%mutate(race=factor(`Race/Ethnicity`))
+
+#tenured trend by race top 3
 #pivot table
+g1race<-
 data%>% filter(`Race/Ethnicity`%in% nrace$`Race/Ethnicity`[1:3])%>% group_by(Year, `Race/Ethnicity`,`Tenure Status`)%>%#2016 male as a group -> proportions of (non) tenure for all male professors in 2016
 summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%filter(`Tenure Status`=="Tenure Line")%>%
 #plot
@@ -107,17 +111,11 @@ geom_text_repel(aes(label=prt),fontface="bold",size=6.5)+
 #themes
 scale_y_continuous(breaks = seq(.3,.5,by=.1),labels = scales::percent)+
 theme_lz_ppt()+theme(axis.text.y=element_blank())+
-labs(title="Tenured Faculty in Large Racial Groups (n>80)",x="",y="")
-```
+labs(title=str_wrap("Tenured Faculty in Large Racial Groups (n>80)",40),x="",y="")
 
-# Faculty Characteristics: Race/Ethnicity
-
-::: notes
-
-::: 
-
-```{r tenured trend by race bottom 3}
+# tenured trend by race bottom 3
 #pivot table
+g2race<-
 data%>% filter(`Race/Ethnicity`%in% nrace$`Race/Ethnicity`[4:6])%>% group_by(Year, `Race/Ethnicity`,`Tenure Status`)%>%#2016 male as a group -> proportions of (non) tenure for all male professors in 2016
 summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%filter(`Tenure Status`=="Tenure Line")%>%
 #plot
@@ -127,7 +125,9 @@ geom_text_repel(aes(label=prt),fontface="bold",size=6.5)+
 #themes
 scale_y_continuous(breaks = seq(.3,.5,by=.1),labels = scales::percent)+
 theme_lz_ppt()+theme(axis.text.y=element_blank())+
-labs(title="Tenured Faculty in Small Racial Groups (n<80)",x="",y="")
+labs(title=str_wrap("Tenured Faculty in Small Racial Groups (n<80)",40),x="",y="")
+
+gridExtra::grid.arrange(g1race,g2race, ncol = 2)
 ```
 
 # Faculty Characteristics: Legal Sex
@@ -147,7 +147,7 @@ ggplot(aes(color=factor(`Legal Sex`),x=factor(Year),y=prt,group=factor(`Legal Se
 scale_y_continuous(breaks = seq(.2,.8,by=.2),labels = scales::percent)+
 #scale_x_discrete(labels=c())
 scale_color_discrete(name="")+
-theme_lz_ppt()+theme(axis.text.y=element_text(size=12))+theme(panel.grid.major.y = element_line(color = "grey"))+
+theme_lz_ppt()+theme(axis.text.y=element_text(size=12))+theme(panel.grid.major.y = element_line(color = "grey95"))+
 labs(title="Tenured Faculty by Legal Sex and Racial Groups",x="",y="")
 ```
 

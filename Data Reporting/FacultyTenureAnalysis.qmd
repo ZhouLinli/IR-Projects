@@ -111,9 +111,9 @@ summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%fil
 #max.min<-racepvt%>%select(`Race/Ethnicity`,prt)%>%group_by(`Race/Ethnicity`)%>%summarise(max=max(prt),min=min(prt))
   
 #plot
-racepvt%>%ggplot(aes(color=factor(`Race/Ethnicity`),x=factor(Year),y=prt,group=factor(`Race/Ethnicity`)))+geom_line()+
+racepvt%>%ggplot(aes(x=factor(Year),y=prt,color=factor(`Race/Ethnicity`),linetype=factor(`Race/Ethnicity`),group=factor(`Race/Ethnicity`)))+geom_line()+
   scale_color_manual(name="",limits=nrace$race, values = c("black","blue","chartreuse3","darkgoldenrod","brown1","deeppink4"),labels=c("White","Asian","International","Hispanic","Black","Muti-races"))+  
-  
+  scale_linetype_manual(name="",limits=nrace$race, values = c("solid","longdash","twodash","solid","longdash","twodash"),labels=c("White","Asian","International","Hispanic","Black","Muti-races"))+
   facet_wrap(~RaceGroup,labeller=labeller(RaceGroup= c(`Larger Racial Group`="Larger Racial Groups (n>80)", `Smaller Racial Group`="Smaller Racial Groups (n<80)") ) )+
   
 #geom_text_repel(aes(label=prt),fontface="bold",size=5)+

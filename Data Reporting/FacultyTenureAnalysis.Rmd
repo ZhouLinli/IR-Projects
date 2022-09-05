@@ -58,7 +58,7 @@ mycolors<-c("#13294b","#5c88da","#69b3e7","#da291c","#641F45","#fcb53b","#6C6F70
 - Racial equity: tenured in race1/ all people in race1
 - Gender equity by department: in department 1, calcualte white-black prt gap, then rank
 
-```{r clean}
+```{r clean, results='hide'}
 #remove duplicated rows
 data<-unique(data)#from 4003 to 3984 observations
 #remove duplicated ID/persons
@@ -101,7 +101,7 @@ data%>%group_by(Year, `Tenure Status`)%>%summarise(cnt=n())%>%mutate(prt=percent
 # Tenure Status by Rank, Race, and Sex
 
 Assistant Professor has 64% Tenured status, 4% higher than Professor and 6% higher than Associate Professor. 
-```{r tenure by rank}
+```{r tenure by rank, fig.width=4}
 data%>% filter(Rank=="Professor"|Rank=="Assistant Professor"| Rank=="Associate Professor")%>%
   group_by(Rank,`Tenure Status`)%>%summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%
 ggplot(aes(fill=factor(`Tenure Status`),x=factor(Rank),y=prt))+
@@ -113,7 +113,7 @@ ggplot(aes(fill=factor(`Tenure Status`),x=factor(Rank),y=prt))+
 
 Male faculty has 8% more tenured rate than female faculty. 
 
-```{r tenure by sex}
+```{r tenure by sex, fig.width=3}
 data%>%  filter(`Legal Sex`!="Unreported") %>% group_by(`Legal Sex`,`Tenure Status`)%>% summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%
 ggplot(aes(fill=factor(`Tenure Status`),x=factor(`Legal Sex`),y=prt))+
   geom_bar(stat = "identity",position = position_dodge())+

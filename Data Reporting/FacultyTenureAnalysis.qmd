@@ -44,34 +44,37 @@ ggplot(aes(color=factor(`Tenure Status`),x=factor(Year),y=prt,group=factor(`Tenu
 geom_text(aes(label=prt),fontface="bold", size = 9)+
 theme_lz_ppt()+
 scale_y_continuous(breaks = seq(.4,.6,by=.05),labels = scales::percent)+
-labs(title="Tenured Status by Year",x="Year",y="")+
+labs(title=str_wrap("Proportion of Faulcty in Different Tenured Status from 2016-2021",50),x="",y="")+
 scale_color_discrete(labels=c("Non-tenure","Tenure"),name="")+
-theme(axis.text.y=element_blank())+theme(axis.title.x =element_blank())
+theme(axis.text.y=element_blank())
 ```
 
-# Trends by Faculty Characteristics
+# Faculty Characteristics: Rank
 
 ::: notes
-Assistant Professor has 64% Tenured status, 4% higher than Professor and 6% higher than Associate Professor.
+- 2017-2019 is a period for the largest jump of tenured proportion, 13% for AiP and 11% for P. AoP has less jump, and on the contry, experienced a large drop of 6% from 2019 to 2021.
+Omitted details below:
+- Although from 2016 to 2017, proportion of tenured AiP decreased 6%, it jumped from 57% in 2017 to 75% om 2021, representing a 18% increase over recent 4 years.
+- From 2016 to 2019, proportion of tenured AoP increased slightly from 63% to 66%. However, since 2019, the proportion dropped to 60%. AoP is 13-15% lower than AiP and Prof.
+- From 2016-2018, proportion of tenured professor dropped from 68% to 65%, while it increased 9% in 2019, and kept 74% in 2020, with a slight drop in 2021 to 73%.
 ::: 
 
 ```{r trend by rank}
 #pivot table
 data%>% filter(Rank=="Professor"|Rank=="Assistant Professor"| Rank=="Associate Professor")%>%
   group_by(Year, Rank,`Tenure Status`)%>%#2016 professor as a group -> proportions of (non) tenure for all professors in 2016
-summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%
+summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%filter(`Tenure Status`=="Tenure Line")%>%
 #plot
-ggplot(aes(color=factor(`Tenure Status`),x=factor(Year),y=prt,group=factor(`Tenure Status`)))+geom_line()+
-geom_text(aes(label=prt),fontface="bold",size=6.5)+facet_wrap(~Rank)+
+ggplot(aes(color=factor(Rank),x=factor(Year),y=prt,group=factor(Rank)))+geom_line()+
+geom_text_repel(aes(label=prt),fontface="bold",size=6.5)+
 #themes
-scale_y_continuous(breaks = seq(.25,.75,by=.1),labels = scales::percent)+
-scale_x_discrete(labels=c("16","17","18","19","20","21"))+
-scale_color_discrete(labels=c("Non-tenure","Tenure"),name="")+
-theme_lz_ppt()+theme(axis.text.y=element_blank())+theme(axis.title.x =element_blank())+
-labs(title="Tenure Status Trend by Faculty Rank",x="",y="")
+scale_y_continuous(breaks = seq(.55,.75,by=.1),labels = scales::percent)+
+scale_color_discrete(name="")+
+theme_lz_ppt()+theme(axis.text.y=element_blank())+
+labs(title="Tenured Faculty by Rank from 2016-2021",x="",y="")
 ```
 
-```{r tenure by rank, fig.width=8}
+```{r tenure by rank, fig.width=8, include=FALSE}
 data%>% filter(Rank=="Professor"|Rank=="Assistant Professor"| Rank=="Associate Professor")%>%
   group_by(Rank,`Tenure Status`)%>%summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%
 
@@ -81,6 +84,8 @@ geom_text(aes(label=prt),position=position_dodge(.9),vjust=1.5,color="white",fon
 scale_fill_discrete(labels=c("Non-tenure","Tenure"),name="")+
   scale_x_discrete(labels=c("Assistant Prof", "Associate Prof", "Professor"))+
 labs(x="",y="",title="Overall Tenured Status by Rank")
+
+#Assistant Professor has 64% Tenured status, 4% higher than Professor and 6% higher than Associate Professor.
 ```
 
 

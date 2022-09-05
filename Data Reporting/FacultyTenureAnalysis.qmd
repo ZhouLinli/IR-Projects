@@ -2,6 +2,7 @@
 title: "FacultyTenureAnalysis"
 author: "Linli Zhou"
 format: pptx
+always_allow_html: true
 editor: visual
 ---
 
@@ -153,14 +154,7 @@ labs(title="Gender Gaps for Tenure-line Faculty",x="",y="")
 
 # Departmental Tenure Status
 
-```{r dep groups, results='hide'}
-#Department that has top 6 number (unique ID/person) faculty
-topdep<-data%>%group_by(Department)%>%summarise(cnt=n_distinct(ID))%>%arrange(-cnt)%>%head()
-#check top department's T/NT
-data%>%filter(Department %in% topdep[[1]]) %>%
-  group_by(Department,`Tenure Status`)%>%
-  summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%arrange(-prt)
-
+```{r dep groups}
 #order based on tenure prt -- exclude those without any tenure
 dep.order.t<-data%>%group_by(Department,`Tenure Status`)%>%
   summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%
@@ -174,7 +168,7 @@ dep.order<-c(order.exclude$dep.xf,dep.order.t$dep.f)
 ```
 
 
-```{r n<5}
+```{r function plot.dep}
 #make department count as ndep
 ndep<-data%>%group_by(Department)%>%summarise(cnt=n_distinct(ID))%>%arrange(-cnt)#
 
@@ -188,12 +182,30 @@ plot.dep<-function(min.input,max.input){
   summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%
   ggplot(aes(x=Department,y=prt,fill=`Tenure Status`))+geom_bar(stat = "identity")+
   scale_x_discrete(limits = dep.order[dep.order %in% mylist])+
+  scale_fill_discrete(name="",labels=c("Non-tenure","Tenure"))+
   theme_lz_ppt()+geom_text(aes(label=prt),position = position_stack(),hjust=1, color="white",size=6)+
   coord_flip()+theme(axis.text.x = element_blank())+
-  theme(axis.text.y=element_text(size = 12),plot.title = element_text(size=14))+
+  theme(axis.text.y=element_text(size = 12),plot.title = element_text(size=18))+
   labs(x="",y="",title=str_wrap( 
-    paste0("Faculty Tenure Status for Departments (",min.input, "<n<",max.input,")"),35))}
+    paste0("Faculty Tenure Status for Departments (",min.input, "<n<",max.input,")"),70))}
+```
 
+```{r}
 #apply function
 plot.dep(0,5)
 ```
+
+```{r eruptions}
+library(shiny)
+inputPanel(
+  sliderInput("min.input", label = "Department's minimum count of faculty:",
+              min = 0, max = 147, value = 0, step = 1),
+  sliderInput("max.input", label = "Department's maximum count of faculty:",
+              min = 0, max = 147, value = 147, step = 1)
+)
+
+renderPlot({
+plot.dep(min.input,max.input)
+})
+```
+

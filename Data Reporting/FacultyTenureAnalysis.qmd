@@ -44,7 +44,7 @@ ggplot(aes(color=factor(`Tenure Status`),x=factor(Year),y=prt,group=factor(`Tenu
 geom_text(aes(label=prt),fontface="bold", size = 9)+
 theme_lz_ppt()+
 scale_y_continuous(breaks = seq(.4,.6,by=.05),labels = scales::percent)+
-labs(title=str_wrap("Proportion of Faulcty in Different Tenured Status from 2016-2021",50),x="",y="")+
+labs(title=str_wrap("Proportion of Faulcty in Different Tenured Status",50),x="",y="")+
 scale_color_discrete(labels=c("Non-tenure","Tenure"),name="")+
 theme(axis.text.y=element_blank())
 ```
@@ -71,7 +71,7 @@ geom_text_repel(aes(label=prt),fontface="bold",size=6.5)+
 scale_y_continuous(breaks = seq(.55,.75,by=.1),labels = scales::percent)+
 scale_color_discrete(name="")+
 theme_lz_ppt()+theme(axis.text.y=element_blank())+
-labs(title="Tenured Faculty by Rank from 2016-2021",x="",y="")
+labs(title="Tenured Faculty by Rank",x="",y="")
 ```
 
 ```{r none/tenure by rank, fig.width=8, include=FALSE}
@@ -88,14 +88,62 @@ labs(x="",y="",title="Overall Tenured Status by Rank")
 #Assistant Professor has 64% Tenured status, 4% higher than Professor and 6% higher than Associate Professor.
 ```
 
+# Faculty Characteristics: Race/Ethnicity
+
+```{r tenured trend by race top 3}
+#race count
+nrace<-data%>% filter(`Race/Ethnicity`!=c("Unreported",NA))%>%group_by(`Race/Ethnicity`)%>%count()%>%arrange(-n)%>%mutate(race=factor(`Race/Ethnicity`))
+#pivot table
+data%>% filter(`Race/Ethnicity`%in% nrace$`Race/Ethnicity`[1:3])%>% group_by(Year, `Race/Ethnicity`,`Tenure Status`)%>%#2016 male as a group -> proportions of (non) tenure for all male professors in 2016
+summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%filter(`Tenure Status`=="Tenure Line")%>%
+#plot
+ggplot(aes(color=factor(`Race/Ethnicity`),x=factor(Year),y=prt,group=factor(`Race/Ethnicity`)))+geom_line()+
+  scale_color_manual(name="",limits=nrace$race[1:3],values = c(mycolors[1],mycolors[2],mycolors[4]))+
+geom_text_repel(aes(label=prt),fontface="bold",size=6.5)+
+#themes
+scale_y_continuous(breaks = seq(.3,.5,by=.1),labels = scales::percent)+
+theme_lz_ppt()+theme(axis.text.y=element_blank())+
+labs(title="Tenured Faculty in Large Racial Groups (n>80)",x="",y="")
+```
+
+# Faculty Characteristics: Race/Ethnicity
+
+```{r tenured trend by race bottom 3}
+#pivot table
+data%>% filter(`Race/Ethnicity`%in% nrace$`Race/Ethnicity`[4:6])%>% group_by(Year, `Race/Ethnicity`,`Tenure Status`)%>%#2016 male as a group -> proportions of (non) tenure for all male professors in 2016
+summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%filter(`Tenure Status`=="Tenure Line")%>%
+#plot
+ggplot(aes(color=factor(`Race/Ethnicity`),x=factor(Year),y=prt,group=factor(`Race/Ethnicity`)))+geom_line()+
+  scale_color_manual(name="",limits=nrace$race[4:6],values = c(mycolors[6],mycolors[7],mycolors[5]))+
+geom_text_repel(aes(label=prt),fontface="bold",size=6.5)+
+#themes
+scale_y_continuous(breaks = seq(.3,.5,by=.1),labels = scales::percent)+
+theme_lz_ppt()+theme(axis.text.y=element_blank())+
+labs(title="Tenured Faculty in Small Racial Groups (n<80)",x="",y="")
+```
+
 # Faculty Characteristics: Legal Sex
 
 ::: notes
 
 ::: 
 
+```{r tenured trend by sex in different race}
+#pivot table
+data%>% filter(`Race/Ethnicity`!="Unreported")%>% group_by(Year,`Race/Ethnicity`, `Tenure Status`,`Legal Sex`)%>%#2016 male as a group -> proportions of (non) tenure for all male professors in 2016
+summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%filter(`Tenure Status`=="Tenure Line")%>%
+#plot
+ggplot(aes(color=factor(`Legal Sex`),x=factor(Year),y=prt,group=factor(`Legal Sex`)))+geom_line()+facet_wrap(~`Race/Ethnicity`)+
+geom_text_repel(aes(label=prt),fontface="bold",size=6.5)+
+#themes
+scale_y_continuous(breaks = seq(.3,.5,by=.1),labels = scales::percent)+
+scale_color_discrete(name="")+
+theme_lz_ppt()+theme(axis.text.y=element_blank())+
+labs(title="Tenured Faculty by Legal Sex",x="",y="")
+```
 
-```{r tenured trend by sex}
+
+```{r tenured trend by sex, include=FALSE}
 #pivot table
 data%>% group_by(Year, `Legal Sex`,`Tenure Status`)%>%#2016 male as a group -> proportions of (non) tenure for all male professors in 2016
 summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%filter(`Tenure Status`=="Tenure Line")%>%
@@ -106,7 +154,7 @@ geom_text_repel(aes(label=prt),fontface="bold",size=6.5)+
 scale_y_continuous(breaks = seq(.3,.5,by=.1),labels = scales::percent)+
 scale_color_discrete(name="")+
 theme_lz_ppt()+theme(axis.text.y=element_blank())+
-labs(title="Tenured Faculty by Legal Sex from 2016-2021",x="",y="")
+labs(title="Tenured Faculty by Legal Sex",x="",y="")
 ```
 
 ```{r tenure by sex, fig.width=6, include=FALSE}

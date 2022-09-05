@@ -20,20 +20,15 @@ data<-read_excel("/Users/linlizhou/Documents/LASELL/Faculty Data for Analyst Can
 - Tenure status for small, medium, and large department
 
 ```{r clean, results='hide'}
-
 #remove duplicated rows
-
 data<-unique(data)#from 4003 to 3984 observations
-
-#remove duplicated ID/persons
-
+#investigate duplicated ID/persons
 unique(data$ID)%>%length()#1147 unique ID
-
 data%>% group_by(ID) %>% summarise(cnt=n()) %>%arrange(-cnt) %>%filter(cnt>1) #815 duplicated IDs
+#thus, need n_distinct ID in the following codes
 ```
 
-
-# Tenure Status by Year
+# Historical Trends
 
 ::: notes
 - Tenured percentage has been increased since 2016 from 40% to 44% in 2021, with 2020 being the highest 45%. 
@@ -42,78 +37,50 @@ data%>% group_by(ID) %>% summarise(cnt=n()) %>%arrange(-cnt) %>%filter(cnt>1) #8
 ::: 
 
 ```{r unique TvsN across year}
-
 data%>%group_by(Year, `Tenure Status`)%>%
-
 summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%
 
 ggplot(aes(color=factor(`Tenure Status`),x=factor(Year),y=prt,group=factor(`Tenure Status`)))+geom_line()+
-
 geom_text(aes(label=prt),fontface="bold", size = 9)+
-
 theme_lz_ppt()+
-
 scale_y_continuous(breaks = seq(.4,.6,by=.05),labels = scales::percent)+
-
 labs(title="Tenured Status by Year",x="Year",y="")+
-
 scale_color_discrete(labels=c("Non-tenure","Tenure"),name="")+
-
-theme(axis.text.y=element_blank())+
-theme(axis.title.x =element_blank())
-
-#scale_color_discrete(values = c("Non-tenure"=mycolors[4],"Tenure"=mycolors[1]),name="")
-
-#geom_bar(stat = "identity", position=position_dodge())
+theme(axis.text.y=element_blank())+theme(axis.title.x =element_blank())
 ```
 
-
-```{r TvsN across year, include=FALSE}
-
-
-data%>%group_by(Year, `Tenure Status`)%>%summarise(cnt=n())%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%
-
-ggplot(aes(color=factor(`Tenure Status`),x=factor(Year),y=prt,group=factor(`Tenure Status`)))+geom_line()+
-
-geom_text(aes(label=prt), size = 9)+
-
-theme_lz_ppt()+
-
-scale_y_continuous(breaks = seq(.4,.6,by=.05),labels = scales::percent)+
-
-labs(title="",x="Year",y="",fill="")+
-
-scale_color_discrete(labels=c("Non-tenure","Tenure"),name="")
-
-#scale_color_discrete(values = c("Non-tenure"=mycolors[4],"Tenure"=mycolors[1]),name="")
-
-#geom_bar(stat = "identity", position=position_dodge())
-
-```
-
-# Tenure Status by Rank, Race, and Sex
+# Trends by Faculty Characteristics
 
 ::: notes
 Assistant Professor has 64% Tenured status, 4% higher than Professor and 6% higher than Associate Professor.
 ::: 
 
-```{r tenure by rank, fig.width=8}
-
+```{r trend by rank}
+#pivot table
 data%>% filter(Rank=="Professor"|Rank=="Assistant Professor"| Rank=="Associate Professor")%>%
+  group_by(Year, Rank,`Tenure Status`)%>%#2016 professor as a group -> proportions of (non) tenure for all professors in 2016
+summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%
+#plot
+ggplot(aes(color=factor(`Tenure Status`),x=factor(Year),y=prt,group=factor(`Tenure Status`)))+geom_line()+
+geom_text(aes(label=prt),fontface="bold",size=6.5)+facet_wrap(~Rank)+
+#themes
+scale_y_continuous(breaks = seq(.25,.75,by=.1),labels = scales::percent)+
+scale_x_discrete(labels=c("16","17","18","19","20","21"))+
+scale_color_discrete(labels=c("Non-tenure","Tenure"),name="")+
+theme_lz_ppt()+theme(axis.text.y=element_blank())+theme(axis.title.x =element_blank())+
+labs(title="Tenure Status Trend by Faculty Rank",x="",y="")
+```
 
-group_by(Rank,`Tenure Status`)%>%summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%
+```{r tenure by rank, fig.width=8}
+data%>% filter(Rank=="Professor"|Rank=="Assistant Professor"| Rank=="Associate Professor")%>%
+  group_by(Rank,`Tenure Status`)%>%summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%
 
 ggplot(aes(fill=factor(`Tenure Status`),x=factor(Rank),y=prt))+
-
 geom_bar(stat = "identity",position = position_dodge())+
-
 geom_text(aes(label=prt),position=position_dodge(.9),vjust=1.5,color="white",fontface="bold", size= 9 )+theme_lz_ppt()+
-
 scale_fill_discrete(labels=c("Non-tenure","Tenure"),name="")+
   scale_x_discrete(labels=c("Assistant Prof", "Associate Prof", "Professor"))+
-
-labs(x="",y="",title="Tenured Status by Rank")
-
+labs(x="",y="",title="Overall Tenured Status by Rank")
 ```
 
 

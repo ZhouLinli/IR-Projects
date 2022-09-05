@@ -95,14 +95,37 @@ labs(x="",y="",title="Overall Tenured Status by Rank")
 - Asian and Internal 
 ::: 
 
-```{r tenured trend by race, fig.width=18}
+```{r facet two race bulk group,fig.width=15}
 #race count
 nrace<-data%>% filter(`Race/Ethnicity`!=c("Unreported",NA))%>%group_by(`Race/Ethnicity`)%>%count()%>%arrange(-n)%>%mutate(race=factor(`Race/Ethnicity`))
 
+#create two bulk group and plot
+data%>%filter(`Race/Ethnicity`!=c("Unreported",NA))%>%mutate(RaceGroup=case_when(
+  `Race/Ethnicity` %in% nrace$`Race/Ethnicity`[1:3] ~ "Larger Racial Group",
+  `Race/Ethnicity` %in% nrace$`Race/Ethnicity`[4:6] ~ "Smaller Racial Group",))%>%
+  
+#pivot table  
+  group_by(Year, `Race/Ethnicity`,RaceGroup,`Tenure Status`)%>%#2016 male as a group -> proportions of (non) tenure for all male professors in 2016
+summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%filter(`Tenure Status`=="Tenure Line")%>%
+  
+#plot
+ggplot(aes(color=factor(`Race/Ethnicity`),x=factor(Year),y=prt,group=factor(`Race/Ethnicity`)))+geom_line()+
+  scale_color_manual(name="",limits=nrace$race, values = c(mycolors[1],mycolors[2],mycolors[4],mycolors[6],mycolors[7],"green"))+  
+  facet_wrap(~RaceGroup,labeller=labeller(RaceGroup= c(`Larger Racial Group`="Larger Racial Groups (n>80)", `Smaller Racial Group`="Smaller Racial Groups (n<80)") ) )+
+  
+geom_text_repel(aes(label=prt),fontface="bold",size=6.5)+
+#themes
+scale_y_continuous(breaks = seq(.2,.6,by=.2),labels = scales::percent)+
+theme_lz_ppt()+theme(axis.text.y=element_blank())+theme(legend.position = "right", legend.direction = "vertical")+
+labs(title=str_wrap("Tenured Faculty by Racial Groups",80),x="",y="")
+```
+
+
+```{r tenured trend by race, fig.width=18, fig.height=6, include=FALSE}
 #tenured trend by race top 3
 #pivot table
 g1race<-
-data%>% filter(`Race/Ethnicity`%in% nrace$`Race/Ethnicity`[1:3])%>% group_by(Year, `Race/Ethnicity`,`Tenure Status`)%>%#2016 male as a group -> proportions of (non) tenure for all male professors in 2016
+data%>% filter(`Race/Ethnicity`%in% nrace$`Race/Ethnicity`[1:3])%>% group_by(Year, `Race/Ethnicity`,`Tenure Status`)%>%#2016 white as a group -> proportions of (non) tenure for all white professors in 2016
 summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%filter(`Tenure Status`=="Tenure Line")%>%
 #plot
 ggplot(aes(color=factor(`Race/Ethnicity`),x=factor(Year),y=prt,group=factor(`Race/Ethnicity`)))+geom_line()+
@@ -116,7 +139,7 @@ labs(title=str_wrap("Tenured Faculty in Large Racial Groups (n>80)",40),x="",y="
 # tenured trend by race bottom 3
 #pivot table
 g2race<-
-data%>% filter(`Race/Ethnicity`%in% nrace$`Race/Ethnicity`[4:6])%>% group_by(Year, `Race/Ethnicity`,`Tenure Status`)%>%#2016 male as a group -> proportions of (non) tenure for all male professors in 2016
+data%>% filter(`Race/Ethnicity`%in% nrace$`Race/Ethnicity`[4:6])%>% group_by(Year, `Race/Ethnicity`,`Tenure Status`)%>%#2016 white as a group -> proportions of (non) tenure for all white professors in 2016
 summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%filter(`Tenure Status`=="Tenure Line")%>%
 #plot
 ggplot(aes(color=factor(`Race/Ethnicity`),x=factor(Year),y=prt,group=factor(`Race/Ethnicity`)))+geom_line()+

@@ -185,15 +185,32 @@ plot.dep<-function(min.input,max.input){
   scale_fill_discrete(name="",labels=c("Non-tenure","Tenure"))+
   theme_lz_ppt()+geom_text(aes(label=prt),position = position_stack(),hjust=1, color="white",size=6)+
   coord_flip()+theme(axis.text.x = element_blank())+
-  theme(axis.text.y=element_text(size = 12),plot.title = element_text(size=18))+
+  theme(axis.text.y=element_text(size = 14),plot.title = element_text(size=18))+
   labs(x="",y="",title=str_wrap( 
-    paste0("Faculty Tenure Status for Departments (",min.input, "<n<",max.input,")"),70))}
+    paste0("Selected Departments (",min.input, "<Count of Faculty<",max.input,")"),70))}
+```
+
+```{r}
+#apply function
+plot.dep(31,147)
+```
+
+```{r}
+#apply function
+plot.dep(21,30)
+```
+
+```{r}
+#apply function
+plot.dep(6,20)
 ```
 
 ```{r}
 #apply function
 plot.dep(0,5)
 ```
+
+
 
 ```{r eruptions}
 library(shiny)

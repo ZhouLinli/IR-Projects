@@ -13,16 +13,13 @@ source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")  #run 
 data<-read_excel("/Users/linlizhou/Documents/LASELL/Faculty Data for Analyst Candidates.xlsx")
 ```
 
-# Agenda
+# Research Questions
 
-1. Tenure status by year
-  + How has the proportion of tenure-line and non-tenure-line faculty changed over time?
+1. How has the proportion of tenure-line (TL) and non-tenure-line (NTL) faculty **changed over time**?
 
-2. Tenure status by demography (rank, race, sex)
-  + How has the proportion of tenure-line faculty in certain rank, racial, or sex groups changed over time?
+2. How has the proportion of TL faculty in certain **rank, racial, or sex** groups changed over time?
 
-3. Tenure status for small, medium, and large department
-  + How has the proportion of tenure-line and non-tenure-line faculty changed over time for different departments?
+3. How has the proportion of TL and NTL faculty changed over time for different **departments**?
 
 ```{r clean, results='hide'}
 #remove duplicated rows
@@ -37,8 +34,8 @@ data%>% group_by(ID) %>% summarise(cnt=n()) %>%arrange(-cnt) %>%filter(cnt>1) #8
 
 ::: notes
 - Tenured percentage has been increased since 2016 from 40% to 44% in 2021, with 2020 being the highest 45%. 
-- Non-tenured faculty percentage has been decreased from 60% to 56%, with 2020 being the lowest 55%. 
-- There are still 12% less tenured faculty than non tenured.
+- Non-Tenure-line Faculty percentage has been decreased from 60% to 56%, with 2020 being the lowest 55%. 
+- There are still 12% less Tenure-line Faculty than non tenured.
 ::: 
 
 ```{r unique TvsN across year}
@@ -76,7 +73,7 @@ geom_text_repel(aes(label=prt),fontface="bold",size=6.5)+
 scale_y_continuous(breaks = seq(.55,.75,by=.1),labels = scales::percent)+
 scale_color_discrete(name="")+
 theme_lz_ppt()+theme(axis.text.y=element_blank())+
-labs(title="Tenured Faculty of Different Ranks",x="",y="")
+labs(title="Tenure-line Faculty of Different Ranks",x="",y="")
 ```
 
 ```{r none/tenure by rank, fig.width=8, include=FALSE}
@@ -132,14 +129,14 @@ summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%fil
 racepvt%>%ggplot(aes(x=factor(Year),y=prt,color=factor(`Race/Ethnicity`),linetype=factor(`Race/Ethnicity`),group=factor(`Race/Ethnicity`)))+geom_line()+
   scale_color_manual(name="",limits=nrace$race, values = c("black","blue","chartreuse3","darkgoldenrod","brown1"),labels=c("White","Asian","International","Hispanic","Black"))+  
   scale_linetype_manual(name="",limits=nrace$race, values = c("solid","longdash","twodash","solid","longdash"),labels=c("White","Asian","International","Hispanic","Black"))+
-  facet_wrap(~RaceGroup,labeller=labeller(RaceGroup= c(`Larger Racial Group`="Larger Racial Groups (Tenured Faculty>100)", `Smaller Racial Group`="Smaller Racial Groups (10<Tenured Faculty<100)") ) )+
+  facet_wrap(~RaceGroup,labeller=labeller(RaceGroup= c(`Larger Racial Group`="Larger Racial Groups (Tenure-line Faculty>100)", `Smaller Racial Group`="Smaller Racial Groups (10<Tenure-line Faculty<100)") ) )+
   
 geom_text_repel(aes(label=prt),size=5)+
 #themes
 scale_y_continuous(breaks = seq(.2,1,by=.2),labels = scales::percent)+
 theme_lz_ppt()+theme(axis.text.y=element_text(size=12))+theme(panel.grid.major.y = element_line(color = "grey95"), panel.grid.minor.y = element_line(color = "grey95"))+#theme(legend.position = "right", legend.direction = "vertical")+
   guides(color = guide_legend(nrow = 1, byrow = TRUE))+
-labs(title=str_wrap("Tenured Faculty in Different Racial Groups",80),x="",y="")
+labs(title=str_wrap("Tenure-line Faculty in Different Racial Groups",80),x="",y="")
 ```
 
 
@@ -156,7 +153,7 @@ geom_text_repel(aes(label=prt),fontface="bold",size=6.5)+
 #themes
 scale_y_continuous(breaks = seq(.3,.5,by=.1),labels = scales::percent)+
 theme_lz_ppt()+theme(axis.text.y=element_blank())+
-labs(title=str_wrap("Tenured Faculty in Large Racial Groups (n>80)",40),x="",y="")
+labs(title=str_wrap("Tenure-line Faculty in Large Racial Groups (n>80)",40),x="",y="")
 
 # tenured trend by race bottom 3
 #pivot table
@@ -170,7 +167,7 @@ geom_text_repel(aes(label=prt),fontface="bold",size=6.5)+
 #themes
 scale_y_continuous(breaks = seq(.3,.5,by=.1),labels = scales::percent)+
 theme_lz_ppt()+theme(axis.text.y=element_blank())+
-labs(title=str_wrap("Tenured Faculty in Small Racial Groups (n<80)",40),x="",y="")
+labs(title=str_wrap("Tenure-line Faculty in Small Racial Groups (n<80)",40),x="",y="")
 
 gridExtra::grid.arrange(g1race,g2race, ncol = 2)
 ```
@@ -193,7 +190,7 @@ scale_y_continuous(breaks = seq(.2,.8,by=.2),labels = scales::percent)+
 #scale_x_discrete(labels=c())
 scale_color_discrete(name="")+
 theme_lz_ppt()+theme(axis.text.y=element_text(size=12))+theme(panel.grid.major.y = element_line(color = "grey95"))+
-labs(title="Gender Gaps for Tenured Faculty",x="",y="")
+labs(title="Gender Gaps for Tenure-line Faculty",x="",y="")
 ```
 
 
@@ -208,7 +205,7 @@ geom_text_repel(aes(label=prt),fontface="bold",size=6.5)+
 scale_y_continuous(breaks = seq(.3,.5,by=.1),labels = scales::percent)+
 scale_color_discrete(name="")+
 theme_lz_ppt()+theme(axis.text.y=element_blank())+
-labs(title="Tenured Faculty by Legal Sex",x="",y="")
+labs(title="Tenure-line Faculty by Legal Sex",x="",y="")
 ```
 
 ```{r tenure by sex, fig.width=6, include=FALSE}
@@ -221,7 +218,7 @@ labs(x="",y="",title="Tenured Status by Legal Sex")
 #Male faculties have 8% more tenured rate than female faculty.
 ```
 
-```{r tenure-by-race}
+```{r tenure-by-race, include=FALSE}
 #set order
 
 race.order<-data%>%filter(`Race/Ethnicity`!=c ("Unreported",NA) )%>%
@@ -332,7 +329,7 @@ data%>%filter(Department %in% ndep[ndep$cnt>20,1]$Department ) %>%
 
   scale_fill_discrete(labels=c("Non-tenure","Tenure"),name="")+
 
-  labs(x="",y="", title="Tenure for Large Departments (>20 faculty)")
+  labs(x="",y="", title="Faculty Tenure Status for Large Departments (>20 faculty)")
 ```
 
 ```{r dep n>30}
@@ -356,7 +353,7 @@ data%>%filter(Department %in% ndep[ndep$cnt>30,1]$Department ) %>%
 
   scale_fill_discrete(labels=c("Non-tenure","Tenure"),name="")+
 
-  labs(x="",y="", title="Tenure for Giant Departments (>30 faculty)")
+  labs(x="",y="", title="Faculty Tenure Status for Giant Departments (>30 faculty)")
 ```
 
 ```{r dep n21-30}
@@ -382,7 +379,7 @@ data%>%filter(Department %in% ndep[ndep$cnt%in%seq(21,30,by=1),1]$Department ) %
 
   theme(axis.text.y=element_text(size = 20))+
 
-  labs(x="",y="",title=str_wrap("Tenure for Large Departments (21-30 faculty)",35))
+  labs(x="",y="",title=str_wrap("Faculty Tenure Status for Large Departments (21-30 faculty)",35))
 ```
 
 ```{r dep n5-20}
@@ -408,7 +405,7 @@ data%>%filter(Department %in% ndep[ndep$cnt%in%seq(5,20,by=1),1]$Department ) %>
 
   theme(axis.text.y=element_text(size = 20))+
 
-  labs(x="",y="",title=str_wrap("Tenure for Medium-size Departments (5-20 faculty)",35))
+  labs(x="",y="",title=str_wrap("Faculty Tenure Status for Medium-size Departments (5-20 faculty)",35))
 ```
 
 ```{r n<5}
@@ -434,5 +431,5 @@ data%>%filter(Department %in% ndep[ndep$cnt<5,1]$Department ) %>%
 
   theme(axis.text.y=element_text(size = 20))+
 
-  labs(x="",y="",title=str_wrap("Tenure for Medium-size Departments (<5 faculty)",35))
+  labs(x="",y="",title=str_wrap("Faculty Tenure Status for Medium-size Departments (<5 faculty)",35))
 ```

@@ -177,17 +177,12 @@ dep.order<-c(order.exclude$dep.xf,dep.order.t$dep.f)
 ```{r n<5}
 #make department count as ndep
 ndep<-data%>%group_by(Department)%>%summarise(cnt=n_distinct(ID))%>%arrange(-cnt)#
-#grouping
-group<-ndep[ndep$cnt%in%seq(min.input,max.input,by=1),1]
-
-#grouping ndep
-mylist1<-ndep[ndep$cnt<5,1]$Department
-mylist2<-ndep[ndep$cnt%in%seq(5,20,by=1),1]$Department
-mylist3<-ndep[ndep$cnt%in%seq(21,30,by=1),1]$Department
-mylist4<-ndep[ndep$cnt>30,1]$Department
 
 #plot for each group
-plot.dep<-function(mylist){
+plot.dep<-function(min.input,max.input){
+  group<-ndep[ndep$cnt%in%seq(min.input,max.input,by=1),1]
+  mylist<-group$Department
+
   data%>%filter(Department %in% mylist ) %>%
   group_by(Department,`Tenure Status`)%>%
   summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%
@@ -197,8 +192,8 @@ plot.dep<-function(mylist){
   coord_flip()+theme(axis.text.x = element_blank())+
   theme(axis.text.y=element_text(size = 12),plot.title = element_text(size=14))+
   labs(x="",y="",title=str_wrap( 
-    paste0("Faculty Tenure Status for Departments (",min(mylist), "<n<",max(mylist)),35))}
+    paste0("Faculty Tenure Status for Departments (",min.input, "<n<",max.input,")"),35))}
 
 #apply function
-plot.dep(mylist2)
+plot.dep(0,5)
 ```

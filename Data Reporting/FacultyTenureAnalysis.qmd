@@ -54,11 +54,9 @@ theme(axis.text.y=element_blank())
 # Historical Trends Breakdown: Faculty Rank
 
 ::: notes
-- 2017-2019 is a period for the largest jump of tenured proportion, 13% for AiP and 11% for P. AoP has less jump, and on the contry, experienced a large drop of 6% from 2019 to 2021.
-Omitted details below:
-- Although from 2016 to 2017, proportion of tenured AiP decreased 6%, it jumped from 57% in 2017 to 75% om 2021, representing a 18% increase over recent 4 years.
-- From 2016 to 2019, proportion of tenured AoP increased slightly from 63% to 66%. However, since 2019, the proportion dropped to 60%. AoP is 13-15% lower than AiP and Prof.
-- From 2016-2018, proportion of tenured professor dropped from 68% to 65%, while it increased 9% in 2019, and kept 74% in 2020, with a slight drop in 2021 to 73%.
+- Assistant professor tenure-line proportion dropped from 63% in 2016 to 57% in 2017 and became the lowest across professor ranks. However, the proportion but has been increasing ever since and reached 75% in 2021. 
+- Professor experienced a slight drop from 68% in 2016 to 65% in 2018, but has increased ever since and reached 73% in 2021. 
+- Associate professor has slight increase from 63% in 2016 to 66% in 2019, but dropped to 60% in 2021. 
 ::: 
 
 ```{r tenured trend by rank}
@@ -80,19 +78,6 @@ theme_lz_ppt()+theme(axis.text.y=element_blank())+
 labs(title="Tenure-line Faculty of Different Ranks",x="",y="")
 ```
 
-```{r none/tenure by rank, fig.width=8, include=FALSE}
-data%>% filter(Rank=="Professor"|Rank=="Assistant Professor"| Rank=="Associate Professor")%>%
-  group_by(Rank,`Tenure Status`)%>%summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%
-
-ggplot(aes(fill=factor(`Tenure Status`),x=factor(Rank),y=prt))+
-geom_bar(stat = "identity",position = position_dodge())+
-geom_text(aes(label=prt),position=position_dodge(.9),vjust=1.5,color="white",fontface="bold", size= 9 )+theme_lz_ppt()+
-scale_fill_discrete(labels=c("Non-tenure","Tenure"),name="")+
-  scale_x_discrete(labels=c("Assistant Prof", "Associate Prof", "Professor"))+
-labs(x="",y="",title="Overall Tenured Status by Rank")
-
-#Assistant Professor has 64% Tenured status, 4% higher than Professor and 6% higher than Associate Professor.
-```
 
 # Historical Trends Breakdown: Race
 
@@ -144,38 +129,6 @@ labs(title=str_wrap("Tenure-line Faculty in Different Racial Groups",80),x="",y=
 ```
 
 
-```{r tenured trend by race, fig.width=18, fig.height=6, include=FALSE}
-#tenured trend by race top 3
-#pivot table
-g1race<-
-data%>% filter(`Race/Ethnicity`%in% nrace$`Race/Ethnicity`[1:3])%>% group_by(Year, `Race/Ethnicity`,`Tenure Status`)%>%#2016 white as a group -> proportions of (non) tenure for all white professors in 2016
-summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%filter(`Tenure Status`=="Tenure Line")%>%
-#plot
-ggplot(aes(color=factor(`Race/Ethnicity`),x=factor(Year),y=prt,group=factor(`Race/Ethnicity`)))+geom_line()+
-  scale_color_manual(name="",limits=nrace$race[1:3],values = c(mycolors[1],mycolors[2],mycolors[4]))+
-geom_text_repel(aes(label=prt),fontface="bold",size=6.5)+
-#themes
-scale_y_continuous(breaks = seq(.3,.5,by=.1),labels = scales::percent)+
-theme_lz_ppt()+theme(axis.text.y=element_blank())+
-labs(title=str_wrap("Tenure-line Faculty in Large Racial Groups (n>80)",40),x="",y="")
-
-# tenured trend by race bottom 3
-#pivot table
-g2race<-
-data%>% filter(`Race/Ethnicity`%in% nrace$`Race/Ethnicity`[4:6])%>% group_by(Year, `Race/Ethnicity`,`Tenure Status`)%>%#2016 white as a group -> proportions of (non) tenure for all white professors in 2016
-summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%filter(`Tenure Status`=="Tenure Line")%>%
-#plot
-ggplot(aes(color=factor(`Race/Ethnicity`),x=factor(Year),y=prt,group=factor(`Race/Ethnicity`)))+geom_line()+
-  scale_color_manual(name="",limits=nrace$race[4:6],values = c(mycolors[6],mycolors[7],mycolors[5]))+
-geom_text_repel(aes(label=prt),fontface="bold",size=6.5)+
-#themes
-scale_y_continuous(breaks = seq(.3,.5,by=.1),labels = scales::percent)+
-theme_lz_ppt()+theme(axis.text.y=element_blank())+
-labs(title=str_wrap("Tenure-line Faculty in Small Racial Groups (n<80)",40),x="",y="")
-
-gridExtra::grid.arrange(g1race,g2race, ncol = 2)
-```
-
 # Historical Trends Breakdown: Legal Sex in Different Race
 
 ::: notes
@@ -198,60 +151,9 @@ labs(title="Gender Gaps for Tenure-line Faculty",x="",y="")
 ```
 
 
-```{r tenured trend by sex, include=FALSE}
-#pivot table
-data%>% group_by(Year, `Legal Sex`,`Tenure Status`)%>%#2016 male as a group -> proportions of (non) tenure for all male professors in 2016
-summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%filter(`Tenure Status`=="Tenure Line")%>%
-#plot
-ggplot(aes(color=factor(`Legal Sex`),x=factor(Year),y=prt,group=factor(`Legal Sex`)))+geom_line()+
-geom_text_repel(aes(label=prt),fontface="bold",size=6.5)+
-#themes
-scale_y_continuous(breaks = seq(.3,.5,by=.1),labels = scales::percent)+
-scale_color_discrete(name="")+
-theme_lz_ppt()+theme(axis.text.y=element_blank())+
-labs(title="Tenure-line Faculty by Legal Sex",x="",y="")
-```
-
-```{r tenure by sex, fig.width=6, include=FALSE}
-data%>% filter(`Legal Sex`!="Unreported") %>% group_by(`Legal Sex`,`Tenure Status`)%>% summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%
-ggplot(aes(fill=factor(`Tenure Status`),x=factor(`Legal Sex`),y=prt))+
-geom_bar(stat = "identity",position = position_dodge())+
-geom_text(aes(label=prt),position=position_dodge(.9),vjust=1.5,color="white",fontface="bold", size = 9)+theme_lz_ppt()+
-scale_fill_discrete(labels=c("Non-tenure","Tenure"),name="")+
-labs(x="",y="",title="Tenured Status by Legal Sex")
-#Male faculties have 8% more tenured rate than female faculty.
-```
-
-```{r tenure-by-race, include=FALSE}
-#set order
-
-race.order<-data%>%filter(`Race/Ethnicity`!=c ("Unreported",NA) )%>%
-
-  group_by(`Race/Ethnicity`,`Tenure Status`)%>%summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%filter(`Tenure Status`=="Tenure Line")%>%arrange(prt)%>%mutate(race.f=factor(`Race/Ethnicity`))
-
-data%>%filter(`Race/Ethnicity`!=c ("Unreported",NA) )%>%
-
-  group_by(`Race/Ethnicity`,`Tenure Status`)%>%summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%
-
-ggplot(aes(fill=factor(`Tenure Status`),y=factor(`Race/Ethnicity`),x=prt))+
-
-  geom_bar(stat = "identity",position = position_dodge())+
-
-  geom_text(aes(label=prt),position=position_dodge(.9),hjust=1,color="white",fontface="bold", size = 9)+theme_lz_ppt()+
-
-  scale_fill_discrete(labels=c("Non-tenure","Tenure"),name="")+
-
-  labs(x="",y="",title="Tenured Status by Racial Groups")+
-
-  scale_y_discrete(limits=race.order$race.f)+
-
-  theme(axis.text.x = element_blank(),axis.text.y = element_text(size = 20))
-
-#Faculty from two or more races has the highest tenured rate, 50%. Hispanic and White faculty have 39% tenured rate. Asian has 38%, African American has 36%, and International has the lowest 34% tenured rate.
-```
-
-
 # Departmental Tenure Status
+
+
 
 ```{r top n dep, include=FALSE}
 #Department that has top 6 number (unique ID/person) faculty

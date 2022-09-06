@@ -55,7 +55,7 @@ data%>%group_by(Year, `Tenure Status`)%>%
 summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%
 
 ggplot(aes(color=factor(`Tenure Status`),x=factor(Year),y=prt,group=factor(`Tenure Status`)))+geom_line()+
-geom_text(aes(label=prt),fontface="bold", )+
+geom_text(aes(label=prt))+
 
 scale_y_continuous(breaks = seq(.4,.6,by=.05),labels = scales::percent)+
 labs(title=str_wrap("Proportion of Faulcty in Different Tenured Status",50),x="",y="")+
@@ -79,7 +79,7 @@ summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%fil
   
 #plot
 ggplot(aes(color=factor(Rank),linetype=factor(Rank),x=factor(Year),y=prt,group=factor(Rank)))+geom_line()+
-geom_text_repel(aes(label=prt),fontface="bold")+theme_lz.html()+
+geom_text_repel(aes(label=prt))+theme_lz.html()+
   
 #themes
 scale_y_continuous(breaks = seq(.55,.75,by=.1),labels = scales::percent)+
@@ -239,7 +239,7 @@ ui <- fluidPage(
 "Women's, Gender, and Sexuality Studies"
 #"Writing Program"
 ),
-        selected=c("Heller"))),
+        selected=c("African and African American Studies"))),
   
       mainPanel(plotOutput("line"))))
 

@@ -45,7 +45,7 @@ summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%
 
 ggplot(aes(color=factor(`Tenure Status`),x=factor(Year),y=prt,group=factor(`Tenure Status`)))+geom_line()+
 geom_text(aes(label=prt),fontface="bold", size = 9)+
-theme_lz_ppt()+
+
 scale_y_continuous(breaks = seq(.4,.6,by=.05),labels = scales::percent)+
 labs(title=str_wrap("Proportion of Faulcty in Different Tenured Status",50),x="",y="")+
 scale_color_discrete(labels=c("Non-tenure","Tenure"),name="")+
@@ -75,7 +75,7 @@ scale_y_continuous(breaks = seq(.55,.75,by=.1),labels = scales::percent)+
 scale_color_discrete(name="")+
 scale_linetype_discrete(name="")+
  
-theme_lz_ppt()+theme(axis.text.y=element_blank())+
+theme(axis.text.y=element_blank())+
 labs(title="Tenure-line Faculty of Different Ranks",x="",y="")
 ```
 
@@ -124,7 +124,7 @@ racepvt%>%ggplot(aes(x=factor(Year),y=prt,color=factor(`Race/Ethnicity`),linetyp
 geom_text_repel(aes(label=prt),size=5)+
 #themes
 scale_y_continuous(breaks = seq(.2,1,by=.2),labels = scales::percent)+
-theme_lz_ppt()+theme(axis.text.y=element_text(size=12))+theme(panel.grid.major.y = element_line(color = "grey95"), panel.grid.minor.y = element_line(color = "grey95"))+#theme(legend.position = "right", legend.direction = "vertical")+
+theme(axis.text.y=element_text(size=12))+theme(panel.grid.major.y = element_line(color = "grey95"), panel.grid.minor.y = element_line(color = "grey95"))+#theme(legend.position = "right", legend.direction = "vertical")+
   guides(color = guide_legend(nrow = 1, byrow = TRUE))+
 labs(title=str_wrap("Tenure-line Faculty in Different Racial Groups",80),x="",y="")
 ```
@@ -147,7 +147,7 @@ ggplot(aes(color=factor(`Legal Sex`),x=factor(Year),y=prt,group=factor(`Legal Se
 scale_y_continuous(breaks = seq(.2,.8,by=.2),labels = scales::percent)+
 #scale_x_discrete(labels=c())
 scale_color_discrete(name="")+
-theme_lz_ppt()+theme(axis.text.y=element_text(size=12))+theme(panel.grid.major.y = element_line(color = "grey95"))+
+theme(axis.text.y=element_text(size=12))+theme(panel.grid.major.y = element_line(color = "grey95"))+
 labs(title="Gender Gaps for Tenure-line Faculty",x="",y="")
 ```
 
@@ -165,32 +165,92 @@ order.exclude<-data[( data$Department %in% dep.order.t$dep.f ) == FALSE,] %>%gro
   summarise(cnt=n_distinct(ID)) %>% arrange(cnt) %>% mutate(dep.xf=factor(Department))
 #full order based on prt of tenured
 dep.order<-c(order.exclude$dep.xf,dep.order.t$dep.f)
+all_dep<-data%>%group_by(Department)%>%count()%>%arrange(Department)%>%select(Department)
 ```
 
 ```{r}
-inputPanel(
-  checkboxGroupInput(
+ui <- fluidPage(
+  sidebarLayout(
+    
+    sidebarPanel(checkboxGroupInput(
         inputId="mylist",
         label="Which department(s) do you want to display?",
-        choices=dep.order,
-        selected=c("Heller")
-      )
-)
+        choices=c("African and African American Studies",
+"American Studies",
+"Anthropology",
+"Asian American and Pacific Islander Studies",
+"Biochemistry",
+"Biology",
+"Chemistry",
+"Classical Studies",
+"Comparative Literature",
+"Computer Science",
+"Creativity, the Arts, and Social Transformation",
+"Economics",
+"Education",
+"English",
+"Environmental Studies",
+"Film, Television and Interactive Media",
+"Fine Arts",
+"Genetic Counseling",
+"German, Russian & Asian Languages and Literatures",
+"Graduate Professional Studies",
+"Health: Science, Society and Policy",
+"Heller",
+"History",
+"Hornstein Jewish Professional Leadership Graduate Program",
+"International and Global Studies Program",
+"International Business School",
+"International Center for Ethics, Justice, and Public Life",
+"Islamic & Middle Eastern Study",
+"Jack, Joseph, and Morton Mandel Center for Studies in Jewish Education",
+"Journalism",
+"Legal Studies",
+"Linguistics",
+"Mandel Center for St in J Ed",
+"Mathematics",
+"Music",
+"Myra Kraft Transitional Year Program",
+"Near Eastern & Judaic Studies",
+"Peace Conflict Coexistence",
+"Philosophy",
+"Physics",
+"Politics",
+"Psychology",
+"Religious Studies",
+"Romance Studies",
+"Schusterman Center",
+"Social Justice and Social Policy",
+"Sociology",
+"Student Support Services",
+"Theater Arts",
+"University Writing Program",
+"Women's, Gender, and Sexuality Studies",
+"Writing Program"),
+        selected=c("Heller"))),
+  
+      mainPanel(plotOutput("line"))))
 
-
-renderPlot({
-
-data%>%filter(Department %in% input$mylist ) %>%#has to be INPUT$inputid
+server <- function(input, output,session) {
+  output$line<-renderPlot({
+    
+plot_dat<-data%>%filter(Department %in% input$mylist ) %>%#has to be INPUT$inputid
   group_by(Year,Department,`Tenure Status`)%>%
   summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%
-    filter(`Tenure Status`=="Tenure Line")%>%
+    filter(`Tenure Status`=="Tenure Line")
   
-ggplot(aes(x=Year,y=prt,color=Department,group=Department))+geom_line()+
-  scale_color_discrete(limits = dep.order[dep.order %in% input$mylist])+
+ggplot(data=plot_dat, aes(x=Year,y=prt,color=Department,group=Department))+geom_line()+
+  #scale_color_discrete(limits = dep.order[dep.order %in% input$mylist])+
     scale_y_continuous(labels=scales::percent_format(accuracy = 1))+
-    theme_lz_ppt()+theme(axis.text.y=element_text(size=18))+
+    theme(axis.text.y=element_text(size=18),legend.direction = "vertical")+
     theme(panel.grid.major.y = element_line(color = "grey95"))+
     labs(x="",y="",title=str_wrap("Selected Departments' Historical Trends of Tenure-Line Faculty Proportion",40))
-  
-  })
+  })}
+
+# Run the application 
+shinyApp(ui = ui, server = server)
 ```
+
+
+
+

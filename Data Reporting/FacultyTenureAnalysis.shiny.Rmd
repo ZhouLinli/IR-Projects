@@ -9,7 +9,18 @@ runtime: shiny
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, include = TRUE, warning=FALSE, message=FALSE, fig.align = "center")
 #theme
-source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")  #run code from saved r script
+theme_lz.html <- function(){ 
+theme_minimal() %+replace%    #replace elements already strips axis lines, 
+  theme(
+    panel.grid.major = element_blank(),    #no major gridlines
+    panel.grid.minor = element_blank(),    #no minor gridlines
+    plot.title = element_text(hjust = 0.5, vjust = 2),
+    axis.ticks = element_blank(),          #strip axis ticks
+    axis.text.y=element_blank(),
+    legend.position="bottom",
+    legend.direction = "horizontal",
+    strip.background = element_blank()#facet background
+  )}
 #load data
 data<-read_excel("/Users/linlizhou/Documents/LASELL/Faculty Data for Analyst Candidates.xlsx")
 ```
@@ -44,11 +55,11 @@ data%>%group_by(Year, `Tenure Status`)%>%
 summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%
 
 ggplot(aes(color=factor(`Tenure Status`),x=factor(Year),y=prt,group=factor(`Tenure Status`)))+geom_line()+
-geom_text(aes(label=prt),fontface="bold", size = 9)+
+geom_text(aes(label=prt),fontface="bold", )+
 
 scale_y_continuous(breaks = seq(.4,.6,by=.05),labels = scales::percent)+
 labs(title=str_wrap("Proportion of Faulcty in Different Tenured Status",50),x="",y="")+
-scale_color_discrete(labels=c("Non-tenure","Tenure"),name="")+
+scale_color_discrete(labels=c("Non-tenure","Tenure"),name="")+theme_lz.html()+
 theme(axis.text.y=element_blank())
 ```
 
@@ -68,7 +79,7 @@ summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%fil
   
 #plot
 ggplot(aes(color=factor(Rank),linetype=factor(Rank),x=factor(Year),y=prt,group=factor(Rank)))+geom_line()+
-geom_text_repel(aes(label=prt),fontface="bold",size=6.5)+
+geom_text_repel(aes(label=prt),fontface="bold")+theme_lz.html()+
   
 #themes
 scale_y_continuous(breaks = seq(.55,.75,by=.1),labels = scales::percent)+
@@ -116,15 +127,15 @@ summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%fil
 #max.min<-racepvt%>%select(`Race/Ethnicity`,prt)%>%group_by(`Race/Ethnicity`)%>%summarise(max=max(prt),min=min(prt))%>%arrange(min)
   
 #plot
-racepvt%>%ggplot(aes(x=factor(Year),y=prt,color=factor(`Race/Ethnicity`),linetype=factor(`Race/Ethnicity`),group=factor(`Race/Ethnicity`)))+geom_line()+
+racepvt%>%ggplot(aes(x=factor(Year),y=prt,color=factor(`Race/Ethnicity`),linetype=factor(`Race/Ethnicity`),group=factor(`Race/Ethnicity`)))+geom_line()+theme_lz.html()+
   scale_color_manual(name="",limits=nrace$race, values = c("black","blue","chartreuse3","darkgoldenrod","brown1"),labels=c("White","Asian","International","Hispanic","Black"))+  
   scale_linetype_manual(name="",limits=nrace$race, values = c("solid","longdash","twodash","solid","longdash"),labels=c("White","Asian","International","Hispanic","Black"))+
   facet_wrap(~RaceGroup,labeller=labeller(RaceGroup= c(`Larger Racial Group`="Larger Racial Groups (Tenure-line Faculty>100)", `Smaller Racial Group`="Smaller Racial Groups (10<Tenure-line Faculty<100)") ) )+
   
-geom_text_repel(aes(label=prt),size=5)+
+geom_text_repel(aes(label=prt))+
 #themes
 scale_y_continuous(breaks = seq(.2,1,by=.2),labels = scales::percent)+
-theme(axis.text.y=element_text(size=12))+theme(panel.grid.major.y = element_line(color = "grey95"), panel.grid.minor.y = element_line(color = "grey95"))+#theme(legend.position = "right", legend.direction = "vertical")+
+theme(axis.text.y=element_text())+theme(panel.grid.major.y = element_line(color = "grey95"), panel.grid.minor.y = element_line(color = "grey95"))+#theme(legend.position = "right", legend.direction = "vertical")+
   guides(color = guide_legend(nrow = 1, byrow = TRUE))+
 labs(title=str_wrap("Tenure-line Faculty in Different Racial Groups",80),x="",y="")
 ```
@@ -141,13 +152,13 @@ Hispanic and White faculties have a consistent gender gap with male faculties ha
 data%>% filter(`Race/Ethnicity`!="Unreported")%>% group_by(Year,`Race/Ethnicity`, `Tenure Status`,`Legal Sex`)%>%#2016 male as a group -> proportions of (non) tenure for all male professors in 2016
 summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%filter(`Tenure Status`=="Tenure Line")%>%
 #plot
-ggplot(aes(color=factor(`Legal Sex`),x=factor(Year),y=prt,group=factor(`Legal Sex`)))+geom_line()+facet_wrap(~`Race/Ethnicity`)+
+ggplot(aes(color=factor(`Legal Sex`),x=factor(Year),y=prt,group=factor(`Legal Sex`)))+geom_line()+facet_wrap(~`Race/Ethnicity`)+theme_lz.html()+
 #geom_text_repel(aes(label=prt),fontface="bold",size=6.5)+
 #themes
 scale_y_continuous(breaks = seq(.2,.8,by=.2),labels = scales::percent)+
 #scale_x_discrete(labels=c())
 scale_color_discrete(name="")+
-theme(axis.text.y=element_text(size=12))+theme(panel.grid.major.y = element_line(color = "grey95"))+
+theme(axis.text.y=element_text())+theme(panel.grid.major.y = element_line(color = "grey95"))+
 labs(title="Gender Gaps for Tenure-line Faculty",x="",y="")
 ```
 
@@ -239,10 +250,10 @@ plot_dat<-data%>%filter(Department %in% input$mylist ) %>%#has to be INPUT$input
   summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%
     filter(`Tenure Status`=="Tenure Line")
   
-ggplot(data=plot_dat, aes(x=Year,y=prt,color=Department,group=Department))+geom_line()+
+ggplot(data=plot_dat, aes(x=Year,y=prt,color=Department,group=Department))+geom_line()+theme_lz.html()+
   #scale_color_discrete(limits = dep.order[dep.order %in% input$mylist])+
     scale_y_continuous(labels=scales::percent_format(accuracy = 1))+
-    theme(axis.text.y=element_text(size=18),legend.direction = "vertical")+
+    theme(axis.text.y=element_text(),legend.direction = "vertical")+
     theme(panel.grid.major.y = element_line(color = "grey95"))+
     labs(x="",y="",title=str_wrap("Selected Departments' Historical Trends of Tenure-Line Faculty Proportion",40))
   })}

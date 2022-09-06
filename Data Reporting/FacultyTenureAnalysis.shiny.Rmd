@@ -7,6 +7,10 @@ runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
+library(readxl)
+library(tidyverse)
+library(formattable)
+library(ggrepel)
 knitr::opts_chunk$set(echo = FALSE, include = TRUE, warning=FALSE, message=FALSE, fig.align = "center")
 #theme
 theme_lz.html <- function(){ 

@@ -110,7 +110,7 @@ Omitted details:
 - Black faculties' tenured proportion dropped from 50% in 2017 to 20% in 2018, but has been increasing by 7% each year to 44% in 2020 and kept stable at 45% in 2021.
 ::: 
 
-```{r facet two race bulk group,fig.width=15}
+```{r facet two race bulk group}
 #race count
 nrace<-data%>% filter( !(`Race/Ethnicity`%in% c("Unreported", "Two or More Races",NA)))%>%filter(`Tenure Status`=="Tenure Line")%>%
   group_by(`Race/Ethnicity`)%>%count()%>%arrange(-n)%>%mutate(race=factor(`Race/Ethnicity`))
@@ -147,7 +147,7 @@ labs(title=str_wrap("Tenure-line Faculty in Different Racial Groups",80),x="",y=
 Hispanic and White faculties have a consistent gender gap with male faculties have higher tenured proportion than female faculties.
 ::: 
 
-```{r tenured trend by sex in different race, fig.width=15}
+```{r tenured trend by sex in different race}
 #pivot table
 data%>% filter(`Race/Ethnicity`!="Unreported")%>% group_by(Year,`Race/Ethnicity`, `Tenure Status`,`Legal Sex`)%>%#2016 male as a group -> proportions of (non) tenure for all male professors in 2016
 summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%filter(`Tenure Status`=="Tenure Line")%>%

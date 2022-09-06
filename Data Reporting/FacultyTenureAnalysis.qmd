@@ -169,7 +169,7 @@ dep.order<-c(order.exclude$dep.xf,dep.order.t$dep.f)
 
 
 ```{r function trend.dep}
-mylist<-c("Heller")
+mylist<-dep.order
 
 data%>%filter(Department %in% mylist ) %>%
   group_by(Year,Department,`Tenure Status`)%>%

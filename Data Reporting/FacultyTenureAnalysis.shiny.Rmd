@@ -11,6 +11,7 @@ library(readxl)
 library(tidyverse)
 library(formattable)
 library(ggrepel)
+library(condformat)
 knitr::opts_chunk$set(echo = FALSE, include = TRUE, warning=FALSE, message=FALSE, fig.align = "center")
 #theme
 theme_lz.html <- function(){ 
@@ -46,7 +47,7 @@ data%>% group_by(ID) %>% summarise(cnt=n()) %>%arrange(-cnt) %>%filter(cnt>1) #8
 #thus, need n_distinct ID in the following codes
 ```
 
-# Historical Trends
+# Trends
 
 
 ```{r unique TvsN across year}
@@ -66,7 +67,7 @@ theme(axis.text.y=element_blank())
 * Non-Tenure-line Faculty percentage has been decreased from 60% to 56%, with 2020 being the lowest 55%. 
 * There are still 12% less Tenure-line Faculty than non tenured.
 
-# Historical Trends Breakdown: Faculty Rank
+# Trends Breakdown: Faculty Rank
 
 ```{r tenured trend by rank}
 #pivot table
@@ -92,7 +93,7 @@ labs(title="Tenure-line Faculty of Different Ranks",x="",y="")
 * Associate professor has slight increase from 63% in 2016 to 66% in 2019, but dropped to 60% in 2021. 
 
 
-# Historical Trends Breakdown: Race
+# Trends Breakdown: Race
 
 ```{r facet two race bulk group}
 #race count
@@ -132,8 +133,7 @@ labs(title=str_wrap("Tenure-line Faculty in Different Racial Groups",80),x="",y=
 + Hispanic faculties have increased tenured proportion from 33% in 2016 to 59% in 2020, and 55% in 2021, both are the highest among all racial groups in those two years. 
 + Black faculties' tenured proportion dropped from 50% in 2017 to 20% in 2018, but has been increasing by 7% each year to 44% in 2020 and kept stable at 45% in 2021.
 
-# Historical Trends Breakdown: Legal Sex in Different Race
-
+# Trends Breakdown: Legal Sex & Race
 
 ```{r tenured trend by sex in different race}
 #pivot table
@@ -152,7 +152,10 @@ labs(title="Gender Gaps for Tenure-line Faculty",x="",y="")
 
 * Hispanic and White faculties have a consistent gender gap with male faculties have higher tenured proportion than female faculties.
 
-# Departmental Tenure Status
+
+
+# Trends for Individual Departments (with 2016-2021 data)
+
 
 ```{r dep groups}
 #order based on tenure prt -- exclude those without any tenure
@@ -245,13 +248,51 @@ ggplot(data=plot_dat, aes(x=Year,y=prt,color=Department,group=Department))+geom_
     scale_y_continuous(labels=scales::percent_format(accuracy = 1))+
     theme(axis.text.y=element_text(),legend.direction = "vertical")+
     theme(panel.grid.major.y = element_line(color = "grey95"))+
-    labs(x="",y="",title=str_wrap("Selected Departments' Historical Trends of Tenure-Line Faculty Proportion",40))
+    labs(x="",y="",title=str_wrap("Selected Departments' Trends of Tenure-Line Faculty Proportion",40))
   })}
 
 # Run the application 
 shinyApp(ui = ui, server = server)
 ```
 
+# Departments with Significant Changes (2016~2021)
+
+```{r dep prop.year table}
+#n dep; filter out small dep that has skewed prt
+n10dep<-data%>%group_by(Department)%>%summarise(cnt=n())%>% filter(cnt>10)%>%arrange(cnt)
+
+#tenure prop by department
+dep.Tprop<-data%>%filter(Department %in% n10dep$Department)%>%
+  group_by(Year,Department, `Tenure Status`)%>%
+  summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%
+  arrange(Department)%>%filter(`Tenure Status`=="Tenure Line")%>%
+  select(-`Tenure Status`,-cnt)#have to remove cnt because only have the same value can be seen as one group; while cnt for different years vary, making departments not considered as the same
+
+#year as cols
+dep.wide<-dep.Tprop%>%pivot_wider(names_from = Year,values_from = prt)%>%mutate(Change=`2021`-`2016`,Average=mean(c(`2016`,`2017`,`2018`,`2019`,`2020`,`2021`)))%>%arrange(-Average)
+```
+
+```{r change_avg.dep}
+#average and rank and change
+average.dep<-dep.wide%>%select(Department,Average,Change)%>%arrange(-Average)%>% ungroup%>%mutate(Rank=rank(-Average))#needs to ungroup before row_number or rank
+
+#sig change>10%; list of departments
+change.dep<-dep.wide%>%select(Department,`2016`,`2021`,Change)%>%
+  filter(Change>0.1 | Change<(-0.1))%>%arrange(-Change) #have to use () for -0.1
+
+change.avgrank<-merge(change.dep,average.dep)%>%select(Department,Change,Average,Rank)%>%arrange(-Change)
+#condformat(change.dep) %>% rule_fill_gradient(Change, low=rgb(1,0,0),high=rgb(0,1,0))#low=rgb(1,0,0),high=rgb(0,1,0) good red-yellow/white-green
+
+change.avgrank%>%formattable(list(
+  Change=color_tile("red","yellow"),#from red to sth in between to yellow ultimately
+  Average=color_bar("lightblue"),
+  Rank= formatter("span",
+                  style=x~style(color=ifelse(
+                    x<10,"darkgreen",
+                    ifelse(x>20,"red","grey")
+                  )))
+))
+```
 
 
 

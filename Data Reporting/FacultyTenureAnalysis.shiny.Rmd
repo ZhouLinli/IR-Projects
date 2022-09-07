@@ -280,18 +280,15 @@ average.dep<-dep.wide%>%select(Department,Average,Change)%>%arrange(-Average)%>%
 change.dep<-dep.wide%>%select(Department,`2016`,`2021`,Change)%>%
   filter(Change>0.1 | Change<(-0.1))%>%arrange(-Change) #have to use () for -0.1
 
-change.avgrank<-merge(change.dep,average.dep)%>%select(Department,Change,Average,Rank)%>%arrange(-Change)
+change.avgrank<-merge(change.dep,average.dep)%>%select(Department,Change,Average)%>%arrange(-Change)
 #condformat(change.dep) %>% rule_fill_gradient(Change, low=rgb(1,0,0),high=rgb(0,1,0))#low=rgb(1,0,0),high=rgb(0,1,0) good red-yellow/white-green
 
 change.avgrank%>%formattable(list(
   Change=color_tile("red","yellow"),#from red to sth in between to yellow ultimately
   Average=color_bar("lightblue"),
-  Change=formatter("span", style = ~ style(color = ifelse(Change >0, "darkgreen", "black")),
-                    ~ icontext(ifelse(Change >0,"thumbs-up", "arrow-down"), Change)),
-  Rank= formatter("span",font.weight="bold",
-                  style=x~style(color=ifelse(
-                    x<10,"darkgreen",
-                    ifelse(x>20,"red","grey"))))
+  Change=formatter("span", style = ~ style(color = ifelse(Change >0, "darkgreen", "red")),
+                    ~ icontext(ifelse(Change <0,"arrow-down", ifelse(Change>0.2,"thumbs-up","arrow-up")), Change))#,#the last change is to show values of change after styles
+  #`Rank of Average`= formatter("span",style=x~style(color=ifelse(x<10,"darkgreen",ifelse(x>20,"red","grey"))))
 ))#%>%kable("html",caption = "Changes and Averages of Tenure-line Proportion for Departments")
 ```
 

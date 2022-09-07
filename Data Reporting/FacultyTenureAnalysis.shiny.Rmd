@@ -9,9 +9,9 @@ runtime: shiny
 ```{r setup, include=FALSE}
 library(readxl)
 library(tidyverse)
-library(formattable)
 library(ggrepel)
-library(condformat)
+library(formattable)
+library(kableExtra)
 knitr::opts_chunk$set(echo = FALSE, include = TRUE, warning=FALSE, message=FALSE, fig.align = "center")
 #theme
 theme_lz.html <- function(){ 
@@ -154,7 +154,7 @@ labs(title="Gender Gaps for Tenure-line Faculty",x="",y="")
 
 
 
-# Trends for Individual Departments (with 2016-2021 data)
+# Trends for Individual Departments (Interactive Dashboard)
 
 
 ```{r dep groups}
@@ -274,7 +274,7 @@ dep.wide<-dep.Tprop%>%pivot_wider(names_from = Year,values_from = prt)%>%mutate(
 
 ```{r change_avg.dep}
 #average and rank and change
-average.dep<-dep.wide%>%select(Department,Average,Change)%>%arrange(-Average)%>% ungroup%>%mutate(Rank=rank(-Average))#needs to ungroup before row_number or rank
+average.dep<-dep.wide%>%select(Department,Average,Change)%>%arrange(-Average)%>% ungroup%>%mutate(`Rank of Average`=rank(-Average))#needs to ungroup before row_number or rank
 
 #sig change>10%; list of departments
 change.dep<-dep.wide%>%select(Department,`2016`,`2021`,Change)%>%
@@ -286,12 +286,13 @@ change.avgrank<-merge(change.dep,average.dep)%>%select(Department,Change,Average
 change.avgrank%>%formattable(list(
   Change=color_tile("red","yellow"),#from red to sth in between to yellow ultimately
   Average=color_bar("lightblue"),
-  Rank= formatter("span",
+  Change=formatter("span", style = ~ style(color = ifelse(Change >0, "darkgreen", "black")),
+                    ~ icontext(ifelse(Change >0,"thumbs-up", "arrow-down"), Change)),
+  Rank= formatter("span",font.weight="bold",
                   style=x~style(color=ifelse(
                     x<10,"darkgreen",
-                    ifelse(x>20,"red","grey")
-                  )))
-))
+                    ifelse(x>20,"red","grey"))))
+))#%>%kable("html",caption = "Changes and Averages of Tenure-line Proportion for Departments")
 ```
 
 

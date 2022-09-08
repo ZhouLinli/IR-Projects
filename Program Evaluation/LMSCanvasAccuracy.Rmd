@@ -52,7 +52,7 @@ theme_lz <- function(){
     )}
 ```
 
-```{r load dataset} 
+```{r load dataset, include=FALSE} 
 #include=FALSE meaning output won't be shown
 
 #for windows
@@ -62,7 +62,7 @@ theme_lz <- function(){
 canvrp<-read_excel("/Users/linlizhou/Documents/LASELL/data/progameval/gradalign_working.xlsx")
 ```
 
-```{r dataset prep - poppulation&semester}
+```{r dataset prep - poppulation&semester, include=FALSE}
 #We focus on undergraduate and graduate student in fall, spring, and summer semesters. We thus filtered out students in other level of study (professional, certificate, or non-matriculated students) and in students in winter semesters (which may be input error).
 
 #check program names
@@ -98,7 +98,7 @@ canvrp_ugg$`Academic Session`=factor(canvrp_ugg$`Academic Session`,levels=c("MAI
 canvrp_ugg%>%group_by(`Academic Session`)%>%count()
 ```
 
-```{r dataset prep - remove unmatched}
+```{r dataset prep - remove unmatched, include=FALSE}
 #To have valid data points, we removed those Canvas GPA that does not have a match at Registrar GPA or the other way around. 
 
 # for existing gpa in both system, duplicate canvas gpa
@@ -123,7 +123,7 @@ canvrp_ugg_match%>% group_by(registrargpa_match)%>%count()
 
 
 
-```{r dataset prep - create difference var}
+```{r dataset prep - create difference var, include=FALSE}
 #create the difference variable (reg-canvas)
 canvrp_ugg_match<-canvrp_ugg_match%>% mutate(difference=registrargpa_match-canvasgpa_match)
 #check
@@ -145,7 +145,7 @@ canvrp_ugg_match$diff_cat=factor( canvrp_ugg_match$diff_cat, levels = c("Exact m
 #check
 canvrp_ugg_match%>%group_by(diff_cat)%>%count() #looks right now with three categories of differences with the right order
 ```
-```{r department-school var}
+```{r department-school var, include=FALSE}
 canvrp_ugg_match<-canvrp_ugg_match%>% mutate(school = case_when(
   `Course Department`=="ACC"~"No School",
 `Course Department`=="ARTH"~"School of Communication & the Arts",

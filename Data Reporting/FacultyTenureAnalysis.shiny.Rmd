@@ -28,8 +28,10 @@ theme_minimal() %+replace%    #replace elements already strips axis lines,
     legend.direction = "horizontal",
     strip.background = element_blank()#facet background
   )}
+#setwd
+#setwd("/Users/linlizhou/Documents/Rprojects/IR-Projects/Data Reporting/")
 #load data
-data<-read_excel("/Users/linlizhou/Documents/LASELL/Faculty Data for Analyst Candidates.xlsx")
+data<-read_excel("Faculty Data for Analyst Candidates.xlsx")
 ```
 
 # Research Questions
@@ -60,14 +62,14 @@ ggplot(aes(color=factor(`Tenure Status`),x=factor(Year),y=prt,group=factor(`Tenu
 geom_text(aes(label=prt))+
 
 scale_y_continuous(breaks = seq(.4,.6,by=.05),labels = scales::percent)+
-labs(title=str_wrap("Proportion of Faulcty in Different Tenured Status",50),x="",y="")+
+labs(title=str_wrap("Proportion of Faulcty in Different Tenure-line Status",50),x="",y="")+
 scale_color_discrete(labels=c("Non-tenure","Tenure"),name="")+theme_lz.html()+
 theme(axis.text.y=element_blank())
 ```
 
-* Tenured percentage has been increased since 2016 from 40% to 44% in 2021, with 2020 being the highest 45%. 
+* Tenure-line percentage has been increased since 2016 from 40% to 44% in 2021, with 2020 being the highest 45%. 
 * Non-Tenure-line Faculty percentage has been decreased from 60% to 56%, with 2020 being the lowest 55%. 
-* There are still 12% less Tenure-line Faculty than non tenured.
+* There are still 12% less Tenure-line Faculty than non-tenure-line.
 
 # Trends Breakdown: Faculty Rank
 
@@ -127,13 +129,13 @@ theme(axis.text.y=element_text())+theme(panel.grid.major.y = element_line(color 
 labs(title=str_wrap("Tenure-line Faculty in Different Racial Groups",80),x="",y="")
 ```
 
-* White faculties have the most stable tenured proportion -- within the 42-48% range. 
-* Asian faculties experienced two dropped in 2018 and 2020 and only has 31-32% tenured proportion. The tenured proportion increased from 31% to 51% in 2021.
+* White faculties have the most stable tenure-line proportion -- within the 42-48% range. 
+* Asian faculties experienced two dropped in 2018 and 2020 and only has 31-32% tenure-line proportion. The tenure-line proportion increased from 31% to 51% in 2021.
 
-* Smaller racial groups have below 30% tenured proportions before 2018. However, their tenured proportion has been increasing since 2018 and reached 46-48% in 2021. 
-+ International faculties have the lowest tenured proportion of 20% in 2016, but the proportion jumped to 50% in 2018 and 2021.
-+ Hispanic faculties have increased tenured proportion from 33% in 2016 to 59% in 2020, and 55% in 2021, both are the highest among all racial groups in those two years. 
-+ Black faculties' tenured proportion dropped from 50% in 2017 to 20% in 2018, but has been increasing by 7% each year to 44% in 2020 and kept stable at 45% in 2021.
+* Smaller racial groups have below 30% tenure-line proportions before 2018. However, their tenure-line proportion has been increasing since 2018 and reached 46-48% in 2021. 
++ International faculties have the lowest tenure-line proportion of 20% in 2016, but the proportion jumped to 50% in 2018 and 2021.
++ Hispanic faculties have increased tenure-line proportion from 33% in 2016 to 59% in 2020, and 55% in 2021, both are the highest among all racial groups in those two years. 
++ Black faculties' tenure-line proportion dropped from 50% in 2017 to 20% in 2018, but has been increasing by 7% each year to 44% in 2020 and kept stable at 45% in 2021.
 
 # Trends Breakdown: Legal Sex & Race
 
@@ -152,7 +154,7 @@ theme(axis.text.y=element_text())+theme(panel.grid.major.y = element_line(color 
 labs(title="Gender Gaps for Tenure-line Faculty",x="",y="")
 ```
 
-* Hispanic and White faculties have a consistent gender gap with male faculties have higher tenured proportion than female faculties.
+* Hispanic and White faculties have a consistent gender gap with male faculties have higher tenure-line proportion than female faculties.
 
 
 

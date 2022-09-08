@@ -1,5 +1,5 @@
 ---
-title: "FacultyTenureAnalysis"
+title: "Historical Trends of Faculty Tenure Status"
 author: "Linli Zhou"
 format: pptx
 always_allow_html: true
@@ -11,16 +11,16 @@ knitr::opts_chunk$set(echo = FALSE, include = TRUE, warning=FALSE, message=FALSE
 #theme
 source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")  #run code from saved r script
 #load data
-data<-read_excel("/Users/linlizhou/Documents/LASELL/Faculty Data for Analyst Candidates.xlsx")
+data<-readxl::read_excel("/Users/linlizhou/Documents/LASELL/Faculty Data for Analyst Candidates.xlsx")
 ```
 
 # Research Questions
 
-1. How has the proportion of tenure-line (TL) and non-tenure-line (NTL) faculty **changed over time**?
+1.  How has the proportion of tenure-line (TL) and non-tenure (NT) faculty **changed over time**?
 
-2. How has the proportion of TL faculty in certain **rank, racial, or sex** groups changed over time?
+2.  How has the proportion of TL faculty in certain **rank, racial, or sex** groups changed over time?
 
-3. How has the proportion of TL and NTL faculty changed over time for different **departments**?
+3.  How has the proportion of TL and NTL faculty changed over time for different **departments**?
 
 ```{r clean, results='hide'}
 #remove duplicated rows
@@ -31,13 +31,13 @@ data%>% group_by(ID) %>% summarise(cnt=n()) %>%arrange(-cnt) %>%filter(cnt>1) #8
 #thus, need n_distinct ID in the following codes
 ```
 
-# Historical Trends
+# Trends
 
 ::: notes
-- Tenured percentage has been increased since 2016 from 40% to 44% in 2021, with 2020 being the highest 45%. 
-- Non-Tenure-line Faculty percentage has been decreased from 60% to 56%, with 2020 being the lowest 55%. 
-- There are still 12% less Tenure-line Faculty than non tenured.
-::: 
+* Tenure-line percentage has been increased since 2016 from 40% to 44% in 2021, with 2020 being the highest 45%. 
+* Non-Tenure Faculty percentage has been decreased from 60% to 56%, with 2020 being the lowest 55%. 
+* There are still 12% less Tenure-line Faculty than non-tenure.
+:::
 
 ```{r unique TvsN across year}
 data%>%group_by(Year, `Tenure Status`)%>%
@@ -52,13 +52,13 @@ scale_color_discrete(labels=c("Non-tenure","Tenure"),name="")+
 theme(axis.text.y=element_blank())
 ```
 
-# Historical Trends Breakdown: Faculty Rank
+# Trends Breakdown: Faculty Rank
 
 ::: notes
-- Assistant professor tenure-line proportion dropped from 63% in 2016 to 57% in 2017 and became the lowest across professor ranks. However, the proportion but has been increasing ever since and reached 75% in 2021. 
-- Professor experienced a slight drop from 68% in 2016 to 65% in 2018, but has increased ever since and reached 73% in 2021. 
-- Associate professor has slight increase from 63% in 2016 to 66% in 2019, but dropped to 60% in 2021. 
-::: 
+* Assistant professor tenure-line proportion dropped from 63% in 2016 to 57% in 2017 and became the lowest across professor ranks. However, the proportion but has been increasing ever since and reached 75% in 2021. 
+* Professor experienced a slight drop from 68% in 2016 to 65% in 2018, but has increased ever since and reached 73% in 2021. 
+* Associate professor has slight increase from 63% in 2016 to 66% in 2019, but dropped to 60% in 2021. 
+:::
 
 ```{r tenured trend by rank}
 #pivot table
@@ -79,25 +79,17 @@ theme_lz_ppt()+theme(axis.text.y=element_blank())+
 labs(title="Tenure-line Faculty of Different Ranks",x="",y="")
 ```
 
-
-# Historical Trends Breakdown: Race
+# Trends Breakdown: Race
 
 ::: notes
-- White faculties have the most stable tenured proportion -- within the 42-48% range. 
-- Asian faculties experienced two dropped in 2018 and 2020 and only has 31-32% tenured proportion. The tenured proportion increased from 31% to 51% in 2021.
-- Smaller racial groups have below 30% tenured proportions before 2018. However, their tenured proportion has been increasing since 2018 and reached 46-48% in 2021. 
+* White faculties have the most stable tenure-line proportion -- within the 42-48% range. 
+* Asian faculties experienced two dropped in 2018 and 2020 and only has 31-32% tenure-line proportion. The tenure-line proportion increased from 31% to 51% in 2021.
 
-Omitted details:
-- 2017 and 2018 are years that most groups experienced drops except Hispanic faculties. International faculties dropped 7% in 2017 and Black faculties dropped 13% in 2018.  
-- Hispanic faculties' tenured proportion has been increasing from 25% in 2016 to 59% in 2020. However, it dropped to 46% and become close to other groups. 
-
-
-
-
-- International faculties have the lowest tenured proportion of 20% in 2016, but the proportion jumped to 50% in 2018 and 2021.
-- Hispanic faculties have increased tenured proportion from 33% in 2016 to 59% in 2020, and 55% in 2021, both are the highest among all racial groups in those two years. 
-- Black faculties' tenured proportion dropped from 50% in 2017 to 20% in 2018, but has been increasing by 7% each year to 44% in 2020 and kept stable at 45% in 2021.
-::: 
+* Smaller racial groups have below 30% tenure-line proportions before 2018. However, their tenure-line proportion has been increasing since 2018 and reached 46-48% in 2021. 
++ International faculties have the lowest tenure-line proportion of 20% in 2016, but the proportion jumped to 50% in 2018 and 2021.
++ Hispanic faculties have increased tenure-line proportion from 33% in 2016 to 59% in 2020, and 55% in 2021, both are the highest among all racial groups in those two years. 
++ Black faculties' tenure-line proportion dropped from 50% in 2017 to 20% in 2018, but has been increasing by 7% each year to 44% in 2020 and kept stable at 45% in 2021.
+:::
 
 ```{r facet two race bulk group,fig.width=15}
 #race count
@@ -129,12 +121,11 @@ theme_lz_ppt()+theme(axis.text.y=element_text(size=12))+theme(panel.grid.major.y
 labs(title=str_wrap("Tenure-line Faculty in Different Racial Groups",80),x="",y="")
 ```
 
-
-# Historical Trends Breakdown: Legal Sex in Different Race
+# Trends Breakdown: Legal Sex & Race
 
 ::: notes
-Hispanic and White faculties have a consistent gender gap with male faculties have higher tenured proportion than female faculties.
-::: 
+* Hispanic and White faculties have a consistent gender gap with male faculties have higher tenure-line proportion than female faculties.
+:::
 
 ```{r tenured trend by sex in different race, fig.width=15}
 #pivot table
@@ -151,8 +142,46 @@ theme_lz_ppt()+theme(axis.text.y=element_text(size=12))+theme(panel.grid.major.y
 labs(title="Gender Gaps for Tenure-line Faculty",x="",y="")
 ```
 
+# Departments with Significant Changes (2016~2021)
 
-# Departmental Tenure Status
+```{r dep prop.year table}
+#n dep; filter out small dep that has skewed prt
+n10dep<-data%>%group_by(Department)%>%summarise(cnt=n())%>% filter(cnt>10)%>%arrange(cnt)
+
+#tenure prop by department
+dep.Tprop<-data%>%filter(Department %in% n10dep$Department)%>%
+  group_by(Year,Department, `Tenure Status`)%>%
+  summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%
+  arrange(Department)%>%filter(`Tenure Status`=="Tenure Line")%>%
+  select(-`Tenure Status`,-cnt)#have to remove cnt because only have the same value can be seen as one group; while cnt for different years vary, making departments not considered as the same
+
+#year as cols
+dep.wide<-dep.Tprop%>%pivot_wider(names_from = Year,values_from = prt)%>%mutate(Change=`2021`-`2016`,Average=mean(c(`2016`,`2017`,`2018`,`2019`,`2020`,`2021`)))%>%arrange(-Average)
+```
+
+```{r change_avg.dep}
+#average and rank and change
+average.dep<-dep.wide%>%select(Department,Average,Change)%>%arrange(-Average)%>% ungroup%>%mutate(`Rank of Average`=rank(-Average))#needs to ungroup before row_number or rank
+
+#sig change>10%; list of departments
+change.dep<-dep.wide%>%select(Department,`2016`,`2021`,Change)%>%
+  filter(Change>0.1 | Change<(-0.1))%>%arrange(-Change) #have to use () for -0.1
+
+change.avgrank<-merge(change.dep,average.dep)%>%select(Department,Change,Average)%>%arrange(-Change)
+#condformat(change.dep) %>% rule_fill_gradient(Change, low=rgb(1,0,0),high=rgb(0,1,0))#low=rgb(1,0,0),high=rgb(0,1,0) good red-yellow/white-green
+
+change.avgrank%>%formattable(list(
+  Change=color_tile("red","yellow"),#from red to sth in between to yellow ultimately
+  Average=color_bar("lightblue"),
+  Change=formatter("span", style = ~ style(color = ifelse(Change >0, "darkgreen", "red")),
+                    ~ icontext(ifelse(Change <0,"arrow-down", ifelse(Change>0.2,"thumbs-up","arrow-up")), Change))#,#the last change is to show values of change after styles
+  #`Rank of Average`= formatter("span",style=x~style(color=ifelse(x<10,"darkgreen",ifelse(x>20,"red","grey"))))
+))#%>%kable("html",caption = "Changes and Averages of Tenure-line Proportion for Departments")
+```
+
+
+
+# Trends for Individual Departments (Interactive Dashboard)
 
 ```{r dep order}
 #order based on tenure prt -- exclude those without any tenure
@@ -167,7 +196,6 @@ order.exclude<-data[( data$Department %in% dep.order.t$dep.f ) == FALSE,] %>%gro
 dep.order<-c(order.exclude$dep.xf,dep.order.t$dep.f)
 ```
 
-
 ```{r function trend.dep}
 mylist<-dep.order
 
@@ -180,13 +208,8 @@ data%>%filter(Department %in% mylist ) %>%
   scale_color_discrete(limits = dep.order[dep.order %in% mylist])+
   scale_y_continuous(labels=scales::percent_format(accuracy = 1))+
   theme_lz_ppt()+theme(axis.text.y=element_text(size=18))+theme(panel.grid.major.y = element_line(color = "grey95"))+
-  labs(x="",y="",title=str_wrap("Selected Departments' Historical Trends of Tenure-Line Faculty Proportion",40))
+  labs(x="",y="",title=str_wrap("Selected Departments' Trends of Tenure-Line Faculty Proportion",40))
 ```
-
-
-
-
-
 
 ```{r function plot.dep}
 #make department count as ndep
@@ -210,39 +233,13 @@ plot.dep<-function(min.input,max.input){
     paste0("Selected Departments (",min.input, "<Count of Faculty<",max.input,")"),70))}
 ```
 
-```{r}
+```{r, include=FALSE}
 #apply function
 plot.dep(31,147)
-```
 
-```{r}
-#apply function
 plot.dep(21,30)
-```
 
-```{r}
-#apply function
 plot.dep(6,20)
-```
 
-```{r}
-#apply function
 plot.dep(0,5)
 ```
-
-
-
-```{r eruptions}
-library(shiny)
-inputPanel(
-  sliderInput("min.input", label = "Department's minimum count of faculty:",
-              min = 0, max = 147, value = 0, step = 1),
-  sliderInput("max.input", label = "Department's maximum count of faculty:",
-              min = 0, max = 147, value = 147, step = 1)
-)
-
-renderPlot({
-plot.dep(min.input,max.input)
-})
-```
-

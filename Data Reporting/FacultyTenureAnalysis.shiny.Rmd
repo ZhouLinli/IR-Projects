@@ -36,11 +36,11 @@ data<-read_excel("Faculty Data for Analyst Candidates.xlsx")
 
 # Research Questions
 
-1. How has the proportion of tenure-line (TL) and non-tenure-line (NTL) faculty **changed over time**?
+1. How has the proportion of tenure-line (TL) and non-tenure (NT) faculty **changed over time**?
 
 2. How has the proportion of TL faculty in certain **rank, racial, or sex** groups changed over time?
 
-3. How has the proportion of TL and NTL faculty changed over time for different **departments**?
+3. How has the proportion of TL and NT faculty changed over time for different **departments**?
 
 ```{r clean, results='hide'}
 #remove duplicated rows
@@ -67,9 +67,8 @@ scale_color_discrete(labels=c("Non-tenure","Tenure"),name="")+theme_lz.html()+
 theme(axis.text.y=element_blank())
 ```
 
-* Tenure-line percentage has been increased since 2016 from 40% to 44% in 2021, with 2020 being the highest 45%. 
-* Non-Tenure-line Faculty percentage has been decreased from 60% to 56%, with 2020 being the lowest 55%. 
-* There are still 12% less Tenure-line Faculty than non-tenure-line.
+* Tenure-line (TL) proportion increased 4% from 2016 to 44% in 2021, with 2020 being the highest 45%. 
+
 
 # Trends Breakdown: Faculty Rank
 
@@ -92,9 +91,10 @@ theme(axis.text.y=element_blank())+
 labs(title="Tenure-line Faculty of Different Ranks",x="",y="")
 ```
 
-* Assistant professor tenure-line proportion dropped from 63% in 2016 to 57% in 2017 and became the lowest across professor ranks. However, the proportion but has been increasing ever since and reached 75% in 2021. 
-* Professor experienced a slight drop from 68% in 2016 to 65% in 2018, but has increased ever since and reached 73% in 2021. 
-* Associate professor has slight increase from 63% in 2016 to 66% in 2019, but dropped to 60% in 2021. 
+* Although Assistant Professor and Professor experienced a 6% and 3% drop in TL proportion in 2017 and 2018 respectively, their TL proportion has increased to 73% and 75% respectively in 2021.  
+* Associate professor, though slightly increased 1-2% in 2016-2019, dropped from 66% in 2019 to 60% in 2021.
+
+
 
 
 # Trends Breakdown: Race
@@ -129,13 +129,16 @@ theme(axis.text.y=element_text())+theme(panel.grid.major.y = element_line(color 
 labs(title=str_wrap("Tenure-line Faculty in Different Racial Groups",80),x="",y="")
 ```
 
-* White faculties have the most stable tenure-line proportion -- within the 42-48% range. 
-* Asian faculties experienced two dropped in 2018 and 2020 and only has 31-32% tenure-line proportion. The tenure-line proportion increased from 31% to 51% in 2021.
+* White faculty has a stable 42-48% TL proportion. 
+* Asian faculty dropped from 40-42% in 2016-2017 to 32% in 2018. Though increased to 40% in 2019, dropped to 31% again in 2020. In the most recent year, Asian faculty's TL proportion reached the highest 51% in 2021.
 
-* Smaller racial groups have below 30% tenure-line proportions before 2018. However, their tenure-line proportion has been increasing since 2018 and reached 46-48% in 2021. 
+* International, Hispanic, and Black faculty have 22-35% TL proportions in 2016-2017, 12-17% less than White and Asian faculty. However, their TL proportion increased since 2018 and reached 46-48% in 2021. 
 + International faculties have the lowest tenure-line proportion of 20% in 2016, but the proportion jumped to 50% in 2018 and 2021.
 + Hispanic faculties have increased tenure-line proportion from 33% in 2016 to 59% in 2020, and 55% in 2021, both are the highest among all racial groups in those two years. 
 + Black faculties' tenure-line proportion dropped from 50% in 2017 to 20% in 2018, but has been increasing by 7% each year to 44% in 2020 and kept stable at 45% in 2021.
+
+
+
 
 # Trends Breakdown: Legal Sex & Race
 
@@ -145,7 +148,7 @@ data%>% filter(`Race/Ethnicity`!="Unreported")%>% group_by(Year,`Race/Ethnicity`
 summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits=0))%>%filter(`Tenure Status`=="Tenure Line")%>%
 #plot
 ggplot(aes(color=factor(`Legal Sex`),x=factor(Year),y=prt,group=factor(`Legal Sex`)))+geom_line()+facet_wrap(~`Race/Ethnicity`)+theme_lz.html()+
-#geom_text_repel(aes(label=prt),fontface="bold",size=6.5)+
+geom_text_repel(aes(label=prt),size=3)+
 #themes
 scale_y_continuous(breaks = seq(.2,.8,by=.2),labels = scales::percent)+
 #scale_x_discrete(labels=c())
@@ -154,7 +157,50 @@ theme(axis.text.y=element_text())+theme(panel.grid.major.y = element_line(color 
 labs(title="Gender Gaps for Tenure-line Faculty",x="",y="")
 ```
 
-* Hispanic and White faculties have a consistent gender gap with male faculties have higher tenure-line proportion than female faculties.
+* Hispanic and White faculty have a consistent gender gap during 2016-2021.
+* White faculty has 50% and 60% gender difference in 2016 and 2019. The TL proportion difference decreased since 2019 and reached 20% in 2021. 
+* Hispanic faculty gender gap has been consistently between 20-28%. 
+
+
+# Departments with Significant Changes (2016~2021)
+
+```{r dep prop.year table}
+#n dep; filter out small dep that has skewed prt
+n10dep<-data%>%group_by(Department)%>%summarise(cnt=n())%>% filter(cnt>10)%>%arrange(cnt)
+
+#tenure prop by department
+dep.Tprop<-data%>%filter(Department %in% n10dep$Department)%>%
+  group_by(Year,Department, `Tenure Status`)%>%
+  summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%
+  arrange(Department)%>%filter(`Tenure Status`=="Tenure Line")%>%
+  select(-`Tenure Status`,-cnt)#have to remove cnt because only have the same value can be seen as one group; while cnt for different years vary, making departments not considered as the same
+
+#year as cols
+dep.wide<-dep.Tprop%>%pivot_wider(names_from = Year,values_from = prt)%>%mutate(Change=`2021`-`2016`,Average=mean(c(`2016`,`2017`,`2018`,`2019`,`2020`,`2021`)))%>%arrange(-Average)
+```
+
+```{r change_avg.dep}
+#average and rank and change
+average.dep<-dep.wide%>%select(Department,Average,Change)%>%arrange(-Average)%>% ungroup%>%mutate(`Rank of Average`=rank(-Average))#needs to ungroup before row_number or rank
+
+#sig change>10%; list of departments
+change.dep<-dep.wide%>%select(Department,`2016`,`2021`,Change)%>%
+  filter(Change>0.1 | Change<(-0.1))%>%arrange(-Change) #have to use () for -0.1
+
+change.avgrank<-merge(change.dep,average.dep)%>%select(Department,Change,Average)%>%arrange(-Change)
+#condformat(change.dep) %>% rule_fill_gradient(Change, low=rgb(1,0,0),high=rgb(0,1,0))#low=rgb(1,0,0),high=rgb(0,1,0) good red-yellow/white-green
+
+change.avgrank%>%formattable(list(
+  Change=color_tile("red","yellow"),#from red to sth in between to yellow ultimately
+  Average=color_bar("lightblue"),
+  Change=formatter("span", style = ~ style(color = ifelse(Change >0, "darkgreen", "red")),
+                    ~ icontext(ifelse(Change <0,"arrow-down", ifelse(Change>0.2,"thumbs-up","arrow-up")), Change))#,#the last change is to show values of change after styles
+  #`Rank of Average`= formatter("span",style=x~style(color=ifelse(x<10,"darkgreen",ifelse(x>20,"red","grey"))))
+))#%>%kable("html",caption = "Changes and Averages of Tenure-line Proportion for Departments")
+```
+
+* TL proportion of nine departments increased at least 13-40% during 2016-2021, with American Studies increased the most. 
+* However, three departments (Econ, Phil, Chem) decreased 11-13% from 2016 to 2021. 
 
 
 
@@ -259,42 +305,12 @@ ggplot(data=plot_dat, aes(x=Year,y=prt,color=Department,group=Department))+geom_
 shinyApp(ui = ui, server = server)
 ```
 
-# Departments with Significant Changes (2016~2021)
 
-```{r dep prop.year table}
-#n dep; filter out small dep that has skewed prt
-n10dep<-data%>%group_by(Department)%>%summarise(cnt=n())%>% filter(cnt>10)%>%arrange(cnt)
+# Summary
 
-#tenure prop by department
-dep.Tprop<-data%>%filter(Department %in% n10dep$Department)%>%
-  group_by(Year,Department, `Tenure Status`)%>%
-  summarise(cnt=n_distinct(ID))%>%mutate(prt=percent(cnt/sum(cnt),digits = 0))%>%
-  arrange(Department)%>%filter(`Tenure Status`=="Tenure Line")%>%
-  select(-`Tenure Status`,-cnt)#have to remove cnt because only have the same value can be seen as one group; while cnt for different years vary, making departments not considered as the same
-
-#year as cols
-dep.wide<-dep.Tprop%>%pivot_wider(names_from = Year,values_from = prt)%>%mutate(Change=`2021`-`2016`,Average=mean(c(`2016`,`2017`,`2018`,`2019`,`2020`,`2021`)))%>%arrange(-Average)
-```
-
-```{r change_avg.dep}
-#average and rank and change
-average.dep<-dep.wide%>%select(Department,Average,Change)%>%arrange(-Average)%>% ungroup%>%mutate(`Rank of Average`=rank(-Average))#needs to ungroup before row_number or rank
-
-#sig change>10%; list of departments
-change.dep<-dep.wide%>%select(Department,`2016`,`2021`,Change)%>%
-  filter(Change>0.1 | Change<(-0.1))%>%arrange(-Change) #have to use () for -0.1
-
-change.avgrank<-merge(change.dep,average.dep)%>%select(Department,Change,Average)%>%arrange(-Change)
-#condformat(change.dep) %>% rule_fill_gradient(Change, low=rgb(1,0,0),high=rgb(0,1,0))#low=rgb(1,0,0),high=rgb(0,1,0) good red-yellow/white-green
-
-change.avgrank%>%formattable(list(
-  Change=color_tile("red","yellow"),#from red to sth in between to yellow ultimately
-  Average=color_bar("lightblue"),
-  Change=formatter("span", style = ~ style(color = ifelse(Change >0, "darkgreen", "red")),
-                    ~ icontext(ifelse(Change <0,"arrow-down", ifelse(Change>0.2,"thumbs-up","arrow-up")), Change))#,#the last change is to show values of change after styles
-  #`Rank of Average`= formatter("span",style=x~style(color=ifelse(x<10,"darkgreen",ifelse(x>20,"red","grey"))))
-))#%>%kable("html",caption = "Changes and Averages of Tenure-line Proportion for Departments")
-```
-
-
+* Tenure-line (TL) proportion increased 4% from 2016 to 2021, with 2020 being the highest 45%.
+* TL proportion for assistant professor and professor both increased 12% and 5% respectively from 2016 to 2021. However, TL proportion for associate professor decreased 3% during 2016-2021.
+* Although international, Hispanic, and black faculties used to have 12-17% less TL proportion than Asian and White faculties in 2016, after increases over the years, their TL proportion are similar in 2021 in a range of 45-51%.
+* Consistent gender gaps of at least 20% difference in TL proportion still exist for White and Hispanic faculties in 2021. 
+* TL proportion  of nine departments increased at least 13-40% during 2016-2021, with American Studies increased the most. However, three departments (Econ, Phil, Chem) decreased 11-13% from 2016 to 2021. 
 

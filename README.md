@@ -21,5 +21,5 @@ In this folder, you will find R scripts/markdown I developed for cleaning and an
 - A historical comparison study with data from the National Survey of Student Engagement
 - A comprehensive analysis of the Student Satisfaction Survey
 
-# Output of the R scripts/markdown and original data are hidden. 
-All R scripts/markdown released in the folders followed guidelines of [Institutional Review Board (IRB)](https://irb.research.chop.edu/criteria-irb-approval), [Family Educational Rights & Privacy Act (FERPA)](https://www.jhsph.edu/offices-and-services/student-affairs/ferpa.html#:~:text=What%20is%20FERPA%3F,of%20information%20from%20the%20records.), and [protection of data ownership](https://www.techopedia.com/definition/29059/data-ownership#:~:text=Explains%20Data%20Ownership-,What%20Does%20Data%20Ownership%20Mean%3F,implemented%20by%20the%20data%20owner.).
+# Note
+Most output of the R scripts/markdown and original data are hidden. All R scripts/markdown released in the folders followed guidelines of [Institutional Review Board (IRB)](https://irb.research.chop.edu/criteria-irb-approval), [Family Educational Rights & Privacy Act (FERPA)](https://www.jhsph.edu/offices-and-services/student-affairs/ferpa.html#:~:text=What%20is%20FERPA%3F,of%20information%20from%20the%20records.), and [protection of data ownership](https://www.techopedia.com/definition/29059/data-ownership#:~:text=Explains%20Data%20Ownership-,What%20Does%20Data%20Ownership%20Mean%3F,implemented%20by%20the%20data%20owner.).

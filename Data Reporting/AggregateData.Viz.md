@@ -7,6 +7,15 @@ output:
     keep_md: true
 ---
 
+The dataset used for this project contains the number of students enrolling in their first English course at a university who enrolled in transfer-level or below transfer-level English by term and race/ethnicity. 
+
+Context: Assembly Bill 705 (Title 5, § 55003 and 55522) requires all California Community Colleges to
+design placement methods that maximize the probability that students will enter and complete
+transfer-level coursework in English and math/quantitative reasoning within one year of their
+first enrollment in the discipline. In the databset, the university's methods used to determine placement changed from a placement test in fall 2015 and 2016, to multiple measures in fall 2017 and 2018, to AB705 in fall 2019. 
+
+Research Question" How did the change in placement methods impact placement into transfer-level English?
+
 
 
 
@@ -70,6 +79,10 @@ ggplot(aes(x=Level,y=percent(prt,digit=0),fill=Method))+
 
 <img src="AggregateData.Viz_files/figure-html/within method-group-1.png" style="display: block; margin: auto;" />
 
+Conclusion: Each time we change placement methods, there have been around 13% more students to
+be placed into transfer level than below transfer English course. For example, the latest
+placement methods (AB705) put 13% more students into transfer level English course
+than its predecessors (Multiple Measures).
 
 
 
@@ -90,4 +103,10 @@ ggplot(aes(x=Level,y=percent(prt,digit=0),fill=Method))+
 ```
 
 <img src="AggregateData.Viz_files/figure-html/within method-group by race-1.png" style="display: block; margin: auto;" />
+
+
+Conclusion: One-year throughput increased among all race/ethnic groups, during MMAP and AB705,
+particularly among Hispanic/Latinx students, though a large throughput gap between
+White students and Hispanic/Latinx, Asian, and Black/African-American students
+remained in fall 2019.
 

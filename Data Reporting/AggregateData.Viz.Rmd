@@ -14,7 +14,7 @@ design placement methods that maximize the probability that students will enter 
 transfer-level coursework in English and math/quantitative reasoning within one year of their
 first enrollment in the discipline. In the databset, the university's methods used to determine placement changed from a placement test in fall 2015 and 2016, to multiple measures in fall 2017 and 2018, to AB705 in fall 2019. 
 
-Research Question" How did the change in placement methods impact placement into transfer-level English?
+Research Question: How did the change in placement methods impact placement into transfer-level English?
 
 
 ```{r setup, include=FALSE}

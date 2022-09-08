@@ -2,7 +2,9 @@
 title: "FacultyTenureTrends"
 author: "Linli Zhou"
 date: "`r Sys.Date()`"
-output: html_document
+output: 
+  html_document:
+    keep_md: true
 runtime: shiny
 ---
 

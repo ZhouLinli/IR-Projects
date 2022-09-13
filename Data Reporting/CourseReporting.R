@@ -8,8 +8,8 @@ nrow(course21_22)
 nrow(unique(course21_22))
 course21_22_unqiue<-unique(course21_22)
 
-
-#external reporting for the Princeton Review 2022-8-19 due
+######################################################################################
+##############external reporting for the Princeton Review 2022-8-19 due##############
 
 
 #1.goal -question 10 and 11: confirm the following are offered as undergraduate course
@@ -59,15 +59,66 @@ course21_22_unqiue%>%filter(
 
 
 
+######################################################################################
+##############external reporting for the US News 2022-10-14 due##############
+library(rvest)
+#read html and parse it into R readable contents
+pg<-read_html("https://www.lasell.edu/graduate-studies/academics/bsba.html#Curriculum-Section")
+#look at it (a list object that contains the tree-like structure)
+pg
+#search using nodes (html tags or css class) and print text
+#pg %>% html_nodes("body")%>%html_text()#indeed all contents of body
+#search using css class as nodes
+my.title<-pg %>% html_nodes(".code")%>%html_text() 
+  my.title%>%length()#we must add a . before the class name
+  
+#save to df
+my.df<-data.frame(BSBA=my.title)
 
 
 
+##############web2
+pg.2<-read_html("https://www.lasell.edu/graduate-studies/academics/psychology.html#Curriculum-Section")
+#make a list of course titles
+my.title2<-c()#initialize a empty list
+for (i in 1:30 )  { #estimate 30 i
+  my.title2[[i]]<-#have to use [[]] to indicate the list index
+    pg.2%>%html_nodes(
+      xpath=paste0("/html/body/div[1]/main/div/div[1]/div[2]/div[2]/table/tbody/tr[",i,"]/td[1]"#paste the xpath using i
+      )) %>% html_text()# print out corresponding text to nodes
+  i<-i+1 #add one to go to next index
+}
+
+library(stringr)
+#remove empty and not in format of -- using any capital letters follow by any number
+my.title2<-my.title2[str_detect(my.title2,"[A-Z][0-9]")]
+my.title2%>%length()
+
+#save to df
+length(my.title2)=length(my.title)
+my.df<-my.df%>%mutate(Psych=my.title2)
+
+##############web3
+pg.3<-read_html("https://www.lasell.edu/graduate-studies/academics/communication.html")
+#make a list of course titles
+my.title3<-c()#initialize a empty list
+for (i in 1:30 )  { #estimate 30 i
+  my.title3[[i]]<-#have to use [[]] to indicate the list index
+    pg.3%>%html_nodes(
+      xpath=paste0("/html/body/div[1]/main/div/div[1]/div[2]/div[2]/table/tbody/tr[",i,"]/td[1]"#paste the xpath using i
+      )) %>% html_text()# print out corresponding text to nodes
+  i<-i+1 #add one to go to next index
+}
+
+library(stringr)
+#remove empty and not in format of -- using any capital letters follow by any number
+my.title3<-my.title3[str_detect(my.title3,"[A-Z][0-9]")]
+my.title3%>%length()
 
 
-
-
-
-
+#save to df
+length(my.title3)=length(my.title)
+my.df<-my.df%>%mutate(Com=my.title3)
 
 
 

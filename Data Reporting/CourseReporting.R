@@ -155,7 +155,8 @@ gd22sp<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Repo
 ug22sum.main.1<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Summer/Main and I/SUM22 SES1 and Main UG Backup Data  Report - 2022-06-02T080930.592.xlsx")
 gd22sum.main.1<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Summer/Main and I/SUM22 MainSES1-Graduate Backup Data  Report (23).xlsx")
 
-
+####################################################################################
+#######################clean data headers#######################
 #investigate names 1)view df 2)find no headers and tackling those headers
 #tackling ug21sum2
 names(ug21sum2)<-ug21sum2[3,]#header is the third row
@@ -166,7 +167,6 @@ ug21sum2<-ug21sum2%>%select(-`NA`)#remove NA col
 ##compare larger col df to smaller col df; and select from larger col to see what's not exist
 ##names(ug21fa)%in%names(ug21sum2)
 ##names(ug21fa)[names(ug21fa) %in% names(ug21sum2) == "FALSE"]#no Age; SCHOOL that in larger data but not in smaller data
-
 
 #tackling ug22wi
 names(ug22wi)<-ug22wi[3,]#header is the third row
@@ -198,6 +198,8 @@ n<-nrow(gd22wi)#prep the length
 gd22wi<-gd22wi[7:n,]#select from 7th row to the end
 gd22wi<-gd22wi%>%select(-`NA`)#remove NA col
 
+####################################################################################
+###################create a full list of students############################
 #focusing on govern id/ssn and degree(GD)/Curriculum(UG)
 ssn1<-g21fa%>%select(`gov id`,Degree)
 ssn2<-gd21sum2%>%select(`gov id`,Degree)
@@ -228,71 +230,64 @@ full.ssn<-unique(full.ssn)%>%na.omit(full.ssn)
 write.xlsx(list("SSN"=full.ssn), file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/2022 US News/StudentLoanInfo_USNewsReport.xlsx")
 
 
-
-
-#filter target out with searched results
-t.filter<-function(df){
-  filter(df, Degree %in% c("MSCJ","MSM","MBA","Business Administration","Communication Bachelors Completion","Interdisciplinary Bachelors Completion","Psychology Bachelors Completion"))
-}
-
-t.g21fa<-t.filter(g21fa)
-t.gd21sum2<-t.filter(gd21sum2)
-t.gd22sp<-t.filter(gd22sp)
-t.gd22sum.main.1<-t.filter(gd22sum.main.1)
-t.gd22wi<-t.filter(gd22wi)
-t.ug21fa<-t.filter(ug21fa)
-t.ug21sum2<-t.filter(ug21sum2)
-t.ug22sp<-t.filter(ug22sp)
-t.ug22sum.main.1<-t.filter(ug22sum.main.1)
-t.ug22wi<-t.filter(ug22wi)
-
-
+####################################################################################
+##############################UG data###############################
+ug1<-ug21fa%>%select(`People Code Id`,Curriculum,`Birth Date`,Ethnicity,`Transfer YN`,`Cum Credits`)
+ug2<-ug21sum2%>%select(`People Code Id`,Curriculum,`Birth Date`,Ethnicity,`Transfer YN`,`Cum Credits`)
+ug3<-ug22sp%>%select(`People Code Id`,Curriculum,`Birth Date`,Ethnicity,`Transfer YN`,`Cum Credits`)
+ug4<-ug22sum.main.1%>%select(`People Code Id`,Curriculum,`Birth Date`,Ethnicity,`Transfer YN`,`Cum Credits`)
+ug5<-ug22wi%>%select(`People Code Id`,Curriculum,`Birth Date`,Ethnicity,`Transfer YN`,`Cum Credits`)
+ug.t<-plyr::join_all(list(ug1,ug2,ug3,ug4,ug5),type="full",match="first")%>%unique()%>%
+  filter(Curriculum %in% c("Business Administration","Communication Bachelors Completion","Interdisciplinary Bachelors Completion","Psychology Bachelors Completion"))
 
 ##########age/birth date of UG, question 70###########
-age1<-t.ug21fa%>%select(`People Code Id`,`Birth Date`)
-age2<-t.ug21sum2%>%select(`People Code Id`,`Birth Date`)
-age3<-t.ug22sp%>%select(`People Code Id`,`Birth Date`)
-age4<-t.ug22sum.main.1%>%select(`People Code Id`,`Birth Date`)
-age5<-t.ug22wi%>%select(`People Code Id`,`Birth Date`)
-ug.age<-plyr::join_all(list(age1,age2,age3,age4,age5),type="full",match="first")%>%unique()
 #calculate age from birth date
 library(lubridate)
-age <- function(dob, age.day = today(), units = "years", floor = TRUE) {
+age <- function(dob, age.day = "2021-07-01", units = "years", floor = TRUE) {
 calc.age = interval(dob, age.day) / duration(num = 1, units = units)
 if (floor) return(as.integer(floor(calc.age)))
-return(calc.age)
-}
-ug.age$age = age(mdy(ug.age$`Birth Date`))
-
-ug.age<-ug.age%>%mutate(age.cat=case_when(
+return(calc.age)}
+#count age category
+ug.t %>% mutate(age= age(mdy(ug.t$`Birth Date`))) %>% mutate(age.cat=case_when(
   age<=22 ~ "22 or younger",
   age>=23 & age<=29 ~ "23-29",
   age>=30 & age <=39 ~ "30-39",
   age>=40 & age <=49 ~ "40-49",
   age>=50 & age <=59 ~ "50-59",
   age>-60 ~"60 or older"
-))
+))%>%filter(!is.na(age.cat))%>%group_by(age.cat)%>%count()
 
-ug.age%>%filter(is.na(age.cat))%>%group_by(`Birth Date`)%>%count()#wrong dob input
+##########international students of UG, question 53,54###########
+ug.t%>%group_by(Ethnicity)%>%count()
 
-ug.age%>%filter(!is.na(age.cat))%>%group_by(age.cat)%>%count()
+##########non-transfer of UG, question 55###########
+ug.t%>%group_by(`Transfer YN`)%>%count()
+
+##########cum credit progress out of 120 credits of UG, question 57###########
+ug.t%>%mutate(CreditPrt=as.numeric(`Cum Credits`)/120)%>%mutate(Progress=case_when(
+  CreditPrt<.25~"<25%",
+  CreditPrt>=.25 & CreditPrt<.50~"25-49%",
+  CreditPrt>=.50 & CreditPrt<=.74~"50-49%",
+  CreditPrt>.75~">75%",
+))%>%group_by(Progress)%>%count()
+
+####################################################################################
+##############################GD data###############################
+gd1<-g21fa%>%select(`People Code Id`,Degree,Gender,`Birth Date`)
+gd2<-gd21sum2%>%select(`People Code Id`,Degree,Gender,`Birth Date`)
+gd3<-gd22sp%>%select(`People Code Id`,Degree,Gender,`Birth Date`)
+gd4<-gd22sum.main.1%>%select(`People Code Id`,Degree,Gender,`Birth Date`)
+gd5<-gd22wi%>%select(`People Code Id`,Degree,Gender,`Birth Date`)
+gd.t<-plyr::join_all(list(gd1,gd2,gd3,gd4,gd5),type="full",match="first")%>%unique()%>%filter(Degree %in% c("MSCJ","MSM","MBA"))
 
 ##########GD gender question 47 or 50############
-gender1<-t.g21fa%>%select(`People Code Id`,Degree,Gender)
-gender2<-t.gd21sum2%>%select(`People Code Id`,Degree,Gender)
-gender3<-t.gd22sp%>%select(`People Code Id`,Degree,Gender)
-gender4<-t.gd22sum.main.1%>%select(`People Code Id`,Degree,Gender)
-gender5<-t.gd22wi%>%select(`People Code Id`,Degree,Gender)
-full.gender<-plyr::join_all(list(gender1,gender2,gender3,gender4,gender5),type="full",match="first")%>%unique()
-full.gender%>%group_by(Degree)%>%count()
-#MSCJ
-full.gender%>%filter(Degree=="MSCJ")
+gd.t%>%filter(Degree=="MSCJ")%>%group_by(Gender)%>%count()
+gd.t%>%filter(Degree=="MSM")%>%group_by(Gender)%>%count()
+gd.t%>%filter(Degree=="MBA")%>%group_by(Gender)%>%count()
 
+##########GD age question 49 or 52############
+gd.t%>%mutate(age=age(mdy(`Birth Date`)))%>%filter(!is.na(age))%>%group_by(Degree)%>%summarise(mean.age=mean(age))
 
-###################enroll by program#############
-full.ssn%>%filter(Degree %in% c(
-  "Business Administration","Communication Bachelors Completion","Interdisciplinary Bachelors Completion","Psychology Bachelors Completion"))%>%
-  group_by(Degree)%>%summarise(cnt=n())%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits=0))
 
 #############question 128################
 #count of students who graduated

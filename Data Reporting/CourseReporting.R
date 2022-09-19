@@ -61,6 +61,7 @@ course21_22_unqiue%>%filter(
 
 ######################################################################################
 ##############external reporting for the US News 2022-10-14 due##############
+##############question: Amount of curriculum for undergrad completion/online program###########
 library(rvest)
 #read html and parse it into R readable contents
 pg<-read_html("https://www.lasell.edu/graduate-studies/academics/bsba.html#Curriculum-Section")
@@ -119,6 +120,184 @@ my.title3%>%length()
 #save to df
 length(my.title3)=length(my.title)
 my.df<-my.df%>%mutate(Com=my.title3)
+
+
+
+######################################################################################
+#############################external reporting #############################
+##############US NEWS 07/01/2021-06/30-2022, due 2022-10-15 due##############
+##############how many UG/GD students in various groups######################
+#library
+library(readxl)
+library(dplyr)
+library(tidyverse)
+library(writexl)
+library(openxlsx)
+
+#load data
+##2021 Summer II
+ug21sum2<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2021 Summer/Summer II/Undergraduate Backup Data  Report 21SUII.xlsx")
+gd21sum2<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2021 Summer/Summer II/GR/Graduate Backup Data  Report.xlsx")
+
+##2021 Fall
+ug21fa<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2021 Fall/FA2021 Undergraduate Backup Data  Report.xlsx")
+g21fa<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2021 Fall/Grad/main.SI.S2 GR backup data.xlsx")
+
+##2022 Winter
+ug22wi<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Winter/WI2022 UG Backup Data  Report.xlsx")
+gd22wi<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Winter/Grad Backup data WI22.xlsx")
+
+##2022 Spring
+ug22sp<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Spring/UG/Spring 2022 UG Backup Data.xlsx")
+gd22sp<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Spring/Grad/Graduate SP22 Final Backup Data  Report.xlsx")
+
+##2022 Summer Main&I
+ug22sum.main.1<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Summer/Main and I/SUM22 SES1 and Main UG Backup Data  Report - 2022-06-02T080930.592.xlsx")
+gd22sum.main.1<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Summer/Main and I/SUM22 MainSES1-Graduate Backup Data  Report (23).xlsx")
+
+
+#investigate names 1)view df 2)find no headers and tackling those headers
+#tackling ug21sum2
+names(ug21sum2)<-ug21sum2[3,]#header is the third row
+n<-nrow(ug21sum2)#prep the length
+ug21sum2<-ug21sum2[4:n,]#select from 4th row to the end
+ug21sum2<-ug21sum2%>%select(-`NA`)#remove NA col
+#since no need to merge all, no need to care about each and every col
+##compare larger col df to smaller col df; and select from larger col to see what's not exist
+##names(ug21fa)%in%names(ug21sum2)
+##names(ug21fa)[names(ug21fa) %in% names(ug21sum2) == "FALSE"]#no Age; SCHOOL that in larger data but not in smaller data
+
+
+#tackling ug22wi
+names(ug22wi)<-ug22wi[3,]#header is the third row
+n<-nrow(ug22wi)#prep the length
+ug22wi<-ug22wi[4:n,]#select from 4th row to the end
+ug22wi<-ug22wi%>%select(-`NA`)#remove NA col
+
+#tackling gd22sum.main.1
+names(gd22sum.main.1)<-gd22sum.main.1[3,]#header is the third row
+n<-nrow(gd22sum.main.1)#prep the length
+gd22sum.main.1<-gd22sum.main.1[4:n,]#select from 4th row to the end
+gd22sum.main.1<-gd22sum.main.1%>%select(-`NA`)#remove NA col
+
+#tackling g21fa
+names(g21fa)<-g21fa[6,]#header is the 6th row
+n<-nrow(g21fa)#prep the length
+g21fa<-g21fa[7:n,]#select from 7th row to the end
+g21fa<-g21fa%>%select(-`NA`)#remove NA col
+
+#tackling gd21sum2
+names(gd21sum2)<-gd21sum2[6,]#header is the 6th row
+n<-nrow(gd21sum2)#prep the length
+gd21sum2<-gd21sum2[7:n,]#select from 7th row to the end
+gd21sum2<-gd21sum2%>%select(-`NA`)#remove NA col
+
+#tackling gd22wi
+names(gd22wi)<-gd22wi[6,]#header is the 6th row
+n<-nrow(gd22wi)#prep the length
+gd22wi<-gd22wi[7:n,]#select from 7th row to the end
+gd22wi<-gd22wi%>%select(-`NA`)#remove NA col
+
+#focusing on govern id/ssn and degree(GD)/Curriculum(UG)
+ssn1<-g21fa%>%select(`gov id`,Degree)
+ssn2<-gd21sum2%>%select(`gov id`,Degree)
+ssn3<-gd22sp%>%select(`gov id`,Degree)
+ssn4<-gd22sum.main.1%>%select(`gov id`,Degree)
+ssn5<-gd22wi%>%select(`gov id`,Degree)
+ssn6<-ug21fa%>%select(`gov id`,Curriculum)%>%rename(Degree=Curriculum)
+ssn7<-ug21sum2%>%select(`gov id`,Curriculum)%>%rename(Degree=Curriculum)
+ssn8<-ug22sp%>%select(`gov id`,Curriculum)%>%rename(Degree=Curriculum)
+ssn9<-ug22sum.main.1%>%select(`gov id`,Curriculum)%>%rename(Degree=Curriculum)
+ssn10<-ug22wi%>%select(`gov id`,Curriculum)%>%rename(Degree=Curriculum)
+#merge
+full.ssn<-plyr::join_all(list(ssn1,ssn2,ssn3,ssn4,ssn5,ssn6,ssn7,ssn8,ssn9,ssn10),type="full",match="first")%>%unique()
+
+#search in merged data: UG bussadmin, completion + GD MBA, MSM, MSCJ
+full.ssn%>%group_by(Degree)%>%count()
+full.ssn%>%filter(!grepl("^[0-9]",full$Degree))%>%group_by(Degree)%>%count()
+full.ssn%>%filter(grepl("[Bb][Uu]",full$Degree))%>%group_by(Degree)%>%count()#see "Business Administration"
+full.ssn%>%filter(grepl("[Cc]omp",full$Degree))%>%group_by(Degree)%>%count()#see completion programs
+list<-ug22sp%>%group_by(Curriculum)%>%count()
+#filter using searched results
+full.ssn<-full.ssn%>%filter(Degree %in% c(
+  "MSCJ","MSM","MBA","Business Administration","Communication Bachelors Completion","Interdisciplinary Bachelors Completion","Psychology Bachelors Completion"
+))
+#final touch
+full.ssn<-unique(full.ssn)%>%na.omit(full.ssn)
+#send to list of students financial aid
+write.xlsx(list("SSN"=full.ssn), file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/2022 US News/StudentLoanInfo_USNewsReport.xlsx")
+
+
+
+
+#filter target out with searched results
+t.filter<-function(df){
+  filter(df, Degree %in% c("MSCJ","MSM","MBA","Business Administration","Communication Bachelors Completion","Interdisciplinary Bachelors Completion","Psychology Bachelors Completion"))
+}
+
+t.g21fa<-t.filter(g21fa)
+t.gd21sum2<-t.filter(gd21sum2)
+t.gd22sp<-t.filter(gd22sp)
+t.gd22sum.main.1<-t.filter(gd22sum.main.1)
+t.gd22wi<-t.filter(gd22wi)
+t.ug21fa<-t.filter(ug21fa)
+t.ug21sum2<-t.filter(ug21sum2)
+t.ug22sp<-t.filter(ug22sp)
+t.ug22sum.main.1<-t.filter(ug22sum.main.1)
+t.ug22wi<-t.filter(ug22wi)
+
+
+
+##########age/birth date of UG, question 70###########
+age1<-t.ug21fa%>%select(`People Code Id`,`Birth Date`)
+age2<-t.ug21sum2%>%select(`People Code Id`,`Birth Date`)
+age3<-t.ug22sp%>%select(`People Code Id`,`Birth Date`)
+age4<-t.ug22sum.main.1%>%select(`People Code Id`,`Birth Date`)
+age5<-t.ug22wi%>%select(`People Code Id`,`Birth Date`)
+ug.age<-plyr::join_all(list(age1,age2,age3,age4,age5),type="full",match="first")%>%unique()
+#calculate age from birth date
+library(lubridate)
+age <- function(dob, age.day = today(), units = "years", floor = TRUE) {
+calc.age = interval(dob, age.day) / duration(num = 1, units = units)
+if (floor) return(as.integer(floor(calc.age)))
+return(calc.age)
+}
+ug.age$age = age(mdy(ug.age$`Birth Date`))
+
+ug.age<-ug.age%>%mutate(age.cat=case_when(
+  age<=22 ~ "22 or younger",
+  age>=23 & age<=29 ~ "23-29",
+  age>=30 & age <=39 ~ "30-39",
+  age>=40 & age <=49 ~ "40-49",
+  age>=50 & age <=59 ~ "50-59",
+  age>-60 ~"60 or older"
+))
+
+ug.age%>%filter(is.na(age.cat))%>%group_by(`Birth Date`)%>%count()#wrong dob input
+
+ug.age%>%filter(!is.na(age.cat))%>%group_by(age.cat)%>%count()
+
+##########GD gender question 47 or 50############
+gender1<-t.g21fa%>%select(`People Code Id`,Degree,Gender)
+gender2<-t.gd21sum2%>%select(`People Code Id`,Degree,Gender)
+gender3<-t.gd22sp%>%select(`People Code Id`,Degree,Gender)
+gender4<-t.gd22sum.main.1%>%select(`People Code Id`,Degree,Gender)
+gender5<-t.gd22wi%>%select(`People Code Id`,Degree,Gender)
+full.gender<-plyr::join_all(list(gender1,gender2,gender3,gender4,gender5),type="full",match="first")%>%unique()
+full.gender%>%group_by(Degree)%>%count()
+#MSCJ
+full.gender%>%filter(Degree=="MSCJ")
+
+
+###################enroll by program#############
+full.ssn%>%filter(Degree %in% c(
+  "Business Administration","Communication Bachelors Completion","Interdisciplinary Bachelors Completion","Psychology Bachelors Completion"))%>%
+  group_by(Degree)%>%summarise(cnt=n())%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits=0))
+
+#############question 128################
+#count of students who graduated
+
+
 
 
 

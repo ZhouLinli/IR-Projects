@@ -289,9 +289,9 @@ gd.t%>%filter(Degree=="MBA")%>%group_by(Gender)%>%count()
 gd.t%>%mutate(age=age(mdy(`Birth Date`)))%>%filter(!is.na(age))%>%group_by(Degree)%>%summarise(mean.age=mean(age))
 
 
-#############question 128################
-#count of students who graduated
-
+####################################################################################
+################## IPEDS 12-month enrollment and Completions (due 2022 Oct 19)########
+#####################################################################################
 
 
 

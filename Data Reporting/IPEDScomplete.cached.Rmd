@@ -302,3 +302,17 @@ write_xlsx(ipeds.complete16_crt,"/Users/linlizhou/Documents/LASELL/data/completi
 #check
 #ipeds.complete18f%>%group_by(degree)%>%count()#no more TRK
 ```
+
+
+# IPEDS Completions (due 2022 Oct 19)
+
+
+# US News Completion/graduation 
+## question 128: count of students who graduated
+
+
+
+
+
+
+

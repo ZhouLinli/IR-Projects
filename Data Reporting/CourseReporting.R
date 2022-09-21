@@ -451,11 +451,42 @@ t$FT[is.na(t$FT)]<-0
 t$PT[is.na(t$PT)]<-0
 View(t)
 
+##############################################################################
+############################GENDER UNKNOWN#######################################
+#UG unknown
+ug.ipeds%>%group_by(Gender)%>%count()#31
+#GD unknown
+gd.ipeds%>%group_by(Gender)%>%count()#2
+#Another gender blank - no value as another gender
 
 
-
+##############################################################################
+############################CREDIT#######################################
+cdt1<-ug21fa%>%select(`People Code Id`,`Term Credits`,`Cum Credits`)%>%mutate(Level="UG")
+cdt2<-ug21sum2%>%select(`People Code Id`,`Term Credits`,`Cum Credits`)%>%mutate(Level="UG")
+cdt3<-ug22sp%>%select(`People Code Id`,`Term Credits`,`Cum Credits`)%>%mutate(Level="UG")
+cdt4<-ug22sum.main.1%>%select(`People Code Id`,`Term Credits`,`Cum Credits`)%>%mutate(Level="UG")
+cdt5<-ug22wi%>%select(`People Code Id`,`Term Credits`,`Cum Credits`)%>%mutate(Level="UG")
+cdt6<-g21fa%>%select(`People Code Id`,`Term Credits`,`Cum Credits`)%>%mutate(Level="GD")
+cdt7<-gd21sum2%>%select(`People Code Id`,`Term Credits`,`Cum Credits`)%>%mutate(Level="GD")
+cdt8<-gd22sp%>%select(`People Code Id`,`Term Credits`,`Cum Credits`)%>%mutate(Level="GD")
+cdt9<-gd22sum.main.1%>%select(`People Code Id`,`Term Credits`,`Cum Credits`)%>%mutate(Level="GD")
+cdt10<-gd22wi%>%select(`People Code Id`,`Term Credits`,`Cum Credits`)%>%mutate(Level="GD")
+#########COMPILED UG DATASET
+cdt.ipeds<-plyr::join_all(list(cdt1,cdt2,cdt3,cdt4,cdt5,cdt6,cdt7,cdt8,cdt9,cdt10),type="full",match="first")%>%
+  #prep: cdt.ipeds%>%group_by(Level)%>%count()
+  ug.ipeds%>%group_by(Degree)%>%count()
+  filter(Level%in%c("GR","UNDER"))
+  distinct(`People Code Id`,.keep_all = TRUE)%>%
+  janitor::remove_empty(c("rows", "cols"))%>%#important to have- remove empty/all-NA rows/cols!!
+  mutate()
 ####instructional activity question: add up all gd/ug term credit
+
 ####anyone having ug credit do not count them in gd headcount for ethnicity
+
+
+
+
 ####distance education: student info by course file // no option student courses file -- long to wide: the section type col to multiple cols, each contain one type of section format
 ####
 ####us_rent_income %>% pivot_wider(names_from = variable, values_from = mutated_countof1_eachrow,values_fill = 0)

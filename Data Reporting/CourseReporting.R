@@ -293,8 +293,62 @@ gd.t%>%mutate(age=age(mdy(`Birth Date`)))%>%filter(!is.na(age))%>%group_by(Degre
 ################## IPEDS 12-month enrollment and Completions (due 2022 Oct 19)########
 #####################################################################################
 
+ug1<-ug21fa%>%select(`People Code Id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Blended Sem YN`,Curriculum)
+ug2<-ug21sum2%>%select(`People Code Id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Blended Sem YN`,Curriculum)
+ug3<-ug22sp%>%select(`People Code Id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Blended Sem YN`,Curriculum)
+ug4<-ug22sum.main.1%>%select(`People Code Id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Blended Sem YN`,Curriculum)
+ug5<-ug22wi%>%select(`People Code Id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Blended Sem YN`,Curriculum)
+#########COMPILED UG DATASET
+ug.ipeds<-plyr::join_all(list(ug1,ug2,ug3,ug4,ug5),type="full",match="first")%>%distinct(`People Code Id`,.keep_all = TRUE)%>%mutate(degree.t=case_when(Degree %in% c("NON","Non Matriculated")~"Non-degree",Degree!="NON" & Degree!="Non Matriculated" ~"Degree-seeking"))
+##VERY IMPORT TO RUN BELOW
+#ordering values for easier order match with ipeds form
+ug.ipeds%>%group_by(Ethnicity)%>%count()#do not have islander;; 
+ug.ipeds$Ethnicity=factor(ug.ipeds$Ethnicity, levels=c("Non Resident Alien","Hispanic","American Indian or Alaska Native","Asian","Black or African American","White","Two or more Races"))#not mention unknown so that it merge with NA 
+ug.ipeds$`Transfer YN`=factor(ug.ipeds$`Transfer YN`,levels = c("Y","N"))
+                 
+
+#####################12-month Unduplicated Count by Race/Ethnicity and Gender##########################
+############################Full-time Undergraduate Students:MEN#######################################
+
+#xplore: ug.ipeds%>%group_by(degree.t)%>%count()
+#all groups needed: ug.ipeds%>%filter(`FT/PT`=="FT")%>%group_by(Gender, degree.t,`College Attend`,`Transfer YN`,Ethnicity)%>%count()
+#diasplay male female side by side: ug.ipeds%>%filter(`FT/PT`=="FT")%>%group_by(degree.t,Ethnicity,Gender)%>%count()%>%pivot_wider(names_from = Gender,values_from = n)
+
+##########NON DEGREE
+#report NON-DEGREE column
+ug.ipeds%>%filter(`FT/PT`=="FT",Gender=="F",degree.t=="Non-degree")%>%group_by(degree.t,Ethnicity)%>%count()
+
+##########DEGREE: FIRST TIME (College Attend=NEW)
+##report first-time student in DEGREE-SEEKING column of the WOMEN table of UG
+ug.ipeds%>%filter(`FT/PT`=="FT",Gender=="F",degree.t=="Degree-seeking",`College Attend`=="NEW")%>%group_by(Ethnicity,.drop = FALSE)%>%count()
+
+##########DEGREE&NON FIRST TIME: TRANSFER VS RETURNING in "Transfer YN"
+## focusing on return student, whether they are transfer or not
+tbl<-ug.ipeds%>%filter(`FT/PT`=="FT",Gender=="F",degree.t=="Degree-seeking", `College Attend`=="RET")%>%group_by(`Transfer YN`,Ethnicity,.drop = FALSE)%>%count()%>%pivot_wider(names_from = `Transfer YN`,values_from =  n, names_glue = paste0("Transfer","{`Transfer YN`}_{.value}"))
+tbl
+tbl%>%select(TransferY_n)
+tbl%>%select(TransferN_n)
 
 
+############################Full-time Undergraduate Students:WOMEN#######################################
+##########NON DEGREE
+#report NON-DEGREE column
+ug.ipeds%>%filter(`FT/PT`=="FT",Gender=="M",degree.t=="Non-degree")%>%group_by(degree.t,Ethnicity)%>%count()
+
+##########DEGREE: FIRST TIME (College Attend=NEW)
+##report first-time student in DEGREE-SEEKING column of the MEN table of UG
+ug.ipeds%>%filter(`FT/PT`=="FT",Gender=="M",degree.t=="Degree-seeking",`College Attend`=="NEW")%>%group_by(Ethnicity,.drop = FALSE)%>%count()
+
+##########DEGREE&NON FIRST TIME: TRANSFER VS RETURNING in "Transfer YN"
+## focusing on return student, whether they are transfer or not
+tbl<-ug.ipeds%>%filter(`FT/PT`=="FT",Gender=="M",degree.t=="Degree-seeking", `College Attend`=="RET")%>%group_by(`Transfer YN`,Ethnicity,.drop = FALSE)%>%count()%>%pivot_wider(names_from = `Transfer YN`,values_from =  n, names_glue = paste0("Transfer","{`Transfer YN`}_{.value}"))
+tbl
+tbl%>%select(TransferY_n)
+tbl%>%select(TransferN_n)
 
 
-
+####instructional activity question: add up all gd/ug term credit
+####anyone having ug credit do not count them in gd headcount for ethnicity
+####distance education: student info by course file // no option student courses file -- long to wide: the section type col to multiple cols, each contain one type of section format
+####
+####us_rent_income %>% pivot_wider(names_from = variable, values_from = mutated_countof1_eachrow,values_fill = 0)

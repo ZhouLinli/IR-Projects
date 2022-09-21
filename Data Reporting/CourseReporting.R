@@ -332,27 +332,32 @@ t2<-ug.ipeds%>%filter(`FT/PT`=="FT",Gender=="M",degree.t=="Degree-seeking", `Col
 t3<-ug.ipeds%>%filter(`FT/PT`=="FT",Gender=="M",degree.t=="Non-degree")%>%
   group_by(Ethnicity)%>%summarize(nondegree=n())
 
-plyr::join_all(list(t1,t2,t3),type="full",match="first")
-
+t<-plyr::join_all(list(t1,t2,t3),type="full",match="first")
+View(t)
 
 
 
 ############################Full-time Undergraduate Students:WOMEN#######################################
 
-##########NON DEGREE
-#report NON-DEGREE column
-ug.ipeds%>%filter(`FT/PT`=="FT",Gender=="F",degree.t=="Non-degree")%>%group_by(degree.t,Ethnicity)%>%count()
-
 ##########DEGREE: FIRST TIME (College Attend=NEW)
-##report first-time student in DEGREE-SEEKING column of the WOMEN table of UG
-ug.ipeds%>%filter(`FT/PT`=="FT",Gender=="F",degree.t=="Degree-seeking",`College Attend`=="NEW")%>%group_by(Ethnicity,.drop = FALSE)%>%count()
+##report first-time student in DEGREE-SEEKING column of the MEN table of UG
+t1<-ug.ipeds%>%filter(`FT/PT`=="FT",Gender=="F",degree.t=="Degree-seeking",`College Attend`=="NEW")%>%
+  group_by(Ethnicity,.drop = FALSE)%>%summarise(firsttime=n())
 
 ##########DEGREE&NON FIRST TIME: TRANSFER VS RETURNING in "Transfer YN"
 ## focusing on return student, whether they are transfer or not
-tbl<-ug.ipeds%>%filter(`FT/PT`=="FT",Gender=="F",degree.t=="Degree-seeking", `College Attend`=="RET")%>%group_by(`Transfer YN`,Ethnicity,.drop = FALSE)%>%count()%>%pivot_wider(names_from = `Transfer YN`,values_from =  n, names_glue = paste0("Transfer","{`Transfer YN`}_{.value}"))
-tbl
-tbl%>%select(TransferY_n)
-tbl%>%select(TransferN_n)
+t2<-ug.ipeds%>%filter(`FT/PT`=="FT",Gender=="F",degree.t=="Degree-seeking", `College Attend`=="RET")%>%
+  group_by(`Transfer YN`,Ethnicity,.drop = FALSE)%>%count()%>%
+  #transferY&N side by side
+  pivot_wider(names_from = `Transfer YN`,values_from =  n, names_glue = paste0("Transfer","{`Transfer YN`}_{.value}"))
+
+##########NON DEGREE
+#report NON-DEGREE column
+t3<-ug.ipeds%>%filter(`FT/PT`=="FT",Gender=="F",degree.t=="Non-degree")%>%
+  group_by(Ethnicity)%>%summarize(nondegree=n())
+
+t<-plyr::join_all(list(t1,t2,t3),type="full",match="first")
+View(t)
 
 
 

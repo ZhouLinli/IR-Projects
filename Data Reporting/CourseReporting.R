@@ -292,7 +292,12 @@ gd.t%>%mutate(age=age(mdy(`Birth Date`)))%>%filter(!is.na(age))%>%group_by(Degre
 ####################################################################################
 ################## IPEDS 12-month enrollment and Completions (due 2022 Oct 19)########
 #####################################################################################
+#####################12-month Unduplicated Count by Race/Ethnicity and Gender########
 
+
+
+####################################################################
+##############################UG data###############################
 ug1<-ug21fa%>%select(`People Code Id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Blended Sem YN`,Curriculum)
 ug2<-ug21sum2%>%select(`People Code Id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Blended Sem YN`,Curriculum)
 ug3<-ug22sp%>%select(`People Code Id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Blended Sem YN`,Curriculum)
@@ -301,6 +306,7 @@ ug5<-ug22wi%>%select(`People Code Id`,`FT/PT`,Degree,`Transfer YN`,`College Atte
 #########COMPILED UG DATASET
 ug.ipeds<-plyr::join_all(list(ug1,ug2,ug3,ug4,ug5),type="full",match="first")%>%
   distinct(`People Code Id`,.keep_all = TRUE)%>%
+  janitor::remove_empty(c("rows", "cols"))%>%#important to have- remove empty/all-NA rows/cols!!
   mutate(degree.t=case_when(Degree %in% c("NON","Non Matriculated")~"Non-degree",Degree!="NON" & Degree!="Non Matriculated" ~"Degree-seeking"))
 
 ##VERY IMPORT TO RUN BELOW
@@ -310,9 +316,7 @@ ug.ipeds%>%group_by(Ethnicity)%>%count()#do not have islander;;
 ug.ipeds$Ethnicity=factor(ug.ipeds$Ethnicity, levels=c("Non Resident Alien","Hispanic","American Indian or Alaska Native","Asian","Black or African American","White","Two or more Races"))#not mention unknown so that it merge with NA 
 #level transfer
 ug.ipeds$`Transfer YN`=factor(ug.ipeds$`Transfer YN`,levels = c("Y","N"))
-                 
-
-#####################12-month Unduplicated Count by Race/Ethnicity and Gender##########################
+                
 ############################Full-time Undergraduate Students:MEN#######################################
 
 ##########DEGREE: FIRST TIME (College Attend=NEW)
@@ -333,9 +337,8 @@ t3<-ug.ipeds%>%filter(`FT/PT`=="FT",Gender=="M",degree.t=="Non-degree")%>%
   group_by(Ethnicity)%>%summarize(nondegree=n())
 
 t<-plyr::join_all(list(t1,t2,t3),type="full",match="first")
+t[is.na(t)]<-0
 View(t)
-
-
 
 ############################Full-time Undergraduate Students:WOMEN#######################################
 
@@ -357,9 +360,96 @@ t3<-ug.ipeds%>%filter(`FT/PT`=="FT",Gender=="F",degree.t=="Non-degree")%>%
   group_by(Ethnicity)%>%summarize(nondegree=n())
 
 t<-plyr::join_all(list(t1,t2,t3),type="full",match="first")
+t[is.na(t)]<-0
+View(t)
+
+############################Part-time Undergraduate Students:MEN#######################################
+
+##########DEGREE: FIRST TIME (College Attend=NEW)
+##report first-time student in DEGREE-SEEKING column of the MEN table of UG
+t1<-ug.ipeds%>%filter(`FT/PT`=="PT",Gender=="M",degree.t=="Degree-seeking",`College Attend`=="NEW")%>%
+  group_by(Ethnicity,.drop = FALSE)%>%summarise(firsttime=n())
+
+##########DEGREE&NON FIRST TIME: TRANSFER VS RETURNING in "Transfer YN"
+## focusing on return student, whether they are transfer or not
+t2<-ug.ipeds%>%filter(`FT/PT`=="PT",Gender=="M",degree.t=="Degree-seeking", `College Attend`=="RET")%>%
+  group_by(`Transfer YN`,Ethnicity,.drop = FALSE)%>%count()%>%
+  #transferY&N side by side
+  pivot_wider(names_from = `Transfer YN`,values_from =  n, names_glue = paste0("Transfer","{`Transfer YN`}_{.value}"))
+
+##########NON DEGREE
+#report NON-DEGREE column
+t3<-ug.ipeds%>%filter(`FT/PT`=="PT",Gender=="M",degree.t=="Non-degree")%>%
+  group_by(Ethnicity)%>%summarize(nondegree=n())
+
+t<-plyr::join_all(list(t1,t2,t3),type="full",match="first")#%>%as.data.frame()#have to convert to df for is.na step
+t[is.na(t)]<-0
 View(t)
 
 
+
+############################Part-time Undergraduate Students:WOMEN#######################################
+
+##########DEGREE: FIRST TIME (College Attend=NEW)
+##report first-time student in DEGREE-SEEKING column of the MEN table of UG
+t1<-ug.ipeds%>%filter(`FT/PT`=="PT",Gender=="F",degree.t=="Degree-seeking",`College Attend`=="NEW")%>%
+  group_by(Ethnicity,.drop = FALSE)%>%summarise(firsttime=n())
+
+##########DEGREE&NON FIRST TIME: TRANSFER VS RETURNING in "Transfer YN"
+## focusing on return student, whether they are transfer or not
+t2<-ug.ipeds%>%filter(`FT/PT`=="PT",Gender=="F",degree.t=="Degree-seeking", `College Attend`=="RET")%>%
+  group_by(`Transfer YN`,Ethnicity,.drop = FALSE)%>%count()%>%
+  #transferY&N side by side
+  pivot_wider(names_from = `Transfer YN`,values_from =  n, names_glue = paste0("Transfer","{`Transfer YN`}_{.value}"))
+
+##########NON DEGREE
+#report NON-DEGREE column
+t3<-ug.ipeds%>%filter(`FT/PT`=="PT",Gender=="F",degree.t=="Non-degree")%>%
+  group_by(Ethnicity)%>%summarize(nondegree=n())
+
+t<-plyr::join_all(list(t1,t2,t3),type="full",match="first")#%>%as.data.frame()#have to convert to df for is.na step
+t[is.na(t)]<-0
+View(t)
+
+####################################################################
+##############################GD data###############################
+#prep
+gd.ipeds%>%group_by(`Class level`)%>%count()#can also be done by Curriculum
+gd.ipeds%>%group_by(`FT/PT`)%>%count()#no NA
+#gd data
+gd1<-g21fa%>%select(`People Code Id`,`Class level`,Gender,`FT/PT`,Ethnicity)
+gd2<-gd21sum2%>%select(`People Code Id`,`Class level`,Gender,`FT/PT`,Ethnicity)
+gd3<-gd22sp%>%select(`People Code Id`,`Class level`,Gender,`FT/PT`,Ethnicity)
+gd4<-gd22sum.main.1%>%select(`People Code Id`,`Class level`,Gender,`FT/PT`,Ethnicity)
+gd5<-gd22wi%>%select(`People Code Id`,`Class level`,Gender,`FT/PT`,Ethnicity)
+#########COMPILED UG DATASET
+gd.ipeds<-plyr::join_all(list(gd1,gd2,gd3,gd4,gd5),type="full",match="first")%>%
+  distinct(`People Code Id`,.keep_all = TRUE)%>%#unique ppid and keep all other variables
+  janitor::remove_empty(c("rows", "cols"))%>%#important to have- remove empty/all-NA rows/cols!!
+  filter(`Class level`=="GR")#only report enroll for credit / degree-seeking students
+
+##VERY IMPORT TO RUN BELOW
+#ordering values for easier order match with ipeds form
+gd.ipeds%>%group_by(Ethnicity)%>%count()#do not have islander;; 
+#level ethnicity
+gd.ipeds$Ethnicity=factor(gd.ipeds$Ethnicity, levels=c("Non Resident Alien","Hispanic","American Indian or Alaska Native","Asian","Black or African American","White","Two or more Races"))#not mention unknown so that it merge with NA 
+
+############################GD MEN#######################################
+
+##report MEN's ethnicity by gender
+t<-gd.ipeds%>%filter(Gender=="M")%>%group_by(Ethnicity,`FT/PT`,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = `FT/PT`, values_from = n)
+t$FT[is.na(t$FT)]<-0
+t$PT[is.na(t$PT)]<-0
+View(t)
+
+############################GD WOMEN#######################################
+##report WOMEN's ethnicity by gender
+t<-gd.ipeds%>%filter(Gender=="F")%>%group_by(Ethnicity,`FT/PT`,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = `FT/PT`, values_from = n)
+t$FT[is.na(t$FT)]<-0
+t$PT[is.na(t$PT)]<-0
+View(t)
 
 
 

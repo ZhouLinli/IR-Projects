@@ -205,65 +205,85 @@ gd22wi<-gd22wi%>%select(-`NA`)#remove NA col
 
 ##################################################################
 ####################ug data############
-ug1<-ug21fa%>%select(`People Code Id`,`gov id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%rename(Program=Curriculum)%>%
+ug1<-ug21fa%>%select(`People Code Id`,`gov id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%
   mutate(Level="UG",term="21fall")#mutate identification col
-ug2<-ug21sum2%>%select(`People Code Id`,`gov id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%rename(Program=Curriculum)%>%mutate(Level="UG",term="21summer2")
-ug3<-ug22sp%>%select(`People Code Id`,`gov id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%rename(Program=Curriculum)%>%mutate(Level="UG",term="22spring")
-ug4<-ug22sum.main.1%>%select(`People Code Id`,`gov id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%rename(Program=Curriculum)%>%mutate(Level="UG",term="22summer.1main")
-ug5<-ug22wi%>%select(`People Code Id`,`gov id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%rename(Program=Curriculum)%>%mutate(Level="UG",term="22winter")
+
+ug2<-ug21sum2%>%select(`People Code Id`,`gov id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%
+  mutate(Level="UG",term="21summer2")
+
+ug3<-ug22sp%>%select(`People Code Id`,`gov id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%
+  mutate(Level="UG",term="22spring")
+
+ug4<-ug22sum.main.1%>%select(`People Code Id`,`gov id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%
+  mutate(Level="UG",term="22summer.1main")
+
+ug5<-ug22wi%>%select(`People Code Id`,`gov id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%
+  mutate(Level="UG",term="22winter")
+
 #check selected vars
 sapply(list(ug1,ug2,ug3,ug4,ug5), function(x) ncol(x))#same 14
 
-#merge to one
-ug.ipeds<-plyr::join_all(list(ug1,ug2,ug3,ug4,ug5),type="full")%>%unique()#remove rows that has exact same value across all columns
+##########################merge to one ug dataset
+ug.ipeds<-plyr::join_all(list(ug1,ug2,ug3,ug4,ug5),type="full")%>%
+  unique()%>%#remove rows that has exact same value across all columns
+  rename(Program=Curriculum,`New Ret Term YN`=`College Attend`)%>%#rename for ug-gd consistency
+  mutate(degree.t=case_when(Degree %in% c("NON","Non Matriculated")~"Non-degree",Degree!="NON" & Degree!="Non Matriculated" ~"Degree-seeking"))%>%select(-Degree)#create degree.t (and remove old)
+
 #check
 sapply(list(ug1,ug2,ug3,ug4,ug5), function(x) nrow(x))%>%sum()#2935
 nrow(ug.ipeds)#match="first" #2935
-  
-#create degree-seeking col
-ug.ipeds<-ug.ipeds%>% mutate(degree.t=case_when(Degree %in% c("NON","Non Matriculated")~"Non-degree",Degree!="NON" & Degree!="Non Matriculated" ~"Degree-seeking"))%>%select(-Degree)
-#check
+ncol(ug.ipeds)#14
 names(ug.ipeds)
 
 ##################################################################
 ####################gd data############
-gd1<-g21fa%>%select(`People Code Id`,`gov id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`,Degree,`Birth Date`)%>%rename(Program=Degree)%>%#have no transfer and college attend
+gd1<-g21fa%>%select(`People Code Id`,`gov id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`)%>%
   mutate(Level="GD",term="21fall")#mutate identification col
-gd2<-gd21sum2%>%select(`People Code Id`,`gov id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`,Degree,`Birth Date`)%>%rename(Program=Degree)%>%mutate(Level="GD",term="21summer2")
-gd3<-gd22sp%>%select(`People Code Id`,`gov id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`,Degree,`Birth Date`)%>%rename(Program=Degree)%>%mutate(Level="GD",term="22spring")
-gd4<-gd22sum.main.1%>%select(`People Code Id`,`gov id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`,Degree,`Birth Date`)%>%rename(Program=Degree)%>%mutate(Level="GD",term="22summer.1main")
-gd5<-gd22wi%>%select(`People Code Id`,`gov id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`,Degree,`Birth Date`)%>%rename(Program=Degree)%>%mutate(Level="GD",term="22winter")
+
+gd2<-gd21sum2%>%select(`People Code Id`,`gov id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`)%>%
+  mutate(Level="GD",term="21summer2")
+
+gd3<-gd22sp%>%select(`People Code Id`,`gov id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`)%>%
+  mutate(Level="GD",term="22spring")
+
+gd4<-gd22sum.main.1%>%select(`People Code Id`,`gov id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`)%>%
+  mutate(Level="GD",term="22summer.1main")
+
+gd5<-gd22wi%>%select(`People Code Id`,`gov id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`)%>%
+  mutate(Level="GD",term="22winter")
+
 #check selected vars: compare to ug, do not have transfer, college attend, and cum credit
-sapply(list(gd1,gd2,gd3,gd4,gd5), function(x) ncol(x))#same 11
+sapply(list(gd1,gd2,gd3,gd4,gd5), function(x) ncol(x))#same 14
 
 #merge to one
-gd.ipeds<-plyr::join_all(list(gd1,gd2,gd3,gd4,gd5),type="full")%>%unique()#remove rows that has exact same value across all columns
+gd.ipeds<-plyr::join_all(list(gd1,gd2,gd3,gd4,gd5),type="full")%>%
+  unique()%>%#remove rows that has exact same value across all columns
+  rename(Program=Degree)%>%#renmae for ug-gd consistency
+  mutate(degree.t=case_when(`Class level`!="GR"~"Non-degree",`Class level`=="GR" ~"Degree-seeking"))%>%select(-`Class level`)#create degree.t (and remove old)
+  
 #check
 sapply(list(gd1,gd2,gd3,gd4,gd5), function(x) nrow(x))%>%sum()#1513
-nrow(gd.ipeds)#match="first" #1512, removed one duplicated (across all values)
+nrow(gd.ipeds)#match="first" #1512, removed 1 duplicated (across all values)
+ncol(gd.ipeds)
+names(gd.ipeds)%in%names(ug.ipeds)%>%sum()#14 all same
 
-#create degree-seeking col
-gd.ipeds<-gd.ipeds%>%mutate(degree.t=case_when(`Class level`!="GR"~"Non-degree",`Class level`=="GR" ~"Degree-seeking"))%>%select(-`Class level`)
-#check
-names(gd.ipeds)
-
-#now we have all needed var in both ug/gd
-#merge them:
 ##################################################################
-####################large enrollment data: one dataset############
+####################merge ug.ipeds and gd ipeds###################
 ug.gd<-plyr::join_all(list(ug.ipeds,gd.ipeds),type="full")%>%unique()
 #check
 sapply(list(ug.ipeds,gd.ipeds), function(x) nrow(x))%>%sum()#4447
 nrow(ug.gd)#4443, removed 4 duplicated rows
 ncol(ug.gd)#14
 
-######basic cleaning
+
+##################################################################
+####################cleaning col by col###########################
 #NA rows/cols
 ug.gd<-ug.gd%>%janitor::remove_empty(c("rows", "cols"))#remove all-NA rows/cols!!
   #distinct(`People Code Id`,.keep_all = TRUE)%>%#unique ppid and keep all other variables
 nrow(ug.gd)#4443
 
-#NA ppids
+########################ppids
 ##look at the NA value
 ug.gd[is.na(ug.gd$`People Code Id`),]#looks all can be excluded
 ug.gd<-ug.gd[!is.na(ug.gd$`People Code Id`),]
@@ -271,16 +291,24 @@ nrow(ug.gd)#4422
 #check
 ug.gd[is.na(ug.gd$`People Code Id`),]#no na for ppid
 
-#NA gov ids
+#########################gov ids
 ##look at the NA value
-ug.gd[is.na(ug.gd$`gov id`),]%>%select(term,Level,`People Code Id`,`gov id`)# summers terms and a few fall do not have gov id info; should not remove NA for gov ids
+ug.gd[is.na(ug.gd$`gov id`),]%>%select(term,Level,`People Code Id`,`gov id`)# summers terms and a few fall do not have gov id info; should NOT remove NA for gov ids
 
-#FT/PT
+#########################FT/PT
 ##check all values
 ug.gd%>%group_by(`FT/PT`)%>%count()#find 2 weird numeric value
 #check werid rows
-ug.gd%>%filter(`FT/PT`!="FT" & `FT/PT`!="PT")
-#assign value
+rows<-ug.gd%>%filter(`FT/PT`!="FT" & `FT/PT`!="PT")
+
+##assign value
+gdinfo22sp<-read.csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Spring/Grad/Graduate Student Information.csv")
+gdinfo22sp%>%group_by(status)%>%count()
+replaces<-gdinfo22sp%>%filter(people_code_id%in% rows$`People Code Id`)
+rows$`FT/PT`<-replaces$FTE
+rows$Ethnicity<-replaces$Ethnicity
+
+
 
 ##################################################################
 ####################cleaning: check col by col########################

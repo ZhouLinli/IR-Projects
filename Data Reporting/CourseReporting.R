@@ -291,10 +291,6 @@ gd.t%>%mutate(age=age(mdy(`Birth Date`)))%>%filter(!is.na(age))%>%group_by(Degre
 
 ####################################################################################
 ################## IPEDS 12-month enrollment and Completions (due 2022 Oct 19)########
-#####################################################################################
-#####################12-month Unduplicated Count by Race/Ethnicity and Gender########
-
-
 
 ########################################################################################
 ####################enrollment (reigstrar backup) data: all variables needed############
@@ -345,32 +341,22 @@ ug.gd<-plyr::join_all(list(ug.ipeds,gd.ipeds),type="full")
 #check
 sapply(list(ug.ipeds,gd.ipeds), function(x) nrow(x))%>%sum()#4448
 nrow(ug.gd)#4448
+ncol(ug.gd)#10
+#skim cols: find unreasonable NA, weird values
+gd.ipeds%>%group_by(`FT/PT`)%>%count()#no NA
+gd.ipeds%>%group_by(Ethnicity)%>%count()#do not have islander;; 
 
 
-gd.ipeds%>%
+###basic ordering
+#ordering ethnicity values for easier order match with ipeds form
+gd.ipeds$Ethnicity=factor(gd.ipeds$Ethnicity, levels=c("Non Resident Alien","Hispanic","American Indian or Alaska Native","Asian","Black or African American","White","Two or more Races"))#not mention unknown so that it merge with NA 
+#level transfer
+ug.ipeds$`Transfer YN`=factor(ug.ipeds$`Transfer YN`,levels = c("Y","N"))
+
+
+ug.gd%>%unique()%>%#unique rows (duplicated=with all values the same)
   distinct(`People Code Id`,.keep_all = TRUE)%>%#unique ppid and keep all other variables
   janitor::remove_empty(c("rows", "cols"))%>%#important to have- remove empty/all-NA rows/cols!!
-  
-#prep
-gd.ipeds%>%group_by(`Class level`)%>%count()#can also be done by Curriculum
-gd.ipeds%>%group_by(`FT/PT`)%>%count()#no NA
-##VERY IMPORT TO RUN BELOW
-#ordering values for easier order match with ipeds form
-gd.ipeds%>%group_by(Ethnicity)%>%count()#do not have islander;; 
-#level ethnicity
-gd.ipeds$Ethnicity=factor(gd.ipeds$Ethnicity, levels=c("Non Resident Alien","Hispanic","American Indian or Alaska Native","Asian","Black or African American","White","Two or more Races"))#not mention unknown so that it merge with NA 
-
-
-
-
-
-
-
-  distinct(`People Code Id`,.keep_all = TRUE)%>%##is this fine to just keep the first when duplicated - would the removed rows matter?
-  
-  janitor::remove_empty(c("rows", "cols"))%>%#important to have- remove empty/all-NA rows/cols!!
-
-
 
 #just for fun experiement
 ug.ipeds.t<-ug.gd%>%filter(creditUG>0 & creditGD==0)%>%
@@ -381,16 +367,9 @@ ug.ipeds[(ug.ipeds$`People Code Id` %in% ug.ipeds.t$`People Code Id`) == FALSE,]
 #lesson: find NA values and deal with them first
 
 
-
-
-##VERY IMPORT TO RUN BELOW
-#ordering values for easier order match with ipeds form
-ug.ipeds%>%group_by(Ethnicity)%>%count()#do not have islander;; 
-#level ethnicity
-ug.ipeds$Ethnicity=factor(ug.ipeds$Ethnicity, levels=c("Non Resident Alien","Hispanic","American Indian or Alaska Native","Asian","Black or African American","White","Two or more Races"))#not mention unknown so that it merge with NA 
-#level transfer
-ug.ipeds$`Transfer YN`=factor(ug.ipeds$`Transfer YN`,levels = c("Y","N"))
-                
+#####################################################################################
+#####################12-month Unduplicated Count by Race/Ethnicity and Gender########
+             
 ############################Full-time Undergraduate Students:MEN#######################################
 
 ##########DEGREE: FIRST TIME (College Attend=NEW)

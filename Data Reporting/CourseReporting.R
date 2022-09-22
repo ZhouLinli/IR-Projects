@@ -369,14 +369,6 @@ ug.gd%>%unique()%>%#unique rows (duplicated=with all values the same)
   distinct(`People Code Id`,.keep_all = TRUE)%>%#unique ppid and keep all other variables
   janitor::remove_empty(c("rows", "cols"))%>%#important to have- remove empty/all-NA rows/cols!!
 
-#just for fun experiement
-ug.ipeds.t<-ug.gd%>%filter(creditUG>0 & creditGD==0)%>%
-  unique()%>%  janitor::remove_empty(c("rows", "cols"))%>%
-  distinct(`People Code Id`,.keep_all = TRUE)
-#do find something important to take care of
-ug.ipeds[(ug.ipeds$`People Code Id` %in% ug.ipeds.t$`People Code Id`) == FALSE,]#need to remove the NA=ppid row!!
-#lesson: find NA values and deal with them first
-
 
 #####################################################################################
 #####################12-month Unduplicated Count by Race/Ethnicity and Gender########

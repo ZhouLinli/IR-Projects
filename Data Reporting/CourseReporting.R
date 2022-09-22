@@ -199,57 +199,20 @@ gd22wi<-gd22wi[7:n,]#select from 7th row to the end
 gd22wi<-gd22wi%>%select(-`NA`)#remove NA col
 
 
-
-
-
-####################################################################################
-##############US NEWS 07/01/2021-06/30-2022, due 2022-10-15 due##############
-
-##########create a full list of students
-#focusing on govern id/ssn and degree(GD)/Curriculum(UG)
-ssn1<-g21fa%>%select(`gov id`,Degree)
-ssn2<-gd21sum2%>%select(`gov id`,Degree)
-ssn3<-gd22sp%>%select(`gov id`,Degree)
-ssn4<-gd22sum.main.1%>%select(`gov id`,Degree)
-ssn5<-gd22wi%>%select(`gov id`,Degree)
-ssn6<-ug21fa%>%select(`gov id`,Curriculum)%>%rename(Degree=Curriculum)
-ssn7<-ug21sum2%>%select(`gov id`,Curriculum)%>%rename(Degree=Curriculum)
-ssn8<-ug22sp%>%select(`gov id`,Curriculum)%>%rename(Degree=Curriculum)
-ssn9<-ug22sum.main.1%>%select(`gov id`,Curriculum)%>%rename(Degree=Curriculum)
-ssn10<-ug22wi%>%select(`gov id`,Curriculum)%>%rename(Degree=Curriculum)
-#merge
-ssn<-plyr::join_all(list(ssn1,ssn2,ssn3,ssn4,ssn5,ssn6,ssn7,ssn8,ssn9,ssn10),type="full",match="first")%>%unique()
-#now we merged all students, we need to select students in online programs:
-
-#########search and figure out values for online programs (UG's bussadmin, completion + GD's MBA, MSM, MSCJ)
-#remove not valid values (number values for degree)
-ssn%>%filter(!grepl("^[0-9]",ssn$Degree))%>%group_by(Degree)%>%count()
-#search for business administration
-ssn%>%filter(grepl("[Bb][Uu]",ssn$Degree))%>%group_by(Degree)%>%count()#see "Business Administration"
-#search for completion programs
-ssn%>%filter(grepl("[Cc]omp",ssn$Degree))%>%group_by(Degree)%>%count()#see completion programs
-
-##########filter using searched results
-ssn<-ssn%>%filter(Degree %in% c("MSCJ","MSM","MBA","Business Administration","Communication Bachelors Completion","Interdisciplinary Bachelors Completion","Psychology Bachelors Completion"))%>%
-  select(`gov id`)%>%#keep ssn only
-  unique()%>%na.omit()#remove NA or duplicated id
-#save list of students and send to  financial aid
-write.xlsx(list("SSN"=ssn), file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/2022 US News/StudentLoanInfo_USNewsReport.xlsx")
-
 ########################################################################################
 ####################selecting all variables needed#######################################
 ########################################################################################
 
 ##################################################################
 ####################ug data############
-ug1<-ug21fa%>%select(`People Code Id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%rename(Program=Curriculum)%>%
+ug1<-ug21fa%>%select(`People Code Id`,`gov id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%rename(Program=Curriculum)%>%
   mutate(Level="UG",term="21fall")#mutate identification col
-ug2<-ug21sum2%>%select(`People Code Id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%rename(Program=Curriculum)%>%mutate(Level="UG",term="21summer2")
-ug3<-ug22sp%>%select(`People Code Id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%rename(Program=Curriculum)%>%mutate(Level="UG",term="22spring")
-ug4<-ug22sum.main.1%>%select(`People Code Id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%rename(Program=Curriculum)%>%mutate(Level="UG",term="22summer.1main")
-ug5<-ug22wi%>%select(`People Code Id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%rename(Program=Curriculum)%>%mutate(Level="UG",term="22winter")
+ug2<-ug21sum2%>%select(`People Code Id`,`gov id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%rename(Program=Curriculum)%>%mutate(Level="UG",term="21summer2")
+ug3<-ug22sp%>%select(`People Code Id`,`gov id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%rename(Program=Curriculum)%>%mutate(Level="UG",term="22spring")
+ug4<-ug22sum.main.1%>%select(`People Code Id`,`gov id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%rename(Program=Curriculum)%>%mutate(Level="UG",term="22summer.1main")
+ug5<-ug22wi%>%select(`People Code Id`,`gov id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%rename(Program=Curriculum)%>%mutate(Level="UG",term="22winter")
 #check selected vars
-sapply(list(ug1,ug2,ug3,ug4,ug5), function(x) ncol(x))#same 13
+sapply(list(ug1,ug2,ug3,ug4,ug5), function(x) ncol(x))#same 14
 
 #merge to one
 ug.ipeds<-plyr::join_all(list(ug1,ug2,ug3,ug4,ug5),type="full")%>%unique()#remove rows that has exact same value across all columns
@@ -264,14 +227,14 @@ names(ug.ipeds)
 
 ##################################################################
 ####################gd data############
-gd1<-g21fa%>%select(`People Code Id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`,Degree,`Birth Date`)%>%rename(Program=Degree)%>%#have no transfer and college attend
+gd1<-g21fa%>%select(`People Code Id`,`gov id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`,Degree,`Birth Date`)%>%rename(Program=Degree)%>%#have no transfer and college attend
   mutate(Level="GD",term="21fall")#mutate identification col
-gd2<-gd21sum2%>%select(`People Code Id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`,Degree,`Birth Date`)%>%rename(Program=Degree)%>%mutate(Level="GD",term="21summer2")
-gd3<-gd22sp%>%select(`People Code Id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`,Degree,`Birth Date`)%>%rename(Program=Degree)%>%mutate(Level="GD",term="22spring")
-gd4<-gd22sum.main.1%>%select(`People Code Id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`,Degree,`Birth Date`)%>%rename(Program=Degree)%>%mutate(Level="GD",term="22summer.1main")
-gd5<-gd22wi%>%select(`People Code Id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`,Degree,`Birth Date`)%>%rename(Program=Degree)%>%mutate(Level="GD",term="22winter")
+gd2<-gd21sum2%>%select(`People Code Id`,`gov id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`,Degree,`Birth Date`)%>%rename(Program=Degree)%>%mutate(Level="GD",term="21summer2")
+gd3<-gd22sp%>%select(`People Code Id`,`gov id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`,Degree,`Birth Date`)%>%rename(Program=Degree)%>%mutate(Level="GD",term="22spring")
+gd4<-gd22sum.main.1%>%select(`People Code Id`,`gov id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`,Degree,`Birth Date`)%>%rename(Program=Degree)%>%mutate(Level="GD",term="22summer.1main")
+gd5<-gd22wi%>%select(`People Code Id`,`gov id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`,Degree,`Birth Date`)%>%rename(Program=Degree)%>%mutate(Level="GD",term="22winter")
 #check selected vars: compare to ug, do not have transfer, college attend, and cum credit
-sapply(list(gd1,gd2,gd3,gd4,gd5), function(x) ncol(x))#same 10
+sapply(list(gd1,gd2,gd3,gd4,gd5), function(x) ncol(x))#same 11
 
 #merge to one
 gd.ipeds<-plyr::join_all(list(gd1,gd2,gd3,gd4,gd5),type="full")%>%unique()#remove rows that has exact same value across all columns
@@ -291,18 +254,33 @@ names(gd.ipeds)
 ug.gd<-plyr::join_all(list(ug.ipeds,gd.ipeds),type="full")%>%unique()
 #check
 sapply(list(ug.ipeds,gd.ipeds), function(x) nrow(x))%>%sum()#4447
-nrow(ug.gd)#4438, removed 9 duplicated rows
-ncol(ug.gd)#10
+nrow(ug.gd)#4443, removed 4 duplicated rows
+ncol(ug.gd)#14
 
 ######basic cleaning
 #NA rows/cols
 ug.gd<-ug.gd%>%janitor::remove_empty(c("rows", "cols"))#remove all-NA rows/cols!!
   #distinct(`People Code Id`,.keep_all = TRUE)%>%#unique ppid and keep all other variables
-nrow(ug.gd)#4438
+nrow(ug.gd)#4443
 
-#NA ids
+#NA ppids
+##look at the NA value
+ug.gd[is.na(ug.gd$`People Code Id`),]#looks all can be excluded
 ug.gd<-ug.gd[!is.na(ug.gd$`People Code Id`),]
 nrow(ug.gd)#4422
+#check
+ug.gd[is.na(ug.gd$`People Code Id`),]#no na for ppid
+
+#NA gov ids
+##look at the NA value
+ug.gd[is.na(ug.gd$`gov id`),]%>%select(term,Level,`People Code Id`,`gov id`)# summers terms and a few fall do not have gov id info; should not remove NA for gov ids
+
+#FT/PT
+##check all values
+ug.gd%>%group_by(`FT/PT`)%>%count()#find 2 weird numeric value
+#check werid rows
+ug.gd%>%filter(`FT/PT`!="FT" & `FT/PT`!="PT")
+#assign value
 
 ##################################################################
 ####################cleaning: check col by col########################
@@ -314,8 +292,7 @@ ug.gd$`Term Credits`<-as.numeric(ug.gd$`Term Credits`)
 
 ######change to factor: ordering values for easier order match with ipeds form
 #FT/PT
-ug.gd%>%group_by(`FT/PT`)%>%count()
-ug.gd%>%filter(`FT/PT`!="FT" & `FT/PT`!="PT")
+
 
 #ethnicity
 ug.gd%>%group_by(Ethnicity)%>%count()
@@ -357,6 +334,23 @@ ug.gd%>%mutate(creditUG=case_when(Level=="UG"~`Term Credits`,Level=="GD"~"0"),
 ####################################################################################
 ################## US NEWS 07/01/2021-06/30-2022, due 2022-10-15########
 ########################################################################################
+
+#########search and figure out values for online programs (UG's bussadmin, completion + GD's MBA, MSM, MSCJ)
+#remove not valid values (number values for degree)
+ssn%>%filter(!grepl("^[0-9]",ssn$Degree))%>%group_by(Degree)%>%count()
+#search for business administration
+ssn%>%filter(grepl("[Bb][Uu]",ssn$Degree))%>%group_by(Degree)%>%count()#see "Business Administration"
+#search for completion programs
+ssn%>%filter(grepl("[Cc]omp",ssn$Degree))%>%group_by(Degree)%>%count()#see completion programs
+
+##########filter using searched results
+ssn<-ssn%>%filter(Degree %in% c("MSCJ","MSM","MBA","Business Administration","Communication Bachelors Completion","Interdisciplinary Bachelors Completion","Psychology Bachelors Completion"))%>%
+  select(`gov id`)%>%#keep ssn only
+  unique()%>%na.omit()#remove NA or duplicated id
+#save list of students and send to  financial aid
+write.xlsx(list("SSN"=ssn), file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/2022 US News/StudentLoanInfo_USNewsReport.xlsx")
+
+
 #bachelor online program
 df%>%filter(Curriculum %in% c("Business Administration","Communication Bachelors Completion","Interdisciplinary Bachelors Completion","Psychology Bachelors Completion"))%>%unique()
 #gd merge

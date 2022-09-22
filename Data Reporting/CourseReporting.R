@@ -123,10 +123,12 @@ my.df<-my.df%>%mutate(Com=my.title3)
 
 
 
-######################################################################################
-#############################external reporting #############################
-##############US NEWS 07/01/2021-06/30-2022, due 2022-10-15 due##############
-##############how many UG/GD students in various groups######################
+###############################################################################
+###############################################################################
+##############ENROLLMENT (REGISTRAR BACKUP) 07/01/2021-06/30-2022##############
+###############################################################################
+###############################################################################
+
 #library
 library(readxl)
 library(dplyr)
@@ -134,29 +136,24 @@ library(tidyverse)
 library(writexl)
 library(openxlsx)
 
-#load data
+#################load data
 ##2021 Summer II
 ug21sum2<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2021 Summer/Summer II/Undergraduate Backup Data  Report 21SUII.xlsx")
 gd21sum2<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2021 Summer/Summer II/GR/Graduate Backup Data  Report.xlsx")
-
 ##2021 Fall
 ug21fa<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2021 Fall/FA2021 Undergraduate Backup Data  Report.xlsx")
 g21fa<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2021 Fall/Grad/main.SI.S2 GR backup data.xlsx")
-
 ##2022 Winter
 ug22wi<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Winter/WI2022 UG Backup Data  Report.xlsx")
 gd22wi<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Winter/Grad Backup data WI22.xlsx")
-
 ##2022 Spring
 ug22sp<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Spring/UG/Spring 2022 UG Backup Data.xlsx")
 gd22sp<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Spring/Grad/Graduate SP22 Final Backup Data  Report.xlsx")
-
 ##2022 Summer Main&I
 ug22sum.main.1<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Summer/Main and I/SUM22 SES1 and Main UG Backup Data  Report - 2022-06-02T080930.592.xlsx")
 gd22sum.main.1<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Summer/Main and I/SUM22 MainSES1-Graduate Backup Data  Report (23).xlsx")
 
-####################################################################################
-#######################clean data headers#######################
+####################clean data headers
 #investigate names 1)view df 2)find no headers and tackling those headers
 #tackling ug21sum2
 names(ug21sum2)<-ug21sum2[3,]#header is the third row
@@ -198,8 +195,14 @@ n<-nrow(gd22wi)#prep the length
 gd22wi<-gd22wi[7:n,]#select from 7th row to the end
 gd22wi<-gd22wi%>%select(-`NA`)#remove NA col
 
+
+
+
+
 ####################################################################################
-###################create a full list of students############################
+##############US NEWS 07/01/2021-06/30-2022, due 2022-10-15 due##############
+
+##########create a full list of students
 #focusing on govern id/ssn and degree(GD)/Curriculum(UG)
 ssn1<-g21fa%>%select(`gov id`,Degree)
 ssn2<-gd21sum2%>%select(`gov id`,Degree)
@@ -212,22 +215,25 @@ ssn8<-ug22sp%>%select(`gov id`,Curriculum)%>%rename(Degree=Curriculum)
 ssn9<-ug22sum.main.1%>%select(`gov id`,Curriculum)%>%rename(Degree=Curriculum)
 ssn10<-ug22wi%>%select(`gov id`,Curriculum)%>%rename(Degree=Curriculum)
 #merge
-full.ssn<-plyr::join_all(list(ssn1,ssn2,ssn3,ssn4,ssn5,ssn6,ssn7,ssn8,ssn9,ssn10),type="full",match="first")%>%unique()
+ssn<-plyr::join_all(list(ssn1,ssn2,ssn3,ssn4,ssn5,ssn6,ssn7,ssn8,ssn9,ssn10),type="full",match="first")%>%unique()
+#now we merged all students, we need to select students in online programs:
 
-#search in merged data: UG bussadmin, completion + GD MBA, MSM, MSCJ
-full.ssn%>%group_by(Degree)%>%count()
-full.ssn%>%filter(!grepl("^[0-9]",full$Degree))%>%group_by(Degree)%>%count()
-full.ssn%>%filter(grepl("[Bb][Uu]",full$Degree))%>%group_by(Degree)%>%count()#see "Business Administration"
-full.ssn%>%filter(grepl("[Cc]omp",full$Degree))%>%group_by(Degree)%>%count()#see completion programs
-list<-ug22sp%>%group_by(Curriculum)%>%count()
-#filter using searched results
-full.ssn<-full.ssn%>%filter(Degree %in% c(
-  "MSCJ","MSM","MBA","Business Administration","Communication Bachelors Completion","Interdisciplinary Bachelors Completion","Psychology Bachelors Completion"
-))
-#final touch
-full.ssn<-unique(full.ssn)%>%na.omit(full.ssn)
-#send to list of students financial aid
-write.xlsx(list("SSN"=full.ssn), file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/2022 US News/StudentLoanInfo_USNewsReport.xlsx")
+#########search and figure out values for online programs (UG's bussadmin, completion + GD's MBA, MSM, MSCJ)
+#remove not valid values (number values for degree)
+ssn%>%filter(!grepl("^[0-9]",ssn$Degree))%>%group_by(Degree)%>%count()
+#search for business administration
+ssn%>%filter(grepl("[Bb][Uu]",ssn$Degree))%>%group_by(Degree)%>%count()#see "Business Administration"
+#search for completion programs
+ssn%>%filter(grepl("[Cc]omp",ssn$Degree))%>%group_by(Degree)%>%count()#see completion programs
+
+##########filter using searched results
+ssn<-ssn%>%filter(Degree %in% c("MSCJ","MSM","MBA","Business Administration","Communication Bachelors Completion","Interdisciplinary Bachelors Completion","Psychology Bachelors Completion"))%>%
+  select(`gov id`)%>%#keep ssn only
+  unique()%>%na.omit()#remove NA or duplicated id
+#save list of students and send to  financial aid
+write.xlsx(list("SSN"=ssn), file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/2022 US News/StudentLoanInfo_USNewsReport.xlsx")
+
+
 
 
 ####################################################################################

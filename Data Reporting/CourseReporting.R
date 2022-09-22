@@ -296,24 +296,61 @@ gd.t%>%mutate(age=age(mdy(`Birth Date`)))%>%filter(!is.na(age))%>%group_by(Degre
 
 
 
-####################################################################
-##############################UG data: all variables needed###############################
-ug1<-ug21fa%>%select(`People Code Id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`)%>%mutate(Level="UG",term="21fall")
+########################################################################################
+####################enrollment (reigstrar backup) data: all variables needed############
+
+###########ug data###########
+ug1<-ug21fa%>%select(`People Code Id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`)%>%
+  mutate(Level="UG",term="21fall")#mutate identification col
 ug2<-ug21sum2%>%select(`People Code Id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`)%>%mutate(Level="UG",term="21summer2")
 ug3<-ug22sp%>%select(`People Code Id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`)%>%mutate(Level="UG",term="22spring")
-ug4<-ug22sum.main.1%>%select(`People Code Id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`)%>%mutate(Level="UG",term="22sum.1main")
+ug4<-ug22sum.main.1%>%select(`People Code Id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`)%>%mutate(Level="UG",term="22summer.1main")
 ug5<-ug22wi%>%select(`People Code Id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`)%>%mutate(Level="UG",term="22winter")
-#gd data
-gd1<-g21fa%>%select(`People Code Id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`)%>%mutate(Level="GD",term="21fall")
+
+#merge to one
+ug.ipeds<-plyr::join_all(list(ug1,ug2,ug3,ug4,ug5),type="full")
+#check
+sapply(list(ug1,ug2,ug3,ug4,ug5), function(x) nrow(x))%>%sum()#2935
+nrow(ug.ipeds)#match="first" #2935
+  
+#create degree-seeking col
+ug.ipeds<-ug.ipeds%>% mutate(degree.t=case_when(Degree %in% c("NON","Non Matriculated")~"Non-degree",Degree!="NON" & Degree!="Non Matriculated" ~"Degree-seeking"))%>%select(-Degree)
+#check
+names(ug.ipeds)
+
+############gd data###########
+gd1<-g21fa%>%select(`People Code Id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`)%>%#have no transfer and college attend
+  mutate(Level="GD",term="21fall")#mutate identification col
 gd2<-gd21sum2%>%select(`People Code Id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`)%>%mutate(Level="GD",term="21summer2")
 gd3<-gd22sp%>%select(`People Code Id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`)%>%mutate(Level="GD",term="22spring")
 gd4<-gd22sum.main.1%>%select(`People Code Id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`)%>%mutate(Level="GD",term="22summer.1main")
 gd5<-gd22wi%>%select(`People Code Id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`)%>%mutate(Level="GD",term="22winter")
-#########COMPILED UG DATASET
-gd.ipeds<-plyr::join_all(list(gd1,gd2,gd3,gd4,gd5),type="full",match="first")%>%
+
+#merge to one
+gd.ipeds<-plyr::join_all(list(gd1,gd2,gd3,gd4,gd5),type="full")
+#check
+sapply(list(gd1,gd2,gd3,gd4,gd5), function(x) nrow(x))%>%sum()#1513
+nrow(gd.ipeds)#match="first" #1513
+
+#create degree-seeking col
+gd.ipeds<-gd.ipeds%>%mutate(degree.t=case_when(`Class level`!="GR"~"Non-degree",`Class level`=="GR" ~"Degree-seeking"))%>%select(-`Class level`)
+#check
+names(gd.ipeds)
+
+#now we have all needed var in both ug/gd
+#merge them:
+##################################################################
+####################large enrollment data: one dataset############
+ug.gd<-plyr::join_all(list(ug.ipeds,gd.ipeds),type="full")
+#check
+sapply(list(ug.ipeds,gd.ipeds), function(x) nrow(x))%>%sum()#4448
+nrow(ug.gd)#4448
+
+
+gd.ipeds%>%
   distinct(`People Code Id`,.keep_all = TRUE)%>%#unique ppid and keep all other variables
   janitor::remove_empty(c("rows", "cols"))%>%#important to have- remove empty/all-NA rows/cols!!
-  filter(`Class level`=="GR")#only report enroll for credit / degree-seeking students
+  
 #prep
 gd.ipeds%>%group_by(`Class level`)%>%count()#can also be done by Curriculum
 gd.ipeds%>%group_by(`FT/PT`)%>%count()#no NA
@@ -327,12 +364,12 @@ gd.ipeds$Ethnicity=factor(gd.ipeds$Ethnicity, levels=c("Non Resident Alien","His
 
 
 
-#########COMPILED UG DATASET
-ug.ipeds<-plyr::join_all(list(ug1,ug2,ug3,ug4,ug5),type="full",match="first")%>%#In A dataset, if having duplicated ids (with different conflicting values in other cols), match to B dataset using the first value in conflicting cols
+
+
   distinct(`People Code Id`,.keep_all = TRUE)%>%##is this fine to just keep the first when duplicated - would the removed rows matter?
   
   janitor::remove_empty(c("rows", "cols"))%>%#important to have- remove empty/all-NA rows/cols!!
-  mutate(degree.t=case_when(Degree %in% c("NON","Non Matriculated")~"Non-degree",Degree!="NON" & Degree!="Non Matriculated" ~"Degree-seeking"))
+
 
 
 #just for fun experiement

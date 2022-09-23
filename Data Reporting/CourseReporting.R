@@ -391,17 +391,19 @@ ug.gd[is.na(ug.gd$`Term Credits`),]#non NA
 summary(ug.gd$`Term Credits`)#all students enrolled for credits
 
 
-#################cum credits
+#################cum credits:FOR MULTIPLE ENTRY, TAKE THE LATTER
 #change to numeric
 ug.gd$`Cum Credits`<-as.numeric(ug.gd$`Cum Credits`)
-#check factor class
+#ug.gd%>%mutate(`Cum Credits`=max(which (`Cum Credits`)),CreditPrt=`Cum Credits`/120,CreditPrt=case_when(CreditPrt<.25~"<25%",CreditPrt>=.25 & CreditPrt<.50~"25-49%",CreditPrt>=.50 & CreditPrt<=.74~"50-74%",CreditPrt>.75~">75%"))%>%group_by(CreditPrt)%>%count()
+#check 
 str(ug.gd)
 #explore 
 summary(ug.gd$`Cum Credits`)
 #NA
-ug.gd[is.na(ug.gd$`Cum Credits`),]#a lot of NAs, all comes from 21 fall!
+ug.gd[is.na(ug.gd$`Cum Credits`),]#a lot of NAs, all comes from UG 21 fall!
 #should NOT exclude those rows -- other cols valid
 #remember to rm.na=T when calculate using cum credits
+
 
 ###calculate progress based on cum credits
 ug.gd<-ug.gd%>%mutate(CreditPrt=`Cum Credits`/120)%>%#total is 120 credits for most programs NEEDS TO CONFIRM WITH ERIC
@@ -506,18 +508,27 @@ ug.gd%>%filter(grepl("[Cc]omp",ug.gd$Program))%>%group_by(Program)%>%count()#see
 
 ##############################filter using searched results and crete usn.online
 usn.online<-ug.gd%>%filter(Program %in% c("MSCJ","MSM","MBA","Business Administration","Communication Bachelors Completion","Interdisciplinary Bachelors Completion","Psychology Bachelors Completion"))%>%
-  select(`People Code Id`,`gov id`,Level,Program,age,age.cat,Ethnicity,`Transfer YN`,CreditPrt,Gender)%>%
+  select(`People Code Id`,`gov id`,Level,Program,age,age.cat,Ethnicity,`Transfer YN`,`Cum Credits`,Gender,term,`New Ret Term YN`)%>%
   unique()#remove duplicated rows
 
 #explore
+str(usn.online)
 nrow(usn.online)#418
 #distinct ppid
 usn.online%>%distinct(`People Code Id`,.keep_all = TRUE)%>%nrow()#unique 316 ppid (and keep all other variables)
+
 #investigate duplicated ppid
 dup.id<-usn.online[duplicated(usn.online$`People Code Id`),]
 #show all duplicated ppid - eyeballing where the conflict occurs
-usn.online[usn.online$`People Code Id` %in% dup.id$`People Code Id`,]%>%arrange(`People Code Id`)#all b/c Credit Prt
-
+  usn.online[usn.online$`People Code Id` %in% dup.id$`People Code Id`,]#it's b/c cum credits
+#keep one for duplicated ids
+usn.online<-usn.online%>%#aim: assign one value for duplicated id (to resolve conflict)    
+  arrange(desc(`Cum Credits`))%>%arrange(`People Code Id`)%>%#largest cumcredit at the top, same id large-low
+  distinct(`People Code Id`,.keep_all = TRUE)#distinct will keep the first row (the correct cum credit)
+#explore
+str(usn.online)
+nrow(usn.online)#316
+usn.online[is.na(usn.online$`Cum Credits`),]
 
 
 

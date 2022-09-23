@@ -404,18 +404,6 @@ ug.gd[is.na(ug.gd$`Cum Credits`),]#a lot of NAs, all comes from UG 21 fall!
 #should NOT exclude those rows -- other cols valid
 #remember to rm.na=T when calculate using cum credits
 
-
-###calculate progress based on cum credits
-ug.gd<-ug.gd%>%mutate(CreditPrt=`Cum Credits`/120)%>%#total is 120 credits for most programs NEEDS TO CONFIRM WITH ERIC
-  mutate(CreditPrt=case_when(CreditPrt<.25~"<25%",CreditPrt>=.25 & CreditPrt<.50~"25-49%",CreditPrt>=.50 & CreditPrt<=.74~"50-74%",CreditPrt>.75~">75%"))
-#check
-ug.gd%>%group_by(CreditPrt)%>%count()#857 NAs from NA cum credits
-#factorize
-ug.gd$CreditPrt<-factor(ug.gd$CreditPrt,levels = c("<25%","25-49%","50-74%",">75%"))
-#check
-ug.gd%>%group_by(CreditPrt)%>%count()#857 NAs from NA cum credits
-str(ug.gd)
-
 #########Program
 ls<-ug.gd%>%group_by(Program)%>%count()
 View(ls)#no NA
@@ -477,6 +465,15 @@ str(ug.gd)
 
 ##############################################################################################
 ####################cleaning based on instruction###################
+#remove not needed cols
+ug.gd.did<-ug.gd%>%select(-CreditPrt,-`Cum Credits`,-Program)
+
+###investigate duplicated ppid
+dup.id<-ug.gd[duplicated(ug.gd$`People Code Id`),]
+#show all duplicated ppid - eyeballing where the conflict occurs
+ug.gd[ug.gd$`People Code Id` %in% dup.id$`People Code Id`,]#######it's b/c cum credits
+#keep one for duplicated ids
+
 
 ############FT/PT status decided by entry to the institution for the first full term
 str(ug.gd)
@@ -491,6 +488,23 @@ ug.gd.did<-ug.gd%>%mutate(`FT/PT`=case_when(
 #credit
 ug.gd%>%mutate(creditUG=case_when(Level=="UG"~`Term Credits`,Level=="GD"~"0"),
                creditGD=case_when(Level=="GD"~`Term Credits`,Level=="UG"~"0"))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -517,10 +531,10 @@ nrow(usn.online)#418
 #distinct ppid
 usn.online%>%distinct(`People Code Id`,.keep_all = TRUE)%>%nrow()#unique 316 ppid (and keep all other variables)
 
-#investigate duplicated ppid
+###investigate duplicated ppid
 dup.id<-usn.online[duplicated(usn.online$`People Code Id`),]
 #show all duplicated ppid - eyeballing where the conflict occurs
-  usn.online[usn.online$`People Code Id` %in% dup.id$`People Code Id`,]#it's b/c cum credits
+  usn.online[usn.online$`People Code Id` %in% dup.id$`People Code Id`,]#######it's b/c cum credits
 #keep one for duplicated ids
 usn.online<-usn.online%>%#aim: assign one value for duplicated id (to resolve conflict)    
   arrange(desc(`Cum Credits`))%>%arrange(`People Code Id`)%>%#largest cumcredit at the top, same id large-low
@@ -528,12 +542,24 @@ usn.online<-usn.online%>%#aim: assign one value for duplicated id (to resolve co
 #explore
 str(usn.online)
 nrow(usn.online)#316
-usn.online[is.na(usn.online$`Cum Credits`),]
+usn.online[is.na(usn.online$`Cum Credits`),]# from across terms and across new/tern
 
 
+###calculate progress based on cum credits
+usn.online<-usn.online%>%mutate(CreditPrt=`Cum Credits`/120)%>%#total is 120 credits for most programs NEEDS TO CONFIRM WITH ERIC
+  mutate(CreditPrt=case_when(CreditPrt<.25~"<25%",CreditPrt>=.25 & CreditPrt<.50~"25-49%",CreditPrt>=.50 & CreditPrt<=.74~"50-74%",CreditPrt>.75~">75%"))
+#check
+usn.online%>%group_by(CreditPrt)%>%count()#reorder needed
+#factorize
+usn.online$CreditPrt<-factor(usn.online$CreditPrt,levels = c("<25%","25-49%","50-74%",">75%"))
+#check
+usn.online%>%group_by(CreditPrt)%>%count()#78 NAs from NA cum credits
+str(usn.online)
 
+usn.online[is.na(usn.online$`gov id`),]#one NA
 #save list of students and send to  financial aid
-write.xlsx(list("SSN"=usn.online), file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/2022 US News/StudentLoanInfo_USNewsReport.xlsx")
+write.xlsx(list("PPID"=usn.online), file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/2022 US News/StudentLoanInfo_USNewsReport.xlsx")
+
 
 ##########age/birth date of UG, question 70###########
 #calculate age from birth date

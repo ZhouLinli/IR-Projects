@@ -1,0 +1,47 @@
+---
+title: "InternalAssessSurveyIncomplete"
+author: "Linli Zhou"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(tidyverse)
+library(writexl)
+library(stringr)
+```
+
+```{r complete list of emails}
+allstu22<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Fall/Fall 2022 UG Backup Data Report.xlsx")%>%
+  filter(`Cohort Id`=="2022")%>%
+  select(`People Code Id`, Name,`Lasell email`)%>%
+  rename(email=`Lasell email`)%>%
+  mutate(email=gsub("@lasell.edu","",allstu22$email),
+         email=str_to_lower(email),
+ #need to be exactly "First Name" and "Last Name" as col name to be able to upload on alchemer        
+         `Last Name`=str_trim(str_split_fixed(Name,",",2)[,1]),
+         `First Name`=str_trim(str_split_fixed(Name,",",2)[,2]))#321
+```
+
+
+```{r survey}
+acm<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/First Impressions/2022 Fall/alchemer9.26_raw.xlsx")%>%
+  rename(email=`Please provide your Lasell email address. This information is needed for research purposes. Your personal information will be kept confidential and will not appear on any report. `)
+#must do mutate and filter separatedly from read excel to avoid confusing reading order
+acm<-acm%>%mutate(email=gsub("@lasell.edu","",acm$email),
+         email=str_to_lower(email))%>%  #119  
+            filter(!is.na(email))#116
+
+#part<-acm%>%filter(Status=="Partial")#don't worry about it
+```
+
+```{r match email}
+contact<-allstu22[(allstu22$email%in%acm$email==FALSE),]%>%#213
+  select(-Name)%>%
+  rename(Email=email)#need to be exactly "Email" as col name to be able to upload on alchemer
+
+write.xlsx(contact,file="/Volumes/lasellshare-1/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/First Impressions/2022 Fall/ReminderContactList9.26.xlsx")
+```
+

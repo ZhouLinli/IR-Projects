@@ -7,23 +7,15 @@ output: word_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-```
-
-```{r load data}
-###############################################################################
-###############################################################################
-##############ENROLLMENT (REGISTRAR BACKUP) 07/01/2021-06/30-2022##############
-###############################################################################
-###############################################################################
-
-#library
 library(readxl)
 library(dplyr)
 library(tidyverse)
 library(writexl)
 library(openxlsx)
+```
 
-#################load data
+```{r load data}
+##############ENROLLMENT (REGISTRAR BACKUP) 07/01/2021-06/30-2022##############
 ##2021 Summer II
 ug21sum2<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2021 Summer/Summer II/Undergraduate Backup Data  Report 21SUII.xlsx")
 gd21sum2<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2021 Summer/Summer II/GR/Graduate Backup Data  Report.xlsx")
@@ -85,11 +77,6 @@ gd22wi<-gd22wi%>%select(-`NA`)#remove NA col
 
 
 ```{r all vars in ug & gd}
-########################################################################################
-####################selecting all variables needed#######################################
-########################################################################################
-
-##################################################################
 ####################ug data############
 ug1<-ug21fa%>%select(`People Code Id`,`gov id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%
   mutate(Level="UG",term="21fall")#mutate identification col
@@ -107,21 +94,21 @@ ug5<-ug22wi%>%select(`People Code Id`,`gov id`,`FT/PT`,Degree,`Transfer YN`,`Col
   mutate(Level="UG",term="22winter")
 
 #check selected vars
-sapply(list(ug1,ug2,ug3,ug4,ug5), function(x) ncol(x))#same 14
+#sapply(list(ug1,ug2,ug3,ug4,ug5), function(x) ncol(x))#same 14
 
-##########################merge to one ug dataset
+#merge to one ug dataset
 ug.ipeds<-plyr::join_all(list(ug1,ug2,ug3,ug4,ug5),type="full")%>%
   unique()%>%#remove rows that has exact same value across all columns
   rename(Program=Curriculum,`New Ret Term YN`=`College Attend`)%>%#rename for ug-gd consistency
-  mutate(degree.t=case_when(Degree %in% c("NON","Non Matriculated")~"Non-degree",Degree!="NON" & Degree!="Non Matriculated" ~"Degree-seeking"))%>%select(-Degree)#create degree.t (and remove old)
+  mutate(degree.t=case_when(Degree %in% c("NON","Non Matriculated")~"Non-degree",Degree!="NON" & Degree!="Non Matriculated" ~"Degree-seeking"))%>%
+  select(-Degree)#create degree.t (and remove old)
 
 #check
-sapply(list(ug1,ug2,ug3,ug4,ug5), function(x) nrow(x))%>%sum()#2935
-nrow(ug.ipeds)#match="first" #2935
-ncol(ug.ipeds)#14
-names(ug.ipeds)
+#sapply(list(ug1,ug2,ug3,ug4,ug5), function(x) nrow(x))%>%sum()#2935
+#nrow(ug.ipeds)#match="first" #2935
+#ncol(ug.ipeds)#14
+#names(ug.ipeds)
 
-##################################################################
 ####################gd data############
 gd1<-g21fa%>%select(`People Code Id`,`gov id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`)%>%
   mutate(Level="GD",term="21fall")#mutate identification col
@@ -139,40 +126,35 @@ gd5<-gd22wi%>%select(`People Code Id`,`gov id`,`Class level`,Gender,`FT/PT`,Ethn
   mutate(Level="GD",term="22winter")
 
 #check selected vars: compare to ug, do not have transfer, college attend, and cum credit
-sapply(list(gd1,gd2,gd3,gd4,gd5), function(x) ncol(x))#same 14
+#sapply(list(gd1,gd2,gd3,gd4,gd5), function(x) ncol(x))#same 14
 
 #merge to one
 gd.ipeds<-plyr::join_all(list(gd1,gd2,gd3,gd4,gd5),type="full")%>%
   unique()%>%#remove rows that has exact same value across all columns
   rename(Program=Degree)%>%#renmae for ug-gd consistency
-  mutate(degree.t=case_when(`Class level`!="GR"~"Non-degree",`Class level`=="GR" ~"Degree-seeking"))%>%select(-`Class level`)#create degree.t (and remove old)
+  mutate(degree.t=case_when(`Class level`!="GR"~"Non-degree",`Class level`=="GR" ~"Degree-seeking"))%>%
+  select(-`Class level`)#create degree.t (and remove old)
   
 #check
-sapply(list(gd1,gd2,gd3,gd4,gd5), function(x) nrow(x))%>%sum()#1513
-nrow(gd.ipeds)#match="first" #1512, removed 1 duplicated (across all values)
-ncol(gd.ipeds)
-names(gd.ipeds)%in%names(ug.ipeds)%>%sum()#14 all same
+#sapply(list(gd1,gd2,gd3,gd4,gd5), function(x) nrow(x))%>%sum()#1513
+#nrow(gd.ipeds)#match="first" #1512, removed 1 duplicated (across all values)
+#ncol(gd.ipeds)
+#names(gd.ipeds)%in%names(ug.ipeds)%>%sum()#14 all same
+
+####################merge ug.ipeds and gd ipeds###################
+ug.gd<-plyr::join_all(list(ug.ipeds,gd.ipeds),type="full")%>%
+  unique()%>%janitor::remove_empty(c("rows", "cols"))#remove all-NA rows/cols!!
+#check
+#sapply(list(ug.ipeds,gd.ipeds), function(x) nrow(x))%>%sum()#4447
+#nrow(ug.gd)#4443, removed 4 duplicated rows
+#ncol(ug.gd)#14
+#names(ug.gd)
+#str(ug.gd)
 ```
 
 
-```{r ug.gd and basic clean}
-##################################################################
-####################merge ug.ipeds and gd ipeds###################
-ug.gd<-plyr::join_all(list(ug.ipeds,gd.ipeds),type="full")%>%unique()
-#check
-sapply(list(ug.ipeds,gd.ipeds), function(x) nrow(x))%>%sum()#4447
-nrow(ug.gd)#4443, removed 4 duplicated rows
-ncol(ug.gd)#14
-names(ug.gd)
-str(ug.gd)
-
-
-##############################################################################################
+```{r ug.gd basic clean}
 ####################cleaning col by col: NA, recode values, num/level class###################
-#NA rows/cols
-ug.gd<-ug.gd%>%janitor::remove_empty(c("rows", "cols"))#remove all-NA rows/cols!!
-  #distinct(`People Code Id`,.keep_all = TRUE)%>%#unique ppid and keep all other variables
-nrow(ug.gd)#4443
 
 ########################ppids
 ##look at the NA value

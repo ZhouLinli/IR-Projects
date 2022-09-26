@@ -14,15 +14,14 @@ knitr::opts_chunk$set(echo = TRUE, include = FALSE, warning=FALSE, message=FALSE
 
 ```{r load data}
 #Datamart
-#dtm<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/Test Run of Data Mart/Summer 2022/Test_run_datamart_summer_ses2_20220719_v2.xlsx")
 dtm<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/Test Run of Data Mart/FALL 2022/Test_run_datamart_FALL_main_ses1_20220923.xlsx")%>%
   rename_all(~paste0(.x,".dtm"))%>%#distinguish col from dtm
   rename(ppid=PC_ID.dtm)%>%#ppid same name
   filter(ppid!="NA")%>%#ppid cannot be NA
-  filter(ENROLL_SEP_DESC.dtm!="Not Returning Personal")#filter out Not Returning Personal
+  filter(ENROLL_SEP_DESC.dtm=="Enrolled")#filter only enrolled students
+
 
 #Registrar
-#rgs<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Summer/Summer II/UG Backup Data  Report - 2022-07-19T130244.851.xlsx")
 rgs<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Fall/Fall 2022 UG Backup Data Report.xlsx")%>%
   rename_all(~paste0(.x,".rgs"))%>%#distinguish col from rgs
   rename(ppid=`People Code Id.rgs`)%>%#ppid same name
@@ -33,48 +32,96 @@ rgs<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports
 ```{r ppid conflict}
 #if ppid of A in B
 dtm.unqid<-dtm[(dtm$ppid %in% rgs$ppid)==FALSE,]%>%mutate(conflict="not in registar")# DTM not in RGS
+#if ppid of B in A
 rgs.unqid<-rgs[(rgs$ppid %in% dtm$ppid)==FALSE,]%>%mutate(conflict="not in datamart")#RGS not in DTM
-#merge conflict from the same reason (missing ppid in one of the file)
-conflict.id<-plyr::join_all(list(dtm.unqid,rgs.unqid),type="full")%>%select(ppid,conflict,Name.rgs,FIRST_NAME.dtm,LAST_NAME.dtm)
-#save
-write.xlsx(list("MissingID"=conflict.id),file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Fall/datafreezing.xlsx")#save conflict due to unique ids
+
+#merge missing ppid in one of the file
+conflict.id<-plyr::join_all(list(dtm.unqid,rgs.unqid),type="full")%>%
+  select(ppid,conflict,Name.rgs,FIRST_NAME.dtm,LAST_NAME.dtm,ADMIT_ENROLL_TIME.dtm,MAJOR_1.dtm,Curriculum.rgs,`FT/PT.rgs`)
 ```
 
 ```{r dataset of two-records ppids}
-dtm.rgs<-plyr::join_all(list(dtm,rgs),type="full",by="ppid")%>%# a full join that keep all records
-  filter(!(ppid%in%conflict.id))#filter out ppid without records in both dtm&rgs
+# a full join that keep all records
+dtm.rgs<-plyr::join_all(list(dtm,rgs),type="full",by="ppid")%>%
+  #filter out ppid without records in both dtm&rgs
+  filter(!(ppid%in%conflict.id))
 ```
 
 ```{r compare 2col for each ppid}
 #######Curriculum.rgs and Major_1.dtm
 #dtm.rgs%>% group_by(Curriculum.rgs)%>%count()
 #dtm.rgs%>% group_by(MAJOR_1.dtm)%>%count()
-Cur_Mjr<-dtm.rgs%>%mutate(diff=ifelse(Curriculum.rgs==MAJOR_1.dtm, "matched","not match")) %>%
-  filter(diff=="not match")%>%select(ppid,Curriculum.rgs,MAJOR_1.dtm)
+conflict.major<-dtm.rgs%>%mutate(diff=ifelse(Curriculum.rgs==MAJOR_1.dtm, "matched","not match")) %>%
+  filter(diff=="not match")%>%
+  select(ppid,Name.rgs,Curriculum.rgs,MAJOR_1.dtm)
 
 ########registrar's `Class level` and datamart's CLASS_LEVEL_CODE in merged data
 #dtm.rgs%>% group_by(`Class level.rgs`)%>%count()
 #dtm.rgs%>% group_by(CLASS_LEVEL_CODE.dtm)%>%count()
-Cls_Lvl<-dtm.rgs%>%mutate(diff=ifelse(`Class level.rgs`==CLASS_LEVEL_CODE.dtm, "matched","not match")) %>%filter(diff=="not match")%>%select(ppid,`Class level.rgs`,CLASS_LEVEL_CODE.dtm)
+conflict.level<-dtm.rgs%>%mutate(diff=ifelse(`Class level.rgs`==CLASS_LEVEL_CODE.dtm, "matched","not match")) %>%
+  filter(diff=="not match")%>%
+  select(ppid,Name.rgs,`Class level.rgs`,CLASS_LEVEL_CODE.dtm)
 
 #######registrar's collegeattend_recode and datamart's COLLEGE_ATTEND_DESC
 #dtm.rgs%>% group_by(`College Attend.rgs`)%>%count()
 #dtm.rgs%>% group_by(COLLEGE_ATTEND_DESC.dtm)%>%count()
-Colg_Atd<-dtm.rgs%>%mutate(diff=ifelse(`College Attend.rgs`== COLLEGE_ATTEND_DESC.dtm, "matched","not match")) %>%filter(diff=="not match")%>%select(ppid,`College Attend.rgs`,COLLEGE_ATTEND_DESC.dtm)
+conflict.NewRet<-dtm.rgs%>%mutate(diff=ifelse(`College Attend.rgs`== COLLEGE_ATTEND_DESC.dtm, "matched","not match")) %>%
+  filter(diff=="not match")%>%
+  select(ppid,Name.rgs,`College Attend.rgs`,COLLEGE_ATTEND_DESC.dtm)
 
 
 #########registrar's `Transfer YN` vs TRANSFER_YN in datamart in merged data
 #dtm.rgs%>% group_by(`Transfer YN.rgs`)%>%count()
 #dtm.rgs%>% group_by(TRANSFER_YN.dtm)%>%count()
-Transfer<-dtm.rgs%>%mutate(diff=ifelse(`Transfer YN.rgs` == TRANSFER_YN.dtm, "matched","not match")) %>%filter(diff=="not match")%>%select(ppid,`Transfer YN.rgs`,TRANSFER_YN.dtm)
+conflict.transfer<-dtm.rgs%>%mutate(diff=ifelse(`Transfer YN.rgs` == TRANSFER_YN.dtm, "matched","not match")) %>%
+  filter(diff=="not match")%>%
+  select(ppid,Name.rgs,`Transfer YN.rgs`,TRANSFER_YN.dtm)
 
 
 ###########registrar's `Term Credits` vs SESS_REG_CREDITS in datamart in merged data
+##grep("CREDIT",names(dtm.rgs),value = TRUE)
+#summary(dtm.rgs$`Term Credits.rgs`)
+#summary(dtm.rgs$SESS_REG_CREDITS.dtm)
+##these two are the most similar
 #dtm.rgs%>% group_by(`Term Credits.rgs`)%>%count()
 #dtm.rgs%>% group_by(SESS_REG_CREDITS.dtm)%>%count()
-#grep("CREDIT",names(dtm.rgs),value = TRUE)#ASK ERIC WHICH ONE IS THE COUNTER PART OF TERM CREDITS
-Term_Ses.Crdt<-dtm.rgs%>%mutate(diff=ifelse(`Term Credits.rgs` == TERM_CREDITS_TOT.dtm, "matched","not match")) %>%filter(diff=="not match")%>%select(ppid,`Term Credits.rgs`,TERM_CREDITS_TOT.dtm)
+
+conflict.credit<-dtm.rgs%>%mutate(diff=ifelse(`Term Credits.rgs` == SESS_REG_CREDITS.dtm, "matched","not match")) %>%
+  filter(diff=="not match")%>%
+  select(ppid,Name.rgs,`Term Credits.rgs`,SESS_REG_CREDITS.dtm)
+
+
+###########registrar's Matric Year.rgs vs MATRIC_YEAR.dtm in datamart
+#dtm.rgs%>% group_by(`Matric Year.rgs`)%>%count()
+#dtm.rgs%>% group_by(MATRIC_YEAR.dtm)%>%count()
+conflict.matric<-dtm.rgs%>%mutate(diff=ifelse(`Matric Year.rgs` == MATRIC_YEAR.dtm, "matched","not match")) %>%
+  filter(diff=="not match")%>%
+  select(ppid,Name.rgs,`Term Credits.rgs`,TERM_CREDITS_TOT.dtm)
+
+
+###########registrar's Cohort Id.rgs vs COHORT.dtm in datamart
+#dtm.rgs%>% group_by(`Cohort Id.rgs`)%>%count()
+#dtm.rgs%>% group_by(COHORT.dtm)%>%count()
+conflict.cohort<-dtm.rgs%>%mutate(diff=ifelse(`Cohort Id.rgs` == COHORT.dtm, "matched","not match")) %>%
+  filter(diff=="not match")%>%
+  select(ppid,Name.rgs,`Cohort Id.rgs`,COHORT.dtm)
 ```
+
+```{r}
+#save conflicts in different tab
+write.xlsx(list("MissingID"=conflict.id,
+                "Cohort"=conflict.cohort,
+                #"Level"=conflict.level,
+                #"Matric"=conflict.matric,
+                #"Major"=conflict.major,
+                "NewRet"=conflict.NewRet,
+                "Transfer"=conflict.transfer,
+                "Credit"=conflict.credit),
+           file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Fall/datafreezing.xlsx")
+```
+
+
+
 
 
 

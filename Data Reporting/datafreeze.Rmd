@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE, include = FALSE, warning=FALSE, message=FALSE
 
 ```{r load data}
 #Datamart
-dtm<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/Test Run of Data Mart/FALL 2022/Test_run_datamart_FALL_main_ses1_ses2_20220926.xlsx")%>%
+dtm<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/Test Run of Data Mart/FALL 2022/Test_run_datamart_FALL_ALL_sessions_20220926.xlsx")%>%
   rename_all(~paste0(.x,".dtm"))%>%#distinguish col from dtm
   rename(ppid=PC_ID.dtm)%>%#ppid same name
   filter(ppid!="NA")%>%#ppid cannot be NA

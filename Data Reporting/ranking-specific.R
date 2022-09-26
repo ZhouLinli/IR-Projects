@@ -144,50 +144,39 @@ age.calc <- function(dob, age.day = "2021-07-01", units = "years", floor = TRUE)
 #filter using searched results and crete usn.online
 usn.online<-ug.gd%>%
   filter(Program %in% c("MSCJ","MSM","MBA","Business Administration","Communication Bachelors Completion","Interdisciplinary Bachelors Completion","Psychology Bachelors Completion"))%>%
-  select(`People Code Id`,`gov id`,Level,Program,`Birth Date`,Ethnicity,`Transfer YN`,`Cum Credits`,Gender,term,`New Ret Term YN`)%>%
-  mutate(age= age.calc(`Birth Date`),
-         age.cat=case_when(age<=22 ~ "22 or younger",age>=23 & age<=29 ~ "23-29",age>=30 & age <=39 ~ "30-39", age>=40 & age <=49 ~ "40-49",age>=50 & age <=59 ~ "50-59",age>-60 ~"60 or older"),
-         age.cat=factor(age.cat))%>%
-  select(-age,-`Birth Date`)%>%
-  unique()#remove duplicated rows
-
-#str(usn.online)
-#nrow(usn.online)#779
-
+  mutate(Program=factor(Program,levels = c("Business Administration","Communication Bachelors Completion","Interdisciplinary Bachelors Completion","Psychology Bachelors Completion","MSCJ","MSM","MBA")))%>%
+  select(`People Code Id`,`gov id`,Level,Program,`Birth Date`,Ethnicity,`Transfer YN`,`Cum Credits`,Gender,term,`New Ret Term YN`)%>%unique()#remove duplicated rows; 779 rows
 
 
 ###########de-duplication
-#distinct ppid
-usn.online%>%distinct(`People Code Id`,.keep_all = TRUE)%>%nrow()#unique 316 ppid (and keep all other variables)
+#goal: usn.online%>%distinct(`People Code Id`,.keep_all = TRUE)%>%nrow()#unique 316 ppid (and keep all other variables)
 
 ###investigate duplicated ppid
 dup.id<-usn.online[duplicated(usn.online$`People Code Id`),]
-#show all duplicated ppid - eyeballing where the conflict occurs
-usn.online[usn.online$`People Code Id` %in% dup.id$`People Code Id`,]#######it's b/c cum credits
+usn.online[usn.online$`People Code Id` %in% dup.id$`People Code Id`,]#show all duplicated ppid - conflict b/c cum credits
+
 #keep one for duplicated ids
 usn.online<-usn.online%>%#aim: assign one value for duplicated id (to resolve conflict)    
-  arrange(desc(`Cum Credits`))%>%arrange(`People Code Id`)%>%#largest cumcredit at the top, same id large-low
-  distinct(`People Code Id`,.keep_all = TRUE)#distinct will keep the first row (the correct cum credit)
-#explore
-str(usn.online)
-nrow(usn.online)#316
-usn.online[is.na(usn.online$`Cum Credits`),]# from across terms and across new/tern
+  arrange(desc(`Cum Credits`))%>%#largest cumcredit at the top
+  arrange(`People Code Id`)%>%#same id group and has large-low cumcredit
+  distinct(`People Code Id`,.keep_all = TRUE)#distinct will keep the !first row! (the correct cum credit), 316 rows
 
 
-###calculate progress based on cum credits
-usn.online<-usn.online%>%mutate(CreditPrt=`Cum Credits`/120)%>%#total is 120 credits for most programs NEEDS TO CONFIRM WITH ERIC
-  mutate(CreditPrt=case_when(CreditPrt<.25~"<25%",CreditPrt>=.25 & CreditPrt<.50~"25-49%",CreditPrt>=.50 & CreditPrt<=.74~"50-74%",CreditPrt>.75~">75%"))
-#check
-usn.online%>%group_by(CreditPrt)%>%count()#reorder needed
-#factorize
-usn.online$CreditPrt<-factor(usn.online$CreditPrt,levels = c("<25%","25-49%","50-74%",">75%"))
-#check
-usn.online%>%group_by(CreditPrt)%>%count()#78 NAs from NA cum credits
-str(usn.online)
+###########add cols needed
+usn.online<-usn.online%>%mutate(
+  age= age.calc(`Birth Date`),
+  age.cat=case_when(age<=22 ~ "22 or younger",age>=23 & age<=29 ~ "23-29",age>=30 & age <=39 ~ "30-39", age>=40 & age <=49 ~ "40-49",age>=50 & age <=59 ~ "50-59",age>-60 ~"60 or older"),
+  age.cat=factor(age.cat),
+  
+  #calculate progress based on cum credits
+  CreditPrt=`Cum Credits`/120,#total is 120 credits for most programs NEEDS TO CONFIRM WITH ERIC
+  CreditPrt=case_when(CreditPrt<.25~"<25%",CreditPrt>=.25 & CreditPrt<.50~"25-49%",CreditPrt>=.50 & CreditPrt<=.74~"50-74%",CreditPrt>.75~">75%"),
+  CreditPrt=factor(CreditPrt,levels = c("<25%","25-49%","50-74%",">75%")))%>%select(-`Birth Date`)
+#str(usn.online)
+#usn.online%>%group_by(CreditPrt)%>%count()#78 NAs from NA cum credits
 
-usn.online[is.na(usn.online$`gov id`),]#one NA
-#save list of students and send to  financial aid
-write.xlsx(list("PPID"=usn.online), file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/2022 US News/StudentLoanInfo_USNewsReport.xlsx")
+#save list of students and send to financial aid
+#write.xlsx(list("PPID"=usn.online), file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/2022 US News/StudentLoanInfo_USNewsReport.xlsx")
 
 
 ##########age/birth date of UG, question 70###########
@@ -195,20 +184,16 @@ write.xlsx(list("PPID"=usn.online), file="/Volumes/lasellshare/Faculty_Staff_Sha
 usn.online%>%filter(Level=="UG")%>%group_by(age.cat)%>%count()
 
 ##########GD age question 49 or 52############
-usn.online%>%filter(Level=="UG")%>%group_by(Program)%>%summarise(mean.age=mean(age))#auto remove NA
+usn.online%>%filter(Level=="GD")%>%group_by(Program)%>%summarise(mean.age=mean(age,na.rm = TRUE))#auto remove NA
 
 ##########international students of UG, question 53,54###########
 usn.online%>%filter(Level=="UG")%>%group_by(Ethnicity)%>%count()
 
 ##########non-transfer of UG, question 55###########
-usn.online%>%filter(Level=="UG")e%>%group_by(`Transfer YN`)%>%count()
+usn.online%>%filter(Level=="UG")%>%group_by(`Transfer YN`)%>%count()
 
 ##########cum credit progress out of 120 credits of UG, question 57###########
 usn.online%>%filter(Level=="UG")%>%group_by(CreditPrt)%>%count()
 
 ##########GD gender question 47 or 50############
-usn.online%>%filter(Program=="MSCJ")%>%group_by(Gender)%>%count()
-usn.online%>%filter(Program=="MSM")%>%group_by(Gender)%>%count()
-usn.online%>%filter(Program=="MBA")%>%group_by(Gender)%>%count()
-
-
+usn.online%>%filter(Level=="GD")%>%group_by(Program,Gender)%>%count()%>%arrange(Program)

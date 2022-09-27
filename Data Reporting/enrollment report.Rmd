@@ -175,36 +175,101 @@ ug.gd<-ug.gd%>%mutate(`FT/PT`=factor(`FT/PT`),
                       term=factor(term,levels = c("21summer2","21fall","22winter","22spring","22summer.1main")),
                       degree.t=factor(degree.t))
 #all cols are either factor (with correct values and orders), numeric, or stay as character (id without NA)
+
 write.xlsx(ug.gd,file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ug.gd_21-22.xlsx")
 ```
 
 
 
-```{r ipeds report}
-##############################################################################################
-####################cleaning based on instruction###################
+```{r ipeds cleaning FT/PT Attend}
 #remove not needed cols
-ipeds<-ug.gd%>%select(-CreditPrt,-`Cum Credits`,-Program,-`gov id`,-`Birth Date`,-age,-age.cat)%>%unique()
-str(ipeds)#check
+ipeds<-ug.gd%>%select(-`Cum Credits`,-Program,-`gov id`,-`Birth Date`)%>%
+  unique()%>%arrange(`People Code Id`)
 
-###investigate duplicated ppid
-dup.id<-ipeds[duplicated(ipeds$`People Code Id`),]
-#show all duplicated ppid - eyeballing where the conflict occurs
-ipeds[ipeds$`People Code Id` %in% dup.id$`People Code Id`,]%>%
-  arrange(Level,`People Code Id`)#######it's b/c FT/PT, new/return, term credits, term
+ipeds%>%group_by(term)%>%count()
+###investigate duplicated ppid: it's b/c FT/PT, new/return, term credits, term
+#dup.id<-ipeds[duplicated(ipeds$`People Code Id`),]
+#ipeds[ipeds$`People Code Id` %in% dup.id$`People Code Id`,]%>%arrange(Level,`People Code Id`)
 
 ###########keep one for duplicated ids
-#FT/PT: 
+#FT/PT: determined by students' first full term at Lasell--eric said just whatever fall term value is
 
-#new/return
+sts.fall<-ipeds%>%group_by(`People Code Id`)%>%
+  mutate(attend=if_else(term=="21fall",as.character(`FT/PT`),"No fall"))%>%
+  filter(attend%in%c("FT","PT"))%>%arrange(`People Code Id`)
 
+sts.spring<-ipeds%>%group_by(`People Code Id`)%>%
+  filter(! `People Code Id`%in% sts.fall$`People Code Id`)%>%
+  mutate(attend=if_else(term=="22spring",as.character(`FT/PT`),"No spring"))%>%
+  arrange(`People Code Id`)%>%
+  filter(attend%in%c("FT","PT"))
+
+sts.summer2<-ipeds%>%group_by(`People Code Id`)%>%
+  filter(! `People Code Id`%in% c(sts.fall$`People Code Id`,
+                                  sts.spring$`People Code Id`))%>%
+  mutate(attend=if_else(term=="21summer2",as.character(`FT/PT`),"No sum2"))%>%
+  arrange(`People Code Id`)%>%arrange(`People Code Id`)%>%
+  filter(attend%in%c("FT","PT"))
+
+sts.summer1<-ipeds%>%group_by(`People Code Id`)%>%
+  filter(! `People Code Id`%in% c(sts.fall$`People Code Id`,
+                                  sts.spring$`People Code Id`,
+                                  sts.summer2$`People Code Id`))%>%
+  mutate(attend=if_else(term=="22summer.1main",as.character(`FT/PT`),"No sum1"))%>%
+  arrange(`People Code Id`)%>%
+  filter(attend%in%c("FT","PT"))
+  
+sts.winter<-ipeds%>%group_by(`People Code Id`)%>%
+  filter(! `People Code Id`%in% c(sts.fall$`People Code Id`,
+                                  sts.spring$`People Code Id`,
+                                  sts.summer2$`People Code Id`,
+                                  sts.summer1$`People Code Id`))%>%
+  mutate(attend=if_else(term=="22winter",as.character(`FT/PT`),"No winter"))%>%
+  arrange(`People Code Id`)%>%
+  filter(attend%in%c("FT","PT"))
+
+sts<-plyr::join_all(list(sts.fall,sts.spring,sts.summer2,sts.summer1,sts.winter),type ="full" )%>% 
+  select(`People Code Id`,attend)%>%
+ unique()%>%arrange(`People Code Id`)#2057
+
+ipeds<-plyr::join_all(list(ipeds,sts),type="left")%>%
+  select(-`FT/PT`)%>%
+  unique()%>%arrange(`People Code Id`)
+```
+
+
+```{r ipeds cleaning NewRet}
+#new/return (new/return in the FALL): equals to whatever FALL TERM values
+ret1<-ipeds%>%#group_by(`People Code Id`)%>%
+  mutate(NewRet=if_else(term=="21fall",as.character(`New Ret Term YN`),"No fall"))#same type for TRUE and FALSE
+
+ret2<-ret1%>%filter(NewRet=="No fall")%>%
+  mutate(NewRet=if_else(term=="22winter",as.character(`New Ret Term YN`),"No winter"))
+  
+ret3<-ret2%>%filter(NewRet=="No winter")%>%
+  mutate(NewRet=if_else(term=="22spring",as.character(`New Ret Term YN`),"No spring"))
+
+ret4<-ret3%>%filter(NewRet=="No spring")%>%
+  mutate(NewRet=if_else(term=="21summer2",as.character(`New Ret Term YN`),"No summer1"))
+
+ret5<-ret4%>%filter(NewRet=="No summer1")%>%
+  mutate(NewRet=if_else(term=="22summer.1main",as.character(`New Ret Term YN`),"No summer22"))
+
+ret<-plyr::join_all(list(ret1,ret2,ret3,ret4,ret5),type ="full" )%>% 
+  select(`People Code Id`,NewRet)%>%
+  filter(NewRet %in% c("new","return"))%>%
+  unique()
+
+ipeds<-plyr::join_all(list(ipeds,ret),type="left")%>%unique()#  %>%select(-`New Ret Term YN`)
+
+ipeds%>%select(-`FT/PT`,-`New Ret Term YN`)%>%unique()%>%arrange(`People Code Id`)
 #term credits
 
 #term
+```
 
 
-
-
+```{r ipeds reporting}
 ############FT/PT status decided by entry to the institution for the first full term
 str(ug.gd)
 

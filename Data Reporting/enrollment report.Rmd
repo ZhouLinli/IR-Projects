@@ -354,44 +354,33 @@ ug.gd<-plyr::join_all(list(ug.gd,lev),type="left")%>%
   unique()%>%arrange(ppid)#4422
 ```
 
-## AGGREGATE term to total credit - we only care about total
-```{r duplicated term credit}
-#ppid took two level courses in the same term 
-dup.id<-ug.gd %>% group_by(ppid,term) %>% #for each unique id,
-  summarise(n_per_key=n()) %>% # count time of appearance
-  arrange(desc(n_per_key))%>%filter(n_per_key>1)
-  #ungroup %>% #release ppid back to original data
-  #count(n_per_key)#count how many time each n_per_key appeared
-ug.gd%>%filter(ppid==dup.id$ppid)
-```
-
+## AGGREGATE term to total credit 
 
 ```{r credit by term wider, then merge total}
 #one may take credit from ug and gd classes
-tot.crd<-ug.gd%>%group_by(ppid)%>%summarise(tot.credit=sum(`Term Credits`))
-#check: tot.crd%>%group_by(ppid)%>%summarise(cnt=n())%>%arrange(desc(n))#each id only have one tot.credit value
-
+tot.crd<-ug.gd%>%group_by(ppid)%>% #we only care about total for each student
+  summarise(tot.credit=sum(`Term Credits`))
+#left join to original (and remove what we do not care -- term credit and term-- decide to do that later)
 ug.gd<-plyr::join_all(list(ug.gd,tot.crd),type="left")
-
-#write.xlsx(ug.gd,file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ug.gd_21-22.xlsx")
+#save all
+write.xlsx(ug.gd,file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ug.gd_21-22.xlsx")
 ```
 
 # IPEDS NOW!!
 ```{r ipeds data}
 #IPEDS 12-month enrollment (due 2022 Oct 19)
 #remove not needed cols
-ipeds<-ug.gd%>%select(-`Cum Credits`,-Program,-`gov id`,-`Birth Date`,-term,-`Term Credits`)%>%
-  unique()%>%arrange(ppid)#2058
+ipeds<-ug.gd%>%select(-`Cum Credits`,-Program,-`gov id`,-`Birth Date`,-term,-`Term Credits`,-sourceLevel)%>%
+  unique()%>%arrange(ppid)#2057 FINALLY!
 
 ###investigate duplicated ppid: it's b/c FT/PT, new/return, term credits, term
 #dup.id<-ipeds[duplicated(ipeds$ppid),]
 #ipeds[ipeds$ppid %in% dup.id$ppid,]%>%arrange(ppid)
-ipeds%>%filter(ppid=="P000053125")
 ```
 
 ```{r ipeds reporting}
 #12-month Unduplicated Count by Race/Ethnicity and Gender
-             
+
 #Full-time Undergraduate Students:MEN
 ##########DEGREE: FIRST TIME (College Attend=NEW)
 ##report first-time student in DEGREE-SEEKING column of the MEN table of UG

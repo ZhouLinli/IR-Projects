@@ -141,7 +141,8 @@ gd<-plyr::join_all(list(gd1,gd2,gd3,gd4,gd5),type="full")%>%
   rename(Program=Degree, ppid=`People Code Id`)%>%#renmae for ug-gd consistency
   mutate(degree.t=case_when(`Class level`!="GR"~"Non-degree",`Class level`=="GR" ~"Degree-seeking"))%>%
   select(-`Class level`)#create degree.t (and remove old)
- 
+
+gd%>%group_by(`Class level`) %>%count()
 #check
 #sapply(list(gd1,gd2,gd3,gd4,gd5), function(x) nrow(x))%>%sum()#1513
 #nrow(gd.ipeds)#match="first" #1512, removed 1 duplicated (across all values)
@@ -188,7 +189,7 @@ ug.gd<-ug.gd%>%mutate(`FT/PT`=factor(`FT/PT`),
 #write.xlsx(ug.gd,file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ug.gd_21-22.xlsx")
 ```
 
-# DETERMINE IN ORDER: determined by whatever value in fall, if enrolled in fall, then spring..winter..summer..
+# DETERMINE BY ORDER: full term (fall spring winter summer)
 
 ```{r consistent FT/PT Attend}
 #FT/PT: determined by students' first full term (eric: of the academic year)
@@ -261,7 +262,43 @@ ug.gd<-plyr::join_all(list(ug.gd,ret),type="left")%>%unique()%>%arrange(ppid)%>%
   select(-`New Ret Term YN`)#select what's needed
 ```
 
-# ONE DOMINATE: any non-degree is non-degree in level; then any UG level is UG, any transfer is transfer
+#DETERMINE BY ORDER: latest (22summer.1main   22spring   22winter   21fall  21summer2)
+```{r latest ethnicity}
+#if enrolled in the latest 22summer, then whatever that latest term ethnicity values
+eth.summer1<-ug.gd%>%
+  mutate(ethnicity.c=if_else(term=="22summer.1main",as.character(Ethnicity),"No sum1"))%>%
+  arrange(ppid)%>%filter(ethnicity.c != "No sum1")#either new or ethurn of fall would be settled
+
+#if not in 22sum1, determine by 22spring
+eth.spring<-ug.gd%>%filter(! ppid%in% eth.summer1$ppid)%>%#if not has a fall term
+  mutate(ethnicity.c=if_else(term=="22spring",as.character(Ethnicity),"No spring"))%>%
+  arrange(ppid)%>%filter(ethnicity.c != "No spring")#either new or ethurn of spring would be settled
+
+#if not in sum1&spring at all, determine by 22winter
+eth.winter<-ug.gd%>%filter(! ppid%in% c(eth.summer1$ppid, eth.spring$ppid))%>%
+  mutate(ethnicity.c=if_else(term=="22winter",as.character(Ethnicity),"No winter"))%>%
+  arrange(ppid)%>%filter(ethnicity.c != "No winter")#either new or ethurn of winter would be settled
+
+#if not in 22sum1&spring&winter at all, determine by 21fall
+eth.fall<-ug.gd%>%filter(! ppid%in% c(eth.summer1$ppid, eth.spring$ppid, eth.winter$ppid))%>%
+  mutate(ethnicity.c=if_else(term=="21fall",as.character(Ethnicity),"No fall"))%>%
+  filter(ethnicity.c != "No fall")%>%arrange(ppid)#either new or ethurn of fall would be settled
+
+#if not enrolled in 22sum1&spring&winter&21fall: determine by 21sum2
+eth.summer2<-ug.gd%>% filter(! ppid%in% c(eth.summer1$ppid, eth.spring$ppid, eth.winter$ppid, eth.fall$ppid))%>%#if do not show up in fall&spring&winter
+  mutate(ethnicity.c=if_else(term=="21summer2",as.character(Ethnicity),"No sum2"))%>%
+  arrange(ppid)%>%filter(ethnicity.c != "No sum2")#either new or ethurn of sum2 would be settled
+
+#merge all settled (filtered unique ids from each term)
+eth<-plyr::join_all(list(eth.fall,eth.spring,eth.summer2,eth.summer1,eth.winter),type ="full" )%>% unique()%>%arrange(ppid)%>%select(ppid,ethnicity.c)#select what's needed 2057
+ 
+#left join settledRetNew to ug.gd
+ug.gd<-plyr::join_all(list(ug.gd,eth),type="left")%>%unique()%>%arrange(ppid)%>%#4422
+  select(-Ethnicity)#select what's needed
+```
+
+
+# ONE DOMINATE: any transfer is transfer
 
 ```{r consistent transfer}
 #any of the term is transfer then they are
@@ -285,7 +322,10 @@ ug.gd<-plyr::join_all(list(ug.gd,tran),type="left")%>%
   unique()%>%arrange(ppid)#4422
 ```
 
+# ONE DOMINATE: UG, then GD, then not any UG/GD then non-degree
 ```{r fix non-deg level and level consistency}
+#need to have UG/GD for even non-matriculated students; based on program names
+
 #non-degree shouldn't have any level
 ug.gd<-ug.gd%>%mutate(Level=if_else(
   degree.t=="Non-degree","Non-degree",as.character(Level)))%>%#recode non-degree level
@@ -295,6 +335,9 @@ ug.gd<-ug.gd%>%mutate(Level=if_else(
 #dtm21fa<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/Test Run of Data Mart/Fall 2021/Table_Test_Run_Fall_Main_Ses1_Ses2_Sept_28_2021.xlsx")%>%filter(ENROLL_SEP_DESC=="Enrolled")
 
 #dmt21fa%>%group_by(PROGRAM_1)%>%count()#only undergrad data
+
+#level should be determined by the program name
+ls<-ug.gd%>%group_by(Program)%>%count()%>%arrange(Program); View(ls)
 
 #for degree-seeking, they either are UG/GD
 #for one with both UG/GD level (conflict): anyone with UG are UG
@@ -325,60 +368,36 @@ ug.gd<-plyr::join_all(list(ug.gd, lev),type="left")%>%
 
 
 ## AGGREGATE term to total credit - we only care about total
-```{r credit by term wider, then merge total}
-#ppid has different term and level
+```{r duplicated term credit}
+#ppid took two level courses in the same term 
 dup.id<-ug.gd %>% group_by(ppid,term) %>% #for each unique id,
   summarise(n_per_key=n()) %>% # count time of appearance
   arrange(desc(n_per_key))%>%filter(n_per_key>1)
   #ungroup %>% #release ppid back to original data
   #count(n_per_key)#count how many time each n_per_key appeared
 ug.gd%>%filter(ppid==dup.id$ppid)
+```
 
+
+```{r credit by term wider, then merge total}
 #one may take credit from ug and gd classes
-ug.gd%>%group_by(ppid)%>%summarise(tot.credit=sum(`Term Credits`))
+tot.crd<-ug.gd%>%group_by(ppid)%>%summarise(tot.credit=sum(`Term Credits`))
+#check: tot.crd%>%group_by(ppid)%>%summarise(cnt=n())%>%arrange(desc(n))#each id only have one tot.credit value
 
-
+ug.gd<-plyr::join_all(list(ug.gd,tot.crd),type="left")
 ```
 
-```{r}
-ug.gd<-ug.gd%>%
-  pivot_wider(names_from = Level,values_from = credit.year)%>%
-  arrange(ppid)%>%
-  unique()%>%janitor::remove_empty(c("rows","cols"))#2090
-
-ug.gd$UG[is.na(ug.gd$UG)]<-0
-ug.gd$GD[is.na(ug.gd$GD)]<-0
-
-lv.ug<-ug.gd%>%group_by(ppid)%>%
-  mutate(level=if_else(UG>0,"UG","na"))%>%arrange(ppid)%>%
-  filter(level!="na")
-
-lv.gd<-ug.gd%>%group_by(ppid)%>%
-  filter(! ppid%in% lv.ug$ppid)%>%
-   mutate(level=if_else(GD>0,"GD","na"))%>%arrange(ppid)%>%
-  filter(level!="na")
-
-lv<-plyr::join_all(list(lv.ug,lv.gd),type ="full" )%>% 
-  select(ppid,level)%>%
- unique()%>%arrange(ppid)#2057
-
-ug.gd<-plyr::join_all(list(ug.gd,lv),type="left")%>%mutate(credit.tot=UG+GD)%>%
-  select(-UG,-GD)%>%
-  unique()%>%arrange(ppid)#2061
-```
-
-
-
-
+# IPEDS NOW!!
 ```{r ipeds data}
 #IPEDS 12-month enrollment (due 2022 Oct 19)
 #remove not needed cols
-ipeds<-ug.gd%>%select(-`Cum Credits`,-Program,-`gov id`,-`Birth Date`)%>%
-  unique()%>%arrange(ppid)#4422
+ipeds<-ug.gd%>%select(-`Cum Credits`,-Program,-`gov id`,-`Birth Date`,-term,-`Term Credits`)%>%
+  unique()%>%arrange(ppid)#2058
 
 ###investigate duplicated ppid: it's b/c FT/PT, new/return, term credits, term
 #dup.id<-ipeds[duplicated(ipeds$ppid),]
 #ipeds[ipeds$ppid %in% dup.id$ppid,]%>%arrange(ppid)
+ipeds%>%filter(ppid=="P000053125")
 ```
 
 ```{r ipeds reporting}

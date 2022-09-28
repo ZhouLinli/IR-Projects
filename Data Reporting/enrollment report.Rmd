@@ -261,64 +261,10 @@ ug.gd<-plyr::join_all(list(ug.gd,ret),type="left")%>%unique()%>%arrange(ppid)%>%
   select(-`New Ret Term YN`)#select what's needed
 ```
 
-# ONE DOMINATE: any degree is degree, any transfer is transfer
-
-```{r consistent degree.t}
-#degree: any of the term is degree-seeking then they are
-#level: any of degree-seeking level
-deg.s<-ug.gd%>%group_by(ppid,degree.t)%>%
-  summarize(cnt=n())%>%#unique for ppid&degree.t
-  mutate(degree.c=if_else(degree.t=="Degree-seeking",as.character(degree.t),"non"))%>%
-  arrange(ppid)%>%filter(degree.c=="Degree-seeking")#keep any degree-seeking
-
-#for ppid with not any degree-seeking
-deg.n<-ug.gd%>%filter(! ppid%in% deg.s$ppid)%>%
-  group_by(ppid,degree.t)%>%summarize(cnt=n())%>%
-  mutate(degree.c="Non-degree")#all not settled with deg.s will be non
-
-#merge settled deg
-deg<-plyr::join_all(list(deg.s,deg.n),type ="full" )%>% 
-  select(ppid,degree.c)%>%unique()%>%arrange(ppid)#2057
-
-ug.gd<-plyr::join_all(list(ug.gd,deg),type="left")%>%
-  select(-degree.t)%>%
-  unique()%>%arrange(ppid)#4422
-```
-
-
-```{r level consistency}
-#if determined by the time of admission level status
-#dtm21fa<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/Test Run of Data Mart/Fall 2021/Table_Test_Run_Fall_Main_Ses1_Ses2_Sept_28_2021.xlsx")%>%filter(ENROLL_SEP_DESC=="Enrolled")
-
-#dmt21fa%>%group_by(PROGRAM_1)%>%count()#only undergrad data
-
-#any non-degree should not have a UG/GD status
-lev.n<-ug.gd%>%filter(degree.c=="Non-degree")%>%
-  mutate(level.c="Non-degree")%>%
-  filter(level.c=="Non-degree")#keep only settled
-
-#for degree-seeking, they either are UG/GD
-#for one with both UG/GD level (conflict): anyone with UG are UG
-lev.u<-ug.gd%>%filter(! ppid%in% c(lev.n$ppid))%>%#only taking about deg students
-  mutate(level.c=if_else(Level=="UG","UG","non"))%>%
-  arrange(ppid)%>%filter(level.c=="UG")%>%unique()#keep UG
-
-#for ppid with not any degree-seeking
-lev.g<-ug.gd%>% filter(! ppid%in% c(lev.u$ppid,lev.n$ppid))%>%#for any not settled
-  mutate(level.c="GD")%>%unique()#all not settled with lev.s will be GD
-
-#merge settled  lev
-lev<-plyr::join_all(list(lev.n,lev.u,lev.g),type ="full" )%>%
-  select(ppid,level.c)%>%unique()%>%arrange(ppid)#only what we needed, 2057
-    
-#left join unique-level to ug.gd
-ug.gd<-plyr::join_all(list(ug.gd, lev),type="left")%>%unique()%>%arrange(ppid)%>%
-  select(-Level,-degree.c)#only what we needed, 4422; do not need degree-seeking any more, because that will be determined by level
-```
-
+# ONE DOMINATE: any non-degree is non-degree in level; then any UG level is UG, any transfer is transfer
 
 ```{r consistent transfer}
-#degree: any of the term is transfer then they are
+#any of the term is transfer then they are
 tran.s<-ug.gd%>%group_by(ppid,`Transfer YN`)%>%
   summarize(cnt=n())%>%#unique for ppid&`Transfer YN`
   mutate(transfer=if_else(`Transfer YN`=="Transfer",as.character(`Transfer YN`),"non"))%>%arrange(ppid)%>%
@@ -339,6 +285,45 @@ ug.gd<-plyr::join_all(list(ug.gd,tran),type="left")%>%
   unique()%>%arrange(ppid)#4422
 ```
 
+```{r fix non-deg level and level consistency}
+#non-degree shouldn't have any level
+ug.gd<-ug.gd%>%mutate(Level=if_else(
+  degree.t=="Non-degree","Non-degree",as.character(Level)))%>%#recode non-degree level
+  select(-degree.t)#can refer degree to level, no longer need degree
+
+#if determined by the time of admission level status
+#dtm21fa<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/Test Run of Data Mart/Fall 2021/Table_Test_Run_Fall_Main_Ses1_Ses2_Sept_28_2021.xlsx")%>%filter(ENROLL_SEP_DESC=="Enrolled")
+
+#dmt21fa%>%group_by(PROGRAM_1)%>%count()#only undergrad data
+
+#for degree-seeking, they either are UG/GD
+#for one with both UG/GD level (conflict): anyone with UG are UG
+lev.u<-ug.gd%>%
+  mutate(level.c=if_else(Level=="UG","UG","non"))%>%
+  arrange(ppid)%>%filter(level.c=="UG")%>%unique()#keep UG
+
+#for ppid with not any degree-seeking
+lev.g<-ug.gd%>% filter(! ppid%in% c(lev.u$ppid))%>%#for any not settled
+  mutate(level.c=if_else(Level=="GD","GD","non"))%>%
+  arrange(ppid)%>%filter(level.c=="GD")%>%unique()#keep GD
+
+#not any UG/GD status, then non-degree
+lev.n<-ug.gd%>%filter(! ppid%in% c(lev.u$ppid, lev.g$ppid))%>%
+  mutate(level.c="Non-degree")%>%
+  filter(level.c=="Non-degree")#keep only settled
+
+#merge settled  lev
+lev<-plyr::join_all(list(lev.n,lev.u,lev.g),type ="full" )%>%
+  select(ppid,level.c)%>%unique()%>%arrange(ppid)#only what we needed, 2057
+    
+#left join unique-level to ug.gd
+ug.gd<-plyr::join_all(list(ug.gd, lev),type="left")%>%
+  select(-Level)%>%unique()%>%arrange(ppid)#only what we needed, 4422; do not need degree-seeking any more, because that will be determined by level
+```
+
+
+
+
 ## AGGREGATE term to total credit - we only care about total
 ```{r credit by term wider, then merge total}
 #ppid has different term and level
@@ -348,25 +333,11 @@ dup.id<-ug.gd %>% group_by(ppid,term) %>% #for each unique id,
   #ungroup %>% #release ppid back to original data
   #count(n_per_key)#count how many time each n_per_key appeared
 ug.gd%>%filter(ppid==dup.id$ppid)
+
 #one may take credit from ug and gd classes
 ug.gd%>%group_by(ppid)%>%summarise(tot.credit=sum(`Term Credits`))
 
-#replace NA to 0
-ug.gd$`21fall`[is.na(ug.gd$`21fall`)]<-0
-ug.gd$`22spring`[is.na(ug.gd$`22spring`)]<-0
-ug.gd$`22summer.1main`[is.na(ug.gd$`22summer.1main`)]<-0
-ug.gd$`21summer2`[is.na(ug.gd$`21summer2`)]<-0
-ug.gd$`22winter`[is.na(ug.gd$`22winter`)]<-0
 
-#Calculate total credit adding all terms
-ug.gd<-ug.gd%>%mutate(credit.year=`21fall`+`22spring`+`22summer.1main`+`21summer2`+`22winter`)%>%
-  select(-c(`21fall`,`22spring`,`22summer.1main`,`21summer2`,`22winter`))%>%arrange(ppid)%>%
-  unique()#2089
-
-ug.gd%>%distinct(ppid)#2057
-###investigate duplicated ppid: it's b/c degree.t and level
-#dup.id<-ug.gd[duplicated(ug.gd$ppid),]
-#ug.gd[ug.gd$ppid %in% dup.id$ppid,]%>%arrange(ppid)
 ```
 
 ```{r}
@@ -400,10 +371,7 @@ ug.gd<-plyr::join_all(list(ug.gd,lv),type="left")%>%mutate(credit.tot=UG+GD)%>%
 
 
 ```{r ipeds data}
-########################################################################################
-####################################################################################
-################## IPEDS 12-month enrollment (due 2022 Oct 19)########
-########################################################################################
+#IPEDS 12-month enrollment (due 2022 Oct 19)
 #remove not needed cols
 ipeds<-ug.gd%>%select(-`Cum Credits`,-Program,-`gov id`,-`Birth Date`)%>%
   unique()%>%arrange(ppid)#4422
@@ -414,25 +382,24 @@ ipeds<-ug.gd%>%select(-`Cum Credits`,-Program,-`gov id`,-`Birth Date`)%>%
 ```
 
 ```{r ipeds reporting}
-#####################################################################################
-#####################12-month Unduplicated Count by Race/Ethnicity and Gender########
+#12-month Unduplicated Count by Race/Ethnicity and Gender
              
 #Full-time Undergraduate Students:MEN
 ##########DEGREE: FIRST TIME (College Attend=NEW)
 ##report first-time student in DEGREE-SEEKING column of the MEN table of UG
-t1<-ug.gd%>%filter(Level=="UG")%>%filter(`FT/PT`=="FT",Gender=="M",degree.t=="Degree-seeking",`College Attend`=="NEW")%>%
+t1<-ug.gd%>%filter(Level=="UG")%>%filter(`FT/PT`=="FT",Gender=="M",Level=="Degree-seeking",`College Attend`=="NEW")%>%
   group_by(Ethnicity,.drop = FALSE)%>%summarise(firsttime=n())
 
 ##########DEGREE&NON FIRST TIME: TRANSFER VS RETURNING in "Transfer YN"
 ## focusing on return student, whether they are transfer or not
-t2<-ug.gd%>%filter(Level=="UG")%>%filter(`FT/PT`=="FT",Gender=="M",degree.t=="Degree-seeking", `College Attend`=="RET")%>%
+t2<-ug.gd%>%filter(Level=="UG")%>%filter(`FT/PT`=="FT",Gender=="M",Level=="Degree-seeking", `College Attend`=="RET")%>%
   group_by(`Transfer YN`,Ethnicity,.drop = FALSE)%>%count()%>%
   #transferY&N side by side
   pivot_wider(names_from = `Transfer YN`,values_from =  n, names_glue = paste0("Transfer","{`Transfer YN`}_{.value}"))
 
 ##########NON DEGREE
 #report NON-DEGREE column
-t3<-ug.gd%>%filter(Level=="UG")%>%filter(`FT/PT`=="FT",Gender=="M",degree.t=="Non-degree")%>%
+t3<-ug.gd%>%filter(Level=="UG")%>%filter(`FT/PT`=="FT",Gender=="M",Level=="Non-degree")%>%
   group_by(Ethnicity)%>%summarize(nondegree=n())
 
 t<-plyr::join_all(list(t1,t2,t3),type="full",match="first")
@@ -442,19 +409,19 @@ View(t)
 #Full-time Undergraduate Students:WOMEN
 ##########DEGREE: FIRST TIME (College Attend=NEW)
 ##report first-time student in DEGREE-SEEKING column of the MEN table of UG
-t1<-ug.gd%>%filter(Level=="UG")%>%filter(`FT/PT`=="FT",Gender=="F",degree.t=="Degree-seeking",`College Attend`=="NEW")%>%
+t1<-ug.gd%>%filter(Level=="UG")%>%filter(`FT/PT`=="FT",Gender=="F",Level=="Degree-seeking",`College Attend`=="NEW")%>%
   group_by(Ethnicity,.drop = FALSE)%>%summarise(firsttime=n())
 
 ##########DEGREE&NON FIRST TIME: TRANSFER VS RETURNING in "Transfer YN"
 ## focusing on return student, whether they are transfer or not
-t2<-ug.gd%>%filter(Level=="UG")%>%filter(`FT/PT`=="FT",Gender=="F",degree.t=="Degree-seeking", `College Attend`=="RET")%>%
+t2<-ug.gd%>%filter(Level=="UG")%>%filter(`FT/PT`=="FT",Gender=="F",Level=="Degree-seeking", `College Attend`=="RET")%>%
   group_by(`Transfer YN`,Ethnicity,.drop = FALSE)%>%count()%>%
   #transferY&N side by side
   pivot_wider(names_from = `Transfer YN`,values_from =  n, names_glue = paste0("Transfer","{`Transfer YN`}_{.value}"))
 
 ##########NON DEGREE
 #report NON-DEGREE column
-t3<-ug.gd%>%filter(Level=="UG")%>%filter(`FT/PT`=="FT",Gender=="F",degree.t=="Non-degree")%>%
+t3<-ug.gd%>%filter(Level=="UG")%>%filter(`FT/PT`=="FT",Gender=="F",Level=="Non-degree")%>%
   group_by(Ethnicity)%>%summarize(nondegree=n())
 
 t<-plyr::join_all(list(t1,t2,t3),type="full",match="first")
@@ -464,19 +431,19 @@ View(t)
 #Part-time Undergraduate Students:MEN
 ##########DEGREE: FIRST TIME (College Attend=NEW)
 ##report first-time student in DEGREE-SEEKING column of the MEN table of UG
-t1<-ug.gd%>%filter(Level=="UG")%>%filter(`FT/PT`=="PT",Gender=="M",degree.t=="Degree-seeking",`College Attend`=="NEW")%>%
+t1<-ug.gd%>%filter(Level=="UG")%>%filter(`FT/PT`=="PT",Gender=="M",Level=="Degree-seeking",`College Attend`=="NEW")%>%
   group_by(Ethnicity,.drop = FALSE)%>%summarise(firsttime=n())
 
 ##########DEGREE&NON FIRST TIME: TRANSFER VS RETURNING in "Transfer YN"
 ## focusing on return student, whether they are transfer or not
-t2<-ug.gd%>%filter(Level=="UG")%>%filter(`FT/PT`=="PT",Gender=="M",degree.t=="Degree-seeking", `College Attend`=="RET")%>%
+t2<-ug.gd%>%filter(Level=="UG")%>%filter(`FT/PT`=="PT",Gender=="M",Level=="Degree-seeking", `College Attend`=="RET")%>%
   group_by(`Transfer YN`,Ethnicity,.drop = FALSE)%>%count()%>%
   #transferY&N side by side
   pivot_wider(names_from = `Transfer YN`,values_from =  n, names_glue = paste0("Transfer","{`Transfer YN`}_{.value}"))
 
 ##########NON DEGREE
 #report NON-DEGREE column
-t3<-ug.gd%>%filter(Level=="UG")%>%filter(`FT/PT`=="PT",Gender=="M",degree.t=="Non-degree")%>%
+t3<-ug.gd%>%filter(Level=="UG")%>%filter(`FT/PT`=="PT",Gender=="M",Level=="Non-degree")%>%
   group_by(Ethnicity)%>%summarize(nondegree=n())
 
 t<-plyr::join_all(list(t1,t2,t3),type="full",match="first")#%>%as.data.frame()#have to convert to df for is.na step
@@ -487,19 +454,19 @@ View(t)
 #Part-time Undergraduate Students:WOMEN
 ##########DEGREE: FIRST TIME (College Attend=NEW)
 ##report first-time student in DEGREE-SEEKING column of the MEN table of UG
-t1<-ug.gd%>%filter(Level=="UG")%>%filter(`FT/PT`=="PT",Gender=="F",degree.t=="Degree-seeking",`College Attend`=="NEW")%>%
+t1<-ug.gd%>%filter(Level=="UG")%>%filter(`FT/PT`=="PT",Gender=="F",Level=="Degree-seeking",`College Attend`=="NEW")%>%
   group_by(Ethnicity,.drop = FALSE)%>%summarise(firsttime=n())
 
 ##########DEGREE&NON FIRST TIME: TRANSFER VS RETURNING in "Transfer YN"
 ## focusing on return student, whether they are transfer or not
-t2<-ug.gd%>%filter(Level=="UG")%>%filter(`FT/PT`=="PT",Gender=="F",degree.t=="Degree-seeking", `College Attend`=="RET")%>%
+t2<-ug.gd%>%filter(Level=="UG")%>%filter(`FT/PT`=="PT",Gender=="F",Level=="Degree-seeking", `College Attend`=="RET")%>%
   group_by(`Transfer YN`,Ethnicity,.drop = FALSE)%>%count()%>%
   #transferY&N side by side
   pivot_wider(names_from = `Transfer YN`,values_from =  n, names_glue = paste0("Transfer","{`Transfer YN`}_{.value}"))
 
 ##########NON DEGREE
 #report NON-DEGREE column
-t3<-ug.gd%>%filter(Level=="UG")%>%filter(`FT/PT`=="PT",Gender=="F",degree.t=="Non-degree")%>%
+t3<-ug.gd%>%filter(Level=="UG")%>%filter(`FT/PT`=="PT",Gender=="F",Level=="Non-degree")%>%
   group_by(Ethnicity)%>%summarize(nondegree=n())
 
 t<-plyr::join_all(list(t1,t2,t3),type="full",match="first")#%>%as.data.frame()#have to convert to df for is.na step

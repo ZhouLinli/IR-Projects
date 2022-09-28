@@ -287,47 +287,33 @@ ug.gd<-plyr::join_all(list(ug.gd,deg),type="left")%>%
 
 
 ```{r level consistency}
-dtm21fa<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/Test Run of Data Mart/Fall 2021/Table_Test_Run_Fall_Main_Ses1_Ses2_Sept_28_2021.xlsx")%>%filter(ENROLL_SEP_DESC=="Enrolled")
+#if determined by the time of admission level status
+#dtm21fa<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/Test Run of Data Mart/Fall 2021/Table_Test_Run_Fall_Main_Ses1_Ses2_Sept_28_2021.xlsx")%>%filter(ENROLL_SEP_DESC=="Enrolled")
 
-dmt21fa%>%group_by(PROGRAM_1)%>%count()
+#dmt21fa%>%group_by(PROGRAM_1)%>%count()#only undergrad data
+
 #any non-degree should not have a UG/GD status
-ug.gd<-ug.gd%>%filter(degree.c=="Non-degree")%>%mutate(level.c="Non-degree")
+lev.n<-ug.gd%>%filter(degree.c=="Non-degree")%>%
+  mutate(level.c="Non-degree")%>%
+  filter(level.c=="Non-degree")#keep only settled
 
 #for degree-seeking, they either are UG/GD
-#settle those that only has one level
-ug.gd<-ug.gd%>%filter(degree.c=="Degree-seeking")%>%
-  select(ppid,Level)%>%unique()%>%arrange(ppid,Level)%>%
-  group_by(ppid)%>%summarise(cnt=n())%>%arrange(desc(n))%>%
-  filter()%>%mutate(level.c=Level)
+#for one with both UG/GD level (conflict): anyone with UG are UG
+lev.u<-ug.gd%>%filter(! ppid%in% c(lev.n$ppid))%>%#only taking about deg students
+  mutate(level.c=if_else(Level=="UG","UG","non"))%>%
+  arrange(ppid)%>%filter(level.c=="UG")%>%unique()#keep UG
 
-#whatever level that has higher total credit, is the correct level
-ug.gd%>%filter(degree.c=="Degree-seeking")%>%
-  group_by(ppid,Level)%>%
-  summarise(credit=sum(`Term Credits`))
-
-#level determined by whatever degree-level they have
- lev.s<-ug.gd%>%group_by(ppid,degree.t,Level)%>%
-  summarize(cnt=n())%>%#unique for ppid&Level
-  mutate(level.c=if_else(degree.t=="Degree-seeking",as.character(Level),"LevelofNon-degree"))%>%arrange(ppid)%>%
-  filter(degree.t=="Degree-seeking")#alternatively filter(level.c!="levelofNon-degree)
-
-#within lev.s, UG/GD level conflict may exist: anyone with UG are UG (more strictly, it needs to be determined by the admit type level)
-
-
-#check: lev.s%>%group_by(ppid)%>%count()%>%arrange(desc(n))
-
-#if no degree anywhere in their records, they are absolutely a non-matric student
- lev.n<-ug.gd%>%filter(! ppid%in%  lev.s$ppid)%>%
-  mutate(level.c="non-degree")%>%arrange(ppid)#all not settled with lev.s will be whatever level they have
- #assuming 
+#for ppid with not any degree-seeking
+lev.g<-ug.gd%>% filter(! ppid%in% c(lev.u$ppid,lev.n$ppid))%>%#for any not settled
+  mutate(level.c="GD")%>%unique()#all not settled with lev.s will be GD
 
 #merge settled  lev
-lev<-plyr::join_all(list(lev.s,lev.n),type ="full" )%>%
-  select(ppid,level.c)%>%unique()%>%arrange(ppid)#only what we needed, 2086
+lev<-plyr::join_all(list(lev.n,lev.u,lev.g),type ="full" )%>%
+  select(ppid,level.c)%>%unique()%>%arrange(ppid)#only what we needed, 2057
     
 #left join unique-level to ug.gd
 ug.gd<-plyr::join_all(list(ug.gd, lev),type="left")%>%unique()%>%arrange(ppid)%>%
-  select(-Level)#only what we needed, 4422
+  select(-Level,-degree.c)#only what we needed, 4422; do not need degree-seeking any more, because that will be determined by level
 ```
 
 

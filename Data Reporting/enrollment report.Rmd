@@ -181,6 +181,7 @@ ug.gd<-ug.gd%>%mutate(`FT/PT`=factor(`FT/PT`),
 #write.xlsx(ug.gd,file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ug.gd_21-22.xlsx")
 ```
 
+# DETERMINE IN ORDER: determined by whatever value in fall, if enrolled in fall, then spring..winter..summer..
 
 ```{r consistent FT/PT Attend}
 #FT/PT: determined by students' first full term at Lasell--eric said just whatever fall term value is
@@ -274,6 +275,8 @@ ug.gd<-plyr::join_all(list(ug.gd,ret),type="left")%>%
   unique()%>%arrange(ppid)#4422
 ```
 
+# ONE DOMINATE: any degree is degree, any transfer is transfer
+
 ```{r consistent degree.t}
 #degree: any of the term is degree-seeking then they are
 deg.s<-ug.gd%>%group_by(ppid,degree.t)%>%
@@ -318,6 +321,7 @@ ug.gd<-plyr::join_all(list(ug.gd,tran),type="left")%>%
   unique()%>%arrange(ppid)#4422
 ```
 
+## AGGREGATE term to total credit - we only care about total
 ```{r credit by term wider, then merge total}
 #Credit for each term
 ug.gd<-ug.gd%>%pivot_wider(names_from = term,values_from = `Term Credits`)%>%

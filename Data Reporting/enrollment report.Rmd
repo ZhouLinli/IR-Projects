@@ -15,8 +15,10 @@ library(openxlsx)
 library(lubridate)
 ```
 
-```{r load data}
+```{r load enrollment data}
+
 ##############ENROLLMENT (REGISTRAR BACKUP) 07/01/2021-06/30-2022##############
+
 ##2021 Summer II
 ug21sum2<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2021 Summer/Summer II/Undergraduate Backup Data  Report 21SUII.xlsx")
 gd21sum2<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2021 Summer/Summer II/GR/Graduate Backup Data  Report.xlsx")
@@ -100,7 +102,7 @@ ug5<-ug22wi%>%select(`People Code Id`,`gov id`,`FT/PT`,Degree,`Transfer YN`,`Col
 #merge to one ug dataset
 ug.ipeds<-plyr::join_all(list(ug1,ug2,ug3,ug4,ug5),type="full")%>%
   unique()%>%#remove rows that has exact same value across all columns
-  rename(Program=Curriculum,`New Ret Term YN`=`College Attend`)%>%#rename for ug-gd consistency
+  rename(Program=Curriculum,`New Ret Term YN`=`College Attend`, ppid=`People Code Id`)%>%#rename for ug-gd consistency
   mutate(degree.t=case_when(Degree %in% c("NON","Non Matriculated")~"Non-degree",Degree!="NON" & Degree!="Non Matriculated" ~"Degree-seeking"))%>%
   select(-Degree)#create degree.t (and remove old)
 
@@ -132,7 +134,7 @@ gd5<-gd22wi%>%select(`People Code Id`,`gov id`,`Class level`,Gender,`FT/PT`,Ethn
 #merge to one
 gd.ipeds<-plyr::join_all(list(gd1,gd2,gd3,gd4,gd5),type="full")%>%
   unique()%>%#remove rows that has exact same value across all columns
-  rename(Program=Degree)%>%#renmae for ug-gd consistency
+  rename(Program=Degree, ppid=`People Code Id`)%>%#renmae for ug-gd consistency
   mutate(degree.t=case_when(`Class level`!="GR"~"Non-degree",`Class level`=="GR" ~"Degree-seeking"))%>%
   select(-`Class level`)#create degree.t (and remove old)
   
@@ -145,7 +147,7 @@ gd.ipeds<-plyr::join_all(list(gd1,gd2,gd3,gd4,gd5),type="full")%>%
 ####################merge ug.ipeds and gd ipeds###################
 ug.gd<-plyr::join_all(list(ug.ipeds,gd.ipeds),type="full")%>%#4447 rows
   unique()%>%janitor::remove_empty(c("rows", "cols"))%>%#remove all-NA rows/cols!! 4443 rows
-  filter(!is.na(`People Code Id`))#4422 row
+  filter(!is.na(ppid))#4422 row
 #check
 #sapply(list(ug.ipeds,gd.ipeds), function(x) nrow(x))%>%sum()#4447 rows
 ```
@@ -176,123 +178,190 @@ ug.gd<-ug.gd%>%mutate(`FT/PT`=factor(`FT/PT`),
                       degree.t=factor(degree.t))
 #all cols are either factor (with correct values and orders), numeric, or stay as character (id without NA)
 
-write.xlsx(ug.gd,file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ug.gd_21-22.xlsx")
+#write.xlsx(ug.gd,file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ug.gd_21-22.xlsx")
 ```
 
 
-
-```{r ipeds cleaning FT/PT Attend}
-#remove not needed cols
-ipeds<-ug.gd%>%select(-`Cum Credits`,-Program,-`gov id`,-`Birth Date`)%>%
-  unique()%>%arrange(`People Code Id`)
-
-ipeds%>%group_by(term)%>%count()
-###investigate duplicated ppid: it's b/c FT/PT, new/return, term credits, term
-#dup.id<-ipeds[duplicated(ipeds$`People Code Id`),]
-#ipeds[ipeds$`People Code Id` %in% dup.id$`People Code Id`,]%>%arrange(Level,`People Code Id`)
-
-###########keep one for duplicated ids
+```{r consistent FT/PT Attend}
 #FT/PT: determined by students' first full term at Lasell--eric said just whatever fall term value is
-
-sts.fall<-ipeds%>%group_by(`People Code Id`)%>%
+sts.fall<-ug.gd%>%group_by(ppid)%>%
   mutate(attend=if_else(term=="21fall",as.character(`FT/PT`),"No fall"))%>%
-  filter(attend%in%c("FT","PT"))%>%arrange(`People Code Id`)
+  filter(attend%in%c("FT","PT"))%>%arrange(ppid)#only keep the settled
 
-sts.spring<-ipeds%>%group_by(`People Code Id`)%>%
-  filter(! `People Code Id`%in% sts.fall$`People Code Id`)%>%
+sts.spring<-ug.gd%>%group_by(ppid)%>%
+  filter(! ppid%in% sts.fall$ppid)%>%#only care those not-settled
   mutate(attend=if_else(term=="22spring",as.character(`FT/PT`),"No spring"))%>%
-  arrange(`People Code Id`)%>%
-  filter(attend%in%c("FT","PT"))
+  arrange(ppid)%>%
+  filter(attend%in%c("FT","PT"))#only keep the newly settled
 
-sts.summer2<-ipeds%>%group_by(`People Code Id`)%>%
-  filter(! `People Code Id`%in% c(sts.fall$`People Code Id`,
-                                  sts.spring$`People Code Id`))%>%
+sts.summer2<-ug.gd%>%group_by(ppid)%>%
+  filter(! ppid%in% c(sts.fall$ppid,
+                                  sts.spring$ppid))%>%#only care those not-settled (after two settled cohort)
   mutate(attend=if_else(term=="21summer2",as.character(`FT/PT`),"No sum2"))%>%
-  arrange(`People Code Id`)%>%arrange(`People Code Id`)%>%
+  arrange(ppid)%>%arrange(ppid)%>%
   filter(attend%in%c("FT","PT"))
 
-sts.summer1<-ipeds%>%group_by(`People Code Id`)%>%
-  filter(! `People Code Id`%in% c(sts.fall$`People Code Id`,
-                                  sts.spring$`People Code Id`,
-                                  sts.summer2$`People Code Id`))%>%
+sts.summer1<-ug.gd%>%group_by(ppid)%>%#each time unique ids
+  filter(! ppid%in% c(sts.fall$ppid,
+                                  sts.spring$ppid,
+                                  sts.summer2$ppid))%>%#filter out three settled cohort
   mutate(attend=if_else(term=="22summer.1main",as.character(`FT/PT`),"No sum1"))%>%
-  arrange(`People Code Id`)%>%
+  arrange(ppid)%>%
   filter(attend%in%c("FT","PT"))
   
-sts.winter<-ipeds%>%group_by(`People Code Id`)%>%
-  filter(! `People Code Id`%in% c(sts.fall$`People Code Id`,
-                                  sts.spring$`People Code Id`,
-                                  sts.summer2$`People Code Id`,
-                                  sts.summer1$`People Code Id`))%>%
+sts.winter<-ug.gd%>%group_by(ppid)%>%
+  filter(! ppid%in% c(sts.fall$ppid,
+                                  sts.spring$ppid,
+                                  sts.summer2$ppid,
+                                  sts.summer1$ppid))%>%
   mutate(attend=if_else(term=="22winter",as.character(`FT/PT`),"No winter"))%>%
-  arrange(`People Code Id`)%>%
+  arrange(ppid)%>%
   filter(attend%in%c("FT","PT"))
-
+#mutate settled
 sts<-plyr::join_all(list(sts.fall,sts.spring,sts.summer2,sts.summer1,sts.winter),type ="full" )%>% 
-  select(`People Code Id`,attend)%>%
- unique()%>%arrange(`People Code Id`)#2057
-
-ipeds<-plyr::join_all(list(ipeds,sts),type="left")%>%
-  select(-`FT/PT`)%>%
-  unique()%>%arrange(`People Code Id`)
+  select(ppid,attend)%>%#select only relevant
+ unique()%>%arrange(ppid)#2057
+#left join to ug.gd
+ug.gd<-plyr::join_all(list(ug.gd,sts),type="left")%>%
+  select(-`FT/PT`)%>%#attend is the new FT/PT
+  unique()%>%arrange(ppid)#4422
 ```
 
 
-```{r ipeds cleaning NewRet}
+```{r consistent NewRet}
 #new/return (new/return in the FALL): equals to whatever FALL TERM values
-ret1<-ipeds%>%#group_by(`People Code Id`)%>%
-  mutate(NewRet=if_else(term=="21fall",as.character(`New Ret Term YN`),"No fall"))#same type for TRUE and FALSE
+ret.fall<-ug.gd%>%group_by(ppid)%>%
+  mutate(NewRet=if_else(term=="21fall",as.character(`New Ret Term YN`),"No fall"))%>%
+  filter(NewRet%in%c("new","return"))%>%arrange(ppid)
 
-ret2<-ret1%>%filter(NewRet=="No fall")%>%
-  mutate(NewRet=if_else(term=="22winter",as.character(`New Ret Term YN`),"No winter"))
+ret.spring<-ug.gd%>%group_by(ppid)%>%
+  filter(! ppid%in% ret.fall$ppid)%>%
+  mutate(NewRet=if_else(term=="22spring",as.character(`New Ret Term YN`),"No spring"))%>%
+  arrange(ppid)%>%
+  filter(NewRet%in%c("new","return"))
+
+ret.summer2<-ug.gd%>%group_by(ppid)%>%
+  filter(! ppid%in% c(ret.fall$ppid,
+                                  ret.spring$ppid))%>%
+  mutate(NewRet=if_else(term=="21summer2",as.character(`New Ret Term YN`),"No sum2"))%>%
+  arrange(ppid)%>%arrange(ppid)%>%
+  filter(NewRet%in%c("new","return"))
+
+ret.summer1<-ug.gd%>%group_by(ppid)%>%
+  filter(! ppid%in% c(ret.fall$ppid,
+                                  ret.spring$ppid,
+                                  ret.summer2$ppid))%>%
+  mutate(NewRet=if_else(term=="22summer.1main",as.character(`New Ret Term YN`),"No sum1"))%>%
+  arrange(ppid)%>%
+  filter(NewRet%in%c("new","return"))
   
-ret3<-ret2%>%filter(NewRet=="No winter")%>%
-  mutate(NewRet=if_else(term=="22spring",as.character(`New Ret Term YN`),"No spring"))
+ret.winter<-ug.gd%>%group_by(ppid)%>%
+  filter(! ppid%in% c(ret.fall$ppid,
+                                  ret.spring$ppid,
+                                  ret.summer2$ppid,
+                                  ret.summer1$ppid))%>%
+  mutate(NewRet=if_else(term=="22winter",as.character(`New Ret Term YN`),"No winter"))%>%
+  arrange(ppid)%>%
+  filter(NewRet%in%c("new","return"))
 
-ret4<-ret3%>%filter(NewRet=="No spring")%>%
-  mutate(NewRet=if_else(term=="21summer2",as.character(`New Ret Term YN`),"No summer1"))
+ret<-plyr::join_all(list(ret.fall,ret.spring,ret.summer2,ret.summer1,ret.winter),type ="full" )%>% 
+  select(ppid,NewRet)%>%
+ unique()%>%arrange(ppid)#2057
 
-ret5<-ret4%>%filter(NewRet=="No summer1")%>%
-  mutate(NewRet=if_else(term=="22summer.1main",as.character(`New Ret Term YN`),"No summer22"))
+ug.gd<-plyr::join_all(list(ug.gd,ret),type="left")%>%
+  select(-`New Ret Term YN`)%>%
+  unique()%>%arrange(ppid)#4422
+```
 
-ret<-plyr::join_all(list(ret1,ret2,ret3,ret4,ret5),type ="full" )%>% 
-  select(`People Code Id`,NewRet)%>%
-  filter(NewRet %in% c("new","return"))%>%
-  unique()
+```{r consistent degree.t}
+deg.s<-ug.gd%>%group_by(ppid)%>%
+  mutate(degree.c=if_else(degree.t=="Degree-seeking",as.character(degree.t),"non"))%>%arrange(ppid)%>%
+  filter(degree.c!="non")
 
-ipeds<-plyr::join_all(list(ipeds,ret),type="left")%>%unique()#  %>%select(-`New Ret Term YN`)
+deg.n<-ug.gd%>%group_by(ppid)%>%
+  filter(! ppid%in% deg$ppid)%>%
+  mutate(degree.c=if_else(degree.t=="Non-degree",as.character(degree.t),"non"))%>%
+  arrange(ppid)%>%
+  filter(degree.c!="non")
 
-ipeds%>%select(-`FT/PT`,-`New Ret Term YN`)%>%unique()%>%arrange(`People Code Id`)
-#term credits
+deg<-plyr::join_all(list(deg.s,deg.n),type ="full" )%>% 
+  select(ppid,degree.c)%>%
+ unique()%>%arrange(ppid)#2057
 
-#term
+ug.gd<-plyr::join_all(list(ug.gd,deg),type="left")%>%
+  select(-degree.t)%>%
+  unique()%>%arrange(ppid)#4422
+```
+
+```{r credit by term wider, then merge total}
+#Credit for each term
+ug.gd<-ug.gd%>%pivot_wider(names_from = term,values_from = `Term Credits`)%>%
+  arrange(ppid)%>%
+  unique()%>%janitor::remove_empty(c("rows","cols"))#2090
+
+#replace NA to 0
+ug.gd$`21fall`[is.na(ug.gd$`21fall`)]<-0
+ug.gd$`22spring`[is.na(ug.gd$`22spring`)]<-0
+ug.gd$`22summer.1main`[is.na(ug.gd$`22summer.1main`)]<-0
+ug.gd$`21summer2`[is.na(ug.gd$`21summer2`)]<-0
+ug.gd$`22winter`[is.na(ug.gd$`22winter`)]<-0
+
+#Calculate total credit adding all terms
+ug.gd<-ug.gd%>%mutate(credit.year=`21fall`+`22spring`+`22summer.1main`+`21summer2`+`22winter`)%>%
+  select(-c(`21fall`,`22spring`,`22summer.1main`,`21summer2`,`22winter`))%>%arrange(ppid)%>%
+  unique()#2089
+
+ug.gd%>%distinct(ppid)#2057
+###investigate duplicated ppid: it's b/c degree.t and level
+#dup.id<-ug.gd[duplicated(ug.gd$ppid),]
+#ug.gd[ug.gd$ppid %in% dup.id$ppid,]%>%arrange(ppid)
+```
+
+```{r}
+ug.gd<-ug.gd%>%
+  pivot_wider(names_from = Level,values_from = credit.year)%>%
+  arrange(ppid)%>%
+  unique()%>%janitor::remove_empty(c("rows","cols"))#2090
+
+ug.gd$UG[is.na(ug.gd$UG)]<-0
+ug.gd$GD[is.na(ug.gd$GD)]<-0
+
+lv.ug<-ug.gd%>%group_by(ppid)%>%
+  mutate(level=if_else(UG>0,"UG","na"))%>%arrange(ppid)%>%
+  filter(level!="na")
+
+lv.gd<-ug.gd%>%group_by(ppid)%>%
+  filter(! ppid%in% lv.ug$ppid)%>%
+   mutate(level=if_else(GD>0,"GD","na"))%>%arrange(ppid)%>%
+  filter(level!="na")
+
+lv<-plyr::join_all(list(lv.ug,lv.gd),type ="full" )%>% 
+  select(ppid,level)%>%
+ unique()%>%arrange(ppid)#2057
+
+ug.gd<-plyr::join_all(list(ug.gd,lv),type="left")%>%mutate(credit.tot=UG+GD)%>%
+  select(-UG,-GD)%>%
+  unique()%>%arrange(ppid)#2061
 ```
 
 
-```{r ipeds reporting}
-############FT/PT status decided by entry to the institution for the first full term
-str(ug.gd)
-
-ipeds<-ug.gd%>%mutate(`FT/PT`=case_when(
-  `New Ret Term YN`=="new"~`FT/PT`,
-  `New Ret Term YN`=="return"~"find new term"))
-
-##################################################################
-####################unduplicated###########################
-
-#credit
-ug.gd%>%mutate(creditUG=case_when(Level=="UG"~`Term Credits`,Level=="GD"~"0"),
-               creditGD=case_when(Level=="GD"~`Term Credits`,Level=="UG"~"0"))
 
 
-
-
-
+```{r ipeds data}
 ########################################################################################
 ####################################################################################
-################## IPEDS 12-month enrollment and Completions (due 2022 Oct 19)########
+################## IPEDS 12-month enrollment (due 2022 Oct 19)########
 ########################################################################################
+#remove not needed cols
+ipeds<-ug.gd%>%select(-`Cum Credits`,-Program,-`gov id`,-`Birth Date`)%>%
+  unique()%>%arrange(ppid)#4422
 
+###investigate duplicated ppid: it's b/c FT/PT, new/return, term credits, term
+#dup.id<-ipeds[duplicated(ipeds$ppid),]
+#ipeds[ipeds$ppid %in% dup.id$ppid,]%>%arrange(ppid)
+```
+
+```{r ipeds reporting}
 #####################################################################################
 #####################12-month Unduplicated Count by Race/Ethnicity and Gender########
              
@@ -407,15 +476,6 @@ ug.gd%>%filter(Level=="UG")%>%group_by(Gender)%>%count()#31
 #GD unknown
 ug.gd%>%filter(Level=="GD")%>%group_by(Gender)%>%count()#2
 #Another gender blank - no value as another gender
-
-
-#CREDIT
-
-
-####instructional activity question: add up all gd/ug term credit
-
-####anyone having ug credit do not count them in gd headcount for ethnicity
-
 
 
 

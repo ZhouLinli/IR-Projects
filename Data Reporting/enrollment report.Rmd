@@ -326,6 +326,34 @@ ug.gd<-plyr::join_all(list(ug.gd,tran),type="left")%>%
   unique()%>%arrange(ppid)#4422
 ```
 
+#DETERMINE BY ORDER: GDdegree (MS...), UGdegree, nondeg
+```{r consistent level.degree}
+#GDdegree is defined most specifically with MS/MBA/MED/MFA values, so ordered first
+lev.g<-ug.gd%>%group_by(ppid,level.degree)%>%summarise(cnt=n())%>%#unique output
+  mutate(level.c=if_else(level.degree %in% c("GDdegree"),as.character(level.degree),"non"))%>%arrange(ppid)%>%
+  filter(level.c != "non")
+
+#after GDdegree settled, any with a degree should be degree, so the other degree is UGdegree
+lev.u<-ug.gd%>%filter(! ppid%in% lev.g$ppid)%>%#not settled with lev.s
+  group_by(ppid,level.degree)%>%summarise(cnt=n())%>%
+  mutate(level.c=if_else(level.degree %in% c("UGdegree"),as.character(level.degree),"non"))%>%arrange(ppid)%>%
+  filter(level.c != "non")
+
+#indeed without any record with a degree, then they are nondeg as is
+lev.n<-ug.gd%>%filter(! ppid%in% c(lev.g$ppid,lev.u$ppid))%>%#not settled
+  mutate(level.c=if_else(level.degree %in% c("GDnondeg","UGnondeg"),as.character(level.degree),"non"))%>%arrange(ppid)%>%
+  filter(level.c != "non")# for not appear once as deg, keep them as GD/UGnondeg
+
+#merge settled lev
+lev<-plyr::join_all(list(lev.g,lev.u,lev.n),type ="full" )%>% 
+  select(ppid,level.c)%>%
+ unique()%>%arrange(ppid)#2057
+
+ug.gd<-plyr::join_all(list(ug.gd,lev),type="left")%>%
+  select(-level.degree)%>%
+  unique()%>%arrange(ppid)#4422
+```
+
 ## AGGREGATE term to total credit - we only care about total
 ```{r duplicated term credit}
 #ppid took two level courses in the same term 

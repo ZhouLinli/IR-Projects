@@ -16,8 +16,7 @@ library(lubridate)
 ```
 
 ```{r load enrollment data}
-
-##############ENROLLMENT (REGISTRAR BACKUP) 07/01/2021-06/30-2022##############
+#ENROLLMENT (REGISTRAR BACKUP) 07/01/2021-06/30-2022
 
 ##2021 Summer II
 ug21sum2<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2021 Summer/Summer II/Undergraduate Backup Data  Report 21SUII.xlsx")
@@ -34,7 +33,10 @@ gd22sp<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Repo
 ##2022 Summer Main&I
 ug22sum.main.1<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Summer/Main and I/SUM22 SES1 and Main UG Backup Data  Report - 2022-06-02T080930.592.xlsx")
 gd22sum.main.1<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Summer/Main and I/SUM22 MainSES1-Graduate Backup Data  Report (23).xlsx")
+```
 
+
+```{r clean data header}
 ####################clean data headers
 #investigate names 1)view df 2)find no headers and tackling those headers
 #tackling ug21sum2
@@ -79,8 +81,7 @@ gd22wi<-gd22wi%>%select(-`NA`)#remove NA col
 ```
 
 
-```{r all vars in ug & gd}
-####################ug data############
+```{r ug}
 ug1<-ug21fa%>%select(`People Code Id`,`gov id`,`FT/PT`,Degree,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%
   mutate(Level="UG",term="21fall")#mutate identification col
 
@@ -111,8 +112,10 @@ ug.ipeds<-plyr::join_all(list(ug1,ug2,ug3,ug4,ug5),type="full")%>%
 #nrow(ug.ipeds)#match="first" #2935
 #ncol(ug.ipeds)#14
 #names(ug.ipeds)
+```
 
-####################gd data############
+
+```{r gd}
 gd1<-g21fa%>%select(`People Code Id`,`gov id`,`Class level`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`)%>%
   mutate(Level="GD",term="21fall")#mutate identification col
 
@@ -143,8 +146,11 @@ gd.ipeds<-plyr::join_all(list(gd1,gd2,gd3,gd4,gd5),type="full")%>%
 #nrow(gd.ipeds)#match="first" #1512, removed 1 duplicated (across all values)
 #ncol(gd.ipeds)
 #names(gd.ipeds)%in%names(ug.ipeds)%>%sum()#14 all same
+```
 
-####################merge ug.ipeds and gd ipeds###################
+
+```{r ug.gd}
+#merge ug.ipeds and gd ipeds
 ug.gd<-plyr::join_all(list(ug.ipeds,gd.ipeds),type="full")%>%#4447 rows
   unique()%>%janitor::remove_empty(c("rows", "cols"))%>%#remove all-NA rows/cols!! 4443 rows
   filter(!is.na(ppid))#4422 row
@@ -184,95 +190,74 @@ ug.gd<-ug.gd%>%mutate(`FT/PT`=factor(`FT/PT`),
 # DETERMINE IN ORDER: determined by whatever value in fall, if enrolled in fall, then spring..winter..summer..
 
 ```{r consistent FT/PT Attend}
-#FT/PT: determined by students' first full term at Lasell--eric said just whatever fall term value is
-sts.fall<-ug.gd%>%group_by(ppid)%>%
-  mutate(status=if_else(term=="21fall",as.character(`FT/PT`),"No fall"))%>%
-  filter(status%in%c("FT","PT"))%>%arrange(ppid)#only keep the settled
+#FT/PT: determined by students' first full term (eric: of the academic year)
+
+#whatever fall value
+sts.fall<-ug.gd%>%mutate(status=if_else(term=="21fall",as.character(`FT/PT`),"No fall"))%>%
+  arrange(ppid)%>%filter(status%in%c("FT","PT"))#only keep the settled
+
 #not in fall, then determine by spring FT/PT
-sts.spring<-ug.gd%>%group_by(ppid)%>%
-  filter(! ppid%in% sts.fall$ppid)%>%#only care those not-settled
+sts.spring<-ug.gd%>%filter(! ppid%in% sts.fall$ppid)%>%#only care those not-settled
   mutate(status=if_else(term=="22spring",as.character(`FT/PT`),"No spring"))%>%
-  arrange(ppid)%>%
-  filter(status%in%c("FT","PT"))#only keep the newly settled
+  arrange(ppid)%>%filter(status%in%c("FT","PT"))#only keep the newly settled
+
 #not in fall&spring, then determine by winter FT/PT
-sts.winter<-ug.gd%>%group_by(ppid)%>%
-  filter(! ppid%in% c(sts.fall$ppid,
-                      sts.spring$ppid))%>%
+sts.winter<-ug.gd%>%filter(! ppid%in% c(sts.fall$ppid,sts.spring$ppid))%>%
   mutate(status=if_else(term=="22winter",as.character(`FT/PT`),"No winter"))%>%
-  arrange(ppid)%>%
-  filter(status%in%c("FT","PT"))
+  arrange(ppid)%>%filter(status%in%c("FT","PT"))
+
 #not in fall&spring&winter, then determine by summer2 FT/PT  
-sts.summer2<-ug.gd%>%group_by(ppid)%>%
-  filter(! ppid%in% c(sts.fall$ppid,
-                      sts.spring$ppid,
-                      sts.winter$ppid))%>%#only care those not-settled (after two settled cohort)
+sts.summer2<-ug.gd%>%filter(! ppid%in% c(sts.fall$ppid, sts.spring$ppid, sts.winter$ppid))%>%#only care those not-settled (after three settled cohorts)
   mutate(status=if_else(term=="21summer2",as.character(`FT/PT`),"No sum2"))%>%
-  arrange(ppid)%>%arrange(ppid)%>%
-  filter(status%in%c("FT","PT"))
+  arrange(ppid)%>%filter(status%in%c("FT","PT"))
+
 #not in fall&spring&winter&summer2, then determine by summer1 FT/PT
-sts.summer1<-ug.gd%>%group_by(ppid)%>%#each time unique ids
-  filter(! ppid%in% c(sts.fall$ppid,
-                      sts.spring$ppid,
-                      sts.winter$ppid,
-                      sts.summer2$ppid))%>%#filter out three settled cohort
+sts.summer1<-ug.gd%>%filter(! ppid%in% c(sts.fall$ppid, sts.spring$ppid, sts.winter$ppid, sts.summer2$ppid))%>%#filter out four settled cohort
   mutate(status=if_else(term=="22summer.1main",as.character(`FT/PT`),"No sum1"))%>%
-  arrange(ppid)%>%
-  filter(status%in%c("FT","PT"))
+  arrange(ppid)%>%filter(status%in%c("FT","PT"))
 
 #mutate all settled (unique ids)
-sts<-plyr::join_all(list(sts.fall,sts.spring,sts.summer2,sts.summer1,sts.winter),type ="full" )%>% 
-  select(ppid,status)%>%#select only relevant
- unique()%>%arrange(ppid)#2057
+sts<-plyr::join_all(list(sts.fall,sts.spring,sts.summer2,sts.summer1,sts.winter),type ="full" )%>% unique()%>%arrange(ppid)%>%
+  select(ppid,status)#select only relevant #2057
+
 #left join all-uniqueid's-status to ug.gd
-ug.gd<-plyr::join_all(list(ug.gd,sts),type="left")%>%
-  select(-`FT/PT`)%>%#status is the new FT/PT
-  unique()%>%arrange(ppid)#4422
+ug.gd<-plyr::join_all(list(ug.gd,sts),type="left")%>%unique()%>%arrange(ppid)%>%#4422
+  select(-`FT/PT`)#status is the new FT/PT
 ```
 
 
 ```{r consistent NewRet}
-#new/return (new/return in the FALL): equals to whatever FALL TERM values
-ret.fall<-ug.gd%>%group_by(ppid)%>%
+#if enrolled in fall, then whatever FALL TERM new/ret values
+ret.fall<-ug.gd%>%
   mutate(NewRet=if_else(term=="21fall",as.character(`New Ret Term YN`),"No fall"))%>%
   filter(NewRet%in%c("new","return"))%>%arrange(ppid)#either new or return of fall would be settled
-#if not in fall at all, determine by spring
-ret.spring<-ug.gd%>%group_by(ppid)%>%
-  filter(! ppid%in% ret.fall$ppid)%>%#if do not show up in fall
+
+#if not enrolled in fall but spring: determine by spring
+ret.spring<-ug.gd%>%filter(! ppid%in% ret.fall$ppid)%>%#if not has a fall term
   mutate(NewRet=if_else(term=="22spring",as.character(`New Ret Term YN`),"No spring"))%>%
-  arrange(ppid)%>%
-  filter(NewRet%in%c("new","return"))#either new or return of fall would be settled
+  arrange(ppid)%>%filter(NewRet%in%c("new","return"))#either new or return of spring would be settled
+
 #if not in fall&spring at all, determine by winter
-ret.winter<-ug.gd%>%group_by(ppid)%>%
-  filter(! ppid%in% c(ret.fall$ppid,
-                      ret.spring$ppid))%>%
+ret.winter<-ug.gd%>%filter(! ppid%in% c(ret.fall$ppid, ret.spring$ppid))%>%
   mutate(NewRet=if_else(term=="22winter",as.character(`New Ret Term YN`),"No winter"))%>%
-  arrange(ppid)%>%
-  filter(NewRet%in%c("new","return"))#either new or return of fall would be settled
+  arrange(ppid)%>%filter(NewRet%in%c("new","return"))#either new or return of winter would be settled
+
 #if not in fall&spring&winter at all, determine by summer2
-ret.summer2<-ug.gd%>%group_by(ppid)%>%
-  filter(! ppid%in% c(ret.fall$ppid,
-                      ret.spring$ppid,
-                      ret.winter$ppid))%>%#if do not show up in fall&spring
+ret.summer2<-ug.gd%>% filter(! ppid%in% c(ret.fall$ppid, ret.spring$ppid, ret.winter$ppid))%>%#if do not show up in fall&spring&winter
   mutate(NewRet=if_else(term=="21summer2",as.character(`New Ret Term YN`),"No sum2"))%>%
-  arrange(ppid)%>%arrange(ppid)%>%
-  filter(NewRet%in%c("new","return"))#either new or return of fall would be settled
+  arrange(ppid)%>%filter(NewRet%in%c("new","return"))#either new or return of sum2 would be settled
+
 #if not in fall&spring&winter&summer2 at all, determine by summer1
-ret.summer1<-ug.gd%>%group_by(ppid)%>%
-  filter(! ppid%in% c(ret.fall$ppid,
-                      ret.spring$ppid,
-                      ret.winter$ppid,
-                      ret.summer2$ppid))%>%
-  mutate(NewRet=if_else(term=="22summer.1main",as.character(`New Ret Term YN`),"No sum1"))%>%
-  arrange(ppid)%>%
-  filter(NewRet%in%c("new","return"))#either new or return of fall would be settled
+ret.summer1<-ug.gd%>%filter(! ppid%in% c(ret.fall$ppid, ret.spring$ppid, ret.winter$ppid, ret.summer2$ppid))%>%
+  mutate(NewRet=if_else(term=="22summer.1main",as.character(`New Ret Term YN`),"No sum1"))%>%#if do not show up in fall&spring&winter&sum2
+  arrange(ppid)%>%filter(NewRet%in%c("new","return"))#either new or return of fall would be settled
+
 #merge all settled (filtered unique ids from each term)
-ret<-plyr::join_all(list(ret.fall,ret.spring,ret.summer2,ret.summer1,ret.winter),type ="full" )%>% 
-  select(ppid,NewRet)%>%
- unique()%>%arrange(ppid)#2057
+ret<-plyr::join_all(list(ret.fall,ret.spring,ret.summer2,ret.summer1,ret.winter),type ="full" )%>% unique()%>%arrange(ppid)%>%select(ppid,NewRet)#select what's needed 2057
+ 
 #left join settledRetNew to ug.gd
-ug.gd<-plyr::join_all(list(ug.gd,ret),type="left")%>%
-  select(-`New Ret Term YN`)%>%
-  unique()%>%arrange(ppid)#4422
+ug.gd<-plyr::join_all(list(ug.gd,ret),type="left")%>%unique()%>%arrange(ppid)%>%#4422
+  select(-`New Ret Term YN`)#select what's needed
 ```
 
 # ONE DOMINATE: any degree is degree, any transfer is transfer

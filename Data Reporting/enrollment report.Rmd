@@ -370,8 +370,10 @@ ug.gd<-ug.gd%>%mutate(status=factor(status),
                       NewRet=factor(NewRet),
                       ethnicity.c=factor(ethnicity.c, levels=c("Non Resident Alien","Hispanic","American Indian or Alaska Native","Asian","Black or African American","Native Hawaiian or Other Pacific Islander","White","Two or more Races","Race and Ethnicity Unknown")),
                       transfer=factor(transfer,levels = c("Transfer","Non-transfer")),
-                     level.deg=factor(level.deg,levels = c("UGdegree","UGnondeg","GDdegree","GDnondeg")))
-
+                      level.deg=factor(level.deg,levels = c("UGdegree","UGnondeg","GDdegree","GDnondeg")),
+                      level=case_when(level.deg%in%c("UGdegree","UGnondeg")~"UG",
+                                      level.deg%in%c("GDdegree","GDnondeg")~"GD"),
+                      level=factor(level,levels = c("UG","GD")))
 #save all
 write.xlsx(ug.gd,file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ug.gd_21-22.xlsx")
 ```
@@ -598,15 +600,24 @@ View(gd.t2)#for convinience of copy-paste
 
 
 ```{r UnknownGender}
-ipeds%>%filter(Gender=="U")%>%##gender unknown
-        group_by(level.deg)%>%
-        summarise(unknowncount=n())#need to sum UGnondeg+UGdegree; sum GDnondeg+GDdegree
+#Unknown gender in UG and GD
+dk.t<-ipeds%>%filter(Gender=="U")%>%##gender unknown
+        group_by(level)%>%#by UG/GD
+        summarise(unknowncount=n())#count
+dk.t[is.na(dk.t)]<-0#without count are NA, convert to 0
+View(dk.t)
+```
+
+```{r credit total}
+crd.t<-ipeds%>%group_by(level)%>%#by UG/GD
+        summarise(crd=sum(tot.credit))#sum tot.credit (total term credit each ppid take for the whole year)
+crd.t[is.na(crd.t)]<-0#without count are NA, convert to 0
+View(crd.t)
 ```
 
 ```{r distance ed}
 
 ```
-
 
 
 ```{r U}

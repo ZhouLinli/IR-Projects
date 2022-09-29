@@ -157,19 +157,28 @@ ug.gd<-plyr::join_all(list(ug,gd),type="full")%>%#4447 rows
 ```
 
 
-```{r ug.gd recode}
-#str(ug.gd)
+```{r ug.gd clean class and recode}
+ug.gd%>%count(`Transfer YN`)
 #ls<-ug.gd%>%group_by(Program)%>%count();View(ls)#no NA
 #ug.gd[is.na(ug.gd$`Cum Credits`),]#a lot of NAs, all comes from UG 21 fall!
 #ug.gd[is.na(ug.gd$`Birth Date`),]#find many, come from different file
-ug.gd<-ug.gd%>%mutate(`Transfer YN`=factor(`Transfer YN`,labels =c("Transfer","Non-transfer"),levels = c("Y","N")),
+ug.gd<-ug.gd%>%mutate(`FT/PT`=factor(`FT/PT`),
+                      `Transfer YN`=factor(`Transfer YN`,labels =c("Transfer","Non-transfer"),levels = c("Y","N")),
+                      
                       #"no" college status="new", "yes" college status="return"
                       `New Ret Term YN`=case_when(`New Ret Term YN`=="N"~"new",`New Ret Term YN`=="NEW"~"new",`New Ret Term YN`=="Y"~"return",`New Ret Term YN`=="RET"~"return",`New Ret Term YN`=="RETS"~"return"),
                       `New Ret Term YN`=factor(`New Ret Term YN`,levels = c("new","return")),
+                      
+                      Ethnicity=if_else(Ethnicity=="Non Resident Alien/International","Non Resident Alien",Ethnicity),
+                      Ethnicity=factor(Ethnicity, levels=c("Non Resident Alien","Hispanic","American Indian or Alaska Native","Asian","Black or African American","White","Two or more Races","Race and Ethnicity Unknown")),
+                      Gender=factor(Gender,levels = c("M","F","U")),
+                      
                       `Term Credits`=as.numeric(`Term Credits`),
                       `Cum Credits`=as.numeric(`Cum Credits`),
                       `Birth Date`=mdy(`Birth Date`),
-                     Ethnicity=if_else(Ethnicity=="Non Resident Alien/International","Non Resident Alien",Ethnicity),
+                      
+                      sourceLevel=factor(sourceLevel,levels = c("UG","GD")),
+                      term=factor(term,levels = c("21summer2","21fall","22winter","22spring","22summer.1main")),
                       level.degree=if_else(grepl("^MS|^MED|^MBA|^MFA",ug.gd$Program), "GDdegree",
                                     if_else(Program %in% c("NON"), "GDnondeg",
                                        if_else(Program %in% c("Non Matriculated","Lasell Village"), "UGnondeg","UGdegree"))))
@@ -179,6 +188,7 @@ ug.gd<-ug.gd%>%mutate(`Transfer YN`=factor(`Transfer YN`,labels =c("Transfer","N
 #ug.gd%>%filter(grepl("^MS|^MED|^MBA|^MFA",ug.gd$Program))
 #startsWith(ug.gd$Program, c("MBA", "MFA", "MED", "MS"))
 #grep("^MS|^MED|^MBA|^MFA",ug.gd$Program,value=TRUE)
+ug.gd%>%filter(ppid=="P000049623")
 ```
 
 
@@ -354,8 +364,14 @@ tot.crd<-ug.gd%>%group_by(ppid)%>% #we only care about total for each student
 ug.gd<-plyr::join_all(list(ug.gd,tot.crd),type="left")
 ```
 
+```{r ug.gd class/report order and SAVE}
+#ug.gd%>%count(transfer)
+ug.gd<-ug.gd%>%mutate(status=factor(status),
+                      NewRet=factor(NewRet),
+                      ethnicity.c=factor(ethnicity.c, levels=c("Non Resident Alien","Hispanic","American Indian or Alaska Native","Asian","Black or African American","Native Hawaiian or Other Pacific Islander","White","Two or more Races","Race and Ethnicity Unknown")),
+                      transfer=factor(transfer,levels = c("Transfer","Non-transfer")),
+                     level.c=factor(level.c,levels = c("UGdegree","UGnondeg","GDdegree","GDnondeg")))
 
-```{r credit by term wider, then merge total}
 #save all
 write.xlsx(ug.gd,file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ug.gd_21-22.xlsx")
 ```
@@ -374,7 +390,7 @@ ipeds<-ug.gd%>%select(-`Cum Credits`,-Program,-`gov id`,-`Birth Date`,-term,-`Te
 ipeds%>%group_by(NewRet,transfer)%>%count()
 ```
 
-```{r ipeds reporting}
+```{r table1.FT.UG.M}
 #12-month Unduplicated Count by Race/Ethnicity and Gender
 #Table1.Full-time Undergraduate Students:MEN
 #DEGREE: FIRST TIME (report first-time student in DEGREE-SEEKING column of the MEN table of FT UG)
@@ -410,9 +426,54 @@ t1.4<-ipeds%>%filter(status=="FT",#full time
 
 #merge TABLE 1
 t1<-plyr::join_all(list(t1.1,t1.2,t1.3,t1.4),type="full")
-t1[is.na(t1)]<-0
-t1
+t1[is.na(t1)]<-0#without count are NA, convert to 0
+View(t1)#for convinience of copy-paste
+```
 
+
+
+```{r table2.FT.UG.F}
+#12-month Unduplicated Count by Race/Ethnicity and Gender
+#Table1.Full-time Undergraduate Students:MEN
+#DEGREE: FIRST TIME (report first-time student in DEGREE-SEEKING column of the MEN table of FT UG)
+t2.1<-ipeds%>%filter(status=="FT",#full time
+               Gender=="F",#male
+               level.c%in%c("UGdegree"),#undergrad degree seeking
+               NewRet=="new",transfer=="Non-transfer")%>%#first time=first year at Lasell+first time at all
+    group_by(ethnicity.c,.drop = FALSE)%>%#appear groups that has zero count
+    summarise(firsttime.deg=n())
+
+#DEGREE: NON-FIRST-TIME, newly transfer in
+t2.2<-ipeds%>%filter(status=="FT",#full time
+               Gender=="F",#male
+               level.c%in%c("UGdegree"),#undergrad degree seeking
+               NewRet=="new",transfer=="Transfer")%>%#non-first-time transfer in=new+transfer
+    group_by(ethnicity.c,.drop = FALSE)%>%#appear groups that has zero count
+    summarise(newtransferin.deg=n())
+
+#DEGREE: NON-FIRST-TIME, return (anyone who returns regardless their previously transfer students or not)
+t2.3<-ipeds%>%filter(status=="FT",#full time
+               Gender=="F",#male
+               level.c%in%c("UGdegree"),#undergrad degree seeking
+               NewRet=="return")%>%#returning (including previous transfer students)
+    group_by(ethnicity.c,.drop = FALSE)%>%#appear groups that has zero count
+    summarise(return.deg=n())
+
+#NON-DEGREE
+t2.4<-ipeds%>%filter(status=="FT",#full time
+               Gender=="F",#male
+               level.c%in%c("UGnondeg"))%>%#undergrad non degree
+    group_by(ethnicity.c,.drop = FALSE)%>%#appear groups that has zero count
+    summarise(nondeg=n())
+
+#merge TABLE 2
+t2<-plyr::join_all(list(t2.1,t2.2,t2.3,t2.4),type="full")
+t2[is.na(t2)]<-0#without count are NA, convert to 0
+View(t2)#for convinience of copy-paste
+```
+
+
+```{r table3}
 #Full-time Undergraduate Students:WOMEN
 ##########DEGREE: FIRST TIME (College Attend=NEW)
 ##report first-time student in DEGREE-SEEKING column of the MEN table of UG

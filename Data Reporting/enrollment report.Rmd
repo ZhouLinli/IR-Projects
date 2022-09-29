@@ -473,28 +473,108 @@ View(t2)#for convinience of copy-paste
 ```
 
 
-```{r table3}
-#Full-time Undergraduate Students:WOMEN
-##########DEGREE: FIRST TIME (College Attend=NEW)
-##report first-time student in DEGREE-SEEKING column of the MEN table of UG
-t1<-ug.gd%>%filter(sourceLevel=="UG")%>%filter(`FT/PT`=="FT",Gender=="F",sourceLevel=="Degree-seeking",`College Attend`=="NEW")%>%
-  group_by(ethnicity.c,.drop = FALSE)%>%summarise(firsttime=n())
 
-##########DEGREE&NON FIRST TIME: TRANSFER VS RETURNING in "Transfer YN"
-## focusing on return student, whether they are transfer or not
-t2<-ug.gd%>%filter(sourceLevel=="UG")%>%filter(`FT/PT`=="FT",Gender=="F",sourceLevel=="Degree-seeking", `College Attend`=="RET")%>%
-  group_by(`Transfer YN`,ethnicity.c,.drop = FALSE)%>%count()%>%
-  #transferY&N side by side
-  pivot_wider(names_from = `Transfer YN`,values_from =  n, names_glue = paste0("Transfer","{`Transfer YN`}_{.value}"))
+```{r table3.PT.UG.M}
+#12-month Unduplicated Count by Race/Ethnicity and Gender
+#Table1.Full-time Undergraduate Students:MEN
+#DEGREE: FIRST TIME (report first-time student in DEGREE-SEEKING column of the MEN table of FT UG)
+t3.1<-ipeds%>%filter(status=="PT",#full time
+               Gender=="M",#male
+               level.c%in%c("UGdegree"),#undergrad degree seeking
+               NewRet=="new",transfer=="Non-transfer")%>%#first time=first year at Lasell+first time at all
+    group_by(ethnicity.c,.drop = FALSE)%>%#appear groups that has zero count
+    summarise(firsttime.deg=n())
 
-##########NON DEGREE
-#report NON-DEGREE column
-t3<-ug.gd%>%filter(sourceLevel=="UG")%>%filter(`FT/PT`=="FT",Gender=="F",sourceLevel=="Non-degree")%>%
-  group_by(ethnicity.c)%>%summarize(nondegree=n())
+#DEGREE: NON-FIRST-TIME, newly transfer in
+t3.2<-ipeds%>%filter(status=="PT",#full time
+               Gender=="M",#male
+               level.c%in%c("UGdegree"),#undergrad degree seeking
+               NewRet=="new",transfer=="Transfer")%>%#non-first-time transfer in=new+transfer
+    group_by(ethnicity.c,.drop = FALSE)%>%#appear groups that has zero count
+    summarise(newtransferin.deg=n())
 
-t<-plyr::join_all(list(t1,t2,t3),type="full",match="first")
-t[is.na(t)]<-0
-View(t)
+#DEGREE: NON-FIRST-TIME, return (anyone who returns regardless their previously transfer students or not)
+t3.3<-ipeds%>%filter(status=="PT",#full time
+               Gender=="M",#male
+               level.c%in%c("UGdegree"),#undergrad degree seeking
+               NewRet=="return")%>%#returning (including previous transfer students)
+    group_by(ethnicity.c,.drop = FALSE)%>%#appear groups that has zero count
+    summarise(return.deg=n())
+
+#NON-DEGREE
+t3.4<-ipeds%>%filter(status=="PT",#full time
+               Gender=="M",#male
+               level.c%in%c("UGnondeg"))%>%#undergrad non degree
+    group_by(ethnicity.c,.drop = FALSE)%>%#appear groups that has zero count
+    summarise(nondeg=n())
+
+#merge TABLE 1
+t3<-plyr::join_all(list(t3.1,t3.2,t3.3,t3.4),type="full")
+t3[is.na(t3)]<-0#without count are NA, convert to 0
+View(t3)#for convinience of copy-paste
+```
+
+
+
+```{r table4.FT.UG.F}
+#12-month Unduplicated Count by Race/Ethnicity and Gender
+#Table1.Full-time Undergraduate Students:MEN
+#DEGREE: FIRST TIME (report first-time student in DEGREE-SEEKING column of the MEN table of FT UG)
+t4.1<-ipeds%>%filter(status=="PT",#full time
+               Gender=="F",#male
+               level.c%in%c("UGdegree"),#undergrad degree seeking
+               NewRet=="new",transfer=="Non-transfer")%>%#first time=first year at Lasell+first time at all
+    group_by(ethnicity.c,.drop = FALSE)%>%#appear groups that has zero count
+    summarise(firsttime.deg=n())
+
+#DEGREE: NON-FIRST-TIME, newly transfer in
+t4.2<-ipeds%>%filter(status=="PT",#full time
+               Gender=="F",#male
+               level.c%in%c("UGdegree"),#undergrad degree seeking
+               NewRet=="new",transfer=="Transfer")%>%#non-first-time transfer in=new+transfer
+    group_by(ethnicity.c,.drop = FALSE)%>%#appear groups that has zero count
+    summarise(newtransferin.deg=n())
+
+#DEGREE: NON-FIRST-TIME, return (anyone who returns regardless their previously transfer students or not)
+t4.3<-ipeds%>%filter(status=="PT",#full time
+               Gender=="F",#male
+               level.c%in%c("UGdegree"),#undergrad degree seeking
+               NewRet=="return")%>%#returning (including previous transfer students)
+    group_by(ethnicity.c,.drop = FALSE)%>%#appear groups that has zero count
+    summarise(return.deg=n())
+
+#NON-DEGREE
+t4.4<-ipeds%>%filter(status=="PT",#full time
+               Gender=="F",#male
+               level.c%in%c("UGnondeg"))%>%#undergrad non degree
+    group_by(ethnicity.c,.drop = FALSE)%>%#appear groups that has zero count
+    summarise(nondeg=n())
+
+#merge TABLE 2
+t4<-plyr::join_all(list(t4.1,t4.2,t4.3,t4.4),type="full")
+t4[is.na(t4)]<-0#without count are NA, convert to 0
+View(t4)#for convinience of copy-paste
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r table3 }
 
 #Part-time Undergraduate Students:MEN
 ##########DEGREE: FIRST TIME (College Attend=NEW)

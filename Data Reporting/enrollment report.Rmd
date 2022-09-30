@@ -615,8 +615,18 @@ crd.t[is.na(crd.t)]<-0#without count are NA, convert to 0
 View(crd.t)
 ```
 
-```{r distance ed}
+```{r distance ed load data}
+####distance education: student info by course file // no option student courses file -- long to wide: the section type col to multiple cols, each contain one type of section format
+####
+####us_rent_income %>% pivot_wider(names_from = variable, values_from = mutated_countof1_eachrow,values_fill = 0)
+crs21sum2<-read.csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/NO Option student Courses_21sum2.csv",skip=2)#header is in the 3rd row, skip the first two rows
+crs21fall<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/NO Option student Courses_21fall.csv",skip=2)
+crs21winter<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/NO Option student Courses_21winter.csv",skip=2)
+crs22spring<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/NO Option student Courses_22spring.csv",skip=2)
+crs22sum1.main<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/NO Option student Courses_22sum1.main.csv",skip=2)
 
+#merge
+crs<-plyr::join_all(list(crs21sum2,crs21fall,crs21winter,crs22spring,crs22sum1.main),type = "full")
 ```
 
 
@@ -625,8 +635,6 @@ View(crd.t)
 #ask linda's official file + report manager
 #ba/bs 
 
-####distance education: student info by course file // no option student courses file -- long to wide: the section type col to multiple cols, each contain one type of section format
-####
-####us_rent_income %>% pivot_wider(names_from = variable, values_from = mutated_countof1_eachrow,values_fill = 0)
+
 ```
 

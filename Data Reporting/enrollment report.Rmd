@@ -81,20 +81,21 @@ gd22wi<-gd22wi%>%select(-`NA`)#remove NA col
 ```
 
 
-```{r ug}
-ug1<-ug21fa%>%select(`People Code Id`,`gov id`,`FT/PT`,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%
+```{r ug.gd}
+################ug
+ug1<-ug21fa%>%select(Name,`People Code Id`,`gov id`,`FT/PT`,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%
   mutate(sourceLevel="UG",term="21fall")#mutate identification col
 
-ug2<-ug21sum2%>%select(`People Code Id`,`gov id`,`FT/PT`,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%
+ug2<-ug21sum2%>%select(Name,`People Code Id`,`gov id`,`FT/PT`,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%
   mutate(sourceLevel="UG",term="21summer2")
 
-ug3<-ug22sp%>%select(`People Code Id`,`gov id`,`FT/PT`,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%
+ug3<-ug22sp%>%select(Name,`People Code Id`,`gov id`,`FT/PT`,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%
   mutate(sourceLevel="UG",term="22spring")
 
-ug4<-ug22sum.main.1%>%select(`People Code Id`,`gov id`,`FT/PT`,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%
+ug4<-ug22sum.main.1%>%select(Name,`People Code Id`,`gov id`,`FT/PT`,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%
   mutate(sourceLevel="UG",term="22summer.1main")
 
-ug5<-ug22wi%>%select(`People Code Id`,`gov id`,`FT/PT`,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%
+ug5<-ug22wi%>%select(Name,`People Code Id`,`gov id`,`FT/PT`,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%
   mutate(sourceLevel="UG",term="22winter")
 
 #check selected vars
@@ -111,23 +112,20 @@ ug<-plyr::join_all(list(ug1,ug2,ug3,ug4,ug5),type="full")%>%
 #ncol(ug.ipeds)#14
 #names(ug.ipeds)
 
-```
-
-
-```{r gd}
-gd1<-g21fa%>%select(`People Code Id`,`gov id`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`)%>%
+################gd
+gd1<-g21fa%>%select(Name,`People Code Id`,`gov id`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`)%>%
   mutate(sourceLevel="GD",term="21fall")#mutate identification col
 
-gd2<-gd21sum2%>%select(`People Code Id`,`gov id`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`)%>%
+gd2<-gd21sum2%>%select(Name,`People Code Id`,`gov id`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`)%>%
   mutate(sourceLevel="GD",term="21summer2")
 
-gd3<-gd22sp%>%select(`People Code Id`,`gov id`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`)%>%
+gd3<-gd22sp%>%select(Name,`People Code Id`,`gov id`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`)%>%
   mutate(sourceLevel="GD",term="22spring")
 
-gd4<-gd22sum.main.1%>%select(`People Code Id`,`gov id`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`)%>%
+gd4<-gd22sum.main.1%>%select(Name,`People Code Id`,`gov id`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`)%>%
   mutate(sourceLevel="GD",term="22summer.1main")
 
-gd5<-gd22wi%>%select(`People Code Id`,`gov id`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`)%>%
+gd5<-gd22wi%>%select(Name,`People Code Id`,`gov id`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`)%>%
   mutate(sourceLevel="GD",term="22winter")
 
 #check selected vars: compare to ug, do not have transfer, college status, and cum credit
@@ -144,10 +142,8 @@ gd<-plyr::join_all(list(gd1,gd2,gd3,gd4,gd5),type="full")%>%
 #nrow(gd.ipeds)#match="first" #1512, removed 1 duplicated (across all values)
 #ncol(gd.ipeds)
 #names(gd.ipeds)%in%names(ug.ipeds)%>%sum()#14 all same
-```
 
-
-```{r ug.gd}
+################ug.gd
 #merge ug.ipeds and gd ipeds
 ug.gd<-plyr::join_all(list(ug,gd),type="full")%>%#4447 rows
   unique()%>%janitor::remove_empty(c("rows", "cols"))%>%#remove all-NA rows/cols!! 4443 rows
@@ -193,10 +189,10 @@ ug.gd%>%filter(ppid=="P000049623")
 
 
 
-# DETERMINE BY ORDER: full term (fall spring winter summer)
+# consitency: first full term (fall spring winter summer)
 
-```{r consistent FT/PT Attend}
-#FT/PT: determined by students' first full term (eric: of the academic year)
+```{r full or latest term order}
+###########FT/PT: determined by students' first full term (eric: of the academic year)
 
 #whatever fall value
 sts.fall<-ug.gd%>%mutate(status=if_else(term=="21fall",as.character(`FT/PT`),"No fall"))%>%
@@ -229,10 +225,9 @@ sts<-plyr::join_all(list(sts.fall,sts.spring,sts.summer2,sts.summer1,sts.winter)
 #left join all-uniqueid's-status to ug.gd
 ug.gd<-plyr::join_all(list(ug.gd,sts),type="left")%>%unique()%>%arrange(ppid)%>%#4422
   select(-`FT/PT`)#status is the new FT/PT
-```
 
 
-```{r consistent NewRet}
+############NewRet: determined by students' first full term (eric: of the academic year)
 #if enrolled in fall, then whatever FALL TERM new/ret values
 ret.fall<-ug.gd%>%
   mutate(NewRet=if_else(term=="21fall",as.character(`New Ret Term YN`),"No fall"))%>%
@@ -264,10 +259,9 @@ ret<-plyr::join_all(list(ret.fall,ret.spring,ret.summer2,ret.summer1,ret.winter)
 #left join settledRetNew to ug.gd
 ug.gd<-plyr::join_all(list(ug.gd,ret),type="left")%>%unique()%>%arrange(ppid)%>%#4422
   select(-`New Ret Term YN`)#select what's needed
-```
 
-#DETERMINE BY ORDER: latest (22summer.1main   22spring   22winter   21fall  21summer2)
-```{r latest ethnicity}
+
+###############latest ethnicity (22summer.1main   22spring   22winter   21fall  21summer2)
 #if enrolled in the latest 22summer, then whatever that latest term ethnicity values
 eth.summer1<-ug.gd%>%
   mutate(ethnicity.c=if_else(term=="22summer.1main",as.character(Ethnicity),"No sum1"))%>%
@@ -302,7 +296,7 @@ ug.gd<-plyr::join_all(list(ug.gd,eth),type="left")%>%unique()%>%arrange(ppid)%>%
 ```
 
 
-# ONE DOMINATE: any transfer is transfer
+# any transfer is transfer
 
 ```{r consistent transfer}
 #any of the term is transfer then they are
@@ -354,18 +348,20 @@ ug.gd<-plyr::join_all(list(ug.gd,lev),type="left")%>%
   unique()%>%arrange(ppid)#4422
 ```
 
-## AGGREGATE term to total credit 
-
-```{r credit by term wider, then merge total}
+```{r mutate and factorize and SAVE}
+##########add ug/gd credit separately
+##########AGGREGATE term to total UG/GD credit 
 #one may take credit from ug and gd classes
-tot.crd<-ug.gd%>%group_by(ppid)%>% #we only care about total for each student
-  summarise(tot.credit=sum(`Term Credits`))
+tot.crd<-ug.gd%>%group_by(ppid,sourceLevel)%>% #we only care about total for each student
+  summarise(tot.credit=sum(`Term Credits`))%>%
+  pivot_wider(names_from = sourceLevel,values_from = tot.credit)
+
+tot.crd[is.na(tot.crd)]<-0#recode NA to 0
 #left join to original (and remove what we do not care -- term credit and term-- decide to do that later)
 ug.gd<-plyr::join_all(list(ug.gd,tot.crd),type="left")
-```
 
-```{r ug.gd class/report order and SAVE}
-#ug.gd%>%count(transfer)
+############ug.gd class/report order
+#factorize to correct order of value
 ug.gd<-ug.gd%>%mutate(status=factor(status),
                       NewRet=factor(NewRet),
                       ethnicity.c=factor(ethnicity.c, levels=c("Non Resident Alien","Hispanic","American Indian or Alaska Native","Asian","Black or African American","Native Hawaiian or Other Pacific Islander","White","Two or more Races","Race and Ethnicity Unknown")),
@@ -375,7 +371,7 @@ ug.gd<-ug.gd%>%mutate(status=factor(status),
                                       level.deg%in%c("GDdegree","GDnondeg")~"GD"),
                       level=factor(level,levels = c("UG","GD")))
 #save all
-write.xlsx(ug.gd,file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ug.gd_21-22.xlsx")
+write.xlsx(ug.gd,file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ug.gd_21-22_rerun.xlsx")
 ```
 
 # IPEDS NOW!!
@@ -390,6 +386,9 @@ ipeds<-ug.gd%>%select(-`Cum Credits`,-Program,-`gov id`,-`Birth Date`,-term,-`Te
 #ipeds[ipeds$ppid %in% dup.id$ppid,]%>%arrange(ppid)
 #ipeds%>%count(Gender)
 ipeds%>%group_by(NewRet,transfer)%>%count()
+
+#save all
+write.xlsx(ipeds,file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ipeds_21-22_rerun.xlsx")
 ```
 
 ```{r UGtable1.FT.M}
@@ -615,19 +614,149 @@ crd.t[is.na(crd.t)]<-0#without count are NA, convert to 0
 View(crd.t)
 ```
 
-```{r distance ed load data}
-####distance education: student info by course file // no option student courses file -- long to wide: the section type col to multiple cols, each contain one type of section format
-####
-####us_rent_income %>% pivot_wider(names_from = variable, values_from = mutated_countof1_eachrow,values_fill = 0)
-crs21sum2<-read.csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/NO Option student Courses_21sum2.csv",skip=2)#header is in the 3rd row, skip the first two rows
-crs21fall<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/NO Option student Courses_21fall.csv",skip=2)
-crs21winter<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/NO Option student Courses_21winter.csv",skip=2)
-crs22spring<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/NO Option student Courses_22spring.csv",skip=2)
-crs22sum1.main<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/NO Option student Courses_22sum1.main.csv",skip=2)
+# distance education question
+```{r load course data}
+crs21sum2<-read.csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/NO Option student Courses_21sum2.csv",skip=2)%>%
+  mutate(term="21sum2")
 
-#merge
-crs<-plyr::join_all(list(crs21sum2,crs21fall,crs21winter,crs22spring,crs22sum1.main),type = "full")
+#header is in the 3rd row, skip the first two rows
+crs21fall<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/NO Option student Courses_21fall.csv",skip=2)%>%
+  mutate(term="21fall")
+
+crs21winter<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/NO Option student Courses_21winter.csv",skip=2)%>%
+  mutate(term="21winter")
+
+crs22spring<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/NO Option student Courses_22spring.csv",skip=2)%>%
+  mutate(term="22spring")
+
+crs22sum1.main<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/NO Option student Courses_22sum1.main.csv",skip=2)%>%
+  mutate(term="21sum1.main")
 ```
+
+```{r crs dataset}
+crs<-plyr::join_all(list(crs21sum2,crs21fall,crs21winter,crs22spring,crs22sum1.main),type = "full")%>%
+  rename(ppid=people_code_id)%>%#for convenience of recalling
+  select(ppid,event_type)%>%#the event_type is what we only need from this dataset
+  unique()# no worries that the same event_type will merge, as long as it has different event types, it will be separate records, that separate event types (not the count of event type) is what we care about
+
+#save merged course file
+write.xlsx(crs,file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/course_21-22.xlsx")
+```
+
+```{r course_type recode}
+#recode event type to correspond with ipeds types
+crs<-crs%>%mutate(event_type=if_else(event_type%in%c("CRSE","ONLN"),"ONLN",event_type))%>%unique()
+
+#merging multi-types
+#investigate: what does it look like for ppid that has two or more types
+crs%>%group_by(ppid)%>%summarise(cnt_ppid=n())%>%# since crs is a already unique combination of ppid and type, direclty count appearance of ppid to indicate (how multi) types are ppid
+  ungroup()%>%group_by(cnt_ppid)%>%count()#count of cnt_ppid: what are the cnt_ppids 
+#results: having single type, multi-2-types, and multi-3-types
+
+#if cnt_ppid=1 then that ppid has single-type
+single.type<-crs%>%group_by(ppid)%>%summarise(cnt_ppid=n())%>%filter(cnt_ppid==1)
+#if cnt_ppid>1 then that ppid has multi-type
+multi.type<-crs%>%group_by(ppid)%>%summarise(cnt_ppid=n())%>%filter(cnt_ppid>1)
+
+#for single type, keep its type; 
+#the multi-types (from ONLN,CAMP,HYB), any of those types combined, should all be HYB
+crs<-crs%>%mutate(merged.type=if_else(ppid%in%single.type$ppid,
+                                      event_type,#keep single type's type
+                                      "HYB"))%>%#all multi-type should be hyb
+          select(-event_type)%>%#remove old var
+          unique()#always remember this remove exact same rows, 2276 rows
+```
+
+# Merged crs to ipeds
+```{r merge crs type to ipeds enrolled students}
+crs.ipeds<-plyr::join_all(list(ipeds,crs),type="left")%>%#all enrolled 2057 students defined in ipeds
+  select(ppid,Name,merged.type,level.deg)#selected need for reports (type by level and degree)
+
+#find course names of ppid that miss type values
+type.missing<-crs.ipeds%>%filter(is.na(merged.type))%>%arrange(ppid)#36 enrolled students do not have a corresponding type
+#check if the same with students who are not in ipeds (enrolled backup data)
+#enroll.missing<-ipeds%>%filter(ppid%in% type.missing$ppid)%>%select(ppid,level.deg,status)%>%arrange(ppid)
+#enroll.missing[! enroll.missing$ppid %in% type.missing$ppid]#same with type.missing
+```
+
+# missing types
+```{r missing.crsname}
+#can find in the student info by course and fiscal year file
+missing.crsname<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/Student Info by Course and Fiscal Year.csv") %>% 
+  filter(people_code_id %in% type.missing$ppid) %>%#only concerned about those missing ppid
+  select(people_code_id,Course_ID,Course_section)%>%#student info
+  mutate(coursename=paste0(Course_ID,Course_section))%>%#unique ID
+  select(-Course_ID,-Course_section)#remove used for unique coursenames
+#all of them either does not have a grade or withdraw
+```
+
+
+```{r missing.crstype}
+#find course types based on course names == using course name to look up in section tally
+sectally21sum2<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/Section Tally21sum2.csv",skip = 2)# skip first two rows and read the third row as the first row
+sectally21fall<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/Section Tally.21fall.csv",skip = 2)
+sectally22spring<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/Section Tally.22spring.csv",skip = 2)
+sectally22winter<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/Section Tally22winter.csv",skip = 2)
+sectally22sum1main<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/Section Tally.22sum1main.csv",skip = 2)
+#merge one year data
+sectally<-plyr::join_all(list(sectally21sum2,sectally21fall,sectally22spring,sectally22winter,sectally22sum1main),type="full")%>%
+  select(event_id,section,Course_type)%>%#vars needed
+  mutate(coursename=paste0(event_id,section))%>%#unique ID
+  select(-event_id,-section)#remove used for coursename
+# sectally[grep("^COM102", sectally$coursename),]
+
+#merge sectally with missing.crsname: using sectally data for missing missing.crsname AND recode
+missing.crstype<-plyr::join_all(list(missing.crsname,sectally),type="left")%>%unique()
+```
+
+
+```{r standard.crstypes for merging conflicting types}
+#missing.crstype%>%count(Course_type)
+#fixing conflicting types values
+standard.types_single<-missing.crstype%>%filter(! Course_type=="Course" | ! is.na(Course_type))%>%#set aside na values
+  group_by(people_code_id)%>%summarise(cnt_type=n())%>%arrange(people_code_id)%>%filter(cnt_type==1)#how many course types each ppid have
+#multiple standard types; 22 ppid
+standard.types_multi<-missing.crstype%>%filter(! Course_type=="Course" | ! is.na(Course_type))%>%#set aside na values
+  group_by(people_code_id)%>%summarise(cnt_type=n())%>%filter(cnt_type>1)#how many course types each ppid have #4 ppid
+
+#resolving conflict and recode at the same time
+#for single type, keep its type; 
+#the multi-types (from ONLN,CAMP,HYB), any of those types combined, should all be HYB
+standard.crstype<-missing.crstype%>%
+  mutate(merged.type=if_else(people_code_id %in% standard.types_single$people_code_id,
+                                      Course_type,#keep single type's type
+                      if_else(people_code_id %in% standard.types_multi$people_code_id,
+                              "HYB",#all multi-type should be hyb
+                              "not standard type")))%>%#not settled by single/multi standard types
+          unique()#always remember this remove exact same rows, 250 rows
+#standard.crstype%>%count(merged.type)
+
+#recode
+standard.crstype<-standard.crstype%>%mutate(type=case_when(merged.type %in% c("Online Course")~"ONLN",#recode
+                        merged.type %in% c("On-Campus")~"CAMP",
+                        merged.type %in% c("Hybrid Course (online & in class)","HYB")~"HYB",
+                        merged.type %in% c("Course","not standard type")~"Unspecified"))
+
+
+crstype.found<-standard.crstype%>%
+  select(-merged.type,-coursename,-Course_type)%>%#remove recoded old var, remove multi-coursenames for ppid
+  filter(type!="Unspecified")%>%
+  unique() #remove recoded old var, remove multi-coursenames for ppid, 32 rows
+
+#not found
+type.missing [! type.missing$ppid %in% crstype.found$people_code_id,] #P000056440 "P000056986" "P000057211" "P000057212"
+# type.missing$ppid %in% missing.crsname$people_code_id not even in the course info by fiscal year file (to find course names in order to look up course type in section tally)
+
+standard.crstype%>%filter(type=="Unspecified")%>%select(-merged.type,-type) # P000056440
+
+```
+
+```{r}
+crs.ipeds<-plyr::join_all(list(crs.ipeds, crstype.found),type="left")%>%#all 
+  select(ppid,merged.type,level.deg)#selected need for reports (type by level and degree)
+```
+
+
 
 
 ```{r U}

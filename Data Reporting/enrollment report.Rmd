@@ -790,8 +790,10 @@ crs.ipeds[is.na(crs.ipeds$type.c),] #P000056440 "P000056986" "P000057211" "P0000
 crs.ipeds$type.c[is.na(crs.ipeds$type.c)] <-c("ONLN","ONLN","ONLN","ONLN")
 #one of them is due to coursename code error: missing.crsname%>%filter(type=="Unspecified")%>%select(-merged.type,-type) # P000056440
 #check: crs.ipeds%>%count(type.c) #zero na
-
+#factorize for order
 crs.ipeds<-crs.ipeds%>%mutate(type.c=factor(type.c,levels = c("ONLN","HYB","CAMP")))
+#save
+write.xlsx(crs.ipeds,file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/crs.ipeds.matched_21-22_rerun.xlsx")
 ```
 
 ```{r distance ed report}
@@ -811,7 +813,7 @@ gddeg.distance<-crs.ipeds%>%filter(level=="GD")%>%#all GD students
 #merge GD.TABLE 1
 distance<-plyr::join_all(list(ugdeg.distance,ugnondeg.distance,gddeg.distance),type="full")
 distance[is.na(distance)]<-0#without count are NA, convert to 0
-View(distance)#for convinience of copy-paste
+View(distance)#for convinience of copy-paste: ONLY REPORT THE FIRST TWO ROWS
 ```
 
 

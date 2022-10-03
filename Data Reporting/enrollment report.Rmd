@@ -659,7 +659,7 @@ sum(ipeds$GD.tot.credit)
 ```
 
 # distance education question
-```{r load course data}
+```{r load student course data}
 crs21sum2<-read.csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/NO Option student Courses_21sum2.csv",skip=2)%>%
   mutate(term="21sum2")
 
@@ -675,19 +675,15 @@ crs22spring<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPE
 
 crs22sum1.main<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/NO Option student Courses_22sum1.main.csv",skip=2)%>%
   mutate(term="21sum1.main")
-```
 
-```{r crs dataset}
+#merge and select event type for ppid
 crs<-plyr::join_all(list(crs21sum2,crs21fall,crs21winter,crs22spring,crs22sum1.main),type = "full")%>%
   rename(ppid=people_code_id)%>%#for convenience of recalling
   select(ppid,event_type)%>%#the event_type is what we only need from this dataset
   unique()# no worries that the same event_type will merge, as long as it has different event types, it will be separate records, that separate event types (not the count of event type) is what we care about
 
-#save merged course file
-write.xlsx(crs,file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/course_21-22.xlsx")
-```
 
-```{r course_type recode}
+###########event_type consistency
 #recode event type to correspond with ipeds types
 crs<-crs%>%mutate(event_type=if_else(event_type%in%c("CRSE","ONLN"),"ONLN",event_type))%>%unique()
 
@@ -709,12 +705,11 @@ crs<-crs%>%mutate(merged.type=if_else(ppid%in%single.type$ppid,
                                       "HYB"))%>%#all multi-type should be hyb
           select(-event_type)%>%#remove old var
           unique()#always remember this remove exact same rows, 2276 rows
-```
 
-# Merged crs to ipeds
-```{r crs.ipeds}
+
+#############crs.ipeds: Merged crs to ipeds
 crs.ipeds<-plyr::join_all(list(ipeds,crs),type="left")%>%#all enrolled 2057 students defined in ipeds
-  select(ppid,Name,merged.type,level,degree)#selected need for reports (type by level and degree)
+  select(ppid,merged.type,level,degree.c)#selected need for reports (type by level and degree)
 
 #find course names of ppid that miss type values
 type.missing<-crs.ipeds%>%filter(is.na(merged.type))%>%arrange(ppid)#36 enrolled students do not have a corresponding type
@@ -724,24 +719,25 @@ type.missing<-crs.ipeds%>%filter(is.na(merged.type))%>%arrange(ppid)#36 enrolled
 ```
 
 # missing types
-```{r missing.crsname}
+```{r dealing with missing students}
+###############name of the courses that miss types
 #can find in the student info by course and fiscal year file
 missing.crsname<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/Student Info by Course and Fiscal Year.csv") %>% 
-  filter(people_code_id %in% type.missing$ppid) %>%#only concerned about those missing ppid
+  #only concerned about those missing ppid
+  filter(people_code_id %in% type.missing$ppid) %>%
   select(people_code_id,Course_ID,Course_section)%>%#student info
   mutate(coursename=paste0(Course_ID,Course_section))%>%#unique ID
   select(-Course_ID,-Course_section)#remove used for unique coursenames
 #all of them either does not have a grade or withdraw
-```
 
-
-```{r missing.crstype}
+############find type of the course names in section tally
 #find course types based on course names == using course name to look up in section tally
 sectally21sum2<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/Section Tally21sum2.csv",skip = 2)# skip first two rows and read the third row as the first row
 sectally21fall<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/Section Tally.21fall.csv",skip = 2)
 sectally22spring<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/Section Tally.22spring.csv",skip = 2)
 sectally22winter<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/Section Tally22winter.csv",skip = 2)
 sectally22sum1main<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/Section Tally.22sum1main.csv",skip = 2)
+
 #merge one year data
 sectally<-plyr::join_all(list(sectally21sum2,sectally21fall,sectally22spring,sectally22winter,sectally22sum1main),type="full")%>%
   select(event_id,section,Course_type)%>%#vars needed
@@ -750,54 +746,72 @@ sectally<-plyr::join_all(list(sectally21sum2,sectally21fall,sectally22spring,sec
 # sectally[grep("^COM102", sectally$coursename),]
 
 #merge sectally with missing.crsname: using sectally data for missing missing.crsname AND recode
-missing.crstype<-plyr::join_all(list(missing.crsname,sectally),type="left")%>%unique()
-```
+missing.crsname<-plyr::join_all(list(missing.crsname,sectally),type="left")%>%unique()
+#check: missing.crsname%>%count(Course_type)
 
-
-```{r standard.crstypes for merging conflicting types}
-#missing.crstype%>%count(Course_type)
+##################merging conflicting types
 #fixing conflicting types values
-standard.types_single<-missing.crstype%>%filter(! Course_type=="Course" | ! is.na(Course_type))%>%#set aside na values
+standard.types_single<-missing.crsname%>%
+  filter(! Course_type=="Course" | ! is.na(Course_type))%>%#set aside na and "course" values
   group_by(people_code_id)%>%summarise(cnt_type=n())%>%arrange(people_code_id)%>%filter(cnt_type==1)#how many course types each ppid have
 #multiple standard types; 22 ppid
-standard.types_multi<-missing.crstype%>%filter(! Course_type=="Course" | ! is.na(Course_type))%>%#set aside na values
+standard.types_multi<-missing.crsname%>%
+  filter(! Course_type=="Course" | ! is.na(Course_type))%>%#set aside na and "course" values
   group_by(people_code_id)%>%summarise(cnt_type=n())%>%filter(cnt_type>1)#how many course types each ppid have #4 ppid
 
 #resolving conflict and recode at the same time
-#for single type, keep its type; 
-#the multi-types (from ONLN,CAMP,HYB), any of those types combined, should all be HYB
-standard.crstype<-missing.crstype%>%
-  mutate(merged.type=if_else(people_code_id %in% standard.types_single$people_code_id,
-                                      Course_type,#keep single type's type
-                      if_else(people_code_id %in% standard.types_multi$people_code_id,
-                              "HYB",#all multi-type should be hyb
+missing.crsname<-missing.crsname%>%mutate(merged.type=if_else(
+    #for single type, keep its type; 
+    people_code_id %in% standard.types_single$people_code_id,Course_type,#keep single type's type
+    #the multi-types (from ONLN,CAMP,HYB), any of those types combined, should all be HYB
+     if_else(people_code_id %in% standard.types_multi$people_code_id,"HYB",#all multi-type should be hyb
                               "not standard type")))%>%#not settled by single/multi standard types
-          unique()#always remember this remove exact same rows, 250 rows
-#standard.crstype%>%count(merged.type)
-
-#recode
-standard.crstype<-standard.crstype%>%mutate(type=case_when(merged.type %in% c("Online Course")~"ONLN",#recode
+          unique()%>%#always remember this remove exact same rows, 250 rows
+          #recode
+          mutate(type=case_when(merged.type %in% c("Online Course")~"ONLN",#recode
                         merged.type %in% c("On-Campus")~"CAMP",
                         merged.type %in% c("Hybrid Course (online & in class)","HYB")~"HYB",
                         merged.type %in% c("Course","not standard type")~"Unspecified"))
-
-
-crstype.found<-standard.crstype%>%
+#new
+crstype.found<-missing.crsname%>%
   select(-merged.type,-coursename,-Course_type)%>%#remove recoded old var, remove multi-coursenames for ppid
   filter(type!="Unspecified")%>%
-  unique() #remove recoded old var, remove multi-coursenames for ppid, 32 rows
+  unique()%>%rename(ppid=people_code_id) #remove recoded old var, remove multi-coursenames for ppid, 32 rows
+#merge
+#check: crs.ipeds%>%count(merged.type) #36 na
+crs.ipeds<-plyr::join_all(list(crs.ipeds,crstype.found),type = "left")%>%
+  mutate(type.c=if_else(is.na(merged.type), type, merged.type))%>%#need to recode by re-assign, cannot done merely using join_all, won't match and replace, only keep origional NAs
+  select(-type,-merged.type)
+#check: crs.ipeds%>%count(type.c) #4 na
 
-#not found
-type.missing [! type.missing$ppid %in% crstype.found$people_code_id,] #P000056440 "P000056986" "P000057211" "P000057212"
-# type.missing$ppid %in% missing.crsname$people_code_id not even in the course info by fiscal year file (to find course names in order to look up course type in section tally)
+#not found: summer2 students that are not saved in fiscal year 2021-2022 course info
+crs.ipeds[is.na(crs.ipeds$type.c),] #P000056440 "P000056986" "P000057211" "P000057212"
+#look them up in powercampus and turns out they are all online students
+crs.ipeds$type.c[is.na(crs.ipeds$type.c)] <-c("ONLN","ONLN","ONLN","ONLN")
+#one of them is due to coursename code error: missing.crsname%>%filter(type=="Unspecified")%>%select(-merged.type,-type) # P000056440
+#check: crs.ipeds%>%count(type.c) #zero na
 
-standard.crstype%>%filter(type=="Unspecified")%>%select(-merged.type,-type) # P000056440
-
+crs.ipeds<-crs.ipeds%>%mutate(type.c=factor(type.c,levels = c("ONLN","HYB","CAMP")))
 ```
 
-```{r}
-crs.ipeds<-plyr::join_all(list(crs.ipeds, crstype.found),type="left")%>%#all 
-  select(ppid,merged.type,level,degree)#selected need for reports (type by level and degree)
+```{r distance ed report}
+#check: crs.ipeds%>%group_by(ppid)%>%count()%>%ungroup()%>%count(n)#unique rows each ppid
+#UGdegree by ONLN vs HYB
+ugdeg.distance<-crs.ipeds%>%filter(level=="UG", degree.c=="degree")%>%#UGdegree
+        group_by(type.c,.drop = FALSE)%>%#keep zero counts
+        summarise(UGdegree=n())
+#UGnondegree by ONLN vs HYB
+ugnondeg.distance<-crs.ipeds%>%filter(level=="UG", degree.c=="nondegree")%>%#UGnondegree
+        group_by(type.c,.drop = FALSE)%>%#keep zero counts
+        summarise(UGnondegree=n())
+#GDdegree by ONLN vs HYB
+gddeg.distance<-crs.ipeds%>%filter(level=="GD")%>%#all GD students
+        group_by(type.c,.drop = FALSE)%>%#keep zero counts
+        summarise(GD=n())
+#merge GD.TABLE 1
+distance<-plyr::join_all(list(ugdeg.distance,ugnondeg.distance,gddeg.distance),type="full")
+distance[is.na(distance)]<-0#without count are NA, convert to 0
+View(distance)#for convinience of copy-paste
 ```
 
 

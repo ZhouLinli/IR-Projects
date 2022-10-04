@@ -1,3 +1,7 @@
+
+
+######################################################################################
+##############external reporting for the Princeton Review 2022-8-19 due##############
 #Read local data files for course 2021-2022
 
 course21_22<-read.csv("/Users/linlizhou/Documents/LASELL/working on/Student Info by Course and Fiscal Year.csv")
@@ -8,8 +12,6 @@ nrow(course21_22)
 nrow(unique(course21_22))
 course21_22_unqiue<-unique(course21_22)
 
-######################################################################################
-##############external reporting for the Princeton Review 2022-8-19 due##############
 
 
 #1.goal -question 10 and 11: confirm the following are offered as undergraduate course
@@ -59,8 +61,13 @@ course21_22_unqiue%>%filter(
 
 
 
-######################################################################################
-##############external reporting for the US News 2022-10-14 due##############
+
+
+
+####################################################################################
+################## US NEWS ONLINE PROGRAM 07/01/2021-06/30-2022, due 2022-10-15########
+#########################################COURSE QUESTIONS##############################
+
 ##############question: Amount of curriculum for undergrad completion/online program###########
 library(rvest)
 #read html and parse it into R readable contents
@@ -123,11 +130,16 @@ my.df<-my.df%>%mutate(Com=my.title3)
 
 
 
+
+
+
+
+
 ####################################################################################
-################## US NEWS 07/01/2021-06/30-2022, due 2022-10-15########
-########################################################################################
+################## US NEWS ONLINE PROGRAM 07/01/2021-06/30-2022, due 2022-10-15########
+#####################################ENROLLMENT QUESTIONS##############################
 ###########prep data and function
-ug.gd<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ug.gd_21-22.xlsx")
+ug.gd<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ug.gd_21-22_rerun.xlsx")
 
 age.calc <- function(dob, age.day = "2021-07-01", units = "years", floor = TRUE) {
   calc.age = interval(dob, age.day) / duration(num = 1, units = units)
@@ -141,29 +153,29 @@ age.calc <- function(dob, age.day = "2021-07-01", units = "years", floor = TRUE)
 ##search for completion programs
 #ug.gd%>%filter(grepl("[Cc]omp",ug.gd$Program))%>%group_by(Program)%>%count()#see completion programs
 
-#filter using searched results and crete usn.online
-usn.online<-ug.gd%>%
+#filter using searched results and crete usn.enroll
+usn.enroll<-ug.gd%>%
   filter(Program %in% c("MSCJ","MSM","MBA","Business Administration","Communication Bachelors Completion","Interdisciplinary Bachelors Completion","Psychology Bachelors Completion"))%>%
   mutate(Program=factor(Program,levels = c("Business Administration","Communication Bachelors Completion","Interdisciplinary Bachelors Completion","Psychology Bachelors Completion","MSCJ","MSM","MBA")))%>%
   select(`People Code Id`,`gov id`,Level,Program,`Birth Date`,Ethnicity,`Transfer YN`,`Cum Credits`,Gender,term,`New Ret Term YN`)%>%unique()#remove duplicated rows; 779 rows
 
 
 ###########de-duplication
-#goal: usn.online%>%distinct(`People Code Id`,.keep_all = TRUE)%>%nrow()#unique 316 ppid (and keep all other variables)
+#goal: usn.enroll%>%distinct(`People Code Id`,.keep_all = TRUE)%>%nrow()#unique 316 ppid (and keep all other variables)
 
 ###investigate duplicated ppid
-dup.id<-usn.online[duplicated(usn.online$`People Code Id`),]
-usn.online[usn.online$`People Code Id` %in% dup.id$`People Code Id`,]#show all duplicated ppid - conflict b/c cum credits
+dup.id<-usn.enroll[duplicated(usn.enroll$`People Code Id`),]
+usn.enroll[usn.enroll$`People Code Id` %in% dup.id$`People Code Id`,]#show all duplicated ppid - conflict b/c cum credits
 
 #keep one for duplicated ids
-usn.online<-usn.online%>%#aim: assign one value for duplicated id (to resolve conflict)    
+usn.enroll<-usn.enroll%>%#aim: assign one value for duplicated id (to resolve conflict)    
   arrange(desc(`Cum Credits`))%>%#largest cumcredit at the top
   arrange(`People Code Id`)%>%#same id group and has large-low cumcredit
   distinct(`People Code Id`,.keep_all = TRUE)#distinct will keep the !first row! (the correct cum credit), 316 rows
 
 
 ###########add cols needed
-usn.online<-usn.online%>%mutate(
+usn.enroll<-usn.enroll%>%mutate(
   age= age.calc(`Birth Date`),
   age.cat=case_when(age<=22 ~ "22 or younger",age>=23 & age<=29 ~ "23-29",age>=30 & age <=39 ~ "30-39", age>=40 & age <=49 ~ "40-49",age>=50 & age <=59 ~ "50-59",age>-60 ~"60 or older"),
   age.cat=factor(age.cat),
@@ -172,28 +184,66 @@ usn.online<-usn.online%>%mutate(
   CreditPrt=`Cum Credits`/120,#total is 120 credits for most programs NEEDS TO CONFIRM WITH ERIC
   CreditPrt=case_when(CreditPrt<.25~"<25%",CreditPrt>=.25 & CreditPrt<.50~"25-49%",CreditPrt>=.50 & CreditPrt<=.74~"50-74%",CreditPrt>.75~">75%"),
   CreditPrt=factor(CreditPrt,levels = c("<25%","25-49%","50-74%",">75%")))%>%select(-`Birth Date`)
-#str(usn.online)
-#usn.online%>%group_by(CreditPrt)%>%count()#78 NAs from NA cum credits
+#str(usn.enroll)
+#usn.enroll%>%group_by(CreditPrt)%>%count()#78 NAs from NA cum credits
 
 #save list of students and send to financial aid
-#write.xlsx(list("PPID"=usn.online), file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/2022 US News/StudentLoanInfo_USNewsReport.xlsx")
+#write.xlsx(list("PPID"=usn.enroll), file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/2022 US News/StudentLoanInfo_USNewsReport.xlsx")
 
 
 ##########age/birth date of UG, question 70###########
 #calculate age from birth date
-usn.online%>%filter(Level=="UG")%>%group_by(age.cat)%>%count()
+usn.enroll%>%filter(Level=="UG")%>%group_by(age.cat)%>%count()
 
 ##########GD age question 49 or 52############
-usn.online%>%filter(Level=="GD")%>%group_by(Program)%>%summarise(mean.age=mean(age,na.rm = TRUE))#auto remove NA
+usn.enroll%>%filter(Level=="GD")%>%group_by(Program)%>%summarise(mean.age=mean(age,na.rm = TRUE))#auto remove NA
 
 ##########international students of UG, question 53,54###########
-usn.online%>%filter(Level=="UG")%>%group_by(Ethnicity)%>%count()
+usn.enroll%>%filter(Level=="UG")%>%group_by(Ethnicity)%>%count()
 
 ##########non-transfer of UG, question 55###########
-usn.online%>%filter(Level=="UG")%>%group_by(`Transfer YN`)%>%count()
+usn.enroll%>%filter(Level=="UG")%>%group_by(`Transfer YN`)%>%count()
 
 ##########cum credit progress out of 120 credits of UG, question 57###########
-usn.online%>%filter(Level=="UG")%>%group_by(CreditPrt)%>%count()
+usn.enroll%>%filter(Level=="UG")%>%group_by(CreditPrt)%>%count()
 
 ##########GD gender question 47 or 50############
-usn.online%>%filter(Level=="GD")%>%group_by(Program,Gender)%>%count()%>%arrange(Program)
+usn.enroll%>%filter(Level=="GD")%>%group_by(Program,Gender)%>%count()%>%arrange(Program)
+
+
+
+
+
+
+
+####################################################################################
+################## US NEWS ONLINE PROGRAM 07/01/2021-06/30-2022, due 2022-10-15########
+#####################################VETERAN QUESTIONS##############################
+
+usn.vet<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/US News/Online Bachelor's/2022/Veteran Student Benefits 2021-22.xlsx")
+
+usn.vet<-usn.vet%>%mutate(prg.cur=paste0(program,Curriculum))
+ls1<-usn.vet%>%count(prg.cur); View(ls1)
+usn.vet%>%filter(prg.cur=="UNDERBusiness Administration")%>%group_by(program)%>%count()#Bachelor completion
+usn.vet%>%filter(prg.cur=="GRADCriminal Justice")%>%group_by(program)%>%count()#MSCJ
+usn.vet%>%filter(prg.cur%in% c("GRADEmergency & Crisis Management",#Hospitality & Event Management (MSM)
+                               "GRADHuman Resources Management",#Human Resources (MSHR)
+                               "GRADManagement",#Management (MSM)
+                               "GRADMarketing",#Marketing (MSMK)
+                               "GRADProject Management",#Project Management (MSPM)
+                               "GRADSport Management"
+                               ))%>%group_by(program)%>%count()#MSM
+usn.vet%>%filter(prg.cur=="GRADBusiness Administration")%>%group_by(program)%>%count()#MBA
+
+ls<-usn.vet%>%group_by(Curriculum)%>%count(); View(ls)
+##search for business administration
+#usn.vet%>%filter(grepl("[Bb][Uu]",usn.vet$Curriculum))%>%group_by(Curriculum)%>%count()#see "Business Administration"
+##search for completion programs
+#usn.vet%>%filter(grepl("[Cc]omp",usn.vet$Curriculum))%>%group_by(Curriculum)%>%count()#non
+
+#filter using searched results and crete usn.enroll
+usn.enroll<-ug.gd%>%
+  filter(Program %in% c("MSCJ","MSM","MBA","Business Administration","Communication Bachelors Completion","Interdisciplinary Bachelors Completion","Psychology Bachelors Completion"))%>%
+  mutate(Program=factor(Program,levels = c("Business Administration","Communication Bachelors Completion","Interdisciplinary Bachelors Completion","Psychology Bachelors Completion","MSCJ","MSM","MBA")))%>%
+  select(`People Code Id`,`gov id`,Level,Program,`Birth Date`,Ethnicity,`Transfer YN`,`Cum Credits`,Gender,term,`New Ret Term YN`)%>%unique()#remove duplicated rows; 779 rows
+

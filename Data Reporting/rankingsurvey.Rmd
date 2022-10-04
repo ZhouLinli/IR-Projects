@@ -9,12 +9,11 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# 21-22 Course
+# Course data
 ```{r princeton review}
-######################################################################################
-##############external reporting for the Princeton Review 2022-8-19 due##############
-#Read local data files for course 2021-2022
+#external reporting for the Princeton Review 2022-8-19 due
 
+#Read local data files for course 2021-2022
 course21_22<-read.csv("/Users/linlizhou/Documents/LASELL/working on/Student Info by Course and Fiscal Year.csv")
 #course enrollment data for fall/spring/summer main, session1, and 2
 #run from report manager: https://reports.lasell.edu/Reports/report/IR/Student%20Info%20by%20Course%20and%20Fiscal%20Year
@@ -73,11 +72,10 @@ course21_22_unqiue%>%filter(
 
 
 ```{r US News web scrapping courses}
-####################################################################################
-################## US NEWS ONLINE PROGRAM 07/01/2021-06/30-2022, due 2022-10-15########
-#########################################COURSE QUESTIONS##############################
+# US NEWS ONLINE PROGRAM 07/01/2021-06/30-2022, due 2022-10-15
+#COURSE QUESTIONS
 
-##############question: Amount of curriculum for undergrad completion/online program###########
+#question: Amount of curriculum for undergrad completion/online program
 library(rvest)
 #read html and parse it into R readable contents
 pg<-read_html("https://www.lasell.edu/graduate-studies/academics/bsba.html#Curriculum-Section")
@@ -138,90 +136,180 @@ length(my.title3)=length(my.title)
 my.df<-my.df%>%mutate(Com=my.title3)
 ```
 
-# Enrollment
+
+
+
+
+
+# Enrollment data
 ```{r US News}
-####################################################################################
-################## US NEWS ONLINE PROGRAM 07/01/2021-06/30-2022, due 2022-10-15########
-#####################################ENROLLMENT QUESTIONS##############################
-###########prep data and function
+#US NEWS ONLINE PROGRAM 07/01/2021-06/30-2022, due 2022-10-15
+##ENROLLMENT QUESTIONS
+#load data
 ug.gd<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ug.gd_21-22_rerun.xlsx")
 
+
+
+#create USNEWS online program dataset: filter program names
+usn.enroll<-ug.gd%>%
+  filter(Program %in% c("MSCJ","MSM","MBA",#master online programs
+                        "Business Administration",#bachelor BussAdmin
+                        "Communication Bachelors Completion",#bachelor completion programs
+                        "Interdisciplinary Bachelors Completion","Psychology Bachelors Completion"))%>%
+  
+  mutate(Program=factor(Program,levels = c("Business Administration",#correct ordering
+                                           "Communication Bachelors Completion",
+                                           "Interdisciplinary Bachelors Completion",
+                                           "Psychology Bachelors Completion",
+                                           "MSCJ","MSM","MBA")))%>%
+  select(ppid,`gov id`,`Birth Date`,ethnicity.c,Gender,
+         level,Program,transfer,NewRet,status,`Cum Credits`,term)%>%unique()#779 rows
+
+###de-duplication: consistency cum credit
+#goal: usn.enroll%>%distinct(ppid,.keep_all = TRUE)%>%nrow()#unique 316 ppid (and keep all other variables)
+###investigate duplicated ppid
+#dup.id<-usn.enroll[duplicated(usn.enroll$ppid),]
+#usn.enroll[usn.enroll$ppid %in% dup.id$ppid,]#show all duplicated ppid - conflict b/c cum credits
+#keep one CUM CREDIT for duplicated ids
+usn.enroll$`Cum Credits`[is.na(usn.enroll$`Cum Credits`)]<-0#replace NA value with zero
+usn.enroll<-usn.enroll%>%#aim: assign one value for duplicated id (to resolve conflict)    
+  arrange(desc(`Cum Credits`))%>%#largest cumcredit at the top (with no NA, if have NA, NA will be at top)
+  arrange(ppid)%>%#same id group and has large-low cumcredit
+  distinct(ppid,.keep_all = TRUE)#distinct will keep the !first row! (the correct cum credit), 316 rows
+
+
+
+
+
+
+###########add cols needed
+#define function
 age.calc <- function(dob, age.day = "2021-07-01", units = "years", floor = TRUE) {
   calc.age = interval(dob, age.day) / duration(num = 1, units = units)
   if (floor) return(as.integer(floor(calc.age))) #floor=round down to the nearest interger
   return(calc.age)}#return has to be its own row
-
-###########create USNEWS online program dataset
-
-##search for business administration
-#ug.gd%>%filter(grepl("[Bb][Uu]",ug.gd$Program))%>%group_by(Program)%>%count()#see "Business Administration"
-##search for completion programs
-#ug.gd%>%filter(grepl("[Cc]omp",ug.gd$Program))%>%group_by(Program)%>%count()#see completion programs
-
-#filter using searched results and crete usn.enroll
-usn.enroll<-ug.gd%>%
-  filter(Program %in% c("MSCJ","MSM","MBA","Business Administration","Communication Bachelors Completion","Interdisciplinary Bachelors Completion","Psychology Bachelors Completion"))%>%
-  mutate(Program=factor(Program,levels = c("Business Administration","Communication Bachelors Completion","Interdisciplinary Bachelors Completion","Psychology Bachelors Completion","MSCJ","MSM","MBA")))%>%
-  select(`People Code Id`,`gov id`,Level,Program,`Birth Date`,Ethnicity,`Transfer YN`,`Cum Credits`,Gender,term,`New Ret Term YN`)%>%unique()#remove duplicated rows; 779 rows
-
-
-###########de-duplication
-#goal: usn.enroll%>%distinct(`People Code Id`,.keep_all = TRUE)%>%nrow()#unique 316 ppid (and keep all other variables)
-
-###investigate duplicated ppid
-dup.id<-usn.enroll[duplicated(usn.enroll$`People Code Id`),]
-usn.enroll[usn.enroll$`People Code Id` %in% dup.id$`People Code Id`,]#show all duplicated ppid - conflict b/c cum credits
-
-#keep one for duplicated ids
-usn.enroll<-usn.enroll%>%#aim: assign one value for duplicated id (to resolve conflict)    
-  arrange(desc(`Cum Credits`))%>%#largest cumcredit at the top
-  arrange(`People Code Id`)%>%#same id group and has large-low cumcredit
-  distinct(`People Code Id`,.keep_all = TRUE)#distinct will keep the !first row! (the correct cum credit), 316 rows
-
-
-###########add cols needed
+#calculate age
 usn.enroll<-usn.enroll%>%mutate(
   age= age.calc(`Birth Date`),
-  age.cat=case_when(age<=22 ~ "22 or younger",age>=23 & age<=29 ~ "23-29",age>=30 & age <=39 ~ "30-39", age>=40 & age <=49 ~ "40-49",age>=50 & age <=59 ~ "50-59",age>-60 ~"60 or older"),
+  age.cat=case_when(age<=22 ~ "22 or younger",
+                    age>=23 & age<=29 ~ "23-29",
+                    age>=30 & age <=39 ~ "30-39", 
+                    age>=40 & age <=49 ~ "40-49",
+                    age>=50 & age <=59 ~ "50-59",
+                    age>-60 ~"60 or older"),
   age.cat=factor(age.cat),
-  
-  #calculate progress based on cum credits
+#calculate progress based on cum credits
   CreditPrt=`Cum Credits`/120,#total is 120 credits for most programs NEEDS TO CONFIRM WITH ERIC
-  CreditPrt=case_when(CreditPrt<.25~"<25%",CreditPrt>=.25 & CreditPrt<.50~"25-49%",CreditPrt>=.50 & CreditPrt<=.74~"50-74%",CreditPrt>.75~">75%"),
-  CreditPrt=factor(CreditPrt,levels = c("<25%","25-49%","50-74%",">75%")))%>%select(-`Birth Date`)
-#str(usn.enroll)
-#usn.enroll%>%group_by(CreditPrt)%>%count()#78 NAs from NA cum credits
-
-#save list of students and send to financial aid
+  CreditPrt=case_when(CreditPrt<.25~"<25%",
+                      CreditPrt>=.25 & CreditPrt<.50~"25-49%",
+                      CreditPrt>=.50 & CreditPrt<=.74~"50-74%",
+                      CreditPrt>.75~">75%"),
+  CreditPrt=factor(CreditPrt,levels = c("<25%","25-49%","50-74%",">75%")))%>%
+  select(-`Birth Date`)#remove used vars
+#check: usn.enroll%>%group_by(CreditPrt)%>%count()#no NA
+#save  ppid for requesting financial aid
 #write.xlsx(list("PPID"=usn.enroll), file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/2022 US News/StudentLoanInfo_USNewsReport.xlsx")
 
 
-##########age/birth date of UG, question 70###########
+
+
+
+
+
+
+#answering questions:
+#age/birth date of UG, question 70##
 #calculate age from birth date
-usn.enroll%>%filter(Level=="UG")%>%group_by(age.cat)%>%count()
+usn.enroll%>%filter(level=="UG")%>%group_by(age.cat)%>%count()%>%
+  View()#for copy and paste convenience
 
-##########GD age question 49 or 52############
-usn.enroll%>%filter(Level=="GD")%>%group_by(Program)%>%summarise(mean.age=mean(age,na.rm = TRUE))#auto remove NA
+#GD age question 49 or 52###
+usn.enroll%>%filter(level=="GD")%>%group_by(Program)%>%
+  summarise(mean.age=round(mean(age,na.rm = TRUE),digits=0))%>%#auto remove NA
+  View()#for copy and paste convenience
 
-##########international students of UG, question 53,54###########
-usn.enroll%>%filter(Level=="UG")%>%group_by(Ethnicity)%>%count()
+#international students of UG, question 53,54##
+usn.enroll%>%filter(level=="UG")%>%group_by(ethnicity.c)%>%#UG's ethnicity
+  summarise(cnt=n())%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%#count and percentage
+  filter(ethnicity.c=="Non Resident Alien")%>%#question only asked international students
+  View()#for copy and paste convenience
 
-##########non-transfer of UG, question 55###########
-usn.enroll%>%filter(Level=="UG")%>%group_by(`Transfer YN`)%>%count()
+#non-transfer of UG, question 55##
+usn.enroll%>%filter(level=="UG")%>%group_by(transfer,NewRet,status)%>%count()%>%
+  filter(NewRet=="new",#first year freshmen
+         status=="FT")%>%#full time
+         #all program are degree awarding programs
+  View()
 
-##########cum credit progress out of 120 credits of UG, question 57###########
-usn.enroll%>%filter(Level=="UG")%>%group_by(CreditPrt)%>%count()
+#total of UG, question 55##
+usn.enroll%>%filter(level=="UG")%>%summarise(totUG=n())%>%View()
 
-##########GD gender question 47 or 50############
-usn.enroll%>%filter(Level=="GD")%>%group_by(Program,Gender)%>%count()%>%arrange(Program)
+#cum credit progress out of 120 credits of UG, question 57##
+usn.enroll%>%filter(level=="UG")%>%group_by(CreditPrt)%>%count()%>%View()
+
+
+#GD gender question 47 or 50###
+usn.enroll%>%filter(level=="GD")%>%group_by(Program,Gender)%>%count()%>%arrange(Program)%>%
+  pivot_wider(names_from = Gender,values_from = n)%>%View()
 ```
 
 
-#Veteran file
+
+# Retention data
 ```{r US News}
-####################################################################################
-################## US NEWS ONLINE PROGRAM 07/01/2021-06/30-2022, due 2022-10-15########
-#####################################VETERAN QUESTIONS##############################
+#QUESTION GD138/141: "First enrolled between July 1, 2020 and June 30, 2021, re-enrolled or graduated anytime within the next 12 months?"
+#returning student count and prt
+retention<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Graduate Retention/2009 Fall - Present Graduate Retention.xlsx")%>%rename(ppid=`People Code Id`)
+85
+#replace NA with "n
+retention<-retention%>%mutate_at(c(grep("Fall$|Spring$|^Grad AY",names(retention),value = TRUE)),#all relevant cols
+                               ~replace_na(.,"n"))%>%#replace their NA with "n
+#pattern for enter term: concatenate recent terms
+retention<-retention%>%unite("RecentTermPattern",`2020 Fall`:`2021 Fall`,remove = FALSE,sep = "")
+
+
+#re-enrollment students
+reenroll<-retention%>%filter(Degree%in%c("MSCJ","MSM","MBA"),#Master online programs
+                   `Entering Semester`%in%c("2020 Fall","2021 Spring"))%>% #begins 2020 fall or 2021 spring
+            filter(!RecentTermPattern %in% c("Ynn",#not those who enrolled for the first and no show for the rest
+                                            "nYn"))%>%##not those who enrolled for the first and no show for the rest
+            group_by(ppid,Degree)%>%summarise(reenroll=n())
+#graduated students
+graduated<-retention%>%filter(Degree%in%c("MSCJ","MSM","MBA"),#Master online programs
+                   `Entering Semester`%in%c("2020 Fall","2021 Spring"))%>% #begins 2020 fall or 2021 spring
+            filter(`Grad Date`>"2020-07-01"&`Grad Date`<"2022-06-30")%>%
+            group_by(ppid,Degree)%>%summarise(graduated=n())
+
+#unduplicated return and grad students
+ret.grad<-plyr::join_all(list(reenroll,graduated),type = "full")%>%
+                select(ppid,Degree)%>%#one appearance is one, then no need the cnt vars
+                unique()%>%arrange(ppid)%>%group_by(Degree)%>%summarise(ret.grad=n())
+
+#total first time students
+tot.firsttime<-retention%>%filter(Degree%in%c("MSCJ","MSM","MBA"),#Master online programs
+                   `Entering Semester`%in%c("2020 Fall","2021 Spring"))%>%
+                group_by(Degree)%>%summarise(tot.firsttime=n())
+
+#calculate the prt of return/grad students among all first time students (enrolled in 2020F/2021S)
+plyr::join_all(list(ret.grad,tot.firsttime),type = "full")%>%
+  mutate(prt=formattable::percent(ret.grad/tot.firsttime,digits = 0))%>%
+  View()
+
+
+#QUESTION GD136/139: Report the count of students who graduated from your institution’s  program between July 1, 2021 and June 30, 2022.
+retention%>%filter(Degree%in%c("MSCJ","MSM","MBA"))%>% #master online programs
+            filter(`Grad Date`>"2021-07-01"&`Grad Date`<"2022-06-30")%>%#grad between July 1, 2021 and June 30, 2022
+            group_by(Degree)%>%summarise(graduated=n())%>%View()
+```
+
+# Completion
+
+
+
+#Veteran data
+```{r US News}
+#US NEWS ONLINE PROGRAM 07/01/2021-06/30-2022, due 2022-10-15
+#VETERAN QUESTIONS
 
 usn.vet<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/US News/Online Bachelor's/2022/Veteran Student Benefits 2021-22.xlsx")
 
@@ -248,8 +336,6 @@ ls<-usn.vet%>%group_by(Curriculum)%>%count(); View(ls)
 usn.enroll<-ug.gd%>%
   filter(Program %in% c("MSCJ","MSM","MBA","Business Administration","Communication Bachelors Completion","Interdisciplinary Bachelors Completion","Psychology Bachelors Completion"))%>%
   mutate(Program=factor(Program,levels = c("Business Administration","Communication Bachelors Completion","Interdisciplinary Bachelors Completion","Psychology Bachelors Completion","MSCJ","MSM","MBA")))%>%
-  select(`People Code Id`,`gov id`,Level,Program,`Birth Date`,Ethnicity,`Transfer YN`,`Cum Credits`,Gender,term,`New Ret Term YN`)%>%unique()#remove duplicated rows; 779 rows
-
-
+  select(ppid,`gov id`,level,Program,`Birth Date`,ethnicity.c,transfer,`Cum Credits`,Gender,term,NewRet)%>%unique()#remove duplicated rows; 779 rows
 ```
 

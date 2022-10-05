@@ -256,9 +256,10 @@ usn.enroll%>%filter(level=="GD")%>%group_by(Program,Gender)%>%count()%>%arrange(
 
 
 # Retention data
-```{r US News}
-#QUESTION GD138/141: "First enrolled between July 1, 2020 and June 30, 2021, re-enrolled or graduated anytime within the next 12 months?"
-#returning student count and prt
+```{r US News entered last year return and graduated}
+#QUESTION GD138/141: "First enrolled between July 1, 2020 and June 30, 2021, re-enrolled or graduated anytime within the next 12 months?"--student count and prt
+
+#load and clean data 
 retention<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Graduate Retention/2009 Fall - Present Graduate Retention.xlsx")%>%rename(ppid=`People Code Id`)
 85
 #replace NA with "n
@@ -268,42 +269,51 @@ retention<-retention%>%mutate_at(c(grep("Fall$|Spring$|^Grad AY",names(retention
 retention<-retention%>%unite("RecentTermPattern",`2020 Fall`:`2021 Fall`,remove = FALSE,sep = "")
 
 
-#re-enrollment students
+
+#re-enrollment students !who first entered July 1, 2020 and June 30, 2021!
 reenroll<-retention%>%filter(Degree%in%c("MSCJ","MSM","MBA"),#Master online programs
                    `Entering Semester`%in%c("2020 Fall","2021 Spring"))%>% #begins 2020 fall or 2021 spring
             filter(!RecentTermPattern %in% c("Ynn",#not those who enrolled for the first and no show for the rest
                                             "nYn"))%>%##not those who enrolled for the first and no show for the rest
             group_by(ppid,Degree)%>%summarise(reenroll=n())
-#graduated students
+
+#graduated students !who first entered July 1, 2020 and June 30, 2021!
 graduated<-retention%>%filter(Degree%in%c("MSCJ","MSM","MBA"),#Master online programs
                    `Entering Semester`%in%c("2020 Fall","2021 Spring"))%>% #begins 2020 fall or 2021 spring
             filter(`Grad Date`>"2020-07-01"&`Grad Date`<"2022-06-30")%>%
             group_by(ppid,Degree)%>%summarise(graduated=n())
 
-#unduplicated return and grad students
+#merge: unduplicated return and grad students
 ret.grad<-plyr::join_all(list(reenroll,graduated),type = "full")%>%
                 select(ppid,Degree)%>%#one appearance is one, then no need the cnt vars
                 unique()%>%arrange(ppid)%>%group_by(Degree)%>%summarise(ret.grad=n())
 
-#total first time students
+#total: first time students
 tot.firsttime<-retention%>%filter(Degree%in%c("MSCJ","MSM","MBA"),#Master online programs
                    `Entering Semester`%in%c("2020 Fall","2021 Spring"))%>%
                 group_by(Degree)%>%summarise(tot.firsttime=n())
 
-#calculate the prt of return/grad students among all first time students (enrolled in 2020F/2021S)
+#calculate: the prt of return/grad students among all first time students (enrolled in 2020F/2021S)
 plyr::join_all(list(ret.grad,tot.firsttime),type = "full")%>%
   mutate(prt=formattable::percent(ret.grad/tot.firsttime,digits = 0))%>%
   View()
-
-
-#QUESTION GD136/139: Report the count of students who graduated from your institution’s  program between July 1, 2021 and June 30, 2022.
-retention%>%filter(Degree%in%c("MSCJ","MSM","MBA"))%>% #master online programs
-            filter(`Grad Date`>"2021-07-01"&`Grad Date`<"2022-06-30")%>%#grad between July 1, 2021 and June 30, 2022
-            group_by(Degree)%>%summarise(graduated=n())%>%View()
 ```
 
-# Completion
+# Completion data
+```{r US News all graduated}
+#QUESTION UG35/128&GD136/139: Report the count of students who graduated from your institution’s  program between July 1, 2021 and June 30, 2022.----do not use CIP because they overlapp with on-campus programs---use degree and major instead
+#load data
+rgs.cp<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/Completions/Final List of Graduates By Date Range-Including Certs From Registrar_clean.xlsx")
 
+## UG graduated 21-22 in online bachelor programs
+rgs.cp%>%filter(Program=="UNDER",#online bachelor programs
+                Major%in%c("Business Administration",
+                           grep(value=TRUE,"Completion",rgs.cp$Major)))%>%
+        count(Major)%>%View()
+
+#MSCJ, MSM, MBA graduated 21-22 
+rgs.cp%>%filter(Degree%in% c("MSCJ", "MSM", "MBA"))%>%count(Degree)%>%View()
+```
 
 
 #Veteran data

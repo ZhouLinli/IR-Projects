@@ -306,9 +306,40 @@ write_xlsx(ipeds.complete16_crt,"/Users/linlizhou/Documents/LASELL/data/completi
 
 # IPEDS Completions (due 2022 Oct 19)
 
+#complete file: august 21  december 21 may 22 jan 22
 
-# US News Completion/graduation 
-## question 128: count of students who graduated
+```{r load data without NA cols}
+rgs.cp<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/Completions/Final List of Graduates By Date Range-Including Certs From Registrar.xlsx",skip = 6)%>%#header on row 7
+              janitor::remove_empty(c("rows", "cols"))%>%#remove all-NA, inlcuding headers, rows/cols
+              rename(ppid=`People Code ID`)
+
+#remove all-NA cols: sum each col's # of NA rows, as long as not all rows are NA then select them 
+rgs.cp <- rgs.cp[ , colSums(is.na(rgs.cp)) < nrow(rgs.cp)] # all rows of selected cols
+rgs.cp <- rgs.cp%>%select(-...8)#remove another NA col that has one removable character value
+rgs.cp <- rgs.cp[1:(nrow(rgs.cp)-2),]#remove the last two rows that are summarative total info and NAs
+
+#explore: lapply(rgs.cp, unique)
+#valuable vars:
+##program GRAD/UNDER; Major; cip code (28 types)
+##graduation date (4 types); Cohort 497 NA=matric date; 
+rgs.cp%>%count(`Graduation Date`)
+##transfer
+#save
+write.xlsx(rgs.cp,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/Completions/Final List of Graduates By Date Range-Including Certs From Registrar_clean.xlsx")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -816,14 +816,3 @@ distance[is.na(distance)]<-0#without count are NA, convert to 0
 View(distance)#for convinience of copy-paste: ONLY REPORT THE FIRST TWO ROWS
 ```
 
-
-
-
-```{r U}
-#complete file: august 21  december 21 may 22
-#ask linda's official file + report manager
-#ba/bs 
-
-
-```
-

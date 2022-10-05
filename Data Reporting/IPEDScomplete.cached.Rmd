@@ -318,16 +318,75 @@ rgs.cp <- rgs.cp[ , colSums(is.na(rgs.cp)) < nrow(rgs.cp)] # all rows of selecte
 rgs.cp <- rgs.cp%>%select(-...8)#remove another NA col that has one removable character value
 rgs.cp <- rgs.cp[1:(nrow(rgs.cp)-2),]#remove the last two rows that are summarative total info and NAs
 
-#explore: lapply(rgs.cp, unique)
-#valuable vars:
-##program GRAD/UNDER; Major; cip code (28 types)
-##graduation date (4 types); Cohort 497 NA=matric date; 
-rgs.cp%>%count(`Graduation Date`)
-##transfer
+
+#duplication: ipeds.cp%>%group_by(ppid)%>%count()%>%ungroup()%>%count(n)#due to CIP code
+#part1: all ppid that has both na and value in cip code--replce na
+cip.nafound<-ipeds.cp%>%filter(ppid %in% cipna$ppid,#any NA-cip ppid all records
+                  !is.na(`Cip Code`))%>%#filter those do have a cip code
+          select(ppid,`Cip Code`)#save those ppid and corresponding cip code
+
+#part2: all ppid that has a cip code
+cip.nonna<-ipeds.cp%>%filter(!is.na(`Cip Code`))%>%select(ppid,`Cip Code`)%>%unique()
+
+#part3: all ppid that only has na cip
+cipna<-ipeds.cp%>%filter(is.na(`Cip Code`),
+                  !ppid%in%cip.nafound$ppid)%>%select(ppid,`Cip Code`)%>%unique()#161 rows
+
+#cip-major pairs not found
+ipeds.cp%>%filter(ppid%in%cipna$ppid)%>%group_by(Major,`Cip Code`)%>%count()%>%View()
+#cip-major pairs
+ipeds.cp%>%filter(!is.na(`Cip Code`))%>%
+  group_by(Major,`Cip Code`)%>%count()%>%arrange(Major)%>%
+  View()
+
 #save
 write.xlsx(rgs.cp,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/Completions/Final List of Graduates By Date Range-Including Certs From Registrar_clean.xlsx")
 ```
 
+```{r}
+#explore: lapply(rgs.cp, unique)
+#valuable vars: program GRAD/UNDER; Major; cip code (28 types), graduation date (4 types); Cohort 497 NA=matric date, transfer
+#select vars needed
+ipeds.cp<-rgs.cp%>%select(ppid, Program,Major,`Cip Code`,`Graduation Date`)
+
+
+#any with a cip code should be that
+ipeds.cp%>%filter()
+
+
+
+ipeds.cp%>%filter(ppid %in% c())
+
+ipeds.cp[ipeds.cp$ppid,]
+
+ipeds.cp[duplicated(ipeds.cp$ppid),]%>%arrange(ppid)
+
+#UGdatamart to date
+dmt0922<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/DataMart To Date/Final Datamart up to Date 09262022.xlsx")
+#investigate: lapply(dmt0922[20], unique)
+
+#only vars needed with correct order
+dmt0922.s<-dmt0922%>%select(PC_ID, ETHNICITY_REPORT_DESC)%>%
+  mutate(ethnicity=factor(ETHNICITY_REPORT_DESC, 
+                          levels = c("Non Resident Alien",
+                                     "Hispanic",
+                                     "American Indian or Alaska Native",
+                                     "Asian",
+                                     "Black or African American",
+                                     "Native Hawaiian or Other Pacific Islander",
+                                     "White",
+                                     "Two or more Races",
+                                     "Race and Ethnicity Unknown")))%>%
+  select(-ETHNICITY_REPORT_DESC)%>%#remove used
+  rename(ppid=PC_ID)#consistency when merge
+
+#merge
+ipeds.cp.ug<-plyr::join_all(list(ipeds.cp, dmt0922.s),type = "left")%>%unique()#1034>941
+
+duplicated.id<-ipeds.cp.ug[duplicated(ipeds.cp.ug$ppid),]%>%arrange(ppid)
+
+ipeds.cp.ug%>%filter(is.na(ethnicity))
+```
 
 
 

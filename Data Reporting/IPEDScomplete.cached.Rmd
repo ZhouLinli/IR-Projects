@@ -405,7 +405,7 @@ ipeds.cp<-rgs.cp%>%select(ppid, Program, Major,cip,`Graduation Date`)%>%unique()
 ```
 
 
-```{r ethnicity}
+```{r ethnicity UGdmt}
 #UGdatamart to date
 dmt0922<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/DataMart To Date/Final Datamart up to Date 09262022.xlsx")
 #investigate: lapply(dmt0922[20], unique)
@@ -426,36 +426,35 @@ dmt0922.s<-dmt0922%>%select(PC_ID, ETHNICITY_REPORT_DESC)%>%
   rename(ppid=PC_ID)#consistency when merge
 
 ###merge
-ipeds.cp.t<-plyr::join_all(list(ipeds.cp, dmt0922.s),type = "left")%>%unique()#597>574
+ipeds.cp<-plyr::join_all(list(ipeds.cp, dmt0922.s),type = "left")%>%unique()#597>574
+
 # duplication: ipeds.cp.t%>%group_by(ppid)%>%count()%>%ungroup()%>%count(n)# have 49 dup
-dup.id<-ipeds.cp.t%>%group_by(ppid)%>%count()%>%ungroup()%>%filter(n>1)
-dup<-ipeds.cp.t%>%filter(ppid %in% dup.id$ppid)
+dup.id<-ipeds.cp%>%group_by(ppid)%>%count()%>%ungroup()%>%filter(n>1)
+dup<-ipeds.cp%>%filter(ppid %in% dup.id$ppid)#99 rows
 #known in the duplicated df
-eth.k<-dup%>%filter(ethnicity!="Race and Ethnicity Unknown")%>%unique()
+eth.k<-dup%>%filter(ethnicity!="Race and Ethnicity Unknown")%>%unique()%>%#56 rows
+  rename(eth.new=ethnicity)%>%#rename as a new var for later merge
+  select(ppid,eth.new)
 #unknown in the duplicated df
-eth.unk<-dup%>%filter(ethnicity=="Race and Ethnicity Unknown")%>%unique()%>%arrange(ppid)
+eth.unk<-dup%>%filter(ethnicity=="Race and Ethnicity Unknown")%>%unique()%>%arrange(ppid)#43 rows
 #compare
 sum(! eth.unk$ppid%in%eth.k$ppid)# all unknown are in known
-#ppid that have both/intersect, keep the eth.k one
-eth.int<-inner_join(x=eth.k, y=eth.unk, by="ppid")%>%
-  mutate(ethnicity=ethnicity.x)%>%
-  select(ppid,ethnicity)%>%arrange(ppid)
-#ppid that have no intersect, they are truely ethnicity.unknown
-eth.unk<-eth.unk%>%filter(! ppid%in% eth.int$ppid)
-  
 
-
-#merge: filtered truely eth.unk and the other eth.k (from duplication df)
-dup.t<-plyr::join_all(list(eth.unk, eth.k), type = "full")%>%unique()%>%arrange(ppid)
-
-
-
-
-###solve ethnicity conflict by looking up the academic year and term
-
-
-ipeds.cp.ug%>%filter(is.na(ethnicity))
+#reassign those unknown values in the original data
+ipeds.cp<-left_join(ipeds.cp, eth.k)%>%#all eth.k's ethnicity as a new col for those eth.k's ppids in origional file
+  mutate(eth.new=if_else(is.na(eth.new),#if not settled
+                       ethnicity,#equal them to keep their origional ethnicity value
+                       eth.new))%>%#if settled, then keep the settled ones
+  select(-ethnicity)%>%#used var
+  rename(ethnicity=eth.new)%>%#rename to original
+  unique()#should reduce 43, 597-554=43 YES! wuwuwu
 ```
+
+```{r ethnicity GD}
+ipeds.cp%>%filter(is.na(ethnicity))%>%count(Program)#194 GD NA
+
+```
+
 
 
 

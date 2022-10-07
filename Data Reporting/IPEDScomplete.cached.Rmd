@@ -493,7 +493,8 @@ ipeds.cp<-ipeds.cp%>% mutate(ethnicity=factor(ethnicity,
                                      "Native Hawaiian or Other Pacific Islander",
                                      "White",
                                      "Two or more Races",
-                                     "Race and Ethnicity Unknown")))
+                                     "Race and Ethnicity Unknown")),
+                          gender=factor(gender,levels = c("M","F")))
 #check: lapply(ipeds.cp,unique)
 #save
 write.xlsx(ipeds.cp,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/Completions/Complete.with.Ethnicity.xlsx")
@@ -501,20 +502,328 @@ write.xlsx(ipeds.cp,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS
 
 
 ```{r reporting}
+#see all the cip and degree
 ls<-ipeds.cp%>%count(cip,Degree)%>%arrange(cip); View(ls)
-
+#03.0103
 ipeds.cp%>%filter(cip=="03.0103")%>%count(ethnicity,gender)%>%View()
 
-ipeds.cp%>%filter(cip=="09.0100",
-                  )%>%count(ethnicity,gender)%>%View()
+#09.0100, BA
+ipeds.cp%>%filter(cip=="09.0100",Degree=="BA")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+#09.0100, MSC
+ipeds.cp%>%filter(cip=="09.0100",Degree=="MSC")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#09.0199, BA
+ipeds.cp%>%filter(cip=="09.0199",Degree=="BA")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#11.0103
+ipeds.cp%>%filter(cip=="11.0103")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#13.0301, BA
+ipeds.cp%>%filter(cip=="13.0301",Degree=="BA")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+#13.0301, MEDCLI
+ipeds.cp%>%filter(cip=="13.0301",Degree=="MEDCLI")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#13.1099, MEDMD
+ipeds.cp%>%filter(cip=="13.1099",Degree=="MEDMD")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#13.1202, BA
+ipeds.cp%>%filter(cip=="13.1202",Degree=="BA")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+#13.1202, MEDEL
+ipeds.cp%>%filter(cip=="13.1202",Degree=="MEDEL")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#13.1205
+ipeds.cp%>%filter(cip=="13.1205")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#13.1210, BA
+ipeds.cp%>%filter(cip=="13.1210",Degree=="BA")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#22.0000, BA
+ipeds.cp%>%filter(cip=="22.0000",Degree=="BA")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#23.0101, BA
+ipeds.cp%>%filter(cip=="23.0101",Degree=="BA")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+# DID NOT REPORT 23.1302-MFA  AND 24.0000-AA
+
+#24.0101, DO NOT HAVE ANY
+ipeds.cp%>%filter(cip=="24.0101",Degree=="BA")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#26.0101, BS
+ipeds.cp%>%filter(cip=="26.0101",Degree=="BS")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+
+#30.1901, MSNH
+ipeds.cp%>%filter(cip=="30.1901",Degree=="MSNH")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#30.2001, BA
+ipeds.cp%>%filter(cip=="30.2001",Degree=="BA")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+#30.9999, BA
+ipeds.cp%>%filter(cip=="30.9999",Degree=="BA")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#31.0504, BS
+ipeds.cp%>%filter(cip=="31.0504",Degree=="BS")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+#31.0504, MSSM
+ipeds.cp%>%filter(cip=="31.0504",Degree=="MSSM")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#31.0505, BS
+ipeds.cp%>%filter(cip=="31.0505",Degree=="BS")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#42.0101, BS
+ipeds.cp%>%filter(cip=="42.0101",Degree=="BS")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#DID NOT REPORT 43.0404-BS!
+
+#43.0406, BS
+ipeds.cp%>%filter(cip=="43.0406",Degree=="BS")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#45.0401, BS
+ipeds.cp%>%filter(cip=="45.0401",Degree=="BS")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+#45.0401, MSCJ
+ipeds.cp%>%filter(cip=="45.0401",Degree=="MSCJ")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#45.1101, BA
+ipeds.cp%>%filter(cip=="45.1101",Degree=="BA")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#50.0407, BA
+ipeds.cp%>%filter(cip=="50.0407",Degree=="BA")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#50.0409, BA
+ipeds.cp%>%filter(cip=="50.0409",Degree=="BA")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#51.0000, BS
+ipeds.cp%>%filter(cip=="51.0000",Degree=="BS")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#51.0913, BS
+ipeds.cp%>%filter(cip=="51.0913",Degree=="BS")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+#DID NOT REPORT 51.0913-MSAT!
+#51.0913, MSAT
+ipeds.cp%>%filter(cip=="51.0913",Degree=="MSAT")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+
+#51.2314, MSRS
+ipeds.cp%>%filter(cip=="51.2314",Degree=="MSRS")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#52.0201, BS
+ipeds.cp%>%filter(cip=="52.0201",Degree=="BS")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+#52.0201, MSRS
+ipeds.cp%>%filter(cip=="52.0201",Degree=="MBA")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#52.0211
+ipeds.cp%>%filter(cip=="52.0211")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#52.0301, BS
+ipeds.cp%>%filter(cip=="52.0301",Degree=="BS")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+#52.0301-none master
+ipeds.cp%>%filter(cip=="52.0301",Program=="GRAD")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#52.0701, BS
+ipeds.cp%>%filter(cip=="52.0701",Degree=="BS")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#52.0801, BS
+ipeds.cp%>%filter(cip=="52.0801",Degree=="BS")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+#52.0801, SECOND MAJOR- HOW TO REPORT?
+
+
+
+
+#52.0901, BS
+ipeds.cp%>%filter(cip=="52.0901",Degree=="BS")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#52.0906, BS
+ipeds.cp%>%filter(cip=="52.0906",Degree=="BS")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#52.0907, BS
+ipeds.cp%>%filter(cip=="52.0907",Degree=="BS")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+
+#52.1001, NONE MASTER
+ipeds.cp%>%filter(cip=="52.1001")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+
+#52.1101, BS
+ipeds.cp%>%filter(cip=="52.1101",Degree=="BS")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#52.1301, NONE BS
+ipeds.cp%>%filter(cip=="52.1301",Program=="UNDER")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+#52.1301, 6-CER
+ipeds.cp%>%filter(cip=="52.1301",Degree=="CER")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+#52.1301, "MSHR","MSM","MSPM"
+ipeds.cp%>%filter(cip=="52.1301",Degree%in% c("MSHR","MSM","MSPM"))%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+
+#52.1401, BS
+ipeds.cp%>%filter(cip=="52.1401",Degree=="BS")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+#52.1401, CER - DID NOT REPORT
+ipeds.cp%>%filter(cip=="52.1401",Degree=="CER")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+#52.1401, MSMK
+ipeds.cp%>%filter(cip=="52.1401",Degree=="MSMK")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#52.1902, BS
+ipeds.cp%>%filter(cip=="52.1902",Degree=="BS")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+
+#54.0101, BA
+ipeds.cp%>%filter(cip=="54.0101",Degree=="BA")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+#54.0101, HOW TO REPORT SECOND MAJOR
 ```
 
 
 
+# DID NOT REPORT:
+## 23.1302-MFA  
+## 24.0000-AA
+## 43.0404-BS
+## 51.0913-MSAT
+## 52.1401-CER
 
+#52.1301, 6 means CER?
 
-
-
+#HOW TO REPORT SECOND MAJOR:
+## 52.0801
+## 54.0101
 
 
 

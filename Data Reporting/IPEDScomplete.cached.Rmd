@@ -399,31 +399,21 @@ write.xlsx(rgs.cp,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2
 
 ```{r ipeds.cp}
 #select vars needed
-ipeds.cp<-rgs.cp%>%select(ppid, Program, Major,cip,`Graduation Date`)%>%unique()#547 rows
+ipeds.cp<-rgs.cp%>%select(ppid, Program, Major,cip,Degree,`Graduation Date`)%>%unique()#547 rows
 #explore: lapply(ipeds.cp, unique) #no NAs
 #investigate duplication: ipeds.cp%>%count(ppid)%>%ungroup()%>%count(n)#all unique
 ```
 
 
-```{r ethnicity UGdmt}
+```{r ethnicity/gender col and SAVE}
+####finding ethnicity/gender for UG 
 #UGdatamart to date
 dmt0922<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/DataMart To Date/Final Datamart up to Date 09262022.xlsx")
 #investigate: lapply(dmt0922[20], unique)
 
 #only vars needed with correct order
-dmt0922.s<-dmt0922%>%select(PC_ID, ETHNICITY_REPORT_DESC)%>%
-  mutate(ethnicity=factor(ETHNICITY_REPORT_DESC, 
-                          levels = c("Non Resident Alien",
-                                     "Hispanic",
-                                     "American Indian or Alaska Native",
-                                     "Asian",
-                                     "Black or African American",
-                                     "Native Hawaiian or Other Pacific Islander",
-                                     "White",
-                                     "Two or more Races",
-                                     "Race and Ethnicity Unknown")))%>%
-  select(-ETHNICITY_REPORT_DESC)%>%#remove used
-  rename(ppid=PC_ID)#consistency when merge
+dmt0922.s<-dmt0922%>%select(PC_ID, ETHNICITY_REPORT_DESC,GENDER_CODE)%>%
+  rename(ppid=PC_ID, ethnicity=ETHNICITY_REPORT_DESC,gender=GENDER_CODE)#consistency when merge
 
 ###merge
 ipeds.cp<-plyr::join_all(list(ipeds.cp, dmt0922.s),type = "left")%>%unique()#597>574
@@ -448,12 +438,77 @@ ipeds.cp<-left_join(ipeds.cp, eth.k)%>%#all eth.k's ethnicity as a new col for t
   select(-ethnicity)%>%#used var
   rename(ethnicity=eth.new)%>%#rename to original
   unique()#should reduce 43, 597-554=43 YES! wuwuwu
+
+
+
+####### finding ethnicity for GD
+# check values: ipeds.cp%>%count(ethnicity)#194 GD NA for both gender and ethnicity, 554 rows
+#try to found the 194 NA eth values in enrollment data:
+enroll2122<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ipeds_21-22_rerun.xlsx")
+# check values: enroll2122%>%count(ethnicity.c) # same value with ipeds.cp, no need to recode
+#only vars needed with correct order
+enroll2122.s<-enroll2122%>%select(ppid,ethnicity.c,gender.assign)
+
+###merge (new eth col is ethnicity.c)
+ipeds.cp<-plyr::join_all(list(ipeds.cp,enroll2122.s),type = "left")%>%#554 rows
+  mutate(ethnicity.c=if_else(is.na(ethnicity.c),#if not settled by the new col (from enroll2122.s)
+                       ethnicity,#equal them to keep their origional ethnicity value
+                       ethnicity.c),#if settled, then keep the settled ones
+         gender.assign=if_else(is.na(gender.assign),#if not settled by the new col (from enroll2122.s)
+                       gender,#equal them to keep their origional ethnicity value
+                       gender.assign),)%>%#if settled, then keep the settled ones
+  select(-ethnicity,-gender)%>%#used var
+  rename(ethnicity=ethnicity.c, gender=gender.assign)%>%#rename to original
+  unique()#547 rows, 29 NAs for both gender and ethnicity
+
+#try to found the rest 29 NAs in 20-21 data
+enroll20.21<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2021-2022/Fall Collection/12-month enrollment/FY21 12-month enrollment.xlsx", sheet = "All Students")
+#check values: enroll20.21%>%count(`Race/Ethnicity`)
+#excel_sheets("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2021-2022/Fall Collection/12-month enrollment/FY21 12-month enrollment.xlsx")
+#select vars needed
+enroll20.21.s<-enroll20.21%>%select(`People Code Id`,`Race/Ethnicity`, Gender)%>%
+  rename(ppid=`People Code Id`,#rename for match when merge
+         eth.new=`Race/Ethnicity`)#rename as new col when merge
+
+###merge (new eth col is eth.new)
+ipeds.cp<-plyr::join_all(list(ipeds.cp,enroll20.21.s),type = "left")%>%#554 rows
+  mutate(eth.new=if_else(is.na(eth.new),#if not settled by the new col (from enroll20.21.s)
+                       ethnicity,#equal them to keep their origional ethnicity value
+                       eth.new),#if settled, then keep the settled ones
+         Gender=if_else(is.na(Gender),#if not settled by the new col (from enroll20.21.s)
+                       gender,#equal them to keep their origional ethnicity value
+                       Gender))%>%#if settled, then keep the settled ones
+  select(-ethnicity,-gender)%>%#used var
+  rename(ethnicity=eth.new, gender=Gender)%>%#rename to original
+  unique()#547 rows, no ethnicity NAs
+
+#check duplication: ipeds.cp%>%count(ppid)%>%ungroup()%>%count(n) #unique/unduplicated 1 n per ppid
+#factorize correct order
+ipeds.cp<-ipeds.cp%>% mutate(ethnicity=factor(ethnicity, 
+                          levels = c("Non Resident Alien",
+                                     "Hispanic",
+                                     "American Indian or Alaska Native",
+                                     "Asian",
+                                     "Black or African American",
+                                     "Native Hawaiian or Other Pacific Islander",
+                                     "White",
+                                     "Two or more Races",
+                                     "Race and Ethnicity Unknown")))
+#check: lapply(ipeds.cp,unique)
+#save
+write.xlsx(ipeds.cp,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/Completions/Complete.with.Ethnicity.xlsx")
 ```
 
-```{r ethnicity GD}
-ipeds.cp%>%filter(is.na(ethnicity))%>%count(Program)#194 GD NA
 
+```{r reporting}
+ls<-ipeds.cp%>%count(cip,Degree)%>%arrange(cip); View(ls)
+
+ipeds.cp%>%filter(cip=="03.0103")%>%count(ethnicity,gender)%>%View()
+
+ipeds.cp%>%filter(cip=="09.0100",
+                  )%>%count(ethnicity,gender)%>%View()
 ```
+
 
 
 

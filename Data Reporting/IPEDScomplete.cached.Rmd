@@ -811,19 +811,30 @@ ipeds.cp%>%filter(cip=="54.0101",Degree=="BA")%>%
 ```
 
 
+#HOW TO REPORT SECOND MAJOR:
+## 52.0801
+## 54.0101
+###when deciding 1st/ 2nd major -- see all people with 2 majors, arbitrarily select one as 1st and the other as 2nd for all.
 
-# DID NOT REPORT:
+#DID NOT REPORT:
 ## 23.1302-MFA  
-## 24.0000-AA
+## 24.0000-AA -make it 24.0101?
 ## 43.0404-BS
 ## 51.0913-MSAT
 ## 52.1401-CER
 
-#52.1301, 6 means CER?
 
-#HOW TO REPORT SECOND MAJOR:
-## 52.0801
-## 54.0101
+```{r}
+lapply(rgs.cp, unique)
+#NOTE: 
+#5 bachlor, 6 means CER, 7 means master
+#master degree == grad but not cer 
+#bachelor degree == ba bs
+##aa is coded as under
+##cer can be under and grad
+##bs in cs and bs in eng = one degree award
+##bs in cs and mba = two degree award
+```
 
 
 

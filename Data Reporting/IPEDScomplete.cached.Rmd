@@ -11,9 +11,11 @@ knitr::opts_chunk$set(echo = TRUE)#echo is codes
 
 ```{r load r package}
 library(readxl)
-library(dplyr)
-library(plyr)#for join_all
-library(writexl)
+library(tidyverse)
+#library(dplyr)
+#library(plyr)#for join_all
+#detach("package:plyr", unload=TRUE)
+library(writexl)#write_xlsx
 library(lubridate)
 library(stringr)
 ```
@@ -394,7 +396,7 @@ major.program=="UNDERLiberal Arts"~"24.0000",
 # rgs.cp%>%filter(ppid%in% dup.id$ppid)%>%arrange(ppid)#it's all due to concentration and nothing else
 
 #save
-write.xlsx(rgs.cp,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/Completions/Final List of Graduates By Date Range-Including Certs From Registrar_clean.xlsx")
+write_xlsx(rgs.cp,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/Completions/Final List of Graduates By Date Range-Including Certs From Registrar_clean.xlsx")
 ```
 
 ```{r ipeds.cp}
@@ -497,11 +499,13 @@ ipeds.cp<-ipeds.cp%>% mutate(ethnicity=factor(ethnicity,
                           gender=factor(gender,levels = c("M","F")))
 #check: lapply(ipeds.cp,unique)
 #save
-write.xlsx(ipeds.cp,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/Completions/Complete.with.Ethnicity.xlsx")
+write_xlsx(ipeds.cp,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/Completions/Complete.with.Ethnicity.xlsx")
 ```
 
 
 ```{r reporting}
+ipeds.cp<-read_xlsx("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/Completions/Complete.with.Ethnicity.xlsx")
+
 #see all the cip and degree
 ls<-ipeds.cp%>%count(cip,Degree)%>%arrange(cip); View(ls)
 #03.0103
@@ -575,6 +579,12 @@ ipeds.cp%>%filter(cip=="22.0000",Degree=="BA")%>%
 
 #23.0101, BA
 ipeds.cp%>%filter(cip=="23.0101",Degree=="BA")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
+#10-10-2022 adding 23.1302 MFA
+ipeds.cp%>%filter(cip=="23.1302",Degree=="MFA")%>%
   group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
   pivot_wider(names_from = gender,values_from = n)%>%View()
 

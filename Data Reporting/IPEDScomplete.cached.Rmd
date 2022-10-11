@@ -390,7 +390,7 @@ major.program=="UNDERLiberal Arts"~"24.0000",
 ```
 
 
-```{r duplication and SAVE raw}
+```{r duplication and SAVE RGS.CP raw}
 #duplication: rgs.cp%>%group_by(ppid)%>%count()%>%ungroup()%>%count(n)#due to CIP code
 # dup.id<-rgs.cp%>%group_by(ppid)%>%count()%>%ungroup()%>%filter(n>1)
 # rgs.cp%>%filter(ppid%in% dup.id$ppid)%>%arrange(ppid)#it's all due to concentration and nothing else
@@ -399,7 +399,9 @@ major.program=="UNDERLiberal Arts"~"24.0000",
 write_xlsx(rgs.cp,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/Completions/Final List of Graduates By Date Range-Including Certs From Registrar_clean.xlsx")
 ```
 
-```{r ipeds.cp}
+```{r IPEDS.CP CREATED}
+rgs.cp<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/Completions/Final List of Graduates By Date Range-Including Certs From Registrar_clean.xlsx")
+
 #select vars needed
 ipeds.cp<-rgs.cp%>%select(ppid, Program, Major,cip,Degree,`Graduation Date`)%>%unique()#547 rows
 #explore: lapply(ipeds.cp, unique) #no NAs
@@ -407,15 +409,15 @@ ipeds.cp<-rgs.cp%>%select(ppid, Program, Major,cip,Degree,`Graduation Date`)%>%u
 ```
 
 
-```{r ethnicity/gender col and SAVE}
+```{r ethnicity/gender/age from datamart}
 ####finding ethnicity/gender for UG 
 #UGdatamart to date
 dmt0922<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/DataMart To Date/Final Datamart up to Date 09262022.xlsx")
 #investigate: lapply(dmt0922[20], unique)
 
 #only vars needed with correct order
-dmt0922.s<-dmt0922%>%select(PC_ID, ETHNICITY_REPORT_DESC,GENDER_CODE)%>%
-  rename(ppid=PC_ID, ethnicity=ETHNICITY_REPORT_DESC,gender=GENDER_CODE)#consistency when merge
+dmt0922.s<-dmt0922%>%select(PC_ID, ETHNICITY_REPORT_DESC,GENDER_CODE,BIRTHDATE)%>%
+  rename(ppid=PC_ID, ethnicity=ETHNICITY_REPORT_DESC,gender=GENDER_CODE,dob=BIRTHDATE)#consistency when merge
 
 ###merge
 ipeds.cp<-plyr::join_all(list(ipeds.cp, dmt0922.s),type = "left")%>%unique()#597>574
@@ -440,10 +442,11 @@ ipeds.cp<-left_join(ipeds.cp, eth.k)%>%#all eth.k's ethnicity as a new col for t
   select(-ethnicity)%>%#used var
   rename(ethnicity=eth.new)%>%#rename to original
   unique()#should reduce 43, 597-554=43 YES! wuwuwu
+```
 
 
-
-####### finding ethnicity for GD
+```{r ethnicity/gender from ipeds.enroll}
+####### finding ethnicity/gender/age for GD
 # check values: ipeds.cp%>%count(ethnicity)#194 GD NA for both gender and ethnicity, 554 rows
 #try to found the 194 NA eth values in enrollment data:
 enroll2122<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ipeds_21-22_rerun.xlsx")
@@ -497,7 +500,48 @@ ipeds.cp<-ipeds.cp%>% mutate(ethnicity=factor(ethnicity,
                                      "Two or more Races",
                                      "Race and Ethnicity Unknown")),
                           gender=factor(gender,levels = c("M","F")))
+```
+
+
+
+```{r age of the rest and SAVE}
+#ipeds.cp's age
+ipeds.cp<-ipeds.cp%>%mutate(age=age.calc(dob))%>%select(-dob)#remove used
+#investigate: ipeds.cp.t%>%filter(is.na(age))%>%count()#194 na values
+
+#########load dataset that contains age data
+ug.gd2122<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ug.gd_21-22_rerun.xlsx")
+#select age and ppid
+ug.gd2122age<-ug.gd2122%>%select(ppid,age)%>%unique()%>%rename(age.new=age)#always given a new name b/c same name won't merge
+
+#########load dataset that contains age data of the rest from 2020-21 data
+cp20.21<-read_excel("/Volumes/lasellshare-1/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2021-2022/Fall Collection/Completions/IPEDS Completions.xlsx",sheet = "Degrees - Registrar")
+#excel_sheets("/Volumes/lasellshare-1/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2021-2022/Fall Collection/Completions/IPEDS Completions.xlsx")
+#select age and ppid
+cp20.21age<-cp20.21%>%rename(ppid=`People Code ID`,age.new=Age)%>%
+  select(ppid,age.new)%>%unique()%>%mutate(age.new=age.new+2)#age is taken 2020, now they are 2 years older
+
+#merge 20-21, 21-22 first
+age.20_22<-plyr::join_all(list(cp20.21age,ug.gd2122age),type = "full")
+
+#then merge it to ipeds.cp
+###merge (new age col is age.new)
+ipeds.cp<-plyr::join_all(list(ipeds.cp,ug.gd2122age),type = "left")%>%#554 rows
+  mutate(age.new=if_else(is.na(age.new),#if not settled by the new col (from enroll20.21.s)
+                       age,#equal them to keep their origional age value
+                       as.integer(age.new)))%>%#if settled, then keep the settled ones
+  select(-age)%>%#used var
+  rename(age=age.new)%>%#rename to original
+  unique()#547 rows, 30 age NAs
+
+
+ipeds.cp<-ipeds.cp%>%mutate(age.cat=case_when(age<=18 ~ "under 18",
+                    age>=18 & age<=24 ~ "18-24",
+                    age>=25 & age <=39 ~ "25-39", 
+                    age>=40 ~"40 and above"),
+                  age.cat=factor(age.cat,levels = c("under 18","18-24","25-39","40 and above")))
 #check: lapply(ipeds.cp,unique)
+
 #save
 write_xlsx(ipeds.cp,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/Completions/Complete.with.Ethnicity.xlsx")
 ```
@@ -841,7 +885,7 @@ ipeds.cp%>%filter(cip=="54.0101",Degree=="BA")%>%
 
 
 
-```{r}
+```{r completions data online programs}
 ###
 ###DID NOT REPORT:
 ## 23.1302-MFA  added
@@ -857,7 +901,6 @@ ipeds.cp%>%filter(cip=="54.0101",Degree=="BA")%>%
 ###
 ###
 ###
-#####
 ##online programs:
 ###45.0401, MSCJ
 ##52.1301, "MSHR","MSM","MSPM"
@@ -875,22 +918,69 @@ ipeds.cp%>%
 
 #completers by level
 ipeds.cp%>%count(Degree)
+
+
+
 ##Associate's degree level: gender
 ipeds.cp%>%filter(Degree=="AA")%>%
   group_by(gender,.drop = FALSE)%>%count()%>%View()
+
 ##Associate's degree level: race
 ipeds.cp%>%filter(Degree=="AA")%>%
   group_by(ethnicity,.drop = FALSE)%>%count()%>%View()
+
 ##Associate's degree level: age
 ipeds.cp%>%filter(Degree=="AA")%>%
+  group_by(age.cat,.drop = FALSE)%>%count()%>%View()
+
+
+
+##Bachelor's degree level: gender
+ipeds.cp%>%filter(Degree%in%c("BS","BA"))%>%
+  group_by(gender,.drop = FALSE)%>%count()%>%View()
+
+##Bachelor's degree level: race
+ipeds.cp%>%filter(Degree%in%c("BS","BA"))%>%
   group_by(ethnicity,.drop = FALSE)%>%count()%>%View()
-##
+
+##Bachelor's degree level: age
+ipeds.cp%>%filter(Degree%in%c("BS","BA"))%>%
+  group_by(age.cat,.drop = FALSE)%>%count()%>%View()
+
+
+
+##Master's degree level: gender
+ipeds.cp%>%filter(Program=="GRAD",Degree!="CER")%>%
+  group_by(gender,.drop = FALSE)%>%count()%>%View()
+
+##Master's degree level: race
+ipeds.cp%>%filter(Program=="GRAD",Degree!="CER")%>%
+  group_by(ethnicity,.drop = FALSE)%>%count()%>%View()
+
+##Master's degree level: age
+ipeds.cp%>%filter(Program=="GRAD",Degree!="CER")%>%
+  group_by(age.cat,.drop = FALSE)%>%count()%>%View()
+
+
+
+
+##Postbaccalaureate and post-master's certificates degree level: gender
+ipeds.cp%>%filter(Degree=="CER")%>%
+  group_by(gender,.drop = FALSE)%>%count()%>%View()
+
+##Postbaccalaureate and post-master's certificates degree level: race
+ipeds.cp%>%filter(Degree=="CER")%>%
+  group_by(ethnicity,.drop = FALSE)%>%count()%>%View()
+
+##Postbaccalaureate and post-master's certificates degree level: age
+ipeds.cp%>%filter(Degree=="CER")%>%
+  group_by(age.cat,.drop = FALSE)%>%count()%>%View()
+
 
 
 #NOTE: 
 #5 bachlor, 6 means CER, 7 means master
 #master degree == grad but not cer 
-#bachelor degree == ba bs
 ##aa is coded as under; cer can be under and grad
 ##bs in cs and bs in eng = one degree award
 ##bs in cs and mba = two degree award

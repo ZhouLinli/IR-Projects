@@ -415,8 +415,18 @@ ug.gd$gender.assign[! ug.gd$gender.assign %in% c("M","F")]<-c("M","M","F","M",
                                                   "M","M","F","F","F")
 #check: ug.gd%>%count(gender.assign)
 
+
+#define age function
+library(lubridate)
+age.calc <- function(dob, age.day = "2021-07-01", units = "years", floor = TRUE) {
+  calc.age = interval(dob, age.day) / duration(num = 1, units = units)
+  if (floor) return(as.integer(floor(calc.age))) #floor=round down to the nearest interger
+  return(calc.age)}#return has to be its own row
+#add age col
+ug.gd<-ug.gd%>%mutate(age=age.calc(`Birth Date`, age.day = "2021-07-01"))
+
 #save all
-write.xlsx(ug.gd,file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ug.gd_21-22_rerun.xlsx")
+write_xlsx(ug.gd,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ug.gd_21-22_rerun.xlsx")
 ```
 
 # IPEDS NOW!!

@@ -876,35 +876,25 @@ ipeds.cp%>%filter(cip=="52.1902",Degree=="BS")%>%
 ipeds.cp%>%filter(cip=="54.0101",Degree=="BA")%>%
   group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
   pivot_wider(names_from = gender,values_from = n)%>%View()
-#54.0101, HOW TO REPORT SECOND MAJOR
 ```
 
 
 
+```{r second major}
+###HOW TO REPORT SECOND MAJOR:
+## see if duplication due to two majors: when deciding 1st/ 2nd major -- see all people with 2 majors, arbitrarily select one as 1st and the other as 2nd for all.
+
+#linda sent a updated file containing two double major students: added to ipeds system
+ipeds.cp%>%filter(ppid=="P000050884")%>%select(ethnicity,gender)#BS and BA, legal study is the second major
+ipeds.cp%>%filter(ppid=="P000051243")%>%select(ethnicity,gender)#BS and BA, legal study is the second major
+```
 
 
 
-
-```{r completions data online programs}
-###
-###DID NOT REPORT:
-## 23.1302-MFA  added
-## 24.0000-AA -make it 24.0101
-## 43.0404-BS added
-## 51.0913-MSAT added
-## 52.1401-CER added
-## 
-## #HOW TO REPORT SECOND MAJOR:
-## 52.0801-none
-## 54.0101-none
-###when deciding 1st/ 2nd major -- see all people with 2 majors, arbitrarily select one as 1st and the other as 2nd for all.
-###
-###
-###
-##online programs:
-###45.0401, MSCJ
-##52.1301, "MSHR","MSM","MSPM"
-###52.0201, MSRS; #52.0201, BS
+```{r distance education online programs}
+##online programs/distance education - 
+###For 5Bachelors, NONE (except Bachelors Completion and business administration) can be completed entirely via distance education.  
+###For 7Master's and 6CER, ALL (expect in Education) can be completed entirely via distance education.
 ```
 
 
@@ -990,6 +980,21 @@ ipeds.cp%>%filter(Degree=="CER")%>%
 
 
 
+```{r other cip codes screen}
+#09.0199, BA
+ipeds.cp%>%filter(cip=="09.0199",Degree=="BA")%>%
+  group_by(Major)%>%count()%>%View()
+
+
+#13.1099, MEDMD
+ipeds.cp%>%filter(cip=="13.1099",Degree=="MEDMD")%>%
+  group_by(Major)%>%count()%>%View()
+
+
+#30.9999, BA
+ipeds.cp%>%filter(cip=="30.9999",Degree=="BA")%>%
+  group_by(Major)%>%count()%>%View()
+```
 
 
 

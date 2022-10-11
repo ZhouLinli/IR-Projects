@@ -582,16 +582,19 @@ ipeds.cp%>%filter(cip=="23.0101",Degree=="BA")%>%
   group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
   pivot_wider(names_from = gender,values_from = n)%>%View()
 
-
-#10-10-2022 adding 23.1302 MFA
-ipeds.cp%>%filter(cip=="23.1302",Degree=="MFA")%>%
+#23.1302, MFA
+ipeds.cp%>%filter(cip=="23.1302")%>%
   group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
   pivot_wider(names_from = gender,values_from = n)%>%View()
 
 
-# DID NOT REPORT 23.1302-MFA  AND 24.0000-AA
+# 24.0000-AA- treat as reporting to 24.0101
+ipeds.cp%>%filter(cip=="24.0000",Degree=="AA")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
 
-#24.0101, DO NOT HAVE ANY
+
+#24.0101, BA, DO NOT HAVE ANY
 ipeds.cp%>%filter(cip=="24.0101",Degree=="BA")%>%
   group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
   pivot_wider(names_from = gender,values_from = n)%>%View()
@@ -643,7 +646,12 @@ ipeds.cp%>%filter(cip=="42.0101",Degree=="BS")%>%
   pivot_wider(names_from = gender,values_from = n)%>%View()
 
 
-#DID NOT REPORT 43.0404-BS!
+#43.0404, BS
+ipeds.cp%>%filter(cip=="43.0404",Degree=="BS")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
 
 #43.0406, BS
 ipeds.cp%>%filter(cip=="43.0406",Degree=="BS")%>%
@@ -689,6 +697,13 @@ ipeds.cp%>%filter(cip=="51.0000",Degree=="BS")%>%
 ipeds.cp%>%filter(cip=="51.0913",Degree=="BS")%>%
   group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
   pivot_wider(names_from = gender,values_from = n)%>%View()
+
+#51.0913-MSAT
+ipeds.cp%>%filter(cip=="51.0913",Degree=="MSAT")%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+
 
 #DID NOT REPORT 51.0913-MSAT!
 #51.0913, MSAT
@@ -821,34 +836,67 @@ ipeds.cp%>%filter(cip=="54.0101",Degree=="BA")%>%
 ```
 
 
-#HOW TO REPORT SECOND MAJOR:
-## 52.0801
-## 54.0101
-###when deciding 1st/ 2nd major -- see all people with 2 majors, arbitrarily select one as 1st and the other as 2nd for all.
 
-#DID NOT REPORT:
-## 23.1302-MFA  
-## 24.0000-AA -make it 24.0101?
-## 43.0404-BS
-## 51.0913-MSAT
-## 52.1401-CER
+
+
 
 
 ```{r}
-lapply(rgs.cp, unique)
-#NOTE: 
-#5 bachlor, 6 means CER, 7 means master
-#master degree == grad but not cer 
-#bachelor degree == ba bs
-##aa is coded as under
-##cer can be under and grad
-##bs in cs and bs in eng = one degree award
-##bs in cs and mba = two degree award
+###
+###DID NOT REPORT:
+## 23.1302-MFA  added
+## 24.0000-AA -make it 24.0101
+## 43.0404-BS added
+## 51.0913-MSAT added
+## 52.1401-CER added
+## 
+## #HOW TO REPORT SECOND MAJOR:
+## 52.0801-none
+## 54.0101-none
+###when deciding 1st/ 2nd major -- see all people with 2 majors, arbitrarily select one as 1st and the other as 2nd for all.
+###
+###
+###
+#####
+##online programs:
+###45.0401, MSCJ
+##52.1301, "MSHR","MSM","MSPM"
+###52.0201, MSRS; #52.0201, BS
 ```
 
 
 
 
+```{r completer data}
+#all completers
+ipeds.cp%>%
+  group_by(ethnicity,gender,.drop = FALSE)%>%count()%>%
+  pivot_wider(names_from = gender,values_from = n)%>%View()
+
+#completers by level
+ipeds.cp%>%count(Degree)
+##Associate's degree level: gender
+ipeds.cp%>%filter(Degree=="AA")%>%
+  group_by(gender,.drop = FALSE)%>%count()%>%View()
+##Associate's degree level: race
+ipeds.cp%>%filter(Degree=="AA")%>%
+  group_by(ethnicity,.drop = FALSE)%>%count()%>%View()
+##Associate's degree level: age
+ipeds.cp%>%filter(Degree=="AA")%>%
+  group_by(ethnicity,.drop = FALSE)%>%count()%>%View()
+##
+
+
+#NOTE: 
+#5 bachlor, 6 means CER, 7 means master
+#master degree == grad but not cer 
+#bachelor degree == ba bs
+##aa is coded as under; cer can be under and grad
+##bs in cs and bs in eng = one degree award
+##bs in cs and mba = two degree award
+##
+##refer to enrollment report for the gender unknown
+```
 
 
 

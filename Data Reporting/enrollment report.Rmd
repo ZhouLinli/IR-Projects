@@ -84,19 +84,19 @@ gd22wi<-gd22wi%>%select(-`NA`)#remove NA col
 
 ```{r ug and gd}
 ################ug
-ug1<-ug21fa%>%select(Name,`People Code Id`,`gov id`,`FT/PT`,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%
+ug1<-ug21fa%>%select(Name,`People Code Id`,`gov id`,`FT/PT`,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`,Degree,Curriculum)%>%
   mutate(sourceLevel="UG",term="21fall")#mutate identification col
 
-ug2<-ug21sum2%>%select(Name,`People Code Id`,`gov id`,`FT/PT`,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%
+ug2<-ug21sum2%>%select(Name,`People Code Id`,`gov id`,`FT/PT`,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`,Degree,Curriculum)%>%
   mutate(sourceLevel="UG",term="21summer2")
 
-ug3<-ug22sp%>%select(Name,`People Code Id`,`gov id`,`FT/PT`,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%
+ug3<-ug22sp%>%select(Name,`People Code Id`,`gov id`,`FT/PT`,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`,Degree,Curriculum)%>%
   mutate(sourceLevel="UG",term="22spring")
 
-ug4<-ug22sum.main.1%>%select(Name,`People Code Id`,`gov id`,`FT/PT`,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%
+ug4<-ug22sum.main.1%>%select(Name,`People Code Id`,`gov id`,`FT/PT`,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`,Degree,Curriculum)%>%
   mutate(sourceLevel="UG",term="22summer.1main")
 
-ug5<-ug22wi%>%select(Name,`People Code Id`,`gov id`,`FT/PT`,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%
+ug5<-ug22wi%>%select(Name,`People Code Id`,`gov id`,`FT/PT`,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`,Degree,Curriculum)%>%
   mutate(sourceLevel="UG",term="22winter")
 
 #check selected vars
@@ -114,19 +114,19 @@ ug<-plyr::join_all(list(ug1,ug2,ug3,ug4,ug5),type="full")%>%
 #names(ug.ipeds)
 
 ################gd
-gd1<-g21fa%>%select(Name,`People Code Id`,`gov id`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`)%>%
+gd1<-g21fa%>%select(Name,`People Code Id`,`gov id`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`,Degree,Curriculum)%>%
   mutate(sourceLevel="GD",term="21fall")#mutate identification col
 
-gd2<-gd21sum2%>%select(Name,`People Code Id`,`gov id`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`)%>%
+gd2<-gd21sum2%>%select(Name,`People Code Id`,`gov id`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`,Degree,Curriculum)%>%
   mutate(sourceLevel="GD",term="21summer2")
 
-gd3<-gd22sp%>%select(Name,`People Code Id`,`gov id`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`)%>%
+gd3<-gd22sp%>%select(Name,`People Code Id`,`gov id`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`,Degree,Curriculum)%>%
   mutate(sourceLevel="GD",term="22spring")
 
-gd4<-gd22sum.main.1%>%select(Name,`People Code Id`,`gov id`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`)%>%
+gd4<-gd22sum.main.1%>%select(Name,`People Code Id`,`gov id`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`,Degree,Curriculum)%>%
   mutate(sourceLevel="GD",term="22summer.1main")
 
-gd5<-gd22wi%>%select(Name,`People Code Id`,`gov id`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`)%>%
+gd5<-gd22wi%>%select(Name,`People Code Id`,`gov id`,Gender,`FT/PT`,Ethnicity,`Term Credits`,`Cum Credits`,Degree,`Birth Date`,`New Ret Term YN`,`Transfer YN`,Degree,Curriculum)%>%
   mutate(sourceLevel="GD",term="22winter")
 
 #check selected vars: compare to ug, do not have transfer, college status, and cum credit
@@ -156,6 +156,7 @@ ug.gd<-plyr::join_all(list(ug,gd),type="full")%>%#4447 rows
 #sapply(list(ug.ipeds,gd.ipeds), function(x) nrow(x))%>%sum()#4447 rows
 
 ######ug.gd clean class and recode and transfer consistency
+######actually ug.gd class/factorize is not necessary here, save the factorize at the end for a "cleaned" dataset is better
 ug.gd%>%count(`Transfer YN`)
 #ls<-ug.gd%>%group_by(Program)%>%count();View(ls)#no NA
 #ug.gd[is.na(ug.gd$`Cum Credits`),]#a lot of NAs, all comes from UG 21 fall!
@@ -376,7 +377,7 @@ ug.gd<-plyr::join_all(list(ug.gd,lvl),type="left")%>%unique()%>%arrange(ppid)#44
 
 ######################degree
 #a few non degree levels
-ug.gd<-ug.gd%>%mutate(degree=if_else(Program %in% c("NON","Non Matriculated","Lasell Village"),"nondegree","degree"))
+ug.gd<-ug.gd%>%mutate(degree.c=if_else(Program %in% c("NON","Non Matriculated","Lasell Village"),"nondegree","degree"))
 
 ######consistency
 #any degree is degree
@@ -391,7 +392,7 @@ deg.n<-ug.gd%>%filter(!ppid%in%deg.y$ppid)%>%#not settled in degree ppid
 deg<-plyr::join_all(list(deg.y,deg.n),type = "full")#2057
 
 #merge and solve inconsistency
-ug.gd<-plyr::join_all(list(ug.gd.t,deg),type = "left")%>%select(-degree)#4422
+ug.gd<-plyr::join_all(list(ug.gd,deg),type = "left")
 ```
 
 ```{r factorize and SAVE}
@@ -427,14 +428,14 @@ age.calc <- function(dob, age.day = "2021-07-01", units = "years", floor = TRUE)
 ug.gd<-ug.gd%>%mutate(age=age.calc(`Birth Date`, age.day = "2021-07-01"))
 
 #save all
-write_xlsx(ug.gd,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ug.gd_21-22_rerun.xlsx")
+write_xlsx(ug.gd,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ug.gd_21-22_rerun2.xlsx")
 ```
 
 # IPEDS NOW!!
 ```{r ipeds data}
 #IPEDS 12-month enrollment (due 2022 Oct 19)
 #remove not needed cols
-ipeds<-ug.gd%>%select(-`Cum Credits`,-Program,-`gov id`,-`Birth Date`,-term,-`Term Credits`,-sourceLevel,-Name)%>%
+ipeds<-ug.gd%>%select(-`Cum Credits`,-Program,-`gov id`,-`Birth Date`,-term,-`Term Credits`,-sourceLevel,Name)%>%
   unique()%>%arrange(ppid)#2057 FINALLY!  
 #if no -Name then 2063??? due to names are spelled differently with middle names or not
 #check: ipeds%>%group_by(ppid)%>%summarise(cnt=n())%>%ungroup()%>%group_by(cnt)%>%count()

@@ -81,6 +81,7 @@ gd22wi<-gd22wi%>%select(-`NA`)#remove NA col
 ```
 
 
+
 ```{r ug and gd}
 ################ug
 ug1<-ug21fa%>%select(Name,`People Code Id`,`gov id`,`FT/PT`,`Transfer YN`,`College Attend`,Ethnicity,Gender,`Term Credits`,`Cum Credits`,Curriculum,`Birth Date`)%>%

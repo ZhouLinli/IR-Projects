@@ -445,17 +445,16 @@ dup.id<-ipeds.enroll%>%group_by(ppid)%>%count()%>%ungroup()%>%filter(n>1)
 
 ipeds.enroll%>%filter(ppid%in% dup.id$ppid)%>%arrange(ppid)
 
-
 #remove age duplication
-ipeds.enroll.ages<-ug.gd%>%select(age,ppid)%>%unique()
-age.y<-ipeds.enroll%>%filter(!is.na(age))%>%select(ppid,age)#is not na
-age.n<-ipeds.enroll%>%filter(! ppid %in% age.y$ppid)%>%select(ppid,age)#is 
-
+age.y<-ipeds.enroll%>%filter(!is.na(age))%>%mutate(newage=age)%>%select(ppid,newage)%>%unique()#have a age then that age
+age.n<-ipeds.enroll%>%filter(! ppid %in% age.y$ppid)%>%mutate(newage=age)%>%select(ppid,newage)%>%unique()#not settled by age
+age.df<-full_join(age.y,age.n)
+ipeds.enroll<-left_join(ipeds.enroll,age.df)%>%select(-age)%>%unique()%>%rename(age=newage)#2063 removed 2 rows that have both na and age value
 
 #remove name duplication
-ipeds.enroll.names<-ug.gd%>%select(Name,ppid)%>%unique()
+ipeds.enroll.names<-ug.gd%>%select(Name,ppid)%>%unique()%>%rename(newname=Name)
 #merge the first name only
-ipeds.enroll.t<-plyr::join_all(list(ipeds.enroll, ipeds.enroll.names), type = "left", match = "first")%>%unique()
+ipeds.enroll<-plyr::join_all(list(ipeds.enroll, ipeds.enroll.names), type = "left", match = "first")%>%select(-Name)%>%rename(Name=newname)%>%unique()#2057
 
 #check: ipeds.enroll%>%group_by(ppid)%>%summarise(cnt=n())%>%ungroup()%>%group_by(cnt)%>%count()
 ###investigate duplicated ppid: it's b/c FT/PT, new/return, term credits, term

@@ -14,38 +14,33 @@ knitr::opts_chunk$set(echo = TRUE)
 #external reporting for the Princeton Review 2022-8-19 due
 
 #Read local data files for course 2021-2022
-course21_22<-read.csv("/Users/linlizhou/Documents/LASELL/working on/Student Info by Course and Fiscal Year.csv")
+course21_22<-read.csv("/Users/linlizhou/Documents/LASELL/working on/Student Info by Course and Fiscal Year.csv")%>%unique()
 #course enrollment data for fall/spring/summer main, session1, and 2
 #run from report manager: https://reports.lasell.edu/Reports/report/IR/Student%20Info%20by%20Course%20and%20Fiscal%20Year
-#filter out unique rows
-nrow(course21_22)
-nrow(unique(course21_22))
-course21_22_unqiue<-unique(course21_22)
-
 
 
 #1.goal -question 10 and 11: confirm the following are offered as undergraduate course
-dplyr::glimpse(course21_22_unqiue)
-c("Entrepreneurial Leadership","Entrepreneurial Management","Introduction to Entrepreneurship","Introduction to New Business Ventures","New Product Development","New Venture Management","Venture Capital & Private Equity") %in% course21_22_unqiue$Course_Name
+dplyr::glimpse(course21_22)
+c("Entrepreneurial Leadership","Entrepreneurial Management","Introduction to Entrepreneurship","Introduction to New Business Ventures","New Product Development","New Venture Management","Venture Capital & Private Equity") %in% course21_22$Course_Name
 #cannot find exact match except "New Product Development"
 
 
 #filter business and management school and see the courses offered there
 library(dplyr)
 #investigate department names
-course21_22_unqiue %>% dplyr::group_by(Course_Department) %>% count()
+course21_22 %>% dplyr::group_by(Course_Department) %>% count()
 #list business school courses
-course21_22_unqiue%>%filter(Course_Department=="BUSS")%>%group_by(Course_Name)%>%count()
+course21_22%>%filter(Course_Department=="BUSS")%>%group_by(Course_Name)%>%count()
 #find two courses that contains Entrepreneur: "Amer Entrepreneurs: Trends & Innovation" and "Special Topics in Entrepreneurship"
 #then, need to confirm with Bruce for question 10 and 11
 
 
 #let's investigate which courses does Bruce teach, since Bruce is the only faculty for the entreprenurship program
-glimpse(course21_22_unqiue)
-course21_22_unqiue %>% filter(Course_Department=="BUSS")%>%
+glimpse(course21_22)
+course21_22 %>% filter(Course_Department=="BUSS")%>%
   group_by(Instructors)%>%count() #find out McKinnon, Bruce
 
-course21_22_unqiue%>% filter(Instructors=="McKinnon, Bruce" & Course_Department=="BUSS") %>%group_by(Course_Name) %>% count() #there are 7 courses
+course21_22%>% filter(Instructors=="McKinnon, Bruce" & Course_Department=="BUSS") %>%group_by(Course_Name) %>% count() #there are 7 courses
 #asked Eric, "Amer Entrepreneurs: Trends & Innovation","Entrepreneurship & Venture Creation", "Managing the Growing Company" and "Special Topics in Entrepreneurship" are the four courese entrepreneurship-related.
 
 
@@ -55,7 +50,7 @@ course21_22_unqiue%>% filter(Instructors=="McKinnon, Bruce" & Course_Department=
 #2.goal-question 15: What was the total enrollment (full-time and part-time) in your undergraduate entrepreneurship offerings for the 2021-2022 academic year?
 
 #based on the 4 courses are related with entrepreneurship, I can count the enrollment based on the n in the following formula
-t3<-course21_22_unqiue%>%filter(
+t3<-course21_22%>%filter(
   Course_Name %in% c("Amer Entrepreneurs: Trends & Innovation", "Entrepreneurship & Venture Creation", "Managing the Growing Company", "Special Topics in Entrepreneurship") 
 ) %>% group_by(Course_Name) %>% summarise(course_appearance=n())
 
@@ -64,8 +59,8 @@ sum(t3$course_appearance)#61 students
 
 
 #goal-question 15a: within those students who enrolled in the entrepreneurship-related course, count their unique majors
-glimpse(course21_22_unqiue)
-course21_22_unqiue%>%filter(
+glimpse(course21_22)
+course21_22%>%filter(
   Course_Name %in% c("Amer Entrepreneurs: Trends & Innovation", "Entrepreneurship & Venture Creation", "Managing the Growing Company", "Special Topics in Entrepreneurship") 
 ) %>% group_by(Major) %>% summarise(major_appearance=n())#14 majors
 ```
@@ -142,7 +137,7 @@ my.df<-my.df%>%mutate(Com=my.title3)
 
 
 # Enrollment data
-```{r US News}
+```{r enrollment data}
 #US NEWS ONLINE PROGRAM 07/01/2021-06/30-2022, due 2022-10-15
 ##ENROLLMENT QUESTIONS
 #load data
@@ -172,14 +167,11 @@ usn.enroll<-ug.gd%>%
 #usn.enroll[usn.enroll$ppid %in% dup.id$ppid,]#show all duplicated ppid - conflict b/c cum credits
 #keep one CUM CREDIT for duplicated ids
 usn.enroll$`Cum Credits`[is.na(usn.enroll$`Cum Credits`)]<-0#replace NA value with zero
+
 usn.enroll<-usn.enroll%>%#aim: assign one value for duplicated id (to resolve conflict)    
   arrange(desc(`Cum Credits`))%>%#largest cumcredit at the top (with no NA, if have NA, NA will be at top)
   arrange(ppid)%>%#same id group and has large-low cumcredit
   distinct(ppid,.keep_all = TRUE)#distinct will keep the !first row! (the correct cum credit), 316 rows
-
-
-
-
 
 
 ###########add cols needed
@@ -209,53 +201,88 @@ usn.enroll<-usn.enroll%>%mutate(
 #check: usn.enroll%>%group_by(CreditPrt)%>%count()#no NA
 #save  ppid for requesting financial aid
 #write.xlsx(list("PPID"=usn.enroll), file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/2022 US News/StudentLoanInfo_USNewsReport.xlsx")
+```
 
 
-
-
-
-
-
-
+```{r enrollment in loan dataset questions}
+usn.enroll<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/2022 US News/StudentLoanInfo_USNewsReport.xlsx")#indeed we saved it there for jennifer with that file name
 #answering questions:
 #age/birth date of UG, question 70##
 #calculate age from birth date
-usn.enroll%>%filter(level=="UG")%>%group_by(age.cat)%>%count()%>%
+usn.enroll%>%filter(Level=="UG")%>%group_by(age.cat)%>%count()%>%
   View()#for copy and paste convenience
 
-#GD age question 49 or 52###
-usn.enroll%>%filter(level=="GD")%>%group_by(Program)%>%
+
+#UG age question 
+usn.enroll%>%filter(Level=="UG",`New Ret Term YN`=="new")%>%
   summarise(mean.age=round(mean(age,na.rm = TRUE),digits=0))%>%#auto remove NA
   View()#for copy and paste convenience
 
+
+#GD age question 49 or 52###
+usn.enroll%>%filter(Level=="GD")%>%group_by(Program)%>%
+  summarise(mean.age=round(mean(age,na.rm = TRUE),digits=0))%>%#auto remove NA
+  View()#for copy and paste convenience
+
+
+
 #international students of UG, question 53,54##
-usn.enroll%>%filter(level=="UG")%>%group_by(ethnicity.c)%>%#UG's ethnicity
+usn.enroll%>%filter(Level=="UG")%>%group_by(ethnicity.c)%>%#UG's ethnicity
   summarise(cnt=n())%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%#count and percentage
   filter(ethnicity.c=="Non Resident Alien")%>%#question only asked international students
   View()#for copy and paste convenience
 
 #non-transfer of UG, question 55##
-usn.enroll%>%filter(level=="UG")%>%group_by(transfer,NewRet,status)%>%count()%>%
+usn.enroll%>%filter(Level=="UG")%>%group_by(transfer,NewRet,status)%>%count()%>%
   filter(NewRet=="new",#first year freshmen
          status=="FT")%>%#full time
          #all program are degree awarding programs
   View()
 
+
 #total of UG, question 55##
-usn.enroll%>%filter(level=="UG")%>%summarise(totUG=n())%>%View()
+usn.enroll%>%filter(Level=="UG")%>%summarise(totUG=n())%>%View()
+#total UG by gender
+usn.enroll%>%filter(Level=="UG")%>%count(Gender)%>%View()
+#total UG by ethnicity
+usn.enroll%>%filter(Level=="UG")%>%count(Ethnicity)%>%View()
+usn.enroll%>%filter(Ethnicity=="Non Resident Alien",Level=="UG")%>%select(`People Code Id`)
+usn.enroll%>%count(Ethnicity)
+#new UG by ethnicity
+usn.enroll%>%filter(Level=="UG",`New Ret Term YN`=="new")%>%count(Ethnicity)%>%View()
+
+
+#total GD by ethnicity
+usn.enroll%>%filter(Program=="MSM")%>%count(Ethnicity)%>%View()
+usn.enroll%>%filter(Program=="MBA")%>%count(Ethnicity)%>%View()
+usn.enroll%>%count(Program)
+
 
 #cum credit progress out of 120 credits of UG, question 57##
-usn.enroll%>%filter(level=="UG")%>%group_by(CreditPrt)%>%count()%>%View()
+usn.enroll%>%filter(Level=="UG")%>%group_by(CreditPrt)%>%count()%>%View()
 
 
 #GD gender question 47 or 50###
-usn.enroll%>%filter(level=="GD")%>%group_by(Program,Gender)%>%count()%>%arrange(Program)%>%
+usn.enroll%>%filter(Level=="GD")%>%group_by(Program,Gender)%>%count()%>%arrange(Program)%>%
   pivot_wider(names_from = Gender,values_from = n)%>%View()
 ```
 
 
+# UG Retention
+```{r}
+excel_sheets("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2021-2022/Fall Collection/12-month enrollment/FY21 12-month enrollment.xlsx")
 
-# Retention data
+ug.retain21<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2021-2022/Fall Collection/12-month enrollment/FY21 12-month enrollment.xlsx",sheet = "Unduplicated UG")
+
+ug.retain22<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/crs.ipeds.matched_21-22_rerun.xlsx")
+
+stu21<-ug.retain21%>%filter(Curriculum%in%c("Business Administration"))#8 students
+#retention is how many student is there in 22 data
+stu21$`People Code Id`%in%ug.retain22$ppid %>%sum() #7 out ot 8 retained: 87.5%
+```
+
+
+# GD Retention data
 ```{r US News entered last year return and graduated}
 #QUESTION GD138/141: "First enrolled between July 1, 2020 and June 30, 2021, re-enrolled or graduated anytime within the next 12 months?"--student count and prt
 
@@ -299,6 +326,9 @@ plyr::join_all(list(ret.grad,tot.firsttime),type = "full")%>%
   View()
 ```
 
+
+
+
 # Completion data
 ```{r US News all graduated}
 #QUESTION UG35/128&GD136/139: Report the count of students who graduated from your institution’s  program between July 1, 2021 and June 30, 2022.----do not use CIP because they overlapp with on-campus programs---use degree and major instead
@@ -333,7 +363,7 @@ usn.vet%>%filter(prg.cur%in% c("GRADEmergency & Crisis Management",#Hospitality 
                                "GRADMarketing",#Marketing (MSMK)
                                "GRADProject Management",#Project Management (MSPM)
                                "GRADSport Management"
-                               ))%>%group_by(program)%>%count()#MSM
+                               ))%>%group_by(prg.cur)%>%count()#MSM
 usn.vet%>%filter(prg.cur=="GRADBusiness Administration")%>%group_by(program)%>%count()#MBA
 
 ls<-usn.vet%>%group_by(Curriculum)%>%count(); View(ls)
@@ -342,10 +372,7 @@ ls<-usn.vet%>%group_by(Curriculum)%>%count(); View(ls)
 ##search for completion programs
 #usn.vet%>%filter(grepl("[Cc]omp",usn.vet$Curriculum))%>%group_by(Curriculum)%>%count()#non
 
-#filter using searched results and crete usn.enroll
-usn.enroll<-ug.gd%>%
-  filter(Program %in% c("MSCJ","MSM","MBA","Business Administration","Communication Bachelors Completion","Interdisciplinary Bachelors Completion","Psychology Bachelors Completion"))%>%
-  mutate(Program=factor(Program,levels = c("Business Administration","Communication Bachelors Completion","Interdisciplinary Bachelors Completion","Psychology Bachelors Completion","MSCJ","MSM","MBA")))%>%
-  select(ppid,`gov id`,level,Program,`Birth Date`,ethnicity.c,transfer,`Cum Credits`,Gender,term,NewRet)%>%unique()#remove duplicated rows; 779 rows
+
+
 ```
 

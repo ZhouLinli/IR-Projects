@@ -714,6 +714,7 @@ crs<-plyr::join_all(list(crs21sum2,crs21fall,crs21winter,crs22spring,crs22sum1.m
   rename(ppid=people_code_id)#for convenience of recalling
 
 write_xlsx(crs,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/NO-Option_Course21-22.xlsx")
+
 crs<-crs%>%select(ppid,event_type)%>%#the event_type is what we only need from this dataset
   unique()# no worries that the same event_type will merge, as long as it has different event types, it will be separate records, that separate event types (not the count of event type) is what we care about
 ```

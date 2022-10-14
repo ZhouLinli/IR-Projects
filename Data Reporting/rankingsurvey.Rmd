@@ -352,22 +352,22 @@ usn.crs%>%group_by(Department)%>%summarise(mn.size=mean(Current_Enrollment))
 
 # UG Retention
 ```{r}
+#UG students who enrolled in 2020-2021
 excel_sheets("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2021-2022/Fall Collection/12-month enrollment/FY21 12-month enrollment.xlsx")
-
 ug.retain21<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2021-2022/Fall Collection/12-month enrollment/FY21 12-month enrollment.xlsx",sheet = "Unduplicated UG")
+#UG bachelor completion (BussAdmin only) students
+stu21<-ug.retain21%>%filter(Curriculum%in%c("Business Administration"))#8 students
 
+#UG students who enrolled in 2021-2022
 ug.retain22<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/crs.ipeds.matched_21-22_rerun.xlsx")
 
-stu21<-ug.retain21%>%filter(Curriculum%in%c("Business Administration"))#8 students
-#retention is how many student is there in 22 data
+#whether 21student are in 22enrolled: retention is how many student is there in 22 data
 stu21$`People Code Id`%in%ug.retain22$ppid %>%sum() #7 out ot 8 retained: 87.5%
 ```
 
 
 # GD Retention data
 ```{r US News entered last year return and graduated}
-#QUESTION GD138/141: "First enrolled between July 1, 2020 and June 30, 2021, re-enrolled or graduated anytime within the next 12 months?"--student count and prt
-
 #load and clean data 
 retention<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Graduate Retention/2009 Fall - Present Graduate Retention.xlsx")%>%rename(ppid=`People Code Id`)
 85
@@ -376,6 +376,12 @@ retention<-retention%>%mutate_at(c(grep("Fall$|Spring$|^Grad AY",names(retention
                                ~replace_na(.,"n"))%>%#replace their NA with "n
 #pattern for enter term: concatenate recent terms
 retention<-retention%>%unite("RecentTermPattern",`2020 Fall`:`2021 Fall`,remove = FALSE,sep = "")
+
+
+
+
+#QUESTION GD138/141: "First enrolled between July 1, 2020 and June 30, 2021, re-enrolled or graduated anytime within the next 12 months?"--student count and prt
+
 
 
 

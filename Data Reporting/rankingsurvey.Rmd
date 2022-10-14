@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Course data
+# Course data for Princeton Review
 ```{r princeton review}
 #external reporting for the Princeton Review 2022-8-19 due
 
@@ -65,6 +65,8 @@ course21_22%>%filter(
 ) %>% group_by(Major) %>% summarise(major_appearance=n())#14 majors
 ```
 
+
+#Web Scrap Course for US News
 
 ```{r US News web scrapping courses}
 # US NEWS ONLINE PROGRAM 07/01/2021-06/30-2022, due 2022-10-15
@@ -133,48 +135,60 @@ my.df<-my.df%>%mutate(Com=my.title3)
 
 
 
+# !!A VLOOKUP Approach to US News!!
 
-
-
-# Enrollment data
-```{r enrollment data}
+```{r list of targeted students and SAVE}
 #US NEWS ONLINE PROGRAM 07/01/2021-06/30-2022, due 2022-10-15
-##ENROLLMENT QUESTIONS
-#load data
-ug.gd<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ug.gd_21-22_rerun.xlsx")
-
-
+#load merged backup data (in enrollment ipeds folder)
+ug.gd<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/merged enrolldata/ug.gd_21-22_rerun.xlsx")
 
 #create USNEWS online program dataset: filter program names
-usn.enroll<-ug.gd%>%
+stu.ls<-ug.gd%>%
   filter(Program %in% c("MSCJ","MSM","MBA",#master online programs
                         "Business Administration",#bachelor BussAdmin
                         "Communication Bachelors Completion",#bachelor completion programs
                         "Interdisciplinary Bachelors Completion","Psychology Bachelors Completion"))%>%
-  
+  #set up the right order of programs
   mutate(Program=factor(Program,levels = c("Business Administration",#correct ordering
                                            "Communication Bachelors Completion",
                                            "Interdisciplinary Bachelors Completion",
                                            "Psychology Bachelors Completion",
                                            "MSCJ","MSM","MBA")))%>%
-  select(ppid,`gov id`,`Birth Date`,ethnicity.c,Gender,
-         level,Program,transfer,NewRet,status,`Cum Credits`,term)%>%unique()#779 rows
+  select(ppid,Name,Program)%>%unique()
 
-###de-duplication: consistency cum credit
-#goal: usn.enroll%>%distinct(ppid,.keep_all = TRUE)%>%nrow()#unique 316 ppid (and keep all other variables)
-###investigate duplicated ppid
-#dup.id<-usn.enroll[duplicated(usn.enroll$ppid),]
-#usn.enroll[usn.enroll$ppid %in% dup.id$ppid,]#show all duplicated ppid - conflict b/c cum credits
-#keep one CUM CREDIT for duplicated ids
+##investigate duplicated ppid: due to names
+dup.id<-stu.ls%>%group_by(ppid)%>%count()%>%ungroup()%>%filter(n>1);  stu.ls%>%filter(ppid%in% dup.id$ppid)%>%arrange(ppid)
+
+#remove duplication: powercampus results
+stu.ls<-stu.ls%>%filter( ! (ppid=="P000008261"&Program=="MSM"))
+#check: stu.ls%>%filter(ppid=="P000008261") # kept MBA
+
+#save for admission/fin-aid office
+write_xlsx(stu.ls,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/US News/2022 fall/OnlineStudentsList.xlsx")
+```
+
+#create usn.enroll: merging student list & enrollment vars
+```{r select enrollment-vars and deduplicate}
+#select var from enrollment data
+usn.enroll<-ug.gd%>%select(ppid,`gov id`,`Birth Date`,ethnicity.c,Gender,
+         level,transfer,NewRet,status,`Cum Credits`)%>%unique()#779 rows
+#merge to the list of students
+usn.enroll<-left_join(stu.ls,usn.enroll)
+
+##investigate duplicated ppid: due to cum credits
+dup.id<-usn.enroll%>%group_by(ppid)%>%count()%>%ungroup()%>%filter(n>1);  usn.enroll%>%filter(ppid%in% dup.id$ppid)%>%arrange(ppid)
+#de-duplication: first replace NA
 usn.enroll$`Cum Credits`[is.na(usn.enroll$`Cum Credits`)]<-0#replace NA value with zero
-
+#then keep only the top for each ppid after descending cum credit: using distinct ppid
 usn.enroll<-usn.enroll%>%#aim: assign one value for duplicated id (to resolve conflict)    
   arrange(desc(`Cum Credits`))%>%#largest cumcredit at the top (with no NA, if have NA, NA will be at top)
   arrange(ppid)%>%#same id group and has large-low cumcredit
   distinct(ppid,.keep_all = TRUE)#distinct will keep the !first row! (the correct cum credit), 316 rows
+```
 
 
-###########add cols needed
+```{r all enrollment-vars and SAVE}
+###########add needed cols based on enroll vars
 #define function
 age.calc <- function(dob, age.day = "2021-07-01", units = "years", floor = TRUE) {
   calc.age = interval(dob, age.day) / duration(num = 1, units = units)
@@ -198,14 +212,13 @@ usn.enroll<-usn.enroll%>%mutate(
                       CreditPrt>.75~">75%"),
   CreditPrt=factor(CreditPrt,levels = c("<25%","25-49%","50-74%",">75%")))%>%
   select(-`Birth Date`)#remove used vars
-#check: usn.enroll%>%group_by(CreditPrt)%>%count()#no NA
-#save  ppid for requesting financial aid
-#write.xlsx(list("PPID"=usn.enroll), file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/2022 US News/StudentLoanInfo_USNewsReport.xlsx")
+
+#save for admission/fin-aid office
+write_xlsx(usn.enroll,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/US News/2022 fall/OnlineStudentEnroll.xlsx")
 ```
 
-
-```{r enrollment in loan dataset questions}
-usn.enroll<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/2022 US News/StudentLoanInfo_USNewsReport.xlsx")#indeed we saved it there for jennifer with that file name
+```{r enrollment questions}
+usn.enroll<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/US News/2022 fall/OnlineStudentEnroll.xlsx")#indeed we saved it there for jennifer with that file name
 #answering questions:
 #age/birth date of UG, question 70##
 #calculate age from birth date
@@ -266,6 +279,31 @@ usn.enroll%>%filter(Level=="UG")%>%group_by(CreditPrt)%>%count()%>%View()
 usn.enroll%>%filter(Level=="GD")%>%group_by(Program,Gender)%>%count()%>%arrange(Program)%>%
   pivot_wider(names_from = Gender,values_from = n)%>%View()
 ```
+
+
+# Course data for US News
+```{r no-option course data}
+#reload stu.ls (all online program students)
+stu.ls<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/US News/2022 fall/OnlineStudentsList.xlsx")
+#load crs data
+noopt<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/merged course data/NO-Option_Course21-22.xlsx")
+#initiate needed vars 
+usn.crs<-noopt%>%select(ppid,course)%>%
+  filter(str_detect(course, "^BUSS|^CJ|^COM"))#need to make sure course is opened by their program
+#check: usn.crs%>%count(course)
+#create merged usn.crs
+usn.crs<-left_join(stu.ls,usn.crs)
+
+#question: number of course by program
+usn.crs%>%count(course)%>%View()
+
+
+#average class size in SECTALLY
+sec%>%
+
+#instructor FT.PT status, race, degreeobtained
+```
+
 
 
 # UG Retention
@@ -371,8 +409,19 @@ ls<-usn.vet%>%group_by(Curriculum)%>%count(); View(ls)
 #usn.vet%>%filter(grepl("[Bb][Uu]",usn.vet$Curriculum))%>%group_by(Curriculum)%>%count()#see "Business Administration"
 ##search for completion programs
 #usn.vet%>%filter(grepl("[Cc]omp",usn.vet$Curriculum))%>%group_by(Curriculum)%>%count()#non
+```
 
 
+```{r look at different datasets}
+library(readxl)
+cp<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/Completions/Complete.with.Ethnicity_age.eric.editted.xlsx")
+enroll<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/merged enrolldata/ug.gd_21-22_rerun.xlsx")
+crs<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/merged course data/Student Info by Course and Fiscal Year.csv")
+sec<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/merged course data/sectionInfo.xlsx")
 
+sec%>%count(Course_type)
+noopt%>%count(event_type)
+sec%>%count(section)
+names(noopt)
 ```
 

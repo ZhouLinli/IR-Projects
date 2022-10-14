@@ -1,0 +1,30 @@
+---
+title: "2022 First Impression Survey Results"
+author: "Linli Zhou"
+date: "10-14-2022"
+output:
+  bookdown::word_document2:
+    fig_caption: yes
+    fig_height: 5
+    fig_width: 5
+    reference_docx: "/Users/linlizhou/Documents/Rprojects/lasell.report.docx"
+always_allow_html: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, include = FALSE, warning=FALSE, message=FALSE, fig.align = "center") #show only results
+source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R") #run code from saved theme and library
+```
+
+```{r load and clean data}
+#read data
+fis<-read_csv("/Volumes/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/First Impressions/2022 Fall/20221013124928-SurveyExport.csv")
+
+#select vars
+#clean headers
+```
+
+
+## R Markdown
+
+test

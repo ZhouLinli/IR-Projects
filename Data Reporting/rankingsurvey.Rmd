@@ -282,7 +282,7 @@ usn.enroll%>%filter(Level=="GD")%>%group_by(Program,Gender)%>%count()%>%arrange(
 
 
 # Course data for US News
-```{r no-option and sectiontally course data and SAVE}
+```{r no-option course data and course list}
 #reload stu.ls (all online program students)
 stu.ls<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/US News/2022 fall/OnlineStudentsList.xlsx")
 #load crs data
@@ -302,48 +302,47 @@ usn.crs<-usn.crs%>%mutate(CourseCode=str_extract(course, "[A-Z]+[0-9]+\\.[A-Z]")
 #duplicated
 usn.crs%>%count(ppid,CourseCode)%>%ungroup()%>%count()#unique by ppid and coursecode, pp are taking muti-course but after consideirng course, they are unique (no other var has conflict)
 
+#create course list that students online are taking
+crs.ls<-usn.crs%>%select(-ppid, -Name)%>%unique()#69 sections
+```
 
+
+```{r sectiontally course size data for course list and SAVE}
 #load section tally class size data
 sec<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/merged course data/sectionInfo.xlsx")
 #initiate needed vars
-sec.s<-sec%>%select(event_id,section,Current_Enrollment)%>%
+sec.s<-sec%>%select(event_id,section,Current_Enrollment,course_start_date)%>%#need course start date for the same course offered at different terms/times
   mutate(CourseCode=paste(sep=".",event_id,section))%>%#same format
-  select(-event_id,-section)%>%unique()%>%arrange(CourseCode)#remove used
-#duplicated
-sec.s%>%group_by(CourseCode)%>%summarise(cnt=n())%>%ungroup()%>%count(cnt)#each course appeared muti-times
-#de-duplicate: only keep max values
-sum(is.na(sec.s$Current_Enrollment))#there is no NA values (for arrange orders)
-#then keep only the top for each coursecode
-sec.s<-sec.s%>%arrange(desc(Current_Enrollment))%>%#largest at the top
-  arrange(CourseCode)%>%#same id group and has large-low cumcredit
-  distinct(CourseCode,.keep_all = TRUE)#distinct will keep the !first row!
+  select(-event_id,-section)%>%unique()%>%
+  filter(Current_Enrollment>1)#remove 0 and 1 (and na) coureses independent study courses
+#duplicated: none
+sec.s%>%group_by(CourseCode,course_start_date)%>%summarise(cnt=n())%>%ungroup()%>%count(cnt)#each course appeared muti-times
 
-#create merged usn.crs
-usn.crs<-left_join(usn.crs,sec.s)%>%
+
+
+#create merged usn.crs: only keep size info for online students' courses
+crs.sec<-left_join(crs.ls,sec.s)%>%
   mutate(size=case_when(Current_Enrollment==1~"1",
                         Current_Enrollment>=2 & Current_Enrollment<=9~"2-9",
                         Current_Enrollment>=10 & Current_Enrollment<=19~"10-19",
                         Current_Enrollment>=20 & Current_Enrollment<=29~"20-29",
                         Current_Enrollment>=30 & Current_Enrollment<=39~"30-39",
                         Current_Enrollment>=40~">40"),
-         size=factor(size, levels=c("1","2-9","10-19","20-29","30-39",">40")))
+         size=factor(size, levels=c("1","2-9","10-19","20-29","30-39",">40")))%>%
+  filter(!is.na(Current_Enrollment))#remove NA caused by not finding enrollment size
 
 #save
-write.xlsx(usn.crs,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/US News/2022 fall/OnlineStudentCourse.Class.xlsx")
+openxlsx::write.xlsx(list('courselist' = crs.ls, 'coursesize' = crs.sec), file = "/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/US News/2022 fall/OnlineStudentCourse.Class.xlsx") 
 ```
 
 
 ```{r report course.class}
-#remove invalid size (current enrollment is na)
-usn.crs<-usn.crs%>%filter(!is.na(Current_Enrollment))
-
 #question: for each program, number of class (section) in range of different class size
-usn.crs%>%count(Department,CourseCode,size)%>%
-  select(-n)%>%#apperance of course code does not matter
-  count(size,Department)%>%arrange(Department)
+crs.sec%>%count(Department,CourseCode,course_start_date,size)%>%arrange(Department)%>%
+  group_by(Department,size)%>%summarize(size.n=sum(n))
 
 #question: for each program, mean class size
-usn.crs%>%group_by(Department)%>%summarise(mn.size=mean(Current_Enrollment))
+crs.sec%>%group_by(Department)%>%summarise(mn.size=mean(Current_Enrollment))
 
 #instructor FT.PT status, race, degreeobtained
 ```

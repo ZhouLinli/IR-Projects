@@ -22,29 +22,63 @@ fis<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Inte
 ```
 
 
-```{r match ppid}
-#fis email
+```{r match ppid from allstu22 for fis}
+#fis email rename
 fis<-fis%>%
-  rename(email=`Please provide your Lasell email address. This information is needed for research purposes. Your personal information will be kept confidential and will not appear on any report. `)%>%
-  mutate(email=gsub("@lasell.edu","",fis$email),#remove extra to keep all values the same format
-         email=str_to_lower(email))  #lower case
+  rename(email=`Please provide your Lasell email address. This information is needed for research purposes. Your personal information will be kept confidential and will not appear on any report. `)
+
+#fis email.short
+fis<-fis%>%
+  mutate(email.short=gsub("@lasell.edu","",fis$email),#remove extra to keep all values the same format
+         email.short=str_to_lower(email.short))%>%  #lower case
+  select(-email)#to avoid too many cols get merged
+
+
 
 #backup data email
-allstu22<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Fall/Fall 2022 UG Backup Data Report.xlsx")%>%
+allstu<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Fall/Fall 2022 UG Backup Data Report.xlsx")
+
+#select 2022 cohort and vars
+allstu22<-allstu%>%
   filter(`Cohort Id`=="2022")%>%#this year's students
-  select(`People Code Id`, Name,`Lasell email`)%>%#select all usable vars
-  rename(email=`Lasell email`)%>%#match name
-  mutate(email=gsub("@lasell.edu","",allstu22$email),#remove extra to match fis emails
-         email=str_to_lower(email))#keep lower case format
+  select(`People Code Id`, Name,`Lasell email`)#select all usable vars
+
+#create email.short
+allstu22<-allstu22%>%
+  mutate(email.short=gsub("@lasell.edu","",allstu22$`Lasell email`),#remove extra to match fis emails
+         email.short=str_to_lower(email.short))%>%#keep lower case format
+  select(-`Lasell email`)#avoid too many cols get merged
+
 
 #merge
-fis<-left_join(fis,allstu22)#all fis students that entered a valid email will have a ppid and names now
+fis<-left_join(fis,allstu22)#all fis with a valid email will have a ppid and names now
+#check: sum(is.na(fis$`People Code Id`));sum(is.na(fis$Name))#only 16 do not find a matched ppid/name
 ```
 
 
-```{r col headers}
-#rename headers
+```{r select vars and SAVE fis.s}
+#select: remove starter cols
+fis.s<-fis%>%select(-(`Response ID`:Source),-(`Invite Custom Field 2`:Gender))%>%#removed 54 cols
+  janitor::remove_empty(c("rows", "cols"))#remove empty rows/cols (including header has to be NA), removed 1 rows
 
+#remove NA cols: nothing get removed
+fis.s<-fis.s[ , colSums(is.na(fis.s)) < nrow(fis.s)] #sum each col's # of NA rows, as long as not all rows are NA then select them 
+
+#check: names(fis)[names(fis)%in%names(fis.s)==FALSE]
+```
+
+
+```{r one ppid col}
+#rename headers
+#ppid
+#check: sum(is.na(fis.s$`Invite Custom Field 1`));sum(is.na(fis.s$`People Code Id`))#148vs15
+fis.s<-fis.s%>%mutate(ppid=if_else(!is.na(`Invite Custom Field 1`),#if settled by field then field
+                            `Invite Custom Field 1`,`People Code Id`))%>%#if not settled, then matched id
+  select(-`Invite Custom Field 1`,-`People Code Id`)
+#check: sum(is.na(fis.s$ppid))#14 without ppid
+```
+
+```{r rename cols}
 
 ```
 
@@ -52,3 +86,13 @@ fis<-left_join(fis,allstu22)#all fis students that entered a valid email will ha
 ## R Markdown
 
 test
+
+
+
+
+
+
+
+
+
+

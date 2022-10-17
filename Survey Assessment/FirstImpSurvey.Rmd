@@ -79,7 +79,89 @@ fis.s<-fis.s%>%mutate(ppid=if_else(!is.na(`Invite Custom Field 1`),#if settled b
 ```
 
 ```{r rename cols}
+#look at the survey instruction and then better rename cols
+#lapply(fis.s, unique)
+fis.s<-fis.s%>%rename(
+  RCstatus=`Which of the following describes your status for the 2022 fall semester?`,
+#satisfaction 0-6 scale  
+  st.activity=`Campus-wide programs and activities (virtual or in-person)?:Please tell us how satisfied you are with…`,
+  st.activity.cm=`Comment or example::Please tell us how satisfied you are with…...58`,
+  
+  st.overallcourse=`Your courses overall so far?:Please tell us how satisfied you are with…`,
+  st.majorcourse=`Your courses within your major so far? (If you are an undeclared major, please leave blank):Please tell us how satisfied you are with…`,
+  st.course.cm=`Comment or example::Please tell us how satisfied you are with…...61`,
+  
+  st.acchallenge=`The degree of academic challenge in your courses?:Please tell us how satisfied you are with…`,
+  st.acchallenge.cm=`Comment or example::Please tell us how satisfied you are with…...63`,
 
+  st.accommit=`Other students' commitment to their studies?:Please tell us how satisfied you are with…`,
+  st.accommit.cm=`Comment or example::Please tell us how satisfied you are with…...65`,
+  
+  st.foodav=`Food service availability on campus?:Please tell us how satisfied you are with…`,
+  st.foodav.cm=`Comment or example::Please tell us how satisfied you are with…...67`,
+  
+  st.residstaff=`Residential Life staff?:Please tell us how satisfied you are with…`,
+  st.residstaff=`Comment or example::Please tell us how satisfied you are with…...69`,
+  
+  st.residhall=`Your living situation in the residence halls?:Please tell us how satisfied you are with…`,
+  st.residhall.cm=`Comment or example::Please tell us how satisfied you are with…...71`,
+
+#connection 0-6 scale  
+  cn.faculty=`Faculty?:How connected do you feel to…`,
+  cn.faculty.cm=`Comment or example::How connected do you feel to…...73`,
+  
+  cn.stu=`Other students?:How connected do you feel to…`,
+  cn.stu.cm=`Comment or example::How connected do you feel to…...75`,
+
+#emphasis question: 4 text scale  
+  em.acsupport=`Using learning support services (tutoring services, writing center, etc):Based on your experience so far, how much does Lasell University emphasize the following?`,
+  em.socoppo=`Providing opportunities to be involved socially:Based on your experience so far, how much does Lasell University emphasize the following?`,
+  em.campactivity=`Attending campus activities and events (virtual or in-person):Based on your experience so far, how much does Lasell University emphasize the following?`,
+  em.issueevents=`Attending events that address important social, economic, or political issues:Based on your experience so far, how much does Lasell University emphasize the following?`,
+
+#satisfaction 0-6 scale
+  svst.aac=`Academic Achievement Center:Please tell us how satisfied you are with…`,
+  svst.aac.cm=`Comment or Example::Please tell us how satisfied you are with…...81`,
+
+  svst.classtech=`Classroom Technology and Computer Labs:Please tell us how satisfied you are with…`,
+  svst.classtech.cm=`Comment or Example::Please tell us how satisfied you are with…...83`,
+
+  svst.counseling=`Counseling Center (Located at 18 Maple Terrace):Please tell us how satisfied you are with…`,
+  svst.counseling.cm=`Comment or Example::Please tell us how satisfied you are with…...85`,
+
+  svst.acadvisor=`Your academic advisor:Please tell us how satisfied you are with…`,
+  svst.acadvisor.cm=`Comment or Example::Please tell us how satisfied you are with…...87`,
+
+  svst.health=`Health Services (Located in Edwards Student Center):Please tell us how satisfied you are with…`,
+  svst.health.cm=`Comment or Example::Please tell us how satisfied you are with…...89`,
+
+  svst.techhealp=`Technology Help Desk:Please tell us how satisfied you are with…`,
+  svst.techhealp.cm=`Comment or Example::Please tell us how satisfied you are with…...91`,
+
+  svst.shuttle=`Lasell Shuttle:Please tell us how satisfied you are with…`,
+  svst.shuttle.cm=`Comment or Example::Please tell us how satisfied you are with…...93`,
+
+  svst.other=`Please type the service(s) in to the box (i.e. vending, mailroom, washing/drying etc.):Please provide feedback on any other services on campus we have not mentioned in the previous questions.`,
+  svst.other.cm=`Feedback::Please provide feedback on any other services on campus we have not mentioned in the previous questions.`,
+
+#academic 0-6 scale
+  meetacexpect=`Is the college meeting your expectations in terms of academic experience?:Please tell us a little bit about what you think of Lasell's academics.`,
+  meetacexpect.cm=`Comment or example::Please tell us a little bit about what you think of Lasell's academics.`,
+
+  faculty.orgmaterial=`Present material in a well-organized way?:How often do your faculty…`,
+  faculty.explain=`Make good use of examples and illustrations to explain difficult points?:How often do your faculty…`,
+  faculty.prep=`Come to class well prepared?:How often do your faculty…`,
+  faculty.command=`Have a good command of what they are teaching?:How often do your faculty…`,
+
+#outside class 0-6 agreement
+  interact.outside=`I have had a positive interaction with at least one Lasell faculty or staff member outside of class.:How much do you agree…`,
+  interact.cm=`How have you been able to effectively interact with others in the Lasell community in a safe manner so far this semester?`,
+  interact.difficulty=`What are the difficulties you’re facing when interacting with others within the Lasell community this semester?`,
+
+
+
+  
+)
 ```
 
 

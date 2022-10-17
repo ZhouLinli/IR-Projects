@@ -18,10 +18,34 @@ source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R") #run c
 
 ```{r load and clean data}
 #read data
-fis<-read_csv("/Volumes/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/First Impressions/2022 Fall/20221013124928-SurveyExport.csv")
+fis<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/First Impressions/2022 Fall/20221013124928-SurveyExport.csv")
+```
 
-#select vars
-#clean headers
+
+```{r match ppid}
+#fis email
+fis<-fis%>%
+  rename(email=`Please provide your Lasell email address. This information is needed for research purposes. Your personal information will be kept confidential and will not appear on any report. `)%>%
+  mutate(email=gsub("@lasell.edu","",fis$email),#remove extra to keep all values the same format
+         email=str_to_lower(email))  #lower case
+
+#backup data email
+allstu22<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Fall/Fall 2022 UG Backup Data Report.xlsx")%>%
+  filter(`Cohort Id`=="2022")%>%#this year's students
+  select(`People Code Id`, Name,`Lasell email`)%>%#select all usable vars
+  rename(email=`Lasell email`)%>%#match name
+  mutate(email=gsub("@lasell.edu","",allstu22$email),#remove extra to match fis emails
+         email=str_to_lower(email))#keep lower case format
+
+#merge
+fis<-left_join(fis,allstu22)#all fis students that entered a valid email will have a ppid and names now
+```
+
+
+```{r col headers}
+#rename headers
+
+
 ```
 
 

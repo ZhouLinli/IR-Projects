@@ -36,12 +36,14 @@ fis<-fis%>%
 
 
 #backup data email
-allstu<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Fall/Fall 2022 UG Backup Data Report.xlsx")
+allstu<-read_excel("/Volumes/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Fall/Fall 2022 UG Backup Data Report.xlsx")
 
 #select 2022 cohort and vars
 allstu22<-allstu%>%
   filter(`Cohort Id`=="2022")%>%#this year's students
-  select(`People Code Id`, Name,`Lasell email`,`Transfer YN`,`Res/Comm`,Gender,Ethnicity)#select all usable vars
+  select(`People Code Id`, Name,`Lasell email`,
+         `Transfer YN`,`Res/Comm`,Gender,Ethnicity,`FT/PT`)%>%#select all usable vars
+  rename(gender=Gender)#to avoid join by "Gender"
 
 #create email.short
 allstu22<-allstu22%>%
@@ -58,7 +60,7 @@ fis<-left_join(fis,allstu22,by="email.short")#all fis with a valid email will ha
 
 ```{r select vars and SAVE fis.s}
 #select: remove starter cols
-fis.s<-fis%>%select(-(`Response ID`:Source),-(`Invite Custom Field 2`:Gender.x))%>%#removed 54 cols
+fis.s<-fis%>%select(-(`Response ID`:Source),-(`Invite Custom Field 2`:Gender))%>%#removed 54 cols
   janitor::remove_empty(c("rows", "cols"))#remove empty rows/cols (including header has to be NA), removed 1 rows
 
 #remove NA cols: nothing get removed
@@ -81,7 +83,6 @@ fis.s<-fis.s%>%mutate(ppid=if_else(!is.na(`Invite Custom Field 1`),#if settled b
 ```{r rename cols and SAVE xlsx}
 #look at the survey instruction and lapply(fis.s, unique) to do this
 fis.s<-fis.s%>%rename(
-  gender=Gender.y,
   RCstatus=`Which of the following describes your status for the 2022 fall semester?`,
 #satisfaction 0-6 scale  
   satis.activity=`Campus-wide programs and activities (virtual or in-person)?:Please tell us how satisfied you are with…`,
@@ -163,18 +164,40 @@ write.xlsx(fis.s,"/Volumes/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Firs
 
 ## Respondents
 
+```{r respondents vs overall SAVE full df}
+#approach 1
+#data merge full
+fis.s<-fis.s%>%mutate(RespondentOverall="Respondent")
+allstu22<-allstu22%>%mutate(RespondentOverall="Overall")%>%rename(ppid=`People Code Id`)
+fulldf<-full_join(fis.s,allstu22)
+
+#response rate
+num.response=fulldf%>%filter(RespondentOverall=="Respondent")%>%nrow()
+num.overall=fulldf%>%filter(RespondentOverall=="Overall")%>%nrow()
+response_rate=formattable::percent(num.response/num.overall,digits=0)
+
+#approach 2
+allstu22.s<-allstu22%>%select(-RespondentOverall)
+allstu22.s<-allstu22.s%>%mutate(ResAll=
+                        if_else(ppid%in%fis.s$ppid,#if id is one of the same survey id 
+                        "Respond","Not Respond"))
+allstu22.s%>%count(ResAll) #314 person, 195 responded, 177 have ppid, 18 no ppid
+```
+
+
+
 ```{r making fig for respondents}
-fis.s%>%ggplot(aes(RCstatus)) + geom_bar();    ggplot(aes(x,fill)) + geom_bar()
+#check na: sum(is.na(fis.s$ppid))
+#background info: gender & ethnicity, FT/PT & Transfer, RC
 
-ggplot(aes(x,y)) + geom_bar(stat=""identity"")  #By default, geom_bar() will plot counts of discrete values. geom_bar(stat=""identity"") will plot a single value on the y-axis.
+fig.fis_rc<-fis.s%>%
+  ggplot(aes(x = RCstatus, y = `FT/PT`, fill = `Transfer YN`)) +
+  geom_col(stat="identity")+ #是stakced
+  #geom_col(position = position_dodge(stat=""identity""))#是毗邻的
+  scale_fill_manual(...)+
+  labs(title=str_wrap("",35),x="",y=""，fill="", subtitle="", caption="") #80 is a full line length
+facet_wrap(~var,labeller=labeller(var= c(`oldname1`=""newname1"", ...) ) )"
 
-#stack vs side-by-side
-ggplot(data, aes(x = quarter, y = profit, fill = gender)) +geom_col/bar(stat=""identity"") 是stakced +scale_fill_manual(...)
-ggplot(data, aes(x = quarter, y = profit, fill = gender)) +geom_col/bar(position = position_dodge(stat=""identity""))就是毗邻的+scale_fill_manual(...)
-
-#柱状图加线图
-ggplot(aes(x,y,fill)) +geom_bar(stat=""identity"",position=position_dodge(),width=.8) +geom_text()
-  geom_line(aes(x,samey),color="".."")
 ```
 
 

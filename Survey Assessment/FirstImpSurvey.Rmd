@@ -18,7 +18,7 @@ source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R") #run c
 
 ```{r load and clean data}
 #read data
-fis<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/First Impressions/2022 Fall/20221013124928-SurveyExport.csv")
+fis<-read_csv("/Volumes/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/First Impressions/2022 Fall/20221013124928-SurveyExport.csv")
 ```
 
 
@@ -41,7 +41,7 @@ allstu<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Repo
 #select 2022 cohort and vars
 allstu22<-allstu%>%
   filter(`Cohort Id`=="2022")%>%#this year's students
-  select(`People Code Id`, Name,`Lasell email`)#select all usable vars
+  select(`People Code Id`, Name,`Lasell email`,`Transfer YN`,`Res/Comm`,Gender,Ethnicity)#select all usable vars
 
 #create email.short
 allstu22<-allstu22%>%
@@ -51,14 +51,14 @@ allstu22<-allstu22%>%
 
 
 #merge
-fis<-left_join(fis,allstu22)#all fis with a valid email will have a ppid and names now
+fis<-left_join(fis,allstu22,by="email.short")#all fis with a valid email will have a ppid and names now
 #check: sum(is.na(fis$`People Code Id`));sum(is.na(fis$Name))#only 16 do not find a matched ppid/name
 ```
 
 
 ```{r select vars and SAVE fis.s}
 #select: remove starter cols
-fis.s<-fis%>%select(-(`Response ID`:Source),-(`Invite Custom Field 2`:Gender))%>%#removed 54 cols
+fis.s<-fis%>%select(-(`Response ID`:Source),-(`Invite Custom Field 2`:Gender.x))%>%#removed 54 cols
   janitor::remove_empty(c("rows", "cols"))#remove empty rows/cols (including header has to be NA), removed 1 rows
 
 #remove NA cols: nothing get removed
@@ -81,6 +81,7 @@ fis.s<-fis.s%>%mutate(ppid=if_else(!is.na(`Invite Custom Field 1`),#if settled b
 ```{r rename cols and SAVE xlsx}
 #look at the survey instruction and lapply(fis.s, unique) to do this
 fis.s<-fis.s%>%rename(
+  gender=Gender.y,
   RCstatus=`Which of the following describes your status for the 2022 fall semester?`,
 #satisfaction 0-6 scale  
   satis.activity=`Campus-wide programs and activities (virtual or in-person)?:Please tell us how satisfied you are with…`,
@@ -157,17 +158,25 @@ fis.s<-fis.s%>%rename(
   interact.cm=`How have you been able to effectively interact with others in the Lasell community in a safe manner so far this semester?`,
   interact.difficulty=`What are the difficulties you’re facing when interacting with others within the Lasell community this semester?`)
 
-write.xlsx(fis.s,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/First Impressions/2022 Fall/raw_renamed.xlsx")
+write.xlsx(fis.s,"/Volumes/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/First Impressions/2022 Fall/raw_renamed.xlsx")
 ```
 
-```{r}
+## Respondents
 
+```{r making fig for respondents}
+fis.s%>%ggplot(aes(RCstatus)) + geom_bar();    ggplot(aes(x,fill)) + geom_bar()
+
+ggplot(aes(x,y)) + geom_bar(stat=""identity"")  #By default, geom_bar() will plot counts of discrete values. geom_bar(stat=""identity"") will plot a single value on the y-axis.
+
+#stack vs side-by-side
+ggplot(data, aes(x = quarter, y = profit, fill = gender)) +geom_col/bar(stat=""identity"") 是stakced +scale_fill_manual(...)
+ggplot(data, aes(x = quarter, y = profit, fill = gender)) +geom_col/bar(position = position_dodge(stat=""identity""))就是毗邻的+scale_fill_manual(...)
+
+#柱状图加线图
+ggplot(aes(x,y,fill)) +geom_bar(stat=""identity"",position=position_dodge(),width=.8) +geom_text()
+  geom_line(aes(x,samey),color="".."")
 ```
 
-
-## R Markdown
-
-test
 
 
 

@@ -16,7 +16,7 @@ source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R") #run c
 
 ```{r load and clean data}
 #read data
-fis<-read_csv("/Volumes/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/First Impressions/2022 Fall/20221013124928-SurveyExport.csv")
+fis<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/First Impressions/2022 Fall/20221013124928-SurveyExport.csv")
 ```
 
 
@@ -34,7 +34,7 @@ fis<-fis%>%
 
 
 #backup data email
-allstu<-read_excel("/Volumes/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Fall/Fall 2022 UG Backup Data Report.xlsx")
+allstu<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Fall/Fall 2022 UG Backup Data Report.xlsx")
 
 #select 2022 cohort and vars
 allstu22<-allstu%>%
@@ -158,29 +158,22 @@ fis.s<-fis.s%>%rename(
   interact.cm=`How have you been able to effectively interact with others in the Lasell community in a safe manner so far this semester?`,
   interact.difficulty=`What are the difficulties you’re facing when interacting with others within the Lasell community this semester?`)
 
-#write.xlsx(fis.s,"/Volumes/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/First Impressions/2022 Fall/raw_renamed.xlsx")
+#write.xlsx(fis.s,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/First Impressions/2022 Fall/raw_renamed.xlsx")
 ```
 
-## Respondents: Representative of the population
+## Survey respondents
 
 ```{r respondents vs overall SAVE full df}
-#approach 1
+#full merge survey data with all population data for background vars comparisions
 #data merge full
 fis.s<-fis.s%>%mutate(RespondentOverall="Respondents")
-allstu22<-allstu22%>%mutate(RespondentOverall="All First-Year Students")%>%rename(ppid=`People Code Id`)
+allstu22<-allstu22%>%mutate(RespondentOverall="All First-Year")%>%rename(ppid=`People Code Id`)
 fulldf<-full_join(fis.s,allstu22)
 
 #response rate
 num.response=fulldf%>%filter(RespondentOverall=="Respondents")%>%nrow()
-num.overall=fulldf%>%filter(RespondentOverall=="All First-Year Students")%>%nrow()
+num.overall=fulldf%>%filter(RespondentOverall=="All First-Year")%>%nrow()
 response_rate=formattable::percent(num.response/num.overall,digits=0)
-
-#approach 2
-#allstu22.s<-allstu22%>%select(-RespondentOverall)
-#allstu22.s<-allstu22.s%>%mutate(ResAll=
- #                       if_else(ppid%in%fis.s$ppid,#if id is one of the same survey id 
-  #                      "Respond","Not Respond"))
-#check: allstu22.s%>%count(ResAll) #314 person, 195 responded, 177 have ppid, 18 no ppid
 ```
 
 
@@ -212,17 +205,40 @@ fulldf<-fulldf%>%mutate(gender=if_else(is.na(gender),"Unknown",gender))
 
 
 
-```{r ResAll.waffle}
+
+```{r}
+#left merge survey data with all population data 
+allstu22.s<-allstu22%>%select(-RespondentOverall)
+allstu22.s<-allstu22.s%>%mutate(ResAll=
+                        if_else(ppid%in%fis.s$ppid,#if id is one of the same survey id 
+                        "Respond","Not Respond"))
+#check: allstu22.s%>%count(ResAll) #314 person, 195 responded, 177 have ppid, 18 no ppid
+```
+
+```{r resp_rate}
+resp_rate<-allstu22.s%>%group_by(ResAll)%>%summarise(cnt=n())%>%
+ mutate(prt=round(cnt/sum(cnt)*100,digits = 0))%>%
+  ggplot(aes(x=2, y = prt, fill=ResAll)) +#x=2 to place the pie centered on limit
+    xlim(0.5, 2.5)+#only show .5-2.5 of pie (0-.5 will be the hole)
+  geom_bar(stat="identity")+coord_polar(theta="y",start=0)+#make bar on a circled coord
+  scale_fill_manual(values = c("#6C6F70","#69b3e7"))+
+  annotate("text",x = 0.5, y = 0.5, #center is 0.5
+           label = str_wrap(paste0(response_rate," Response Rate"),10), fontface=2)+#bolded
+    theme_lz()+theme(legend.position = "none")+
+  labs(caption=str_wrap("Survey collected: Sep. 20-30, 2022",20))
+    #geom_text(aes(x =2,label = ResAll),position = position_stack(vjust = .5) )
+
 #response rate
-ResAll.waffle<-fulldf%>%group_by(RespondentOverall)%>%summarise(cnt=n())%>%mutate(prt=round(cnt/sum(cnt)*100,digits = 0))%>%
-ggplot(aes(values = prt, fill=RespondentOverall)) +
-  geom_waffle(color="white",flip = TRUE)+
-   labs(title=str_wrap(paste0(response_rate," Response Rate"),40),#, " (",num.response, " out of ", num.overall,")"),40),#80 is a full line length
-       x="",y="",fill="", 40)+
+#ResAll.waffle<-fulldf%>%group_by(RespondentOverall)%>%summarise(cnt=n())%>%
+ # mutate(prt=round(cnt/sum(cnt)*100,digits = 0))%>%
+#ggplot(aes(values = prt, fill=RespondentOverall)) +
+ # geom_waffle(color="white",flip = TRUE)+
+  # labs(title=str_wrap(paste0(response_rate," Response Rate"),40),#, " (",num.response, " out of ", num.overall,")"),40),#80 is a full line length
+   #    x="",y="",fill="", 40)+
        #subtitle=str_wrap("Data collection: Sep 20-30, 2022"),40)+ #shows bottom right
-  theme_lz()+
-    scale_y_discrete(labels=c("Respondents","All First-year"))+
-  scale_fill_manual(values = c("#6C6F70","#69b3e7"))#fill legend labels=c(""),name="")
+  #theme_lz()+
+   # scale_y_discrete(labels=c("Respondents","All First-year"))+
+  #scale_fill_manual(values = c("#6C6F70","#69b3e7"))#fill legend labels=c(""),name="")
  # geom_text(aes(x = prt, y=RespondentOverall, label=paste0(RespondentOverall,": ",prt)),color="white",position = position_dodge(0.9),hjust=1)
 
 #response rate
@@ -239,7 +255,7 @@ ggplot(aes(values = prt, fill=RespondentOverall)) +
 ```
 
 
-```{r respondent res.com figure,fig.width=2}
+```{r respondent res.com figure}
 #background info: gender & ethnicity, FT/PT & Transfer, RC
 #RC
 ResAll.rcstatus<-fulldf%>%group_by(RespondentOverall,RCstatus)%>%summarise(cnt=n())%>%
@@ -248,9 +264,9 @@ ResAll.rcstatus<-fulldf%>%group_by(RespondentOverall,RCstatus)%>%summarise(cnt=n
 ggplot(aes(x = prt, fill=RespondentOverall, y=RCstatus)) +
   geom_bar(stat="identity",position = position_dodge(),width=0.8)+
   labs(title=str_wrap("",40),#80 is a full line length
-       x="",y="",fill="", 
+       x="",y="",fill="")+ 
     #   subtitle=str_wrap(paste0("6% Residents and 94% Commuters"),40), 
-       caption="")+ #shows bottom right
+       
   theme_lz()+
   theme(axis.text.x = element_text(),
         legend.position = "none")+
@@ -260,7 +276,7 @@ ggplot(aes(x = prt, fill=RespondentOverall, y=RCstatus)) +
   coord_flip()
 ```
 
-```{r respondent gender figure,fig.width=2}
+```{r respondent gender figure}
 #background info: gender & ethnicity, FT/PT & Transfer, RC
 #RC
 ResAll.gd<-fulldf%>%filter(gender!="Unknown")%>%
@@ -270,9 +286,7 @@ ResAll.gd<-fulldf%>%filter(gender!="Unknown")%>%
 ggplot(aes(x = prt, fill=RespondentOverall, y=gender)) +
   geom_bar(stat="identity",position = position_dodge(),width=0.8)+
   labs(title=str_wrap("",40),#80 is a full line length
-       x="",y="",fill="", 
-    #   subtitle=str_wrap(paste0("6% Residents and 94% Commuters"),40), 
-       caption="")+ #shows bottom right
+       x="",y="",fill="")+ 
   theme_lz()+
   theme(axis.text.x = element_text(), legend.position = "none")+
     scale_y_discrete(labels=c("Male","Female"))+
@@ -282,7 +296,7 @@ ggplot(aes(x = prt, fill=RespondentOverall, y=gender)) +
 ```
 
 
-```{r respondent ethnicity figure,fig.height=2}
+```{r respondent ethnicity figure}
 pvttbl<-fulldf%>%filter(Ethnicity!="Unknown")%>%
   group_by(RespondentOverall,Ethnicity)%>%summarise(cnt=n())%>%
   mutate(prt=formattable::percent(cnt/sum(cnt),digits=0))
@@ -294,25 +308,75 @@ ResAll.eth<-pvttbl%>%
 ggplot(aes(x = prt, fill=RespondentOverall, y=Ethnicity)) +
   geom_bar(stat="identity",position = position_dodge(),width=0.8)+
   labs(title=str_wrap("",40),#80 is a full line length
-       x="",y="",fill="", 
-    #   subtitle=str_wrap(paste0("6% Residents and 94% Commuters"),40), 
-       caption="")+ #shows bottom right
+       x="",y="",fill="") +
 theme_lz()+
-  theme(axis.text.x = element_text(), legend.position = "none")+
-  scale_y_discrete(limits = set_order$eth_reorder)+
-  geom_text(aes(label=paste0(prt)),size=3,position = position_dodge(0.9))+#, " ", Ethnicity," among ",RespondentOverall
+  theme(axis.text.x = element_text(), legend.position = c(0.5,0.8))+
+ scale_y_discrete(limits = set_order$eth_reorder)+
+  geom_text(aes(label=paste0(prt)),size=3,position = position_dodge(0.9))+
   scale_fill_manual(values = c("#6C6F70","#69b3e7"))+#fill legend labels=c(""),name="")
   coord_flip()
 ```
 
 
-```{r respondent_figures,include=TRUE,fig.height=2,fig.width=6}
-gridExtra::grid.arrange(ResAll.waffle,ResAll.rcstatus, ResAll.gd, nrow=1)
+```{r respondent_figures,include=TRUE,fig.height=2}
+gridExtra::grid.arrange(resp_rate,ResAll.rcstatus, ResAll.gd, nrow=1)
 ResAll.eth
 #layout(matrix(c(1,2,3),nrow=1,ncol=3,byrow = TRUE))
 #ResAll.rcstatus+ ResAll.gd+ ResAll.eth +plot_layout(ncol = 3)
 ```
 
+
+
+## Satisfaction
+
+```{r historical data}
+
+```
+
+```{r overview and compare last year}
+
+#satis.course2&ac2
+
+#satis.food1&resid2#satis.activity1
+```
+
+```{r table by gender and race}
+
+```
+
+
+## Services
+```{r}
+#service.7
+```
+
+
+
+
+## Emphasize
+```{r}
+#empashize4
+```
+
+## Faculty
+```{r}
+#faculty4
+```
+
+## Connection
+```{r}
+#connect2
+#interact2
+```
+
+
+
+
+#Expect
+```{r}
+#meetexpect1
+#cm-various
+```
 
 
 

@@ -1,18 +1,16 @@
 ---
 title: "2022 First Impression Survey Results"
-author: "Linli Zhou"
-date: "10-14-2022"
+author: ""
+date: "Sep 20-30, 2022"
 output:
   bookdown::word_document2:
     fig_caption: yes
-    fig_height: 5
-    fig_width: 5
     reference_docx: "/Users/linlizhou/Documents/Rprojects/lasell.report.docx"
 always_allow_html: true
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, include = FALSE, warning=FALSE, message=FALSE, fig.align = "center") #show only results
+knitr::opts_chunk$set(echo = FALSE, include = FALSE, warning=FALSE, message=FALSE) #show only results
 source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R") #run code from saved theme and library
 ```
 
@@ -160,7 +158,7 @@ fis.s<-fis.s%>%rename(
   interact.cm=`How have you been able to effectively interact with others in the Lasell community in a safe manner so far this semester?`,
   interact.difficulty=`What are the difficulties you’re facing when interacting with others within the Lasell community this semester?`)
 
-write.xlsx(fis.s,"/Volumes/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/First Impressions/2022 Fall/raw_renamed.xlsx")
+#write.xlsx(fis.s,"/Volumes/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/First Impressions/2022 Fall/raw_renamed.xlsx")
 ```
 
 ## Respondents
@@ -186,7 +184,7 @@ response_rate=formattable::percent(num.response/num.overall,digits=0)
 ```
 
 
-```{r one RCstatus col}
+```{r one RCstatus col in fulldf}
 fulldf<-fulldf%>%mutate(Res_Com=if_else(!is.na(RCstatus),#if settled by RC then RC
           RCstatus,`Res/Comm`))%>%#if not settled, then res/com from allstu
   select(-RCstatus,-`Res/Comm`)%>%
@@ -197,47 +195,91 @@ fulldf<-fulldf%>%mutate(Res_Com=if_else(!is.na(RCstatus),#if settled by RC then 
 #check: fulldf.t%>%count(RCstatus)
 ```
 
-
-
-```{r response rate figure}
-#response rate
-response_rate<-fulldf%>%count(RespondentOverall)%>%
-ggplot(aes(x = n, y=RespondentOverall, fill=RespondentOverall)) +
-  geom_col()+
-  labs(title=str_wrap(paste0(response_rate," Response Rate"),35),#80 is a full line length
-       x="Number of Students",y="",fill="", 
-       subtitle=paste0(num.response, " out of ", num.overall, " answered the First Impression Survey"), 
-       caption="Data collection: Sep 20-30, 2022")+ #shows bottom right
-  theme_void()+theme(legend.position="none")+
-  scale_fill_manual(values = c("#6C6F70","#69b3e7"))+#fill legend labels=c(""),name="")
-  #scale_y_discrete(labels=c("Survey Respondents","All First Year Students"))+
-  geom_text(aes(label=paste0(RespondentOverall,": ",n)),color="white",position = position_dodge(0.9),hjust=1.5)
+```{r recode race in fulldf}
+fulldf<-fulldf%>%mutate(Ethnicity=if_else(is.na(Ethnicity),"Race and Ethnicity Unknown",Ethnicity))%>%
+  mutate(Ethnicity=if_else(Ethnicity=="Race and Ethnicity Unknown","Unknown",Ethnicity))%>%
+  mutate(Ethnicity=if_else(Ethnicity=="Two or more Races","Multi-races",Ethnicity))%>%
+  mutate(Ethnicity=if_else(Ethnicity=="Non Resident Alien","International",Ethnicity))%>%
+  mutate(Ethnicity=if_else(Ethnicity=="Native Hawaiian or Other Pacific Islander","Native",Ethnicity))%>%
+  mutate(Ethnicity=if_else(Ethnicity=="Black or African American","Black",Ethnicity))
 ```
 
 
-```{r respondent backgrounds figure}
+
+
+```{r ResAll.waffle}
+#response rate
+ResAll.waffle<-fulldf%>%group_by(RespondentOverall)%>%summarise(cnt=n())%>%mutate(prt=round(cnt/sum(cnt)*100,digits = 0))%>%
+ggplot(aes(values = prt, fill=RespondentOverall)) +
+  geom_waffle(color="white",flip = TRUE)+
+   labs(title=str_wrap(paste0(response_rate," Response Rate"),40),#, " (",num.response, " out of ", num.overall,")"),40),#80 is a full line length
+       x="",y="",fill="", 40)+
+       #subtitle=str_wrap("Data collection: Sep 20-30, 2022"),40)+ #shows bottom right
+  theme_lz()+
+    scale_y_discrete(labels=c("Respondents","All First-year"))+
+  scale_fill_manual(values = c("#6C6F70","#69b3e7"))#fill legend labels=c(""),name="")
+ # geom_text(aes(x = prt, y=RespondentOverall, label=paste0(RespondentOverall,": ",prt)),color="white",position = position_dodge(0.9),hjust=1)
+
+#response rate
+#ResAll.number<-fulldf%>%count(RespondentOverall)%>%
+#ggplot(aes(x = n, y=RespondentOverall, fill=RespondentOverall)) +
+#  geom_col()+
+#  labs(title=str_wrap(paste0(response_rate," Response Rate"),40),#, " (",num.response, " out of ", num.overall,")"),40),#80 is a full line length
+#       x="",y="",fill="", 40)+
+       #subtitle=str_wrap("Data collection: Sep 20-30, 2022"),40)+ #shows bottom right
+#  theme_lz()+theme(legend.position = "none")+
+    #scale_y_discrete(labels=c("Respondents","All First-year"))+
+#  scale_fill_manual(values = c("#69b3e7","#6C6F70"))+#fill legend labels=c(""),name="")
+#  geom_text(aes(label=paste0(RespondentOverall,": ",n)),color="white",position = position_dodge(0.9),hjust=1)
+```
+
+
+```{r respondent res.com figure, fig.height=3}
 #background info: gender & ethnicity, FT/PT & Transfer, RC
 #RC
-fulldf%>%group_by(RespondentOverall,RCstatus)%>%summarise(cnt=n())%>%
+ResAll.rcstatus<-fulldf%>%group_by(RespondentOverall,RCstatus)%>%summarise(cnt=n())%>%
   mutate(prt=formattable::percent(cnt/sum(cnt),digits=0))%>%
   
 ggplot(aes(x = prt, fill=RespondentOverall, y=RCstatus)) +
   geom_bar(stat="identity",position = position_dodge())+
-  labs(title=str_wrap("Representative Resident vs Commuters Composition",35),#80 is a full line length
+  labs(title=str_wrap("Resident vs Commuters Composition",40),#80 is a full line length
        x="",y="",fill="", 
-       subtitle=paste0("6% Residents and 94% Commuters"), 
+    #   subtitle=str_wrap(paste0("6% Residents and 94% Commuters"),40), 
        caption="")+ #shows bottom right
-  theme_void()+theme(legend.position="bottom",
-                     axis.text.y = element_text())+
+  theme_lz()+
+  theme(axis.text.y = element_text())+
     scale_y_discrete(labels=c("Commuters","Residents"))+
-  geom_text(aes(label=prt),color="white",position = position_dodge(0.9),hjust=1)+#, " ", RCstatus," among ",RespondentOverall
+  geom_text(aes(label=paste0(prt)),size=3,position = position_dodge(0.9),hjust=0.5)+#, " ", RCstatus," among ",RespondentOverall
   scale_fill_manual(values = c("#6C6F70","#69b3e7"))#fill legend labels=c(""),name="")
-  
-  
-
-
-
 ```
+
+
+
+
+```{r respondent gender.ethnicity figure, fig.height=3}
+#background info: gender & ethnicity
+ResAll.gdeth<-fulldf%>%group_by(Ethnicity,gender)%>%summarise(cnt=n())%>%
+  mutate(prt=formattable::percent(cnt/sum(cnt),digits=0))%>%
+  
+ggplot(aes(x = prt, fill=gender, y=Ethnicity)) +
+  geom_bar(stat="identity",position = position_dodge())+
+  labs(title=str_wrap("Gender & Ethnicity Composition",40),#80 is a full line length
+       x="",y="",fill="", 
+       caption="")+ #shows bottom right
+  theme_lz()+
+  theme(axis.text.y = element_text())+
+  #  scale_y_discrete(labels=c("Commuters","Residents"))+
+  geom_text(aes(label=paste0(prt)),size=3,position = position_dodge(0.9),hjust=0.5)+#, " ", RCstatus," among ",RespondentOverall
+  #scale_fill_manual(values = c("#6C6F70","#69b3e7"))#fill legend labels=c(""),name="")
+  facet_wrap(RespondentOverall,ncol=2)
+```
+
+```{r respondent_figures,include=TRUE,fig.height=2,fig.width=6}
+gridExtra::grid.arrange(ResAll.waffle,ResAll.rcstatus, ncol=2)
+ResAll.gdeth
+```
+
+
 
 
 

@@ -653,7 +653,22 @@ prtdf%>%count(item)%>%View()
 ## Satisfaction
 ```{r satis1-8}
 #satis.4: satis.acchallenge, satis.accommit, satis.majorcourse, satis.overallcourse
-
+prtdf%>%filter(item%in%
+           c("satis.overallcourse","satis.majorcourse", "satis.acchallenge", "satis.accommit"),
+           year>2019)%>%
+  group_by(item,year,prt)%>%summarise(cnt=n())%>%
+  
+  ggplot(aes(y = prt, fill=year, x=factor(item,levels =c("satis.overallcourse","satis.majorcourse", "satis.acchallenge", "satis.accommit") )))+
+  geom_bar(stat="identity",position = position_dodge(),width=0.8)+
+  #labs(title=str_wrap("",40),x="",y="",fill="") +
+  #theme_lz()+theme(axis.text.x = element_text(),axis.text.y = element_text(), legend.position = c(0.8,0.8))+
+  geom_text(aes(label= ifelse(year==2022,as.character(round(prt,2)),"")),
+            size=3,fontface="bold",position = position_dodge(0.9))+
+  scale_y_continuous(breaks = seq(0.7, 1, by = 0.1) ,
+                     labels=scales::percent_format(accuracy = 1))+#present y axis label as percentage
+  scale_x_discrete(labels=c("Overall Courses","Major Courses","Academic Challenge","Academic Commitment"),
+                   guide=guide_axis(n.dodge = 1))+
+  scale_fill_manual(values = c("Grey","Grey70","#69b3e7"))#fill legend labels=c(""),name="")
 #satis.4: satis.activity, satis.foodav, satis.residhall, satis.residstaff
 ```
 

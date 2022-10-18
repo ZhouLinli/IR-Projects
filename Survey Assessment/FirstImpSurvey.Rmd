@@ -135,8 +135,8 @@ fis.s<-fis.s%>%rename(
   service.health=`Health Services (Located in Edwards Student Center):Please tell us how satisfied you are with…`,
   service.health.cm=`Comment or Example::Please tell us how satisfied you are with…...89`,
 
-  service.techhealp=`Technology Help Desk:Please tell us how satisfied you are with…`,
-  service.techhealp.cm=`Comment or Example::Please tell us how satisfied you are with…...91`,
+  service.techhelp=`Technology Help Desk:Please tell us how satisfied you are with…`,
+  service.techhelp.cm=`Comment or Example::Please tell us how satisfied you are with…...91`,
 
   service.shuttle=`Lasell Shuttle:Please tell us how satisfied you are with…`,
   service.shuttle.cm=`Comment or Example::Please tell us how satisfied you are with…...93`,
@@ -343,58 +343,342 @@ ResAll.eth
 
 
 
-## Satisfaction
+
+
+
 
 ```{r historical data}
+historical<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/First Impressions/2022 Fall/HistoricalItems.xlsx")
 
-```
+historical$`2018`<-as.numeric(historical$`2018`)
 
-```{r overview and compare last year}
-
-#satis.course2&ac2
-
-#satis.food1&resid2#satis.activity1
-```
-
-```{r table by gender and race}
-
+historical<-tidyr::pivot_longer(historical,cols=c(`2018`:`2021`),names_to = "year",values_to = "prt")
 ```
 
 
-## Services
+```{r current data - distill one satis number}
+#check: lapply(fis.s[,str_detect(names(fis.s),"cm$")==FALSE],unique)%>%View()
+
+##satis.t
+satis.t1<-fis.s%>%filter(!is.na(satis.activity))%>%#remove NA from total
+  group_by(satis.activity)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(satis.activity>3,"Satisfied","Dissadisfied"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="satis.activity")%>%select(item,year,prt)#select needed vars and values
+
+satis.t2<-fis.s%>%filter(!is.na(satis.overallcourse))%>%#remove NA from total
+  group_by(satis.overallcourse)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(satis.overallcourse>3,"Satisfied","Dissadisfied"))%>%
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="satis.overallcourse")%>%select(item,year,prt)
+
+satis.t3<-fis.s%>%filter(!is.na(satis.majorcourse))%>%#remove NA from total
+  group_by(satis.majorcourse)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(satis.majorcourse>3,"Satisfied","Dissadisfied"))%>%
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="satis.majorcourse")%>%select(item,year,prt)
+
+satis.t4<-fis.s%>%filter(!is.na(satis.acchallenge))%>%#remove NA from total
+  group_by(satis.acchallenge)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(satis.acchallenge>3,"Satisfied","Dissadisfied"))%>%
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="satis.acchallenge")%>%select(item,year,prt)
+
+satis.t5<-fis.s%>%filter(!is.na(satis.accommit))%>%#remove NA from total
+  group_by(satis.accommit)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(satis.accommit>3,"Satisfied","Dissadisfied"))%>%
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="satis.accommit")%>%select(item,year,prt)
+
+satis.t6<-fis.s%>%filter(!is.na(satis.foodav))%>%#remove NA from total
+  group_by(satis.foodav)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(satis.foodav>3,"Satisfied","Dissadisfied"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="satis.foodav")%>%select(item,year,prt)
+
+satis.t7<-fis.s%>%filter(!is.na(satis.residstaff))%>%#remove NA from total
+  group_by(satis.residstaff)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(satis.residstaff>3,"Satisfied","Dissadisfied"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="satis.residstaff")%>%select(item,year,prt)
+
+satis.t8<-fis.s%>%filter(!is.na(satis.residhall))%>%#remove NA from total
+  group_by(satis.residhall)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(satis.residhall>3,"Satisfied","Dissadisfied"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="satis.residhall")%>%select(item,year,prt)
+
+
+##emphasize faculty and connect
+#emphasize
+emp1<-fis.s%>%filter(!is.na(emphasize.acsupport))%>%#remove NA from total
+  group_by(emphasize.acsupport)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(emphasize.acsupport%in%c("Very much","Quite a bit"),
+                         "Satisfied","Dissadisfied"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="emphasize.acsupport")%>%select(item,year,prt)
+
+emp2<-fis.s%>%filter(!is.na(emphasize.socoppo))%>%#remove NA from total
+  group_by(emphasize.socoppo)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(emphasize.socoppo%in%c("Very much","Quite a bit"),
+                         "Satisfied","Dissadisfied"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="emphasize.socoppo")%>%select(item,year,prt)
+
+emp3<-fis.s%>%filter(!is.na(emphasize.campactivity))%>%#remove NA from total
+  group_by(emphasize.campactivity)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(emphasize.campactivity%in%c("Very much","Quite a bit"),
+                         "Satisfied","Dissadisfied"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="emphasize.campactivity")%>%select(item,year,prt)
+
+emp4<-fis.s%>%filter(!is.na(emphasize.issueevents))%>%#remove NA from total
+  group_by(emphasize.issueevents)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(emphasize.issueevents%in%c("Very much","Quite a bit"),
+                         "Satisfied","Dissadisfied"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="emphasize.issueevents")%>%select(item,year,prt)
+
+expect.t1<-fis.s%>%filter(!is.na(meetacexpect))%>%#remove NA from total
+  group_by(meetacexpect)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(meetacexpect>3,"Satisfied","Dissadisfied"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="meetacexpect")%>%select(item,year,prt)
+#faculty
+faculty.t1<-fis.s%>%filter(!is.na(faculty.orgmaterial))%>%#remove NA from total
+  group_by(faculty.orgmaterial)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(faculty.orgmaterial>3,"Satisfied","Dissadisfied"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="faculty.orgmaterial")%>%select(item,year,prt)
+
+faculty.t2<-fis.s%>%filter(!is.na(faculty.explain))%>%#remove NA from total
+  group_by(faculty.explain)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(faculty.explain>3,"Satisfied","Dissadisfied"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="faculty.explain")%>%select(item,year,prt)
+
+faculty.t3<-fis.s%>%filter(!is.na(faculty.prep))%>%#remove NA from total
+  group_by(faculty.prep)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(faculty.prep>3,"Satisfied","Dissadisfied"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="faculty.prep")%>%select(item,year,prt)
+
+faculty.t4<-fis.s%>%filter(!is.na(faculty.command))%>%#remove NA from total
+  group_by(faculty.command)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(faculty.command>3,"Satisfied","Dissadisfied"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="faculty.command")%>%select(item,year,prt)
+
+#connect.t1<-mean(fis.s$connect.faculty, na.rm = TRUE)
+#connect.t2<-mean(fis.s$connect.stu, na.rm = TRUE)
+connect.t1<-fis.s%>%filter(!is.na(connect.faculty))%>%#remove NA from total
+  group_by(connect.faculty)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(connect.faculty>3,"Satisfied","Dissadisfied"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="connect.faculty")%>%select(item,year,prt)
+
+connect.t2<-fis.s%>%filter(!is.na(connect.stu))%>%#remove NA from total
+  group_by(connect.stu)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(connect.stu>3,"Satisfied","Dissadisfied"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="connect.stu")%>%select(item,year,prt)
+
+connect.t3<-fis.s%>%filter(!is.na(interact.outside))%>%#remove NA from total
+  group_by(interact.outside)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(interact.outside>3,"Satisfied","Dissadisfied"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="interact.outside")%>%select(item,year,prt)
+
+## service
+service.u1<-fis.s%>%filter(!is.na(service.aac))%>%#remove NA from total
+  group_by(service.aac)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(service.aac=="Have not use","Not-use","Used"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Used")%>%mutate(year="2022",item="service.aac.use")%>%select(item,year,prt)
+
+service.s1<-fis.s%>%filter(!is.na(service.aac)&service.aac!="Have not use")%>%#remove NA from total
+  group_by(service.aac)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(service.aac>3,"Satisfied","Dissadisfied"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="service.aac.satis")%>%select(item,year,prt)
+
+
+service.u2<-fis.s%>%filter(!is.na(service.classtech))%>%#remove NA from total
+  group_by(service.classtech)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(service.classtech=="Have not use","Not-use","Used"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Used")%>%mutate(year="2022",item="service.classtech.use")%>%select(item,year,prt)
+
+service.s2<-fis.s%>%filter(!is.na(service.classtech)&service.classtech!="Have not use")%>%#remove NA from total
+  group_by(service.classtech)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(service.classtech>3,"Satisfied","Dissadisfied"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="service.classtech.satis")%>%select(item,year,prt)
+
+
+service.u3<-fis.s%>%filter(!is.na(service.counseling))%>%#remove NA from total
+  group_by(service.counseling)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(service.counseling=="Have not use","Not-use","Used"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Used")%>%mutate(year="2022",item="service.counseling.use")%>%select(item,year,prt)
+
+service.s3<-fis.s%>%filter(!is.na(service.counseling)&service.counseling!="Have not use")%>%#remove NA from total
+  group_by(service.counseling)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(service.counseling>3,"Satisfied","Dissadisfied"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="service.counseling.satis")%>%select(item,year,prt)
+
+
+service.u4<-fis.s%>%filter(!is.na(service.acadvisor))%>%#remove NA from total
+  group_by(service.acadvisor)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(service.acadvisor=="Have not met with advisor","Not-use","Used"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Used")%>%mutate(year="2022",item="service.acadvisor.use")%>%select(item,year,prt)
+
+service.s4<-fis.s%>%filter(!is.na(service.acadvisor)&service.acadvisor!="Have not met with advisor")%>%#remove NA from total
+  group_by(service.acadvisor)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(service.acadvisor>3,"Satisfied","Dissadisfied"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="service.acadvisor.satis")%>%select(item,year,prt)
+
+
+service.u5<-fis.s%>%filter(!is.na(service.health))%>%#remove NA from total
+  group_by(service.health)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(service.health=="Have not use","Not-use","Used"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Used")%>%mutate(year="2022",item="service.health.use")%>%select(item,year,prt)
+
+service.s5<-fis.s%>%filter(!is.na(service.health)&service.health!="Have not use")%>%#remove NA from total
+  group_by(service.health)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(service.health>3,"Satisfied","Dissadisfied"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="service.health.satis")%>%select(item,year,prt)
+
+
+service.u6<-fis.s%>%filter(!is.na(service.techhelp))%>%#remove NA from total
+  group_by(service.techhelp)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(service.techhelp=="Have not use","Not-use","Used"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Used")%>%mutate(year="2022",item="service.techhelp.use")%>%select(item,year,prt)
+
+service.s6<-fis.s%>%filter(!is.na(service.techhelp)&service.techhelp!="Have not use")%>%#remove NA from total
+  group_by(service.techhelp)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(service.techhelp>3,"Satisfied","Dissadisfied"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="service.techhelp.satis")%>%select(item,year,prt)
+
+
+service.u7<-fis.s%>%filter(!is.na(service.shuttle))%>%#remove NA from total
+  group_by(service.shuttle)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(service.shuttle=="Have not use","Not-use","Used"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Used")%>%mutate(year="2022",item="service.shuttle.use")%>%select(item,year,prt)
+
+service.s7<-fis.s%>%filter(!is.na(service.shuttle)&service.shuttle!="Have not use")%>%#remove NA from total
+  group_by(service.shuttle)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(service.shuttle>3,"Satisfied","Dissadisfied"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="service.shuttle.satis")%>%select(item,year,prt)
+
+
+service.u8<-fis.s%>%filter(!is.na(service.aac))%>%#remove NA from total
+  group_by(service.aac)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(service.aac=="Have not use","Not-use","Used"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Used")%>%mutate(year="2022",item="service.aac.use")%>%select(item,year,prt)
+
+service.s8<-fis.s%>%filter(!is.na(service.aac)&service.aac!="Have not use")%>%#remove NA from total
+  group_by(service.aac)%>%summarise(cnt=n())%>%#count each 6 groups
+  mutate(regroup=if_else(service.aac>3,"Satisfied","Dissadisfied"))%>%#converge to 2 group
+  group_by(regroup)%>%summarise(regroup.cnt=sum(cnt))%>%#group regrouped and sum previous cnt
+  mutate(prt=formattable::percent(regroup.cnt/sum(regroup.cnt),digits = 0))%>%#prt within regroups
+  filter(regroup=="Satisfied")%>%mutate(year="2022",item="service.aac.satis")%>%select(item,year,prt)
+
+current<-rbind(connect.t1,connect.t2,connect.t3,
+      emp1,emp2,emp3,emp4,
+      expect.t1,
+      faculty.t1,faculty.t2,faculty.t3,faculty.t4,
+      satis.t1,satis.t2,satis.t3,satis.t4,satis.t5,satis.t6,satis.t7,satis.t8,satis.t9,
+      service.s1,service.s2,service.s3,service.s4,service.s5,service.s6,service.s7,service.s8,
+      service.u1,service.u2,service.u3,service.u4,service.u5,service.u6,service.u7,service.u8)
+```
+
+```{r merge hist and current and SAVE prtdf}
+historical.prt<-historical%>%filter(prt<1)%>%mutate(prt=formattable::percent(prt,digits = 0))
+prtdf<-full_join(current,historical.prt)%>%unique()
+
+#save: 
+write_xlsx(prtdf, "/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/First Impressions/2022 Fall/satisfaction18-22.xlsx")
+
+#check: 
+prtdf%>%count(item)%>%View()
+```
+
+
+## Satisfaction
+```{r satis1-8}
+#satis.4: satis.acchallenge, satis.accommit, satis.majorcourse, satis.overallcourse
+
+#satis.4: satis.activity, satis.foodav, satis.residhall, satis.residstaff
+```
+
+## Services Use and Satisfaction
+```{r service1-7.use/.satis}
+#service.4: service.aac, service.acadvisor, service.classtech, , service.techhelp
+#service.3: service.counseling, service.health, service.shuttle 
+```
+
+## Emphasize, Faculty, and Connect
 ```{r}
-#service.7
+#empashize4: emphasize.acsupport, emphasize.campactivity, emphasize.issueevents, emphasize.socoppo
+
+#faculty4: faculty.command, faculty.explain, faculty.orgmaterial, faculty.prep
+
+#connect4: connect.faculty, connect.stu, interact.outside, meetacexpect
 ```
 
 
+## Qualitative Analysis
 
+## Ethnicity and Inclusion
+```{r table by gender and race this year}
 
-## Emphasize
-```{r}
-#empashize4
 ```
-
-## Faculty
-```{r}
-#faculty4
-```
-
-## Connection
-```{r}
-#connect2
-#interact2
-```
-
-
-
-
-#Expect
-```{r}
-#meetexpect1
-#cm-various
-```
-
-
 
 
 

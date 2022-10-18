@@ -80,6 +80,7 @@ fis.s<-fis.s%>%mutate(ppid=if_else(!is.na(`Invite Custom Field 1`),#if settled b
 #check: sum(is.na(fis.s$ppid))#14 without ppid
 ```
 
+
 ```{r rename cols and SAVE xlsx}
 #look at the survey instruction and lapply(fis.s, unique) to do this
 fis.s<-fis.s%>%rename(
@@ -167,36 +168,74 @@ write.xlsx(fis.s,"/Volumes/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Firs
 ```{r respondents vs overall SAVE full df}
 #approach 1
 #data merge full
-fis.s<-fis.s%>%mutate(RespondentOverall="Respondent")
-allstu22<-allstu22%>%mutate(RespondentOverall="Overall")%>%rename(ppid=`People Code Id`)
+fis.s<-fis.s%>%mutate(RespondentOverall="Respondents")
+allstu22<-allstu22%>%mutate(RespondentOverall="All First-Year Students")%>%rename(ppid=`People Code Id`)
 fulldf<-full_join(fis.s,allstu22)
 
 #response rate
-num.response=fulldf%>%filter(RespondentOverall=="Respondent")%>%nrow()
-num.overall=fulldf%>%filter(RespondentOverall=="Overall")%>%nrow()
+num.response=fulldf%>%filter(RespondentOverall=="Respondents")%>%nrow()
+num.overall=fulldf%>%filter(RespondentOverall=="All First-Year Students")%>%nrow()
 response_rate=formattable::percent(num.response/num.overall,digits=0)
 
 #approach 2
-allstu22.s<-allstu22%>%select(-RespondentOverall)
-allstu22.s<-allstu22.s%>%mutate(ResAll=
-                        if_else(ppid%in%fis.s$ppid,#if id is one of the same survey id 
-                        "Respond","Not Respond"))
-allstu22.s%>%count(ResAll) #314 person, 195 responded, 177 have ppid, 18 no ppid
+#allstu22.s<-allstu22%>%select(-RespondentOverall)
+#allstu22.s<-allstu22.s%>%mutate(ResAll=
+ #                       if_else(ppid%in%fis.s$ppid,#if id is one of the same survey id 
+  #                      "Respond","Not Respond"))
+#check: allstu22.s%>%count(ResAll) #314 person, 195 responded, 177 have ppid, 18 no ppid
+```
+
+
+```{r one RCstatus col}
+fulldf<-fulldf%>%mutate(Res_Com=if_else(!is.na(RCstatus),#if settled by RC then RC
+          RCstatus,`Res/Comm`))%>%#if not settled, then res/com from allstu
+  select(-RCstatus,-`Res/Comm`)%>%
+  mutate(RCstatus=if_else(Res_Com=="R","Resident",
+                          if_else(Res_Com=="C","Commuter",Res_Com)))%>%
+  select(-Res_Com)
+  
+#check: fulldf.t%>%count(RCstatus)
 ```
 
 
 
-```{r making fig for respondents}
-#check na: sum(is.na(fis.s$ppid))
-#background info: gender & ethnicity, FT/PT & Transfer, RC
+```{r response rate figure}
+#response rate
+response_rate<-fulldf%>%count(RespondentOverall)%>%
+ggplot(aes(x = n, y=RespondentOverall, fill=RespondentOverall)) +
+  geom_col()+
+  labs(title=str_wrap(paste0(response_rate," Response Rate"),35),#80 is a full line length
+       x="Number of Students",y="",fill="", 
+       subtitle=paste0(num.response, " out of ", num.overall, " answered the First Impression Survey"), 
+       caption="Data collection: Sep 20-30, 2022")+ #shows bottom right
+  theme_void()+theme(legend.position="none")+
+  scale_fill_manual(values = c("#6C6F70","#69b3e7"))+#fill legend labels=c(""),name="")
+  #scale_y_discrete(labels=c("Survey Respondents","All First Year Students"))+
+  geom_text(aes(label=paste0(RespondentOverall,": ",n)),color="white",position = position_dodge(0.9),hjust=1.5)
+```
 
-fig.fis_rc<-fis.s%>%
-  ggplot(aes(x = RCstatus, y = `FT/PT`, fill = `Transfer YN`)) +
-  geom_col(stat="identity")+ #是stakced
-  #geom_col(position = position_dodge(stat=""identity""))#是毗邻的
-  scale_fill_manual(...)+
-  labs(title=str_wrap("",35),x="",y=""，fill="", subtitle="", caption="") #80 is a full line length
-facet_wrap(~var,labeller=labeller(var= c(`oldname1`=""newname1"", ...) ) )"
+
+```{r respondent backgrounds figure}
+#background info: gender & ethnicity, FT/PT & Transfer, RC
+#RC
+fulldf%>%group_by(RespondentOverall,RCstatus)%>%summarise(cnt=n())%>%
+  mutate(prt=formattable::percent(cnt/sum(cnt),digits=0))%>%
+  
+ggplot(aes(x = prt, fill=RespondentOverall, y=RCstatus)) +
+  geom_bar(stat="identity",position = position_dodge())+
+  labs(title=str_wrap("Representative Resident vs Commuters Composition",35),#80 is a full line length
+       x="",y="",fill="", 
+       subtitle=paste0("6% Residents and 94% Commuters"), 
+       caption="")+ #shows bottom right
+  theme_void()+theme(legend.position="bottom",
+                     axis.text.y = element_text())+
+    scale_y_discrete(labels=c("Commuters","Residents"))+
+  geom_text(aes(label=prt),color="white",position = position_dodge(0.9),hjust=1)+#, " ", RCstatus," among ",RespondentOverall
+  scale_fill_manual(values = c("#6C6F70","#69b3e7"))#fill legend labels=c(""),name="")
+  
+  
+
+
 
 ```
 

@@ -1,7 +1,7 @@
 ---
-title: "2022 First Impression Survey Results"
+title: "First Impression Survey Results"
 author: ""
-date: "Sep 20-30, 2022"
+date: "Survey Collected during Sep 20-30, 2022"
 output:
   bookdown::word_document2:
     fig_caption: yes
@@ -206,7 +206,7 @@ fulldf<-fulldf%>%mutate(gender=if_else(is.na(gender),"Unknown",gender))
 
 
 
-```{r}
+```{r left merge allstu22.2}
 #left merge survey data with all population data 
 allstu22.s<-allstu22%>%select(-RespondentOverall)
 allstu22.s<-allstu22.s%>%mutate(ResAll=
@@ -215,7 +215,7 @@ allstu22.s<-allstu22.s%>%mutate(ResAll=
 #check: allstu22.s%>%count(ResAll) #314 person, 195 responded, 177 have ppid, 18 no ppid
 ```
 
-```{r resp_rate}
+```{r resp_rate,fig.fullwidth=TRUE}
 resp_rate<-allstu22.s%>%group_by(ResAll)%>%summarise(cnt=n())%>%
  mutate(prt=round(cnt/sum(cnt)*100,digits = 0))%>%
   ggplot(aes(x=2, y = prt, fill=ResAll)) +#x=2 to place the pie centered on limit
@@ -223,9 +223,10 @@ resp_rate<-allstu22.s%>%group_by(ResAll)%>%summarise(cnt=n())%>%
   geom_bar(stat="identity")+coord_polar(theta="y",start=0)+#make bar on a circled coord
   scale_fill_manual(values = c("#6C6F70","#69b3e7"))+
   annotate("text",x = 0.5, y = 0.5, #center is 0.5
-           label = str_wrap(paste0(response_rate," Response Rate"),10), fontface=2)+#bolded
+           label = str_wrap(paste0(response_rate," Response Rate"),10))+#fontface=2 bolded
     theme_lz()+theme(legend.position = "none")+
-  labs(caption=str_wrap("Survey collected: Sep. 20-30, 2022",20))
+  labs(#caption=str_wrap("Survey collected: Sep. 20-30, 2022",20),
+       title="",x="",y="",fill="")
     #geom_text(aes(x =2,label = ResAll),position = position_stack(vjust = .5) )
 
 #response rate
@@ -265,15 +266,13 @@ ggplot(aes(x = prt, fill=RespondentOverall, y=RCstatus)) +
   geom_bar(stat="identity",position = position_dodge(),width=0.8)+
   labs(title=str_wrap("",40),#80 is a full line length
        x="",y="",fill="")+ 
-    #   subtitle=str_wrap(paste0("6% Residents and 94% Commuters"),40), 
-       
   theme_lz()+
-  theme(axis.text.x = element_text(),
+  theme(axis.text.y = element_text(),
         legend.position = "none")+
     scale_y_discrete(labels=c("Commuters","Residents"))+
-  geom_text(aes(label=paste0(prt)),size=3,position = position_dodge(0.9))+#, " ", RCstatus," among ",RespondentOverall
-  scale_fill_manual(values = c("#6C6F70","#69b3e7"))+#fill legend labels=c(""),name="")
-  coord_flip()
+  geom_text(aes(label=paste0(prt)),size=3,fontface="bold",position = position_dodge(0.9))+#, " ", RCstatus," among ",RespondentOverall
+  scale_fill_manual(values = c("#6C6F70","#69b3e7"))#+#fill legend labels=c(""),name="")
+ # coord_flip()
 ```
 
 ```{r respondent gender figure}
@@ -288,38 +287,55 @@ ggplot(aes(x = prt, fill=RespondentOverall, y=gender)) +
   labs(title=str_wrap("",40),#80 is a full line length
        x="",y="",fill="")+ 
   theme_lz()+
-  theme(axis.text.x = element_text(), legend.position = "none")+
+  theme(axis.text.y = element_text(), legend.position = "none")+
     scale_y_discrete(labels=c("Male","Female"))+
-  geom_text(aes(label=paste0(prt)),size=3,position = position_dodge(0.9))+#, " ", gender," among ",RespondentOverall
-  scale_fill_manual(values = c("#6C6F70","#69b3e7"))+#fill legend labels=c(""),name="")
-  coord_flip()
+  geom_text(aes(label=paste0(prt)),size=3,fontface="bold",position = position_dodge(0.9))+#, " ", gender," among ",RespondentOverall
+  scale_fill_manual(values = c("#6C6F70","#69b3e7"))#+#fill legend labels=c(""),name="")
+  #coord_flip()
 ```
 
 
 ```{r respondent ethnicity figure}
-pvttbl<-fulldf%>%filter(Ethnicity!="Unknown")%>%
+ResAll.eth<-fulldf%>%filter(Ethnicity!="Unknown")%>%
   group_by(RespondentOverall,Ethnicity)%>%summarise(cnt=n())%>%
-  mutate(prt=formattable::percent(cnt/sum(cnt),digits=0))
-
-set_order <- pvttbl%>% filter(RespondentOverall=="All First-Year Students") %>%
-              arrange(prt) %>%mutate(eth_reorder = factor(Ethnicity))
-
-ResAll.eth<-pvttbl%>%
-ggplot(aes(x = prt, fill=RespondentOverall, y=Ethnicity)) +
+  mutate(prt=formattable::percent(cnt/sum(cnt),digits=0))%>%
+  
+  ggplot(aes(x = prt, fill=RespondentOverall, y=reorder(Ethnicity,(-prt))))+
   geom_bar(stat="identity",position = position_dodge(),width=0.8)+
-  labs(title=str_wrap("",40),#80 is a full line length
-       x="",y="",fill="") +
-theme_lz()+
-  theme(axis.text.x = element_text(), legend.position = c(0.5,0.8))+
- scale_y_discrete(limits = set_order$eth_reorder)+
-  geom_text(aes(label=paste0(prt)),size=3,position = position_dodge(0.9))+
+  labs(title=str_wrap("",40),x="",y="",fill="") +
+  theme_lz()+theme(axis.text.x = element_text(), legend.position = c(0.8,0.8))+
+  geom_text(aes(label=paste0(prt)),size=3,fontface="bold",position = position_dodge(0.9))+
+  scale_y_discrete(guide=guide_axis(n.dodge = 2))+
   scale_fill_manual(values = c("#6C6F70","#69b3e7"))+#fill legend labels=c(""),name="")
   coord_flip()
+
+#pvttbl<-fulldf%>%filter(Ethnicity!="Unknown")%>%
+ # group_by(RespondentOverall,Ethnicity)%>%summarise(cnt=n())%>%
+  #mutate(prt=formattable::percent(cnt/sum(cnt),digits=0))
+
+#set_order <- pvttbl%>% filter(RespondentOverall=="All First-Year Students") %>%
+ #             arrange(prt) %>%mutate(eth_reorder = factor(Ethnicity))
+
+#ResAll.eth<-pvttbl%>%
+#ggplot(aes(x = prt, fill=RespondentOverall, y=Ethnicity)) +
+ # geom_bar(stat="identity",position = position_dodge(),width=0.8)+
+  #labs(title=str_wrap("",40),#80 is a full line length
+   #    x="",y="",fill="") +
+  #theme_lz()+
+  #theme(axis.text.x = element_text(), legend.position = c(0.5,0.8))+
+#  scale_y_discrete(limits = set_order$eth_reorder)+
+ # geom_text(aes(label=paste0(prt)),size=3,position = position_dodge(0.9))+
+  #scale_fill_manual(values = c("#6C6F70","#69b3e7"))+#fill legend labels=c(""),name="")
+  #coord_flip()
+```
+
+```{r combine 2 first}
+fig_gd.rc<-gridExtra::grid.arrange(ResAll.rcstatus, ResAll.gd, nrow=2)
 ```
 
 
-```{r respondent_figures,include=TRUE,fig.height=2}
-gridExtra::grid.arrange(resp_rate,ResAll.rcstatus, ResAll.gd, nrow=1)
+```{r respondent_figures,include=TRUE,fig.height=2.5}
+gridExtra::grid.arrange(resp_rate,fig_gd.rc, nrow=1, widths=c(1,1))
 ResAll.eth
 #layout(matrix(c(1,2,3),nrow=1,ncol=3,byrow = TRUE))
 #ResAll.rcstatus+ ResAll.gd+ ResAll.eth +plot_layout(ncol = 3)

@@ -204,6 +204,11 @@ fulldf<-fulldf%>%mutate(Ethnicity=if_else(is.na(Ethnicity),"Race and Ethnicity U
   mutate(Ethnicity=if_else(Ethnicity=="Black or African American","Black",Ethnicity))
 ```
 
+```{r recode gender}
+fulldf<-fulldf%>%mutate(gender=if_else(is.na(gender),"Unknown",gender))
+```
+
+
 
 
 
@@ -234,49 +239,78 @@ ggplot(aes(values = prt, fill=RespondentOverall)) +
 ```
 
 
-```{r respondent res.com figure, fig.height=3}
+```{r respondent res.com figure,fig.width=2}
 #background info: gender & ethnicity, FT/PT & Transfer, RC
 #RC
 ResAll.rcstatus<-fulldf%>%group_by(RespondentOverall,RCstatus)%>%summarise(cnt=n())%>%
   mutate(prt=formattable::percent(cnt/sum(cnt),digits=0))%>%
   
 ggplot(aes(x = prt, fill=RespondentOverall, y=RCstatus)) +
-  geom_bar(stat="identity",position = position_dodge())+
+  geom_bar(stat="identity",position = position_dodge(),width=0.8)+
   labs(title=str_wrap("Resident vs Commuters Composition",40),#80 is a full line length
        x="",y="",fill="", 
     #   subtitle=str_wrap(paste0("6% Residents and 94% Commuters"),40), 
        caption="")+ #shows bottom right
   theme_lz()+
-  theme(axis.text.y = element_text())+
+  theme(axis.text.x = element_text(),
+        legend.position = "none")+
     scale_y_discrete(labels=c("Commuters","Residents"))+
   geom_text(aes(label=paste0(prt)),size=3,position = position_dodge(0.9),hjust=0.5)+#, " ", RCstatus," among ",RespondentOverall
-  scale_fill_manual(values = c("#6C6F70","#69b3e7"))#fill legend labels=c(""),name="")
+  scale_fill_manual(values = c("#6C6F70","#69b3e7"))+#fill legend labels=c(""),name="")
+  coord_flip()
 ```
 
-
-
-
-```{r respondent gender.ethnicity figure, fig.height=3}
-#background info: gender & ethnicity
-ResAll.gdeth<-fulldf%>%group_by(Ethnicity,gender)%>%summarise(cnt=n())%>%
+```{r respondent gender figure,fig.width=2}
+#background info: gender & ethnicity, FT/PT & Transfer, RC
+#RC
+ResAll.gd<-fulldf%>%filter(gender!="Unknown")%>%
+  group_by(RespondentOverall,gender)%>%summarise(cnt=n())%>%
   mutate(prt=formattable::percent(cnt/sum(cnt),digits=0))%>%
   
-ggplot(aes(x = prt, fill=gender, y=Ethnicity)) +
-  geom_bar(stat="identity",position = position_dodge())+
-  labs(title=str_wrap("Gender & Ethnicity Composition",40),#80 is a full line length
+ggplot(aes(x = prt, fill=RespondentOverall, y=gender)) +
+  geom_bar(stat="identity",position = position_dodge(),width=0.8)+
+  labs(title=str_wrap("Gender Composition",40),#80 is a full line length
        x="",y="",fill="", 
+    #   subtitle=str_wrap(paste0("6% Residents and 94% Commuters"),40), 
        caption="")+ #shows bottom right
   theme_lz()+
-  theme(axis.text.y = element_text())+
-  #  scale_y_discrete(labels=c("Commuters","Residents"))+
-  geom_text(aes(label=paste0(prt)),size=3,position = position_dodge(0.9),hjust=0.5)+#, " ", RCstatus," among ",RespondentOverall
-  #scale_fill_manual(values = c("#6C6F70","#69b3e7"))#fill legend labels=c(""),name="")
-  facet_wrap(RespondentOverall,ncol=2)
+  theme(axis.text.x = element_text(), legend.position = "none")+
+    scale_y_discrete(labels=c("Male","Female"))+
+  geom_text(aes(label=paste0(prt)),size=3,position = position_dodge(0.9),hjust=0.5)+#, " ", gender," among ",RespondentOverall
+  scale_fill_manual(values = c("#6C6F70","#69b3e7"))+#fill legend labels=c(""),name="")
+  coord_flip()
 ```
 
+
+```{r respondent ethnicity figure,fig.height=2}
+pvttbl<-fulldf%>%filter(Ethnicity!="Unknown")%>%
+  group_by(RespondentOverall,Ethnicity)%>%summarise(cnt=n())%>%
+  mutate(prt=formattable::percent(cnt/sum(cnt),digits=0))
+
+set_order <- pvttbl%>% filter(RespondentOverall=="All First-Year Students") %>%
+              arrange(prt) %>%mutate(eth_reorder = factor(Ethnicity))
+
+ResAll.eth<-pvttbl%>%
+ggplot(aes(x = prt, fill=RespondentOverall, y=Ethnicity)) +
+  geom_bar(stat="identity",position = position_dodge(),width=0.8)+
+  labs(title=str_wrap("Ethnicity Composition",40),#80 is a full line length
+       x="",y="",fill="", 
+    #   subtitle=str_wrap(paste0("6% Residents and 94% Commuters"),40), 
+       caption="")+ #shows bottom right
+  theme_lz()+
+  theme(axis.text.x = element_text(), legend.position = "none")+
+  scale_y_discrete(limits = set_order$eth_reorder)+
+  geom_text(aes(label=paste0(prt)),size=3,position = position_dodge(0.9),hjust=0.5)+#, " ", Ethnicity," among ",RespondentOverall
+  scale_fill_manual(values = c("#6C6F70","#69b3e7"))+#fill legend labels=c(""),name="")
+  coord_flip()
+```
+
+
 ```{r respondent_figures,include=TRUE,fig.height=2,fig.width=6}
-gridExtra::grid.arrange(ResAll.waffle,ResAll.rcstatus, ncol=2)
-ResAll.gdeth
+#gridExtra::grid.arrange(ResAll.waffle,ResAll.rcstatus, ncol=2)
+layout(matrix(c(1,2,3),nrow=1,ncol=3,byrow = TRUE))
+#ResAll.waffle; 
+ResAll.rcstatus; ResAll.gd; ResAll.eth
 ```
 
 

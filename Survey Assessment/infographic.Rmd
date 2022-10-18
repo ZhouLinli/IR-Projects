@@ -52,6 +52,15 @@ p5<-alum%>%group_by(Interest)%>%summarise(cnt=n())%>%mutate(prt=formattable::per
 ```
 
 ```{r}
+layout(matrix(c(1,2,3,4),byrow=TRUE,nrow=2,ncol=2))
+layout( matrix(c(1,2), ncol=2) )
+p1
+p2
+
+```
+
+
+```{r}
 pdf("/Users/linlizhou/Downloads/Rinfographic.pdf", width = 10, height = 20)
 
 grid.newpage()#Start by creating new grid plot

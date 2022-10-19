@@ -1,17 +1,38 @@
 ---
 title: "First Impression Survey Results"
-author: ""
+author: ''
 date: "Survey Collected during Sep 20-30, 2022"
-output:
-  bookdown::word_document2:
-    fig_caption: yes
-    reference_docx: "/Users/linlizhou/Documents/Rprojects/lasell.report.docx"
-always_allow_html: true
+output: 
+  pdf_document: default
+  word_document:
+    reference_docx: /Users/linlizhou/Documents/Rprojects/lasell.report.docx
+header-includes:
+    - \usepackage{fancyhdr}
+---
+\addtolength{\headheight}{1.0cm} % make more space for the header
+\pagestyle{fancyplain} % use fancy for all pages except chapter start
+\rhead{\includegraphics[height=1.2cm]{/Users/linlizhou/Documents/Rprojects/Lasell_Monogram.jpg}} % right logo
+\renewcommand{\headrulewidth}{0pt} % remove rule below header
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, include = FALSE, warning=FALSE, message=FALSE) #show only results
 source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R") #run code from saved theme and library
+
+#output:
+#  pdf_document: default
+#  word_document:
+#    reference_docx: /Users/linlizhou/Documents/Rprojects/lasell.report.docx
+
+#output:
+#  word_document:
+#    toc: yes
+#    reference_docx: "/Users/linlizhou/Documents/Rprojects/lasell.report.docx"
+    
+#output:
+#  bookdown::word_document2:
+#    fig_caption: yes
+#    reference_docx: "/Users/linlizhou/Documents/Rprojects/lasell.report.docx"
 ```
 
 ```{r load and clean data}
@@ -221,7 +242,7 @@ resp_rate<-allstu22.s%>%group_by(ResAll)%>%summarise(cnt=n())%>%
   ggplot(aes(x=2, y = prt, fill=ResAll)) +#x=2 to place the pie centered on limit
     xlim(0.5, 2.5)+#only show .5-2.5 of pie (0-.5 will be the hole)
   geom_bar(stat="identity")+coord_polar(theta="y",start=0)+#make bar on a circled coord
-  scale_fill_manual(values = c("#6C6F70","#69b3e7"))+
+  scale_fill_manual(values = c("grey","#69b3e7"))+
   annotate("text",x = 0.5, y = 0.5, #center is 0.5
            label = str_wrap(paste0(response_rate," Response Rate"),10))+#fontface=2 bolded
     theme_lz()+theme(legend.position = "none")+
@@ -239,7 +260,7 @@ resp_rate<-allstu22.s%>%group_by(ResAll)%>%summarise(cnt=n())%>%
        #subtitle=str_wrap("Data collection: Sep 20-30, 2022"),40)+ #shows bottom right
   #theme_lz()+
    # scale_y_discrete(labels=c("Respondents","All First-year"))+
-  #scale_fill_manual(values = c("#6C6F70","#69b3e7"))#fill legend labels=c(""),name="")
+  #scale_fill_manual(values = c("grey","#69b3e7"))#fill legend labels=c(""),name="")
  # geom_text(aes(x = prt, y=RespondentOverall, label=paste0(RespondentOverall,": ",prt)),color="white",position = position_dodge(0.9),hjust=1)
 
 #response rate
@@ -251,7 +272,7 @@ resp_rate<-allstu22.s%>%group_by(ResAll)%>%summarise(cnt=n())%>%
        #subtitle=str_wrap("Data collection: Sep 20-30, 2022"),40)+ #shows bottom right
 #  theme_lz()+theme(legend.position = "none")+
     #scale_y_discrete(labels=c("Respondents","All First-year"))+
-#  scale_fill_manual(values = c("#69b3e7","#6C6F70"))+#fill legend labels=c(""),name="")
+#  scale_fill_manual(values = c("#69b3e7","grey"))+#fill legend labels=c(""),name="")
 #  geom_text(aes(label=paste0(RespondentOverall,": ",n)),color="white",position = position_dodge(0.9),hjust=1)
 ```
 
@@ -271,7 +292,7 @@ ggplot(aes(x = prt, fill=RespondentOverall, y=RCstatus)) +
         legend.position = "none")+
     scale_y_discrete(labels=c("Commuters","Residents"))+
   geom_text(aes(label=paste0(prt)),size=3,fontface="bold",position = position_dodge(0.9))+#, " ", RCstatus," among ",RespondentOverall
-  scale_fill_manual(values = c("#6C6F70","#69b3e7"))#+#fill legend labels=c(""),name="")
+  scale_fill_manual(values = c("grey","#69b3e7"))#+#fill legend labels=c(""),name="")
  # coord_flip()
 ```
 
@@ -290,7 +311,7 @@ ggplot(aes(x = prt, fill=RespondentOverall, y=gender)) +
   theme(axis.text.y = element_text(), legend.position = "none")+
     scale_y_discrete(labels=c("Male","Female"))+
   geom_text(aes(label=paste0(prt)),size=3,fontface="bold",position = position_dodge(0.9))+#, " ", gender," among ",RespondentOverall
-  scale_fill_manual(values = c("#6C6F70","#69b3e7"))#+#fill legend labels=c(""),name="")
+  scale_fill_manual(values = c("grey","#69b3e7"))#+#fill legend labels=c(""),name="")
   #coord_flip()
 ```
 
@@ -306,7 +327,7 @@ ResAll.eth<-fulldf%>%filter(Ethnicity!="Unknown")%>%
   theme_lz()+theme(axis.text.x = element_text(), legend.position = c(0.8,0.8))+
   geom_text(aes(label=paste0(prt)),size=3,fontface="bold",position = position_dodge(0.9))+
   scale_y_discrete(guide=guide_axis(n.dodge = 2))+
-  scale_fill_manual(values = c("#6C6F70","#69b3e7"))+#fill legend labels=c(""),name="")
+  scale_fill_manual(values = c("grey","#69b3e7"))+#fill legend labels=c(""),name="")
   coord_flip()
 
 #pvttbl<-fulldf%>%filter(Ethnicity!="Unknown")%>%
@@ -325,7 +346,7 @@ ResAll.eth<-fulldf%>%filter(Ethnicity!="Unknown")%>%
   #theme(axis.text.x = element_text(), legend.position = c(0.5,0.8))+
 #  scale_y_discrete(limits = set_order$eth_reorder)+
  # geom_text(aes(label=paste0(prt)),size=3,position = position_dodge(0.9))+
-  #scale_fill_manual(values = c("#6C6F70","#69b3e7"))+#fill legend labels=c(""),name="")
+  #scale_fill_manual(values = c("grey","#69b3e7"))+#fill legend labels=c(""),name="")
   #coord_flip()
 ```
 
@@ -336,9 +357,12 @@ fig_gd.rc<-gridExtra::grid.arrange(ResAll.rcstatus, ResAll.gd, nrow=2)
 
 ```{r respondent_figures,include=TRUE,fig.height=2.5}
 gridExtra::grid.arrange(resp_rate,fig_gd.rc, nrow=1, widths=c(1,1))
-ResAll.eth
 #layout(matrix(c(1,2,3),nrow=1,ncol=3,byrow = TRUE))
 #ResAll.rcstatus+ ResAll.gd+ ResAll.eth +plot_layout(ncol = 3)
+```
+
+```{r,include=TRUE,fig.height=2}
+ResAll.eth
 ```
 
 
@@ -652,7 +676,7 @@ prtdf%>%count(item)%>%View()
 ```
 
 
-## Satisfaction
+# Satisfaction
 ```{r satis1-8}
 #satis.4: satis.acchallenge, satis.accommit, satis.majorcourse, satis.overallcourse
 satis.aca.figure<-prtdf%>%filter(item%in%c("satis.overallcourse","satis.majorcourse", "satis.acchallenge", "satis.accommit"),year>2019)%>%
@@ -662,18 +686,22 @@ satis.aca.figure<-prtdf%>%filter(item%in%c("satis.overallcourse","satis.majorcou
   geom_bar(stat="identity",position = position_dodge(),width=0.8)+
   scale_fill_manual(values = c("Grey","Grey70","#69b3e7"))+
   labs(title=str_wrap("",40),x="",y="",fill="") +
- # theme_lz()+#theme(axis.text.x = element_text(), legend.position = "none")+
+  theme_lz()+theme(legend.position = "right",legend.direction = "vertical")+
   geom_text(aes(label= ifelse(year==2022,as.character(round(prt,2)),"")),
             size=3,fontface="bold",position = position_dodge(0.9))+
   geom_text(aes(label= ifelse(year!=2022,as.character(round(prt,2)),"")),
             size=3,color="#6C6F70",fontface="bold",position = position_dodge(0.9))+
   
-  facet_wrap(~factor(item,levels =c("satis.overallcourse","satis.majorcourse", "satis.acchallenge", "satis.accommit"),labels = c("Overall Courses","Major Courses","Academic Challenge","Academic Commitment")),nrow=1) +
+  facet_wrap(~factor(item,levels =c("satis.overallcourse","satis.majorcourse", "satis.acchallenge", "satis.accommit"),labels = c(str_wrap("Overall Courses",10),
+                             str_wrap("Major Courses",10),
+                             str_wrap("Academic Challenge",10),
+                             str_wrap("Academic Commitment",10))),nrow=1) +
   geom_line(aes(y = prt, x=year, group=item, 
                 color=factor(item,levels =c("satis.overallcourse","satis.majorcourse", "satis.acchallenge", "satis.accommit")), 
-                linetype=factor(item,levels =c("satis.overallcourse","satis.majorcourse", "satis.acchallenge", "satis.accommit"))),stat="identity")+
+                linetype=factor(item,levels =c("satis.overallcourse","satis.majorcourse", "satis.acchallenge", "satis.accommit"))),
+            stat="identity", show.legend = F)+#
   scale_color_manual(name="",values=c("black","#6C6F70","#6C6F70","#6C6F70"))+
-  scale_linetype_manual(name="",values=c("solid","longdash","longdash","longdash"))
+  scale_linetype_manual(name="",values=c("solid","dashed","dashed","dashed"))
 
 #satis.4: satis.activity, satis.foodav, satis.residhall, satis.residstaff
 ```

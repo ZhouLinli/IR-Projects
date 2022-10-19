@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.10.18)  19 OCT 2022 11:48
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.10.18)  19 OCT 2022 13:02
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -717,28 +717,27 @@ Package hyperref Info: Link coloring OFF on input line 70.
 \openout3 = `FirstImpSurvey.out'.
 
 LaTeX Font Info:    Font shape `TU/HelveticaLight(0)/m/n' will be
-(Font)              scaled to size 12.0pt on input line 73.
+(Font)              scaled to size 14.4pt on input line 73.
 LaTeX Font Info:    Font shape `TU/HelveticaLight(0)/b/n' will be
-(Font)              scaled to size 12.0pt on input line 73.
+(Font)              scaled to size 14.4pt on input line 73.
 File: FirstImpSurvey_files/figure-latex/respondent_figures-1.pdf Graphic file (type pdf)
 <use FirstImpSurvey_files/figure-latex/respondent_figures-1.pdf>
-File: FirstImpSurvey_files/figure-latex/unnamed-chunk-1-1.pdf Graphic file (type pdf)
-<use FirstImpSurvey_files/figure-latex/unnamed-chunk-1-1.pdf>
-File: FirstImpSurvey_files/figure-latex/satis.ac figure-1.pdf Graphic file (type pdf)
-<use FirstImpSurvey_files/figure-latex/satis.ac figure-1.pdf>
-File: FirstImpSurvey_files/figure-latex/satis.ac figure-2.pdf Graphic file (type pdf)
-<use FirstImpSurvey_files/figure-latex/satis.ac figure-2.pdf>
-
-Underfull \hbox (badness 10000) in paragraph at lines 82--84
-[]
- []
-
+File: FirstImpSurvey_files/figure-latex/eth figure-1.pdf Graphic file (type pdf)
+<use FirstImpSurvey_files/figure-latex/eth figure-1.pdf>
+LaTeX Font Info:    Font shape `TU/HelveticaLight(0)/m/n' will be
+(Font)              scaled to size 12.0pt on input line 83.
+LaTeX Font Info:    Font shape `TU/HelveticaLight(0)/b/n' will be
+(Font)              scaled to size 12.0pt on input line 83.
+File: FirstImpSurvey_files/figure-latex/satis figure-1.pdf Graphic file (type pdf)
+<use FirstImpSurvey_files/figure-latex/satis figure-1.pdf>
+File: FirstImpSurvey_files/figure-latex/satis.life figure-1.pdf Graphic file (type pdf)
+<use FirstImpSurvey_files/figure-latex/satis.life figure-1.pdf>
 File: FirstImpSurvey_files/figure-latex/service figure-1.pdf Graphic file (type pdf)
 <use FirstImpSurvey_files/figure-latex/service figure-1.pdf>
 File: /Users/linlizhou/Documents/Rprojects/IR.png Graphic file (type bmp)
 </Users/linlizhou/Documents/Rprojects/IR.png>
 LaTeX Font Info:    Font shape `TU/HelveticaLight(0)/b/n' will be
-(Font)              scaled to size 10.0pt on input line 93.
+(Font)              scaled to size 10.0pt on input line 101.
 
 Package fancyhdr Warning: \headheight is too small (31.91684pt): 
 (fancyhdr)                Make it at least 40.58926pt, for example:
@@ -749,6 +748,8 @@ Package fancyhdr Warning: \headheight is too small (31.91684pt):
 [1
 
 ]
+File: FirstImpSurvey_files/figure-latex/service.satis figure-1.pdf Graphic file (type pdf)
+<use FirstImpSurvey_files/figure-latex/service.satis figure-1.pdf>
 File: /Users/linlizhou/Documents/Rprojects/IR.png Graphic file (type bmp)
 </Users/linlizhou/Documents/Rprojects/IR.png>
 
@@ -760,14 +761,14 @@ Package fancyhdr Warning: \headheight is too small (31.91684pt):
 
 [2] (./FirstImpSurvey.aux)
 Package rerunfilecheck Info: File `FirstImpSurvey.out' has not changed.
-(rerunfilecheck)             Checksum: A93817B07DBDF4E8275252D719F57129;959.
+(rerunfilecheck)             Checksum: 97718CD923E9189A4201472D0A2016B8;1440.
  ) 
 Here is how much of TeX's memory you used:
- 16486 strings out of 477743
- 307565 string characters out of 5842915
- 786205 words of memory out of 5000000
- 37363 multiletter control sequences out of 15000+600000
- 469999 words of font info for 48 fonts, out of 8000000 for 9000
+ 16504 strings out of 477743
+ 308224 string characters out of 5842915
+ 787350 words of memory out of 5000000
+ 37378 multiletter control sequences out of 15000+600000
+ 470015 words of font info for 50 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  86i,12n,122p,385b,329s stack positions out of 10000i,1000n,20000p,200000b,200000s
 

@@ -12,6 +12,7 @@ date: ""
 output: 
   pdf_document:
     latex_engine: xelatex
+    fig_height: 2
   word_document:
     toc: no
     reference_docx: /Users/linlizhou/Documents/Rprojects/lasell.report.IN-USE.docx
@@ -186,7 +187,7 @@ fis.s<-fis.s%>%rename(
 #write.xlsx(fis.s,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/First Impressions/2022 Fall/raw_renamed.xlsx")
 ```
 
-## Survey respondents
+# Survey respondents
 
 ```{r respondents vs overall SAVE full df}
 #full merge survey data with all population data for background vars comparisions
@@ -286,11 +287,12 @@ resp_rate<-allstu22.s%>%group_by(ResAll)%>%summarise(cnt=n())%>%
 ```{r respondent res.com figure}
 #background info: gender & ethnicity, FT/PT & Transfer, RC
 #RC
-ResAll.rcstatus<-fulldf%>%group_by(RespondentOverall,RCstatus)%>%summarise(cnt=n())%>%
+ResAll.rcstatus<-fulldf%>%filter(!is.na(RCstatus))%>%
+  group_by(RespondentOverall,RCstatus)%>%summarise(cnt=n())%>%
   mutate(prt=formattable::percent(cnt/sum(cnt),digits=0))%>%
   
 ggplot(aes(x = prt, fill=RespondentOverall, y=RCstatus)) +
-  geom_bar(stat="identity",position = position_dodge(),width=0.8)+
+  geom_bar(stat="identity",position = position_dodge(),width=0.9)+
   labs(title=str_wrap("",40),#80 is a full line length
        x="",y="",fill="")+ 
   theme_lz()+
@@ -310,7 +312,7 @@ ResAll.gd<-fulldf%>%filter(gender!="Unknown")%>%
   mutate(prt=formattable::percent(cnt/sum(cnt),digits=0))%>%
   
 ggplot(aes(x = prt, fill=RespondentOverall, y=gender)) +
-  geom_bar(stat="identity",position = position_dodge(),width=0.8)+
+  geom_bar(stat="identity",position = position_dodge(),width=0.9)+
   labs(title=str_wrap("",40),#80 is a full line length
        x="",y="",fill="")+ 
   theme_lz()+
@@ -328,7 +330,7 @@ ResAll.eth<-fulldf%>%filter(Ethnicity!="Unknown")%>%
   mutate(prt=formattable::percent(cnt/sum(cnt),digits=0))%>%
   
   ggplot(aes(x = prt, fill=RespondentOverall, y=reorder(Ethnicity,(-prt))))+
-  geom_bar(stat="identity",position = position_dodge(),width=0.8)+
+  geom_bar(stat="identity",position = position_dodge(),width=0.9)+
   labs(title=str_wrap("",40),x="",y="",fill="") +
   theme_lz()+theme(axis.text.x = element_text(), legend.position = c(0.8,0.8))+
   geom_text(aes(label=paste0(prt)),size=3,fontface="bold",position = position_dodge(0.9))+
@@ -367,8 +369,9 @@ gridExtra::grid.arrange(resp_rate,fig_gd.rc, nrow=1, widths=c(1,1))
 #ResAll.rcstatus+ ResAll.gd+ ResAll.eth +plot_layout(ncol = 3)
 ```
 
-```{r,include=TRUE,fig.height=2}
-ResAll.eth
+
+```{r eth figure, include=TRUE}
+ResAll.eth #has to be separate b/d not part of grid.arrange
 ```
 
 
@@ -690,14 +693,14 @@ prtdf<-full_join(current,historical.prt)%>%unique()
 ```
 
 
-## Satisfaction
+# Satisfaction
 ```{r satis1-8}
 #satis.4: satis.acchallenge, satis.accommit, satis.majorcourse, satis.overallcourse
 satis.aca.figure<-prtdf%>%filter(item%in%c("satis.overallcourse","satis.majorcourse", "satis.acchallenge", "satis.accommit"),year>2019)%>%
   group_by(item,year,prt)%>%summarise(cnt=n())%>%
   
   ggplot(aes(y = prt, x=year, fill=year ))+
-  geom_bar(stat="identity",position = position_dodge(),width=0.8)+
+  geom_bar(stat="identity",position = position_dodge(),width=0.9)+
   scale_fill_manual(values = c("Grey","Grey70","#69b3e7"))+
   labs(title=str_wrap("",40),x="",y="",fill="") +
   theme_lz()+theme(legend.position = "right",legend.direction = "vertical")+
@@ -715,15 +718,15 @@ satis.aca.figure<-prtdf%>%filter(item%in%c("satis.overallcourse","satis.majorcou
                 color=factor(item,levels =c("satis.overallcourse","satis.majorcourse", "satis.acchallenge", "satis.accommit")), 
                 linetype=factor(item,levels =c("satis.overallcourse","satis.majorcourse", "satis.acchallenge", "satis.accommit"))),
             stat="identity", show.legend = F)+#
-  scale_color_manual(name="",values=c("black","#6C6F70","#6C6F70","#6C6F70"))+
-  scale_linetype_manual(name="",values=c("solid","dashed","dashed","dashed"))
+  scale_color_manual(name="",values=c("#6C6F70","#6C6F70","#6C6F70","#6C6F70"))+
+  scale_linetype_manual(name="",values=c("dashed","dashed","dashed","dashed"))
 
 #satis.4: satis.activity, satis.foodav, satis.residhall, satis.residstaff
 satis.life.figure<-prtdf%>%filter(item%in%c("satis.activity", "satis.foodav", "satis.residstaff", "satis.residhall"),year>2019)%>%
   group_by(item,year,prt)%>%summarise(cnt=n())%>%
   
   ggplot(aes(y = prt, x=year, fill=year ))+
-  geom_bar(stat="identity",position = position_dodge(),width=0.8)+
+  geom_bar(stat="identity",position = position_dodge(),width=0.9)+
   scale_fill_manual(values = c("Grey","Grey70","#69b3e7"))+
   labs(title=str_wrap("",40),x="",y="",fill="") +
   theme_lz()+theme(legend.position = "right",legend.direction = "vertical")+
@@ -744,28 +747,34 @@ satis.life.figure<-prtdf%>%filter(item%in%c("satis.activity", "satis.foodav", "s
   scale_linetype_manual(name="",values=c("dashed","solid","dashed","dashed"))
 ```
 
-```{r satis.ac figure, include=TRUE, fig.height=2}
-satis.aca.figure
+## Academic Satisfaction
 
+```{r satis figure, include=TRUE}
+satis.aca.figure
+```
+
+## Life Satisfaction
+
+```{r satis.life figure, include=TRUE}
 satis.life.figure
 ```
 
 
-## Services Use and Satisfaction
+# Services
 ```{r service1-7.use/.satis}
 #service.use: "service.aac.use", "service.acadvisor.use", "service.classtech.use", "service.techhelp.use","service.counseling.use", "service.health.use", "service.shuttle.use" 
 service.use.figure<-prtdf%>%filter(item%in%c("service.aac.use", "service.acadvisor.use", "service.classtech.use", "service.techhelp.use","service.counseling.use", "service.health.use", "service.shuttle.use" ),year>2019)%>%
   group_by(item,year,prt)%>%summarise(cnt=n())%>%
   
   ggplot(aes(y = prt, x=year, fill=year ))+
-  geom_bar(stat="identity",position = position_dodge(),width=0.8)+
+  geom_bar(stat="identity",position = position_dodge(),width=0.9)+
   scale_fill_manual(values = c("Grey","Grey70","#69b3e7"))+
   labs(title=str_wrap("",40),x="",y="",fill="") +
   theme_lz()+theme(legend.position = "right",legend.direction = "vertical")+
   geom_text(aes(label= ifelse(year==2022,as.character(round(prt,2)),"")),
-            size=3,fontface="bold",position = position_dodge(0.9))+
+            size=2.8,fontface="bold",position = position_dodge(0.9))+
   geom_text(aes(label= ifelse(year!=2022,as.character(round(prt,2)),"")),
-            size=3,color="#6C6F70",fontface="bold",position = position_dodge(0.9))+
+            size=2.8,color="#6C6F70",fontface="bold",position = position_dodge(0.9))+
   
   facet_wrap(~factor(item,levels =c("service.aac.use", "service.acadvisor.use", "service.classtech.use", "service.techhelp.use","service.counseling.use", "service.health.use", "service.shuttle.use" ),
                      labels = c(str_wrap("Academic Achievement Center",10),
@@ -781,14 +790,51 @@ service.use.figure<-prtdf%>%filter(item%in%c("service.aac.use", "service.acadvis
             stat="identity", show.legend = F)+#
   scale_color_manual(name="",values=c("#6C6F70","black","#6C6F70","#6C6F70","#6C6F70","#6C6F70","#6C6F70"))+
   scale_linetype_manual(name="",values=c("dashed","solid","dashed","dashed","dashed","dashed","dashed"))
-#service.satis: "service.counseling", "service.health", "service.shuttle" 
+
+#service.satis:"service.aac.satis", "service.acadvisor.satis", "service.classtech.satis", "service.techhelp.satis","service.counseling.satis", "service.health.satis", "service.shuttle.satis" 
+service.satis.figure<-prtdf%>%filter(item%in%c("service.aac.satis", "service.acadvisor.satis", "service.classtech.satis", "service.techhelp.satis","service.counseling.satis", "service.health.satis", "service.shuttle.satis" ),year>2019)%>%
+  group_by(item,year,prt)%>%summarise(cnt=n())%>%
+  
+  ggplot(aes(y = prt, x=year, fill=year ))+
+  geom_bar(stat="identity",position = position_dodge(),width=0.9)+
+  scale_fill_manual(values = c("Grey","Grey70","#69b3e7"))+
+  labs(title=str_wrap("",40),x="",y="",fill="") +
+  theme_lz()+theme(legend.position = "right",legend.direction = "vertical")+
+  #theme(plot.title = element_text(hjust = 0, vjust = -1))+#,plot.margin = margin(1,0,0,0,"cm"))+
+  geom_text(aes(label= ifelse(year==2022,as.character(round(prt,2)),"")),
+            size=2.8,fontface="bold",position = position_dodge(0.9))+
+  geom_text(aes(label= ifelse(year!=2022,as.character(round(prt,2)),"")),
+            size=2.8,color="#6C6F70",fontface="bold",position = position_dodge(0.9))+
+  
+  facet_wrap(~factor(item,levels =c("service.aac.satis", "service.acadvisor.satis", "service.classtech.satis", "service.techhelp.satis","service.counseling.satis", "service.health.satis", "service.shuttle.satis" ),
+                     labels = c(str_wrap("Academic Achievement Center",10),
+                                str_wrap("Academic Advisor",10),
+                                str_wrap("Class Technology",10),
+                                str_wrap("Tech HelpDesk",10),
+                                str_wrap("Counseling Center",10),
+                                str_wrap("Health Center",10),
+                                str_wrap("Shuttle",10))),nrow=1,strip.position = "bottom") +
+  geom_line(aes(y = prt, x=year, group=item, 
+                color=factor(item,levels =c("service.aac.satis", "service.acadvisor.satis", "service.classtech.satis", "service.techhelp.satis","service.counseling.satis", "service.health.satis", "service.shuttle.satis" )), 
+                linetype=factor(item,levels =c("service.aac.satis", "service.acadvisor.satis", "service.classtech.satis", "service.techhelp.satis","service.counseling.satis", "service.health.satis", "service.shuttle.satis" ))),
+            stat="identity", show.legend = F)+#
+  scale_color_manual(name="",values=c("#6C6F70","black","#6C6F70","#6C6F70","#6C6F70","#6C6F70","#6C6F70"))+
+  scale_linetype_manual(name="",values=c("dashed","solid","dashed","dashed","dashed","dashed","dashed"))
 ```
 
-```{r service figure, include=TRUE, fig.height=2}
+## Services Usage
+
+```{r service figure, include=TRUE}
 service.use.figure
 ```
 
-## Emphasize, Faculty, and Connect
+
+## Services Satisfaction
+```{r service.satis figure, include=TRUE}
+service.satis.figure
+```
+
+# Emphasize, Faculty, and Connect
 ```{r}
 #empashize4: emphasize.acsupport, emphasize.campactivity, emphasize.issueevents, emphasize.socoppo
 
@@ -798,9 +844,9 @@ service.use.figure
 ```
 
 
-## Qualitative Analysis
+# Qualitative Analysis
 
-## Ethnicity and Inclusion
+# Ethnicity and Inclusion
 ```{r table by gender and race this year}
 
 ```

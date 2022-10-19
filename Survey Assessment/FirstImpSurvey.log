@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.10.18)  19 OCT 2022 09:42
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.10.18)  19 OCT 2022 11:48
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -724,12 +724,21 @@ File: FirstImpSurvey_files/figure-latex/respondent_figures-1.pdf Graphic file (t
 <use FirstImpSurvey_files/figure-latex/respondent_figures-1.pdf>
 File: FirstImpSurvey_files/figure-latex/unnamed-chunk-1-1.pdf Graphic file (type pdf)
 <use FirstImpSurvey_files/figure-latex/unnamed-chunk-1-1.pdf>
-File: FirstImpSurvey_files/figure-latex/satis figure-1.pdf Graphic file (type pdf)
-<use FirstImpSurvey_files/figure-latex/satis figure-1.pdf>
+File: FirstImpSurvey_files/figure-latex/satis.ac figure-1.pdf Graphic file (type pdf)
+<use FirstImpSurvey_files/figure-latex/satis.ac figure-1.pdf>
+File: FirstImpSurvey_files/figure-latex/satis.ac figure-2.pdf Graphic file (type pdf)
+<use FirstImpSurvey_files/figure-latex/satis.ac figure-2.pdf>
+
+Underfull \hbox (badness 10000) in paragraph at lines 82--84
+[]
+ []
+
+File: FirstImpSurvey_files/figure-latex/service figure-1.pdf Graphic file (type pdf)
+<use FirstImpSurvey_files/figure-latex/service figure-1.pdf>
 File: /Users/linlizhou/Documents/Rprojects/IR.png Graphic file (type bmp)
 </Users/linlizhou/Documents/Rprojects/IR.png>
 LaTeX Font Info:    Font shape `TU/HelveticaLight(0)/b/n' will be
-(Font)              scaled to size 10.0pt on input line 98.
+(Font)              scaled to size 10.0pt on input line 93.
 
 Package fancyhdr Warning: \headheight is too small (31.91684pt): 
 (fancyhdr)                Make it at least 40.58926pt, for example:
@@ -739,17 +748,27 @@ Package fancyhdr Warning: \headheight is too small (31.91684pt):
 
 [1
 
-] (./FirstImpSurvey.aux)
+]
+File: /Users/linlizhou/Documents/Rprojects/IR.png Graphic file (type bmp)
+</Users/linlizhou/Documents/Rprojects/IR.png>
+
+Package fancyhdr Warning: \headheight is too small (31.91684pt): 
+(fancyhdr)                Make it at least 40.58926pt, for example:
+(fancyhdr)                \setlength{\headheight}{40.58926pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+(fancyhdr)                \addtolength{\topmargin}{-8.67242pt}.
+
+[2] (./FirstImpSurvey.aux)
 Package rerunfilecheck Info: File `FirstImpSurvey.out' has not changed.
 (rerunfilecheck)             Checksum: A93817B07DBDF4E8275252D719F57129;959.
  ) 
 Here is how much of TeX's memory you used:
- 16470 strings out of 477743
- 306635 string characters out of 5842915
- 787205 words of memory out of 5000000
- 37349 multiletter control sequences out of 15000+600000
+ 16486 strings out of 477743
+ 307565 string characters out of 5842915
+ 786205 words of memory out of 5000000
+ 37363 multiletter control sequences out of 15000+600000
  469999 words of font info for 48 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 86i,12n,122p,385b,327s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 86i,12n,122p,385b,329s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on FirstImpSurvey.pdf (1 page).
+Output written on FirstImpSurvey.pdf (2 pages).

@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.10.18)  19 OCT 2022 13:02
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.10.18)  19 OCT 2022 14:15
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -750,6 +750,8 @@ Package fancyhdr Warning: \headheight is too small (31.91684pt):
 ]
 File: FirstImpSurvey_files/figure-latex/service.satis figure-1.pdf Graphic file (type pdf)
 <use FirstImpSurvey_files/figure-latex/service.satis figure-1.pdf>
+File: FirstImpSurvey_files/figure-latex/empfaculty-1.pdf Graphic file (type pdf)
+<use FirstImpSurvey_files/figure-latex/empfaculty-1.pdf>
 File: /Users/linlizhou/Documents/Rprojects/IR.png Graphic file (type bmp)
 </Users/linlizhou/Documents/Rprojects/IR.png>
 
@@ -764,10 +766,10 @@ Package rerunfilecheck Info: File `FirstImpSurvey.out' has not changed.
 (rerunfilecheck)             Checksum: 97718CD923E9189A4201472D0A2016B8;1440.
  ) 
 Here is how much of TeX's memory you used:
- 16504 strings out of 477743
- 308224 string characters out of 5842915
+ 16512 strings out of 477743
+ 308641 string characters out of 5842915
  787350 words of memory out of 5000000
- 37378 multiletter control sequences out of 15000+600000
+ 37385 multiletter control sequences out of 15000+600000
  470015 words of font info for 50 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  86i,12n,122p,385b,329s stack positions out of 10000i,1000n,20000p,200000b,200000s

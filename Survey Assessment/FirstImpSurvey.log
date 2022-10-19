@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.10.18)  18 OCT 2022 21:34
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.10.18)  19 OCT 2022 09:42
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -10,14 +10,14 @@ Document Class: article 2021/10/04 v1.4n Standard LaTeX document class
 (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/base/size10.clo
 File: size10.clo 2021/10/04 v1.4n Standard LaTeX file (size option)
 )
-\c@part=\count185
-\c@section=\count186
-\c@subsection=\count187
-\c@subsubsection=\count188
-\c@paragraph=\count189
-\c@subparagraph=\count190
-\c@figure=\count191
-\c@table=\count192
+\c@part=\count181
+\c@section=\count182
+\c@subsection=\count183
+\c@subsubsection=\count184
+\c@paragraph=\count185
+\c@subparagraph=\count186
+\c@figure=\count187
+\c@table=\count188
 \abovecaptionskip=\skip47
 \belowcaptionskip=\skip48
 \bibindent=\dimen138
@@ -37,14 +37,14 @@ Package: amsbsy 1999/11/29 v1.2d Bold Symbols
 ) (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/amsmath/amsopn.sty
 Package: amsopn 2022/04/08 v2.04 operator names
 )
-\inf@bad=\count193
+\inf@bad=\count189
 LaTeX Info: Redefining \frac on input line 234.
-\uproot@=\count194
-\leftroot@=\count195
+\uproot@=\count190
+\leftroot@=\count191
 LaTeX Info: Redefining \overline on input line 399.
 LaTeX Info: Redefining \colon on input line 410.
-\classnum@=\count196
-\DOTSCASE@=\count197
+\classnum@=\count192
+\DOTSCASE@=\count193
 LaTeX Info: Redefining \ldots on input line 496.
 LaTeX Info: Redefining \dots on input line 499.
 LaTeX Info: Redefining \cdots on input line 620.
@@ -57,20 +57,20 @@ LaTeX Info: Redefining \Bigg on input line 725.
 \big@size=\dimen141
 LaTeX Font Info:    Redeclaring font encoding OML on input line 743.
 LaTeX Font Info:    Redeclaring font encoding OMS on input line 744.
-\macc@depth=\count198
+\macc@depth=\count194
 LaTeX Info: Redefining \bmod on input line 905.
 LaTeX Info: Redefining \pmod on input line 910.
 LaTeX Info: Redefining \smash on input line 940.
 LaTeX Info: Redefining \relbar on input line 970.
 LaTeX Info: Redefining \Relbar on input line 971.
-\c@MaxMatrixCols=\count199
+\c@MaxMatrixCols=\count195
 \dotsspace@=\muskip16
-\c@parentequation=\count266
-\dspbrk@lvl=\count267
+\c@parentequation=\count196
+\dspbrk@lvl=\count197
 \tag@help=\toks17
-\row@=\count268
-\column@=\count269
-\maxfields@=\count270
+\row@=\count198
+\column@=\count199
+\maxfields@=\count266
 \andhelp@=\toks18
 \eqnshift@=\dimen142
 \alignsep@=\dimen143
@@ -129,30 +129,145 @@ LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
 (Font)                  OT1/cmtt/m/n --> OT1/lmtt/m/n on input line 38.
 ) (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/generic/iftex/iftex.sty
 Package: iftex 2022/02/03 v1.0f TeX engine tests
-) (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/base/fontenc.sty
+) (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/unicode-math/unicode-math.sty (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/l3kernel/expl3.sty
+Package: expl3 2022-09-28 L3 programming layer (loader) 
+(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/l3backend/l3backend-xetex.def
+File: l3backend-xetex.def 2022-09-28 L3 backend support: XeTeX
+\g__graphics_track_int=\count267
+\l__pdf_internal_box=\box53
+\g__pdf_backend_object_int=\count268
+\g__pdf_backend_annotation_int=\count269
+\g__pdf_backend_link_int=\count270
+))
+Package: unicode-math 2020/01/31 v0.8q Unicode maths in XeLaTeX and LuaLaTeX
+(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/unicode-math/unicode-math-xetex.sty
+Package: unicode-math-xetex 2020/01/31 v0.8q Unicode maths in XeLaTeX and LuaLaTeX
+(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/l3packages/xparse/xparse.sty
+Package: xparse 2022-06-22 L3 Experimental document command parser
+) (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/l3packages/l3keys2e/l3keys2e.sty
+Package: l3keys2e 2022-06-22 LaTeX2e option processing using LaTeX3 keys
+) (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/fontspec/fontspec.sty
+Package: fontspec 2022/01/15 v2.8a Font selection for XeLaTeX and LuaLaTeX
+(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/fontspec/fontspec-xetex.sty
+Package: fontspec-xetex 2022/01/15 v2.8a Font selection for XeLaTeX and LuaLaTeX
+\l__fontspec_script_int=\count271
+\l__fontspec_language_int=\count272
+\l__fontspec_strnum_int=\count273
+\l__fontspec_tmp_int=\count274
+\l__fontspec_tmpa_int=\count275
+\l__fontspec_tmpb_int=\count276
+\l__fontspec_tmpc_int=\count277
+\l__fontspec_em_int=\count278
+\l__fontspec_emdef_int=\count279
+\l__fontspec_strong_int=\count280
+\l__fontspec_strongdef_int=\count281
+\l__fontspec_tmpa_dim=\dimen148
+\l__fontspec_tmpb_dim=\dimen149
+\l__fontspec_tmpc_dim=\dimen150
+(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/base/fontenc.sty
 Package: fontenc 2021/04/29 v2.0v Standard LaTeX package
-LaTeX Font Info:    Trying to load font information for T1+lmr on input line 112.
-(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/lm/t1lmr.fd
-File: t1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-)) (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/base/inputenc.sty
-Package: inputenc 2021/02/14 v1.3d Input encoding file
-\inpenc@prehook=\toks21
-\inpenc@posthook=\toks22
-) (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/base/textcomp.sty
-Package: textcomp 2020/02/02 v2.0n Standard LaTeX package
-) (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/xcolor/xcolor.sty
+) (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/fontspec/fontspec.cfg))) (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/base/fix-cm.sty
+Package: fix-cm 2020/11/24 v1.1t fixes to LaTeX
+(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/base/ts1enc.def
+File: ts1enc.def 2001/06/05 v3.0e (jk/car/fm) Standard LaTeX file
+LaTeX Font Info:    Redeclaring font encoding TS1 on input line 47.
+))
+\g__um_fam_int=\count282
+\g__um_fonts_used_int=\count283
+\l__um_primecount_int=\count284
+\g__um_primekern_muskip=\muskip17
+(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/unicode-math/unicode-math-table.tex)))
+
+Package fontspec Info: Helvetica Light scale = 0.8255998503479701.
+
+
+Package fontspec Info: Helvetica Light scale = 0.8255998503479701.
+
+
+Package fontspec Info: Helvetica Light/B scale = 0.8272585893316855.
+
+
+Package fontspec Info: Helvetica Light/I scale = 0.8272585893316855.
+
+
+Package fontspec Info: Helvetica Light/BI scale = 0.8018053820824344.
+
+
+Package fontspec Info: Font family 'HelveticaLight(0)' created for font
+(fontspec)             'Helvetica Light' with options
+(fontspec)             [Scale=MatchLowercase,Ligatures=TeX,Scale=1].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.: <->s*[1]"Helvetica
+(fontspec)             Light/AAT:mapping=tex-text;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
+(fontspec)             - 'bold' (b/n) with NFSS spec.: <->s*[1]"Helvetica
+(fontspec)             Light/B/AAT:mapping=tex-text;"
+(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: 
+(fontspec)             - 'italic' (m/it) with NFSS spec.: <->s*[1]"Helvetica
+(fontspec)             Light/I/AAT:mapping=tex-text;"
+(fontspec)             - 'italic small caps'  (m/scit) with NFSS spec.: 
+(fontspec)             - 'bold italic' (b/it) with NFSS spec.:
+(fontspec)             <->s*[1]"Helvetica Light/BI/AAT:mapping=tex-text;"
+(fontspec)             - 'bold italic small caps'  (b/scit) with NFSS spec.: 
+
+LaTeX Font Info:    Font shape `TU/HelveticaLight(0)/m/n' will be
+(Font)              scaled to size 10.0pt on input line 20.
+
+Package fontspec Info: Helvetica Light scale = 0.9999970771087928.
+
+
+Package fontspec Info: Helvetica Light scale = 0.9999970771087928.
+
+
+Package fontspec Info: Helvetica Light/B scale = 1.002006203121476.
+
+
+Package fontspec Info: Helvetica Light/I scale = 1.002006203121476.
+
+
+Package fontspec Info: Helvetica Light/BI scale = 0.9711763370046554.
+
+
+Package fontspec Info: Font family 'HelveticaLight(1)' created for font
+(fontspec)             'Helvetica Light' with options [Scale=MatchLowercase].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <->s*[0.9999970771087928]"Helvetica Light/AAT"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
+(fontspec)             - 'bold' (b/n) with NFSS spec.:
+(fontspec)             <->s*[1.002006203121476]"Helvetica Light/B/AAT"
+(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: 
+(fontspec)             - 'italic' (m/it) with NFSS spec.:
+(fontspec)             <->s*[1.002006203121476]"Helvetica Light/I/AAT"
+(fontspec)             - 'italic small caps'  (m/scit) with NFSS spec.: 
+(fontspec)             - 'bold italic' (b/it) with NFSS spec.:
+(fontspec)             <->s*[0.9711763370046554]"Helvetica Light/BI/AAT"
+(fontspec)             - 'bold italic small caps'  (b/scit) with NFSS spec.: 
+
+LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `normal'
+(Font)                  OT1/lmr/m/n --> TU/HelveticaLight(1)/m/n on input line 20.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
+(Font)                  OT1/lmr/m/it --> TU/HelveticaLight(1)/m/it on input line 20.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
+(Font)                  OT1/lmr/bx/n --> TU/HelveticaLight(1)/b/n on input line 20.
+(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/xcolor/xcolor.sty
 Package: xcolor 2022/06/12 v2.14 LaTeX color extensions (UK)
 (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/graphics-cfg/color.cfg
 File: color.cfg 2016/01/02 v1.6 sample color configuration
 )
-Package xcolor Info: Driver file: pdftex.def on input line 227.
-(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/graphics-def/pdftex.def
-File: pdftex.def 2022/09/22 v1.2b Graphics/color driver for pdftex
-\stockwidth=\dimen148
-\stockheight=\dimen149
+Package xcolor Info: Driver file: xetex.def on input line 227.
+(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/graphics-def/xetex.def
+File: xetex.def 2022/09/22 v5.0n Graphics/color driver for xetex
+\stockwidth=\dimen151
+\stockheight=\dimen152
 ) (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/graphics/mathcolor.ltx)
 Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1353.
-Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1357.
 Package xcolor Info: Model `RGB' extended on input line 1369.
 Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1371.
 Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1372.
@@ -164,22 +279,22 @@ Package xcolor Info: Model `wave' substituted by `hsb' on input line 1376.
 Package: geometry 2020/01/02 v5.9 Page Geometry
 (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/graphics/keyval.sty
 Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
-\KV@toks@=\toks23
+\KV@toks@=\toks21
 ) (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/generic/iftex/ifvtex.sty
 Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
 )
-\Gm@cnth=\count271
-\Gm@cntv=\count272
-\c@Gm@tempcnt=\count273
-\Gm@bindingoffset=\dimen150
-\Gm@wd@mp=\dimen151
-\Gm@odd@mp=\dimen152
-\Gm@even@mp=\dimen153
-\Gm@layoutwidth=\dimen154
-\Gm@layoutheight=\dimen155
-\Gm@layouthoffset=\dimen156
-\Gm@layoutvoffset=\dimen157
-\Gm@dimlist=\toks24
+\Gm@cnth=\count285
+\Gm@cntv=\count286
+\c@Gm@tempcnt=\count287
+\Gm@bindingoffset=\dimen153
+\Gm@wd@mp=\dimen154
+\Gm@odd@mp=\dimen155
+\Gm@even@mp=\dimen156
+\Gm@layoutwidth=\dimen157
+\Gm@layoutheight=\dimen158
+\Gm@layouthoffset=\dimen159
+\Gm@layoutvoffset=\dimen160
+\Gm@dimlist=\toks22
 ) (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/graphics/graphicx.sty
 Package: graphicx 2021/09/16 v1.2d Enhanced LaTeX Graphics (DPC,SPQR)
 (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/graphics/graphics.sty
@@ -189,10 +304,10 @@ Package: trig 2021/08/11 v1.11 sin cos tan (DPC)
 ) (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
 File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
 )
-Package graphics Info: Driver file: pdftex.def on input line 107.
+Package graphics Info: Driver file: xetex.def on input line 107.
 )
-\Gin@req@height=\dimen158
-\Gin@req@width=\dimen159
+\Gin@req@height=\dimen161
+\Gin@req@width=\dimen162
 ) (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
 Package: fancyhdr 2022/05/18 v4.0.3 Extensive control of page headers and footers
 \f@nch@headwidth=\skip52
@@ -215,7 +330,7 @@ Package: infwarerr 2019/12/03 v1.5 Providing info/warning/error messages (HO)
 )
 Package pdftexcmds Info: \pdf@primitive is available.
 Package pdftexcmds Info: \pdf@ifprimitive is available.
-Package pdftexcmds Info: \pdfdraftmode found.
+Package pdftexcmds Info: \pdfdraftmode not found.
 ) (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty
 Package: kvsetkeys 2022-10-05 v1.19 Key value parser (HO)
 ) (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty
@@ -237,25 +352,21 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/kvoptions/kvoptions.sty
 Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
 ))
-\c@section@level=\count274
+\c@section@level=\count288
 )
-\@linkdim=\dimen160
-\Hy@linkcounter=\count275
-\Hy@pagecounter=\count276
+\@linkdim=\dimen163
+\Hy@linkcounter=\count289
+\Hy@pagecounter=\count290
 (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/hyperref/pd1enc.def
 File: pd1enc.def 2022-09-22 v7.00t Hyperref: PDFDocEncoding definition (HO)
-Now handling font encoding PD1 ...
-... no UTF-8 mapping file for font encoding PD1
 ) (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/generic/intcalc/intcalc.sty
 Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
 ) (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/generic/etexcmds/etexcmds.sty
 Package: etexcmds 2019/12/15 v1.7 Avoid name clashes with e-TeX commands (HO)
 )
-\Hy@SavedSpaceFactor=\count277
+\Hy@SavedSpaceFactor=\count291
 (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/hyperref/puenc.def
 File: puenc.def 2022-09-22 v7.00t Hyperref: PDF Unicode definition (HO)
-Now handling font encoding PU ...
-... no UTF-8 mapping file for font encoding PU
 )
 Package hyperref Info: Option `unicode' set `true' on input line 4045.
 Package hyperref Info: Hyper figures OFF on input line 4162.
@@ -265,21 +376,21 @@ Package hyperref Info: Plain pages OFF on input line 4177.
 Package hyperref Info: Backreferencing OFF on input line 4182.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
 Package hyperref Info: Bookmarks ON on input line 4410.
-\c@Hy@tempcnt=\count278
+\c@Hy@tempcnt=\count292
 (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/url/url.sty
-\Urlmuskip=\muskip17
+\Urlmuskip=\muskip18
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
 LaTeX Info: Redefining \url on input line 4748.
-\XeTeXLinkMargin=\dimen161
+\XeTeXLinkMargin=\dimen164
 (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/generic/bitset/bitset.sty
 Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
 (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty
 Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO)
 ))
-\Fld@menulength=\count279
-\Field@Width=\dimen162
-\Fld@charsize=\dimen163
+\Fld@menulength=\count293
+\Field@Width=\dimen165
+\Fld@charsize=\dimen166
 Package hyperref Info: Hyper figures OFF on input line 6027.
 Package hyperref Info: Link nesting OFF on input line 6032.
 Package hyperref Info: Hyper index ON on input line 6035.
@@ -291,31 +402,32 @@ Package hyperref Info: PDF/A mode OFF on input line 6057.
 Package: atbegshi-ltx 2021/01/10 v1.0c Emulation of the original atbegshi
 package with kernel methods
 )
-\Hy@abspage=\count280
-\c@Item=\count281
-\c@Hfootnote=\count282
+\Hy@abspage=\count294
+\c@Item=\count295
+\c@Hfootnote=\count296
 )
-Package hyperref Info: Driver (autodetected): hpdftex.
-(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/hyperref/hpdftex.def
-File: hpdftex.def 2022-09-22 v7.00t Hyperref driver for pdfTeX
+Package hyperref Info: Driver (autodetected): hxetex.
+(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/hyperref/hxetex.def
+File: hxetex.def 2022-09-22 v7.00t Hyperref driver for XeTeX
+(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/generic/stringenc/stringenc.sty
+Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO)
+)
+\pdfm@box=\box54
+\c@Hy@AnnotLevel=\count297
+\HyField@AnnotCount=\count298
+\Fld@listcount=\count299
+\c@bookmark@seq@number=\count300
+(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty
+Package: rerunfilecheck 2022-07-10 v1.10 Rerun checks for auxiliary files (HO)
 (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/base/atveryend-ltx.sty
 Package: atveryend-ltx 2020/08/19 v1.0a Emulation of the original atveryend package
 with kernel methods
-)
-\Fld@listcount=\count283
-\c@bookmark@seq@number=\count284
-(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty
-Package: rerunfilecheck 2022-07-10 v1.10 Rerun checks for auxiliary files (HO)
-(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty
+) (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty
 Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
 )
 Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 285.
 )
 \Hy@SectionHShift=\skip61
-) (/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
-File: l3backend-pdftex.def 2022-09-28 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count285
-\l__pdf_internal_box=\box53
 ) (./FirstImpSurvey.aux)
 \openout1 = `FirstImpSurvey.aux'.
 
@@ -329,6 +441,8 @@ LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 70.
 LaTeX Font Info:    ... okay on input line 70.
 LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 70.
 LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
 LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 70.
 LaTeX Font Info:    ... okay on input line 70.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 70.
@@ -337,16 +451,236 @@ LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 70.
 LaTeX Font Info:    ... okay on input line 70.
 LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 70.
 LaTeX Font Info:    ... okay on input line 70.
-(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
-Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
-Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
-(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
-File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
-))
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
+(Font)                  OT1/lmss/m/n --> TU/lmss/m/n on input line 70.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
+(Font)                  OT1/lmss/bx/n --> TU/lmss/b/n on input line 70.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
+(Font)                  OT1/lmtt/m/n --> TU/lmtt/m/n on input line 70.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
+(Font)                  OT1/lmtt/m/n --> TU/lmtt/b/n on input line 70.
+
+Package fontspec Info: latinmodern-math scale = 1.211232701151664.
+
+
+Package fontspec Info: latinmodern-math scale = 1.211232701151664.
+
+
+Package fontspec Info: latinmodern-math scale = 1.211232701151664.
+
+
+Package fontspec Info: Font family 'latinmodern-math.otf(0)' created for font
+(fontspec)             'latinmodern-math.otf' with options
+(fontspec)             [Scale=MatchLowercase,BoldItalicFont={},ItalicFont={},SmallCapsFont={},Script=Math,BoldFont={latinmodern-math.otf}].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <->s*[1.211232701151664]"[latinmodern-math.otf]/OT:script=math;language=dflt;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
+(fontspec)             - 'bold' (b/n) with NFSS spec.:
+(fontspec)             <->s*[1.211232701151664]"[latinmodern-math.otf]/OT:script=math;language=dflt;"
+(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: 
+
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(0)/m/n' will be
+(Font)              scaled to size 12.11227pt on input line 70.
+
+Package fontspec Info: latinmodern-math scale = 1.211232701151664.
+
+
+Package fontspec Info: latinmodern-math scale = 1.211232701151664.
+
+
+Package fontspec Info: latinmodern-math scale = 1.211232701151664.
+
+
+Package fontspec Info: latinmodern-math scale = 1.211232701151664.
+
+
+Package fontspec Info: latinmodern-math scale = 1.211232701151664.
+
+
+Package fontspec Info: Font family 'latinmodern-math.otf(1)' created for font
+(fontspec)             'latinmodern-math.otf' with options
+(fontspec)             [Scale=MatchLowercase,BoldItalicFont={},ItalicFont={},SmallCapsFont={},Script=Math,SizeFeatures={{Size=8.5-},{Size=6-8.5,Font=latinmodern-math.otf,Style=MathScript},{Size=-6,Font=latinmodern-math.otf,Style=MathScriptScript}},BoldFont={latinmodern-math.otf}].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <8.5->s*[1.211232701151664]"[latinmodern-math.otf]/OT:script=math;language=dflt;"<6-8.5>s*[1.211232701151664]"[latinmodern-math.otf]/OT:script=math;language=dflt;+ssty=0;"<-6>s*[1.211232701151664]"[latinmodern-math.otf]/OT:script=math;language=dflt;+ssty=1;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
+(fontspec)             - 'bold' (b/n) with NFSS spec.:
+(fontspec)             <->s*[1.211232701151664]"[latinmodern-math.otf]/OT:script=math;language=dflt;"
+(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: 
+
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
+(Font)              scaled to size 12.11227pt on input line 70.
+LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
+(Font)              `operators' in the math version `normal' on input line 70.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
+(Font)                  OT1/lmr/m/n --> TU/latinmodern-math.otf(1)/m/n on input line 70.
+LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
+(Font)              `operators' in the math version `bold' on input line 70.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
+(Font)                  OT1/lmr/bx/n --> TU/latinmodern-math.otf(1)/b/n on input line 70.
+
+Package fontspec Info: latinmodern-math scale = 1.211232701151664.
+
+
+Package fontspec Info: latinmodern-math scale = 1.211353824421779.
+
+
+Package fontspec Info: latinmodern-math scale = 1.211232701151664.
+
+
+Package fontspec Info: latinmodern-math scale = 1.211353824421779.
+
+
+Package fontspec Info: latinmodern-math scale = 1.211232701151664.
+
+
+Package fontspec Info: latinmodern-math scale = 1.211353824421779.
+
+
+Package fontspec Info: latinmodern-math scale = 1.211232701151664.
+
+
+Package fontspec Info: latinmodern-math scale = 1.211353824421779.
+
+
+Package fontspec Info: latinmodern-math scale = 1.211232701151664.
+
+
+Package fontspec Info: latinmodern-math scale = 1.211353824421779.
+
+
+Package fontspec Info: Font family 'latinmodern-math.otf(2)' created for font
+(fontspec)             'latinmodern-math.otf' with options
+(fontspec)             [Scale=MatchLowercase,BoldItalicFont={},ItalicFont={},SmallCapsFont={},Script=Math,SizeFeatures={{Size=8.5-},{Size=6-8.5,Font=latinmodern-math.otf,Style=MathScript},{Size=-6,Font=latinmodern-math.otf,Style=MathScriptScript}},BoldFont={latinmodern-math.otf},ScaleAgain=1.0001,FontAdjustment={\fontdimen
+(fontspec)             8\font =8.20001pt\relax \fontdimen 9\font
+(fontspec)             =4.77223pt\relax \fontdimen 10\font =5.37785pt\relax
+(fontspec)             \fontdimen 11\font =8.30902pt\relax \fontdimen 12\font
+(fontspec)             =4.17874pt\relax \fontdimen 13\font =4.39676pt\relax
+(fontspec)             \fontdimen 14\font =4.39676pt\relax \fontdimen 15\font
+(fontspec)             =3.50044pt\relax \fontdimen 16\font =2.99173pt\relax
+(fontspec)             \fontdimen 17\font =2.99173pt\relax \fontdimen 18\font
+(fontspec)             =3.02808pt\relax \fontdimen 19\font =2.42245pt\relax
+(fontspec)             \fontdimen 22\font =3.02808pt\relax \fontdimen 20\font
+(fontspec)             =0pt\relax \fontdimen 21\font =0pt\relax }].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <8.5->s*[1.211353824421779]"[latinmodern-math.otf]/OT:script=math;language=dflt;"<6-8.5>s*[1.211353824421779]"[latinmodern-math.otf]/OT:script=math;language=dflt;+ssty=0;"<-6>s*[1.211353824421779]"[latinmodern-math.otf]/OT:script=math;language=dflt;+ssty=1;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
+(fontspec)             and font adjustment code:
+(fontspec)             \fontdimen 8\font =8.20001pt\relax \fontdimen 9\font
+(fontspec)             =4.77223pt\relax \fontdimen 10\font =5.37785pt\relax
+(fontspec)             \fontdimen 11\font =8.30902pt\relax \fontdimen 12\font
+(fontspec)             =4.17874pt\relax \fontdimen 13\font =4.39676pt\relax
+(fontspec)             \fontdimen 14\font =4.39676pt\relax \fontdimen 15\font
+(fontspec)             =3.50044pt\relax \fontdimen 16\font =2.99173pt\relax
+(fontspec)             \fontdimen 17\font =2.99173pt\relax \fontdimen 18\font
+(fontspec)             =3.02808pt\relax \fontdimen 19\font =2.42245pt\relax
+(fontspec)             \fontdimen 22\font =3.02808pt\relax \fontdimen 20\font
+(fontspec)             =0pt\relax \fontdimen 21\font =0pt\relax 
+(fontspec)             - 'bold' (b/n) with NFSS spec.:
+(fontspec)             <->s*[1.211353824421779]"[latinmodern-math.otf]/OT:script=math;language=dflt;"
+(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: 
+(fontspec)             and font adjustment code:
+(fontspec)             \fontdimen 8\font =8.20001pt\relax \fontdimen 9\font
+(fontspec)             =4.77223pt\relax \fontdimen 10\font =5.37785pt\relax
+(fontspec)             \fontdimen 11\font =8.30902pt\relax \fontdimen 12\font
+(fontspec)             =4.17874pt\relax \fontdimen 13\font =4.39676pt\relax
+(fontspec)             \fontdimen 14\font =4.39676pt\relax \fontdimen 15\font
+(fontspec)             =3.50044pt\relax \fontdimen 16\font =2.99173pt\relax
+(fontspec)             \fontdimen 17\font =2.99173pt\relax \fontdimen 18\font
+(fontspec)             =3.02808pt\relax \fontdimen 19\font =2.42245pt\relax
+(fontspec)             \fontdimen 22\font =3.02808pt\relax \fontdimen 20\font
+(fontspec)             =0pt\relax \fontdimen 21\font =0pt\relax 
+
+LaTeX Font Info:    Encoding `OMS' has changed to `TU' for symbol font
+(Font)              `symbols' in the math version `normal' on input line 70.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `normal'
+(Font)                  OMS/lmsy/m/n --> TU/latinmodern-math.otf(2)/m/n on input line 70.
+LaTeX Font Info:    Encoding `OMS' has changed to `TU' for symbol font
+(Font)              `symbols' in the math version `bold' on input line 70.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `bold'
+(Font)                  OMS/lmsy/b/n --> TU/latinmodern-math.otf(2)/b/n on input line 70.
+
+Package fontspec Info: latinmodern-math scale = 1.211232701151664.
+
+
+Package fontspec Info: latinmodern-math scale = 1.211111577881549.
+
+
+Package fontspec Info: latinmodern-math scale = 1.211232701151664.
+
+
+Package fontspec Info: latinmodern-math scale = 1.211111577881549.
+
+
+Package fontspec Info: latinmodern-math scale = 1.211232701151664.
+
+
+Package fontspec Info: latinmodern-math scale = 1.211111577881549.
+
+
+Package fontspec Info: latinmodern-math scale = 1.211232701151664.
+
+
+Package fontspec Info: latinmodern-math scale = 1.211111577881549.
+
+
+Package fontspec Info: latinmodern-math scale = 1.211232701151664.
+
+
+Package fontspec Info: latinmodern-math scale = 1.211111577881549.
+
+
+Package fontspec Info: Font family 'latinmodern-math.otf(3)' created for font
+(fontspec)             'latinmodern-math.otf' with options
+(fontspec)             [Scale=MatchLowercase,BoldItalicFont={},ItalicFont={},SmallCapsFont={},Script=Math,SizeFeatures={{Size=8.5-},{Size=6-8.5,Font=latinmodern-math.otf,Style=MathScript},{Size=-6,Font=latinmodern-math.otf,Style=MathScriptScript}},BoldFont={latinmodern-math.otf},ScaleAgain=0.9999,FontAdjustment={\fontdimen
+(fontspec)             8\font =0.4845pt\relax \fontdimen 9\font
+(fontspec)             =2.42245pt\relax \fontdimen 10\font =2.02275pt\relax
+(fontspec)             \fontdimen 11\font =1.34447pt\relax \fontdimen 12\font
+(fontspec)             =7.26736pt\relax \fontdimen 13\font =0pt\relax }].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <8.5->s*[1.211111577881549]"[latinmodern-math.otf]/OT:script=math;language=dflt;"<6-8.5>s*[1.211111577881549]"[latinmodern-math.otf]/OT:script=math;language=dflt;+ssty=0;"<-6>s*[1.211111577881549]"[latinmodern-math.otf]/OT:script=math;language=dflt;+ssty=1;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
+(fontspec)             and font adjustment code:
+(fontspec)             \fontdimen 8\font =0.4845pt\relax \fontdimen 9\font
+(fontspec)             =2.42245pt\relax \fontdimen 10\font =2.02275pt\relax
+(fontspec)             \fontdimen 11\font =1.34447pt\relax \fontdimen 12\font
+(fontspec)             =7.26736pt\relax \fontdimen 13\font =0pt\relax 
+(fontspec)             - 'bold' (b/n) with NFSS spec.:
+(fontspec)             <->s*[1.211111577881549]"[latinmodern-math.otf]/OT:script=math;language=dflt;"
+(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: 
+(fontspec)             and font adjustment code:
+(fontspec)             \fontdimen 8\font =0.4845pt\relax \fontdimen 9\font
+(fontspec)             =2.42245pt\relax \fontdimen 10\font =2.02275pt\relax
+(fontspec)             \fontdimen 11\font =1.34447pt\relax \fontdimen 12\font
+(fontspec)             =7.26736pt\relax \fontdimen 13\font =0pt\relax 
+
+LaTeX Font Info:    Encoding `OMX' has changed to `TU' for symbol font
+(Font)              `largesymbols' in the math version `normal' on input line 70.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `normal'
+(Font)                  OMX/lmex/m/n --> TU/latinmodern-math.otf(3)/m/n on input line 70.
+LaTeX Font Info:    Encoding `OMX' has changed to `TU' for symbol font
+(Font)              `largesymbols' in the math version `bold' on input line 70.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
+(Font)                  OMX/lmex/m/n --> TU/latinmodern-math.otf(3)/b/n on input line 70.
 *geometry* driver: auto-detecting
-*geometry* detected driver: pdftex
+*geometry* detected driver: xetex
 *geometry* verbose mode - [ preamble ] result:
-* driver: pdftex
+* driver: xetex
 * paper: <default>
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
@@ -360,7 +694,7 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 * \oddsidemargin=0.0pt
 * \evensidemargin=0.0pt
 * \topmargin=-37.0pt
-* \headheight=26.22636pt
+* \headheight=31.91684pt
 * \headsep=25.0pt
 * \topskip=10.0pt
 * \footskip=30.0pt
@@ -382,94 +716,40 @@ Package hyperref Info: Link coloring OFF on input line 70.
 \@outlinefile=\write3
 \openout3 = `FirstImpSurvey.out'.
 
-LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 72.
-(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/lm/ot1lmr.fd
-File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-)
-LaTeX Font Info:    Trying to load font information for OML+lmm on input line 72.
-(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/lm/omllmm.fd
-File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-)
-LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 72.
-(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/lm/omslmsy.fd
-File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-)
-LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 72.
-(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/lm/omxlmex.fd
-File: omxlmex.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-)
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <12> on input line 72.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 72.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 72.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 72.
-(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsa.fd
-File: umsa.fd 2013/01/14 v3.01 AMS symbols A
-)
-LaTeX Font Info:    Trying to load font information for U+msb on input line 72.
-(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd
-File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)
-<FirstImpSurvey_files/figure-latex/respondent_figures-1.pdf, id=28, 392.46625pt x 143.53625pt>
+LaTeX Font Info:    Font shape `TU/HelveticaLight(0)/m/n' will be
+(Font)              scaled to size 12.0pt on input line 73.
+LaTeX Font Info:    Font shape `TU/HelveticaLight(0)/b/n' will be
+(Font)              scaled to size 12.0pt on input line 73.
 File: FirstImpSurvey_files/figure-latex/respondent_figures-1.pdf Graphic file (type pdf)
 <use FirstImpSurvey_files/figure-latex/respondent_figures-1.pdf>
-Package pdftex.def Info: FirstImpSurvey_files/figure-latex/respondent_figures-1.pdf  used on input line 76.
-(pdftex.def)             Requested size: 392.47723pt x 143.54027pt.
-<FirstImpSurvey_files/figure-latex/unnamed-chunk-1-1.pdf, id=29, 421.575pt x 118.4425pt>
 File: FirstImpSurvey_files/figure-latex/unnamed-chunk-1-1.pdf Graphic file (type pdf)
 <use FirstImpSurvey_files/figure-latex/unnamed-chunk-1-1.pdf>
-Package pdftex.def Info: FirstImpSurvey_files/figure-latex/unnamed-chunk-1-1.pdf  used on input line 78.
-(pdftex.def)             Requested size: 421.58038pt x 118.444pt.
-<FirstImpSurvey_files/figure-latex/satis figure-1.pdf, id=30, 439.6425pt x 104.39pt>
 File: FirstImpSurvey_files/figure-latex/satis figure-1.pdf Graphic file (type pdf)
 <use FirstImpSurvey_files/figure-latex/satis figure-1.pdf>
-Package pdftex.def Info: FirstImpSurvey_files/figure-latex/satis figure-1.pdf  used on input line 83.
-(pdftex.def)             Requested size: 439.65483pt x 104.3929pt.
-</Users/linlizhou/Documents/Rprojects/IR.png, id=31, 471.6822pt x 105.2733pt>
-File: /Users/linlizhou/Documents/Rprojects/IR.png Graphic file (type png)
-<use /Users/linlizhou/Documents/Rprojects/IR.png>
-Package pdftex.def Info: /Users/linlizhou/Documents/Rprojects/IR.png  used on input line 99.
-(pdftex.def)             Requested size: 229.47812pt x 51.2165pt.
+File: /Users/linlizhou/Documents/Rprojects/IR.png Graphic file (type bmp)
+</Users/linlizhou/Documents/Rprojects/IR.png>
+LaTeX Font Info:    Font shape `TU/HelveticaLight(0)/b/n' will be
+(Font)              scaled to size 10.0pt on input line 98.
 
-Package fancyhdr Warning: \headheight is too small (26.22636pt): 
-(fancyhdr)                Make it at least 54.81654pt, for example:
-(fancyhdr)                \setlength{\headheight}{54.81654pt}.
+Package fancyhdr Warning: \headheight is too small (31.91684pt): 
+(fancyhdr)                Make it at least 40.58926pt, for example:
+(fancyhdr)                \setlength{\headheight}{40.58926pt}.
 (fancyhdr)                You might also make \topmargin smaller to compensate:
-(fancyhdr)                \addtolength{\topmargin}{-28.59018pt}.
+(fancyhdr)                \addtolength{\topmargin}{-8.67242pt}.
 
 [1
 
-{/Users/linlizhou/Library/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.map} </Users/linlizhou/Documents/Rprojects/IR.png> <./FirstImpSurvey_files/figure-latex/respondent_figures-1.pdf> <./FirstImpSurvey_files/figure-latex/unnamed-chunk-1-1.pdf> <./FirstImpSurvey_files/figure-latex/satis figure-1.pdf>]
-File: /Users/linlizhou/Documents/Rprojects/IR.png Graphic file (type png)
-<use /Users/linlizhou/Documents/Rprojects/IR.png>
-Package pdftex.def Info: /Users/linlizhou/Documents/Rprojects/IR.png  used on input line 99.
-(pdftex.def)             Requested size: 229.47812pt x 51.2165pt.
-
-Package fancyhdr Warning: \headheight is too small (26.22636pt): 
-(fancyhdr)                Make it at least 54.81654pt, for example:
-(fancyhdr)                \setlength{\headheight}{54.81654pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-(fancyhdr)                \addtolength{\topmargin}{-28.59018pt}.
-
-[2] (./FirstImpSurvey.aux)
+] (./FirstImpSurvey.aux)
 Package rerunfilecheck Info: File `FirstImpSurvey.out' has not changed.
 (rerunfilecheck)             Checksum: A93817B07DBDF4E8275252D719F57129;959.
  ) 
 Here is how much of TeX's memory you used:
- 10646 strings out of 477031
- 167618 string characters out of 5827124
- 504402 words of memory out of 5000000
- 31618 multiletter control sequences out of 15000+600000
- 496546 words of font info for 49 fonts, out of 8000000 for 9000
+ 16470 strings out of 477743
+ 306635 string characters out of 5842915
+ 787205 words of memory out of 5000000
+ 37349 multiletter control sequences out of 15000+600000
+ 469999 words of font info for 48 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 72i,14n,77p,328b,439s stack positions out of 10000i,1000n,20000p,200000b,200000s
-{/Users/linlizhou/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}</Users/linlizhou/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></Users/linlizhou/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr10.pfb></Users/linlizhou/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr17.pfb>
-Output written on FirstImpSurvey.pdf (2 pages, 135562 bytes).
-PDF statistics:
- 98 PDF objects out of 1000 (max. 8388607)
- 76 compressed objects within 1 object stream
- 15 named destinations out of 1000 (max. 500000)
- 69 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 86i,12n,122p,385b,327s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
+Output written on FirstImpSurvey.pdf (1 page).

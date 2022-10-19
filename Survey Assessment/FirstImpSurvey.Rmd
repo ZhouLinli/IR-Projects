@@ -1,19 +1,22 @@
 ---
-title: "2022 First Impression Survey Results"
+title: ""
 header-includes:
     \usepackage{fancyhdr}
-    \addtolength{\headheight}{0.5cm}
+    \addtolength{\headheight}{0.7cm}
     \pagestyle{fancyplain} 
-    \chead{\includegraphics[height=1.8cm]{/Users/linlizhou/Documents/Rprojects/IR.png}} 
-    \lhead{}
+    \rhead{\vspace{4mm}\textbf{2022 First Impression Survey Results}}
+    \lhead{\includegraphics[height=1.3cm]{/Users/linlizhou/Documents/Rprojects/IR.png}}
     \renewcommand{\headrulewidth}{0pt}
 author: ''
 date: ""
 output: 
-  pdf_document: default
+  pdf_document:
+    latex_engine: xelatex
   word_document:
     toc: no
-    reference_docx: /Users/linlizhou/Documents/Rprojects/lasell.report.docx
+    reference_docx: /Users/linlizhou/Documents/Rprojects/lasell.report.IN-USE.docx
+mainfont: Helvetica Light
+fontsize: 10pt
 ---
 
 ```{r setup, include=FALSE}
@@ -23,17 +26,17 @@ source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R") #run c
 #output:
 #  pdf_document: default
 #  word_document:
-#    reference_docx: /Users/linlizhou/Documents/Rprojects/lasell.report.docx
+#    reference_docx: /Users/linlizhou/Documents/Rprojects/IR-Projects/lasell_report_template.docx
 
 #output:
 #  word_document:
 #    toc: yes
-#    reference_docx: "/Users/linlizhou/Documents/Rprojects/lasell.report.docx"
+#    reference_docx: "/Users/linlizhou/Documents/Rprojects/IR-Projects/lasell_report_template.docx"
     
 #output:
 #  bookdown::word_document2:
 #    fig_caption: yes
-#    reference_docx: "/Users/linlizhou/Documents/Rprojects/lasell.report.docx"
+#    reference_docx: "/Users/linlizhou/Documents/Rprojects/IR-Projects/lasell_report_template.docx"
 ```
 
 ```{r load and clean data}

@@ -1,18 +1,19 @@
 ---
-title: "First Impression Survey Results"
+title: "2022 First Impression Survey Results"
+header-includes:
+    \usepackage{fancyhdr}
+    \addtolength{\headheight}{0.5cm}
+    \pagestyle{fancyplain} 
+    \chead{\includegraphics[height=1.8cm]{/Users/linlizhou/Documents/Rprojects/IR.png}} 
+    \lhead{}
+    \renewcommand{\headrulewidth}{0pt}
 author: ''
-date: "Survey Collected during Sep 20-30, 2022"
+date: ""
 output: 
   pdf_document: default
   word_document:
+    toc: no
     reference_docx: /Users/linlizhou/Documents/Rprojects/lasell.report.docx
-header-includes:
-    - \usepackage{fancyhdr}
----
-\addtolength{\headheight}{1.0cm} % make more space for the header
-\pagestyle{fancyplain} % use fancy for all pages except chapter start
-\rhead{\includegraphics[height=1.2cm]{/Users/linlizhou/Documents/Rprojects/Lasell_Monogram.jpg}} % right logo
-\renewcommand{\headrulewidth}{0pt} % remove rule below header
 ---
 
 ```{r setup, include=FALSE}
@@ -243,11 +244,13 @@ resp_rate<-allstu22.s%>%group_by(ResAll)%>%summarise(cnt=n())%>%
     xlim(0.5, 2.5)+#only show .5-2.5 of pie (0-.5 will be the hole)
   geom_bar(stat="identity")+coord_polar(theta="y",start=0)+#make bar on a circled coord
   scale_fill_manual(values = c("grey","#69b3e7"))+
-  annotate("text",x = 0.5, y = 0.5, #center is 0.5
+  annotate("text",x = 0.5, y = 0.5, fontface="bold",#center is 0.5
            label = str_wrap(paste0(response_rate," Response Rate"),10))+#fontface=2 bolded
     theme_lz()+theme(legend.position = "none")+
   labs(#caption=str_wrap("Survey collected: Sep. 20-30, 2022",20),
-       title="",x="",y="",fill="")
+       title="",x="",y="",fill="",
+       subtitle = str_wrap("Survey Collection: Sep 20-30, 2022",20))#+
+  #annotate("text",x = 0.5, y = 2.5, label=)
     #geom_text(aes(x =2,label = ResAll),position = position_stack(vjust = .5) )
 
 #response rate
@@ -676,7 +679,7 @@ prtdf%>%count(item)%>%View()
 ```
 
 
-# Satisfaction
+## Satisfaction
 ```{r satis1-8}
 #satis.4: satis.acchallenge, satis.accommit, satis.majorcourse, satis.overallcourse
 satis.aca.figure<-prtdf%>%filter(item%in%c("satis.overallcourse","satis.majorcourse", "satis.acchallenge", "satis.accommit"),year>2019)%>%

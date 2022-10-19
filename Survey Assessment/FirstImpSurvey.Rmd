@@ -633,7 +633,7 @@ current<-rbind(connect.t1,connect.t2,connect.t3,
       emp1,emp2,emp3,emp4,
       expect.t1,
       faculty.t1,faculty.t2,faculty.t3,faculty.t4,
-      satis.t1,satis.t2,satis.t3,satis.t4,satis.t5,satis.t6,satis.t7,satis.t8,satis.t9,
+      satis.t1,satis.t2,satis.t3,satis.t4,satis.t5,satis.t6,satis.t7,satis.t8,
       service.s1,service.s2,service.s3,service.s4,service.s5,service.s6,service.s7,service.s8,
       service.u1,service.u2,service.u3,service.u4,service.u5,service.u6,service.u7,service.u8)
 ```
@@ -647,30 +647,41 @@ write_xlsx(prtdf, "/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell 
 
 #check: 
 prtdf%>%count(item)%>%View()
+#sample_needed=Z^2*p*(1-p)/MOE^2
+#margin of error=Z*p/sqrt(sample_n)
 ```
 
 
 ## Satisfaction
 ```{r satis1-8}
 #satis.4: satis.acchallenge, satis.accommit, satis.majorcourse, satis.overallcourse
-prtdf%>%filter(item%in%
-           c("satis.overallcourse","satis.majorcourse", "satis.acchallenge", "satis.accommit"),
-           year>2019)%>%
+satis.aca.figure<-prtdf%>%filter(item%in%c("satis.overallcourse","satis.majorcourse", "satis.acchallenge", "satis.accommit"),year>2019)%>%
   group_by(item,year,prt)%>%summarise(cnt=n())%>%
   
-  ggplot(aes(y = prt, fill=year, x=factor(item,levels =c("satis.overallcourse","satis.majorcourse", "satis.acchallenge", "satis.accommit") )))+
+  ggplot(aes(y = prt, x=year, fill=year ))+
   geom_bar(stat="identity",position = position_dodge(),width=0.8)+
-  #labs(title=str_wrap("",40),x="",y="",fill="") +
-  #theme_lz()+theme(axis.text.x = element_text(),axis.text.y = element_text(), legend.position = c(0.8,0.8))+
+  scale_fill_manual(values = c("Grey","Grey70","#69b3e7"))+
+  labs(title=str_wrap("",40),x="",y="",fill="") +
+ # theme_lz()+#theme(axis.text.x = element_text(), legend.position = "none")+
   geom_text(aes(label= ifelse(year==2022,as.character(round(prt,2)),"")),
             size=3,fontface="bold",position = position_dodge(0.9))+
-  scale_y_continuous(breaks = seq(0.7, 1, by = 0.1) ,
-                     labels=scales::percent_format(accuracy = 1))+#present y axis label as percentage
-  scale_x_discrete(labels=c("Overall Courses","Major Courses","Academic Challenge","Academic Commitment"),
-                   guide=guide_axis(n.dodge = 1))+
-  scale_fill_manual(values = c("Grey","Grey70","#69b3e7"))#fill legend labels=c(""),name="")
+  geom_text(aes(label= ifelse(year!=2022,as.character(round(prt,2)),"")),
+            size=3,color="#6C6F70",fontface="bold",position = position_dodge(0.9))+
+  
+  facet_wrap(~factor(item,levels =c("satis.overallcourse","satis.majorcourse", "satis.acchallenge", "satis.accommit"),labels = c("Overall Courses","Major Courses","Academic Challenge","Academic Commitment")),nrow=1) +
+  geom_line(aes(y = prt, x=year, group=item, 
+                color=factor(item,levels =c("satis.overallcourse","satis.majorcourse", "satis.acchallenge", "satis.accommit")), 
+                linetype=factor(item,levels =c("satis.overallcourse","satis.majorcourse", "satis.acchallenge", "satis.accommit"))),stat="identity")+
+  scale_color_manual(name="",values=c("black","#6C6F70","#6C6F70","#6C6F70"))+
+  scale_linetype_manual(name="",values=c("solid","longdash","longdash","longdash"))
+
 #satis.4: satis.activity, satis.foodav, satis.residhall, satis.residstaff
 ```
+
+```{r satis figure, include=TRUE, fig.height=2}
+satis.aca.figure
+```
+
 
 ## Services Use and Satisfaction
 ```{r service1-7.use/.satis}

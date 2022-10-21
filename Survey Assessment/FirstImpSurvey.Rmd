@@ -332,7 +332,7 @@ ResAll.eth<-fulldf%>%filter(Ethnicity!="Unknown")%>%
   ggplot(aes(x = prt, fill=RespondentOverall, y=reorder(Ethnicity,(-prt))))+
   geom_bar(stat="identity",position = position_dodge(),width=0.9)+
   labs(title=str_wrap("",40),x="",y="",fill="") +
-  theme_lz()+theme(axis.text.x = element_text(), legend.position = c(0.8,0.8))+
+  theme_lz()+theme(axis.text.x = element_text(), legend.position = c(0.8,0.5))+
   geom_text(aes(label=paste0(prt)),size=3,fontface="bold",position = position_dodge(0.9))+
   #scale_y_discrete(guide=guide_axis(n.dodge = 2))+
   scale_fill_manual(values = c("grey","#69b3e7"))+#fill legend labels=c(""),name="")
@@ -703,7 +703,9 @@ satis.aca.figure<-prtdf%>%filter(item%in%c("satis.overallcourse","satis.majorcou
   geom_bar(stat="identity",position = position_dodge(),width=0.9)+
   scale_fill_manual(values = c("Grey","Grey70","#69b3e7"))+
   labs(title=str_wrap("",40),x="",y="",fill="") +
-  theme_lz()+theme(legend.position = "top")+
+  theme_lz()+
+  theme(legend.position = "top",
+        plot.margin=unit(c(2,1,1,-1),"cm"))+
   geom_text(aes(label= ifelse(year==2022,as.character(round(prt,2)),"")),
             size=3,vjust=1.5,fontface="bold",position = position_dodge(0.9))+
   geom_text(aes(label= ifelse(year!=2022,as.character(round(prt,2)),"")),
@@ -751,13 +753,13 @@ satis.life.figure<-prtdf%>%filter(item%in%c("satis.activity", "satis.foodav", "s
 
 ## Academic Satisfaction
 
-```{r satis figure, include=TRUE}
+```{r satis figure, include=TRUE,fig.height=2.5}
 satis.aca.figure
 ```
 
 ## Life Satisfaction
 
-```{r satis.life figure, include=TRUE}
+```{r satis.life figure, include=TRUE, fig.height=1.5}
 satis.life.figure
 ```
 
@@ -772,7 +774,7 @@ service.use.figure<-prtdf%>%filter(item%in%c("service.aac.use", "service.acadvis
   geom_bar(stat="identity",position = position_dodge(),width=0.9)+
   scale_fill_manual(values = c("Grey","Grey70","#69b3e7"))+
   labs(title=str_wrap("",40),x="",y="",fill="") +
-  theme_lz()+theme(legend.position = "none",legend.direction = "vertical")+
+  theme_lz()+theme(legend.position = "top",plot.margin=unit(c(2,1,1,-1),"cm"))+
   geom_text(aes(label= ifelse(year==2022,as.character(round(prt,2)),"")),
             size=2.8,vjust=1.2,hjust=.4,fontface="bold",position = position_dodge(0.9))+
   geom_text(aes(label= ifelse(year!=2022,as.character(round(prt,2)),"")),
@@ -826,13 +828,13 @@ service.satis.figure<-prtdf%>%filter(item%in%c("service.aac.satis", "service.aca
 
 ## Services Usage
 
-```{r service figure, include=TRUE}
+```{r service figure, include=TRUE,fig.height=3}
 service.use.figure
 ```
 
 
 ## Services Satisfaction
-```{r service.satis figure, include=TRUE, fig.height=1.7}
+```{r service.satis figure, include=TRUE, fig.height=1.5}
 service.satis.figure
 ```
 
@@ -1023,7 +1025,7 @@ ethdiff<-fis.num%>%group_by(Ethnicity)%>%summarise(svmn=mean(service.counseling,
   geom_point(size=10,color="#69b3e7")+
   geom_text(aes(label=round(svmn,digits = 1)),fontface="bold")+
   theme_lz()+
-  theme(axis.text.x =element_text(),axis.text.y =element_text())+
+  theme(axis.text.x =element_text(face = 'bold'),axis.text.y =element_text(face = 'bold'))+
   labs(title=str_wrap("",40),x="",y="",
        caption="*Counseling service is the only survey item significantly different by ethnicity")+
   scale_x_discrete(labels=c("Hispanic","Black","White","Asian","Multi-races"))+

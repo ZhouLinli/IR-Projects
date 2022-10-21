@@ -1115,11 +1115,17 @@ ethdiff
 # Summary
 ## Strengths
 * Academic satisfaction remain high (over 90% on average) among first-year students
+
 * Usage of academic achievement center and academic adviser have increased for first-year students
+
 * First-year students' satisfaction towards Tech HelpDesk and Counseling Center have increased
+
 * Teaching quality for first-year courses has been increasing steadily over the past three years
+
 * Connection among first year students increased compared to previous years
+
 * First-year students from Hispanic and Black ethnicity are highly satisfied with counseling services
+
 
 ## Opportunities
 * Food availability can be improved

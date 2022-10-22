@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.10.18)  20 OCT 2022 19:35
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.10.18)  22 OCT 2022 09:49
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -565,34 +565,34 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 28
 ) (./FirstImpSurvey.aux)
 \openout1 = `FirstImpSurvey.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 84.
-LaTeX Font Info:    ... okay on input line 84.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 84.
-LaTeX Font Info:    ... okay on input line 84.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 84.
-LaTeX Font Info:    ... okay on input line 84.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 84.
-LaTeX Font Info:    ... okay on input line 84.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 84.
-LaTeX Font Info:    ... okay on input line 84.
-LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 84.
-LaTeX Font Info:    ... okay on input line 84.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 84.
-LaTeX Font Info:    ... okay on input line 84.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 84.
-LaTeX Font Info:    ... okay on input line 84.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 84.
-LaTeX Font Info:    ... okay on input line 84.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 84.
-LaTeX Font Info:    ... okay on input line 84.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 87.
+LaTeX Font Info:    ... okay on input line 87.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 87.
+LaTeX Font Info:    ... okay on input line 87.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 87.
+LaTeX Font Info:    ... okay on input line 87.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 87.
+LaTeX Font Info:    ... okay on input line 87.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 87.
+LaTeX Font Info:    ... okay on input line 87.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 87.
+LaTeX Font Info:    ... okay on input line 87.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 87.
+LaTeX Font Info:    ... okay on input line 87.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 87.
+LaTeX Font Info:    ... okay on input line 87.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 87.
+LaTeX Font Info:    ... okay on input line 87.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 87.
+LaTeX Font Info:    ... okay on input line 87.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
-(Font)                  OT1/lmss/m/n --> TU/lmss/m/n on input line 84.
+(Font)                  OT1/lmss/m/n --> TU/lmss/m/n on input line 87.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
-(Font)                  OT1/lmss/bx/n --> TU/lmss/b/n on input line 84.
+(Font)                  OT1/lmss/bx/n --> TU/lmss/b/n on input line 87.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
-(Font)                  OT1/lmtt/m/n --> TU/lmtt/m/n on input line 84.
+(Font)                  OT1/lmtt/m/n --> TU/lmtt/m/n on input line 87.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
-(Font)                  OT1/lmtt/m/n --> TU/lmtt/b/n on input line 84.
+(Font)                  OT1/lmtt/m/n --> TU/lmtt/b/n on input line 87.
 
 Package fontspec Info: latinmodern-math scale = 1.211232701151664.
 
@@ -618,7 +618,7 @@ Package fontspec Info: Font family 'latinmodern-math.otf(0)' created for font
 (fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: 
 
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(0)/m/n' will be
-(Font)              scaled to size 12.11227pt on input line 84.
+(Font)              scaled to size 12.11227pt on input line 87.
 
 Package fontspec Info: latinmodern-math scale = 1.211232701151664.
 
@@ -650,15 +650,15 @@ Package fontspec Info: Font family 'latinmodern-math.otf(1)' created for font
 (fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: 
 
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 12.11227pt on input line 84.
+(Font)              scaled to size 12.11227pt on input line 87.
 LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
-(Font)              `operators' in the math version `normal' on input line 84.
+(Font)              `operators' in the math version `normal' on input line 87.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
-(Font)                  OT1/lmr/m/n --> TU/latinmodern-math.otf(1)/m/n on input line 84.
+(Font)                  OT1/lmr/m/n --> TU/latinmodern-math.otf(1)/m/n on input line 87.
 LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
-(Font)              `operators' in the math version `bold' on input line 84.
+(Font)              `operators' in the math version `bold' on input line 87.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
-(Font)                  OT1/lmr/bx/n --> TU/latinmodern-math.otf(1)/b/n on input line 84.
+(Font)                  OT1/lmr/bx/n --> TU/latinmodern-math.otf(1)/b/n on input line 87.
 
 Package fontspec Info: latinmodern-math scale = 1.211232701151664.
 
@@ -737,13 +737,13 @@ Package fontspec Info: Font family 'latinmodern-math.otf(2)' created for font
 (fontspec)             =0pt\relax \fontdimen 21\font =0pt\relax 
 
 LaTeX Font Info:    Encoding `OMS' has changed to `TU' for symbol font
-(Font)              `symbols' in the math version `normal' on input line 84.
+(Font)              `symbols' in the math version `normal' on input line 87.
 LaTeX Font Info:    Overwriting symbol font `symbols' in version `normal'
-(Font)                  OMS/lmsy/m/n --> TU/latinmodern-math.otf(2)/m/n on input line 84.
+(Font)                  OMS/lmsy/m/n --> TU/latinmodern-math.otf(2)/m/n on input line 87.
 LaTeX Font Info:    Encoding `OMS' has changed to `TU' for symbol font
-(Font)              `symbols' in the math version `bold' on input line 84.
+(Font)              `symbols' in the math version `bold' on input line 87.
 LaTeX Font Info:    Overwriting symbol font `symbols' in version `bold'
-(Font)                  OMS/lmsy/b/n --> TU/latinmodern-math.otf(2)/b/n on input line 84.
+(Font)                  OMS/lmsy/b/n --> TU/latinmodern-math.otf(2)/b/n on input line 87.
 
 Package fontspec Info: latinmodern-math scale = 1.211232701151664.
 
@@ -804,13 +804,13 @@ Package fontspec Info: Font family 'latinmodern-math.otf(3)' created for font
 (fontspec)             =7.26736pt\relax \fontdimen 13\font =0pt\relax 
 
 LaTeX Font Info:    Encoding `OMX' has changed to `TU' for symbol font
-(Font)              `largesymbols' in the math version `normal' on input line 84.
+(Font)              `largesymbols' in the math version `normal' on input line 87.
 LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `normal'
-(Font)                  OMX/lmex/m/n --> TU/latinmodern-math.otf(3)/m/n on input line 84.
+(Font)                  OMX/lmex/m/n --> TU/latinmodern-math.otf(3)/m/n on input line 87.
 LaTeX Font Info:    Encoding `OMX' has changed to `TU' for symbol font
-(Font)              `largesymbols' in the math version `bold' on input line 84.
+(Font)              `largesymbols' in the math version `bold' on input line 87.
 LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
-(Font)                  OMX/lmex/m/n --> TU/latinmodern-math.otf(3)/b/n on input line 84.
+(Font)                  OMX/lmex/m/n --> TU/latinmodern-math.otf(3)/b/n on input line 87.
 *geometry* driver: auto-detecting
 *geometry* detected driver: xetex
 *geometry* verbose mode - [ preamble ] result:
@@ -818,7 +818,7 @@ LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
 * paper: <default>
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
-* modes: 
+* modes: twoside 
 * h-part:(L,W,R)=(72.26999pt, 469.75502pt, 72.26999pt)
 * v-part:(T,H,B)=(72.26999pt, 650.43001pt, 72.26999pt)
 * \paperwidth=614.295pt
@@ -832,7 +832,7 @@ LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
 * \headsep=25.0pt
 * \topskip=10.0pt
 * \footskip=30.0pt
-* \marginparwidth=65.0pt
+* \marginparwidth=121.0pt
 * \marginparsep=11.0pt
 * \columnsep=10.0pt
 * \skip\footins=9.0pt plus 4.0pt minus 2.0pt
@@ -840,38 +840,35 @@ LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
 * \voffset=0.0pt
 * \mag=1000
 * \@twocolumnfalse
-* \@twosidefalse
-* \@mparswitchfalse
+* \@twosidetrue
+* \@mparswitchtrue
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-Package hyperref Info: Link coloring OFF on input line 84.
+Package hyperref Info: Link coloring OFF on input line 87.
 (./FirstImpSurvey.out) (./FirstImpSurvey.out)
 \@outlinefile=\write3
 \openout3 = `FirstImpSurvey.out'.
 
 LaTeX Font Info:    Font shape `TU/HelveticaLight(0)/m/n' will be
-(Font)              scaled to size 14.4pt on input line 87.
+(Font)              scaled to size 14.4pt on input line 90.
 LaTeX Font Info:    Font shape `TU/HelveticaLight(0)/b/n' will be
-(Font)              scaled to size 14.4pt on input line 87.
-File: FirstImpSurvey_files/figure-latex/respondent_figures-1.pdf Graphic file (type pdf)
-<use FirstImpSurvey_files/figure-latex/respondent_figures-1.pdf>
-File: FirstImpSurvey_files/figure-latex/eth figure-1.pdf Graphic file (type pdf)
-<use FirstImpSurvey_files/figure-latex/eth figure-1.pdf>
+(Font)              scaled to size 14.4pt on input line 90.
 LaTeX Font Info:    Font shape `TU/HelveticaLight(0)/m/n' will be
-(Font)              scaled to size 12.0pt on input line 97.
+(Font)              scaled to size 12.0pt on input line 93.
 LaTeX Font Info:    Font shape `TU/HelveticaLight(0)/b/n' will be
-(Font)              scaled to size 12.0pt on input line 97.
-File: FirstImpSurvey_files/figure-latex/satis figure-1.pdf Graphic file (type pdf)
-<use FirstImpSurvey_files/figure-latex/satis figure-1.pdf>
-File: FirstImpSurvey_files/figure-latex/satis.life figure-1.pdf Graphic file (type pdf)
-<use FirstImpSurvey_files/figure-latex/satis.life figure-1.pdf>
-File: FirstImpSurvey_files/figure-latex/service figure-1.pdf Graphic file (type pdf)
-<use FirstImpSurvey_files/figure-latex/service figure-1.pdf>
+(Font)              scaled to size 12.0pt on input line 93.
+File: FirstImpSurvey_files/figure-latex/display resp_rate and combined figure-1.pdf Graphic file (type pdf)
+<use FirstImpSurvey_files/figure-latex/display resp_rate and combined figure-1.pdf>
+File: FirstImpSurvey_files/figure-latex/display eth figure-1.pdf Graphic file (type pdf)
+<use FirstImpSurvey_files/figure-latex/display eth figure-1.pdf>
+File: FirstImpSurvey_files/figure-latex/display satis figure-1.pdf Graphic file (type pdf)
+<use FirstImpSurvey_files/figure-latex/display satis figure-1.pdf>
+
+Underfull \vbox (badness 4291) has occurred while \output is active []
+
 File: /Users/linlizhou/Documents/Rprojects/IR.png Graphic file (type bmp)
 </Users/linlizhou/Documents/Rprojects/IR.png>
-LaTeX Font Info:    Font shape `TU/HelveticaLight(0)/b/n' will be
-(Font)              scaled to size 10.0pt on input line 115.
 
 Package fancyhdr Warning: \headheight is too small (31.91684pt): 
 (fancyhdr)                Make it at least 40.58926pt, for example:
@@ -882,24 +879,21 @@ Package fancyhdr Warning: \headheight is too small (31.91684pt):
 [1
 
 ]
-File: FirstImpSurvey_files/figure-latex/service.satis figure-1.pdf Graphic file (type pdf)
-<use FirstImpSurvey_files/figure-latex/service.satis figure-1.pdf>
-File: FirstImpSurvey_files/figure-latex/empfaculty-1.pdf Graphic file (type pdf)
-<use FirstImpSurvey_files/figure-latex/empfaculty-1.pdf>
-File: FirstImpSurvey_files/figure-latex/numfigure-1.pdf Graphic file (type pdf)
-<use FirstImpSurvey_files/figure-latex/numfigure-1.pdf>
-File: FirstImpSurvey_files/figure-latex/ethdiff-1.pdf Graphic file (type pdf)
-<use FirstImpSurvey_files/figure-latex/ethdiff-1.pdf>
-File: /Users/linlizhou/Documents/Rprojects/IR.png Graphic file (type bmp)
-</Users/linlizhou/Documents/Rprojects/IR.png>
-
-Package fancyhdr Warning: \headheight is too small (31.91684pt): 
-(fancyhdr)                Make it at least 40.58926pt, for example:
-(fancyhdr)                \setlength{\headheight}{40.58926pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-(fancyhdr)                \addtolength{\topmargin}{-8.67242pt}.
-
+File: FirstImpSurvey_files/figure-latex/display satis.life figure-1.pdf Graphic file (type pdf)
+<use FirstImpSurvey_files/figure-latex/display satis.life figure-1.pdf>
+File: FirstImpSurvey_files/figure-latex/display service figure-1.pdf Graphic file (type pdf)
+<use FirstImpSurvey_files/figure-latex/display service figure-1.pdf>
+File: FirstImpSurvey_files/figure-latex/display service.satis figure-1.pdf Graphic file (type pdf)
+<use FirstImpSurvey_files/figure-latex/display service.satis figure-1.pdf>
+File: FirstImpSurvey_files/figure-latex/display empfaculty fig-1.pdf Graphic file (type pdf)
+<use FirstImpSurvey_files/figure-latex/display empfaculty fig-1.pdf>
+LaTeX Font Info:    Font shape `TU/HelveticaLight(0)/b/n' will be
+(Font)              scaled to size 10.0pt on input line 140.
 [2]
+File: FirstImpSurvey_files/figure-latex/display numfigure-1.pdf Graphic file (type pdf)
+<use FirstImpSurvey_files/figure-latex/display numfigure-1.pdf>
+File: FirstImpSurvey_files/figure-latex/display ethdiff-1.pdf Graphic file (type pdf)
+<use FirstImpSurvey_files/figure-latex/display ethdiff-1.pdf>
 File: /Users/linlizhou/Documents/Rprojects/IR.png Graphic file (type bmp)
 </Users/linlizhou/Documents/Rprojects/IR.png>
 
@@ -909,17 +903,45 @@ Package fancyhdr Warning: \headheight is too small (31.91684pt):
 (fancyhdr)                You might also make \topmargin smaller to compensate:
 (fancyhdr)                \addtolength{\topmargin}{-8.67242pt}.
 
-[3] (./FirstImpSurvey.aux)
+[3]
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
+(Font)              scaled to size 8.47859pt on input line 205.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
+(Font)              scaled to size 6.05614pt on input line 205.
+LaTeX Font Info:    Trying to load font information for OML+lmm on input line 205.
+(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/lm/omllmm.fd
+File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 12.1135pt on input line 205.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 8.47945pt on input line 205.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 6.05675pt on input line 205.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 12.11105pt on input line 205.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 8.47774pt on input line 205.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 6.05553pt on input line 205.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 205.
+(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 205.
+(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+) [4] (./FirstImpSurvey.aux)
 Package rerunfilecheck Info: File `FirstImpSurvey.out' has not changed.
-(rerunfilecheck)             Checksum: 947B44A3182527EE6B125B0152FFE85A;2411.
+(rerunfilecheck)             Checksum: A4B67AB1848CDAF7C4999C41B258C973;2729.
  ) 
 Here is how much of TeX's memory you used:
- 18272 strings out of 477743
- 338954 string characters out of 5842915
- 821030 words of memory out of 5000000
- 39078 multiletter control sequences out of 15000+600000
- 470121 words of font info for 51 fonts, out of 8000000 for 9000
+ 18336 strings out of 477743
+ 341413 string characters out of 5842915
+ 820186 words of memory out of 5000000
+ 39114 multiletter control sequences out of 15000+600000
+ 472958 words of font info for 68 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 86i,12n,122p,416b,330s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 86i,12n,122p,418b,463s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on FirstImpSurvey.pdf (3 pages).
+Output written on FirstImpSurvey.pdf (4 pages).

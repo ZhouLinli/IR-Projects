@@ -184,8 +184,11 @@ fis.s<-fis.s%>%rename(
 ```{r respondents vs allstu SAVE fis.allstu}
 #full merge survey data with all population data for background vars comparisions
 #data merge full
+#fis.s distinguish_var value
 fis.s<-fis.s%>%mutate(RespondentOverall="Respondents")
+#allstu22 distinguish_var value
 allstu22<-allstu22%>%mutate(RespondentOverall="All First-Year")%>%rename(ppid=`People Code Id`)
+#merge
 fis.allstu<-full_join(fis.s,allstu22)
 
 #response rate
@@ -193,7 +196,7 @@ num.response=fis.allstu%>%filter(RespondentOverall=="Respondents")%>%nrow()
 num.overall=fis.allstu%>%filter(RespondentOverall=="All First-Year")%>%nrow()
 response_rate=formattable::percent(num.response/num.overall,digits=0)
 
-#one RCstatus col in fis.allstu
+#clean df: one RCstatus col in fis.allstu
 fis.allstu<-fis.allstu%>%mutate(Res_Com=if_else(!is.na(RCstatus),#if settled by RC then RC
           RCstatus,`Res/Comm`))%>%#if not settled, then res/com from allstu
   select(-RCstatus,-`Res/Comm`)%>%
@@ -203,7 +206,7 @@ fis.allstu<-fis.allstu%>%mutate(Res_Com=if_else(!is.na(RCstatus),#if settled by 
   
 #check: fis.allstu.t%>%count(RCstatus)
 
-#r recode race in fis.allstu
+#df clean: recode/shorten race
 fis.allstu<-fis.allstu%>%mutate(Ethnicity=if_else(is.na(Ethnicity),"Race and Ethnicity Unknown",Ethnicity))%>%
   mutate(Ethnicity=if_else(Ethnicity=="Race and Ethnicity Unknown","Unknown",Ethnicity))%>%
   mutate(Ethnicity=if_else(Ethnicity=="Two or more Races","Multi-races",Ethnicity))%>%
@@ -211,14 +214,14 @@ fis.allstu<-fis.allstu%>%mutate(Ethnicity=if_else(is.na(Ethnicity),"Race and Eth
   mutate(Ethnicity=if_else(Ethnicity=="Native Hawaiian or Other Pacific Islander","Native",Ethnicity))%>%
   mutate(Ethnicity=if_else(Ethnicity=="Black or African American","Black",Ethnicity))
 
-# recode gender
+#df clean: recode gender
 fis.allstu<-fis.allstu%>%mutate(gender=if_else(is.na(gender),"Unknown",gender))
 ```
 
 
 ```{r respondent vs allstu res.com figure}
 #background info: gender & ethnicity, FT/PT & Transfer, RC
-#RC
+#create RC figure
 ResAll.rcstatus<-fis.allstu%>%filter(!is.na(RCstatus))%>%
   group_by(RespondentOverall,RCstatus)%>%summarise(cnt=n())%>%
   mutate(prt=formattable::percent(cnt/sum(cnt),digits=0))%>%
@@ -1025,6 +1028,26 @@ ethdiff<-fis.num%>%group_by(Ethnicity)%>%summarise(svmn=mean(service.counseling,
                             "Multi-races (n=4)"))+
   scale_y_continuous(limits = c(1,6), breaks=(seq(1, 6, 1)),
                      labels=c("Extremely Dissatisfied","2","3","4","5","Extremely Satisfied"))
+
+
+ethdiff2<-fis.num%>%group_by(Ethnicity)%>%summarise(
+  counselmn=mean(service.counseling,na.rm=TRUE),
+  aacmn=mean(service.aac,na.rm=TRUE),
+  advmn=mean(service.acadvisor,na.rm=TRUE),
+  overallmn=(counselmn+aacmn+advmn)/3) %>%
+  filter(counselmn>0,aacmn>0,advmn>0,
+         !is.na(Ethnicity),Ethnicity!="Race and Ethnicity Unknown")%>%arrange(overallmn)%>%
+  pivot_longer(cols =c(counselmn:advmn), names_to = "mnitems",values_to = "meanvalue")%>%
+  
+  ggplot(aes(x=reorder(mnitems,(-meanvalue)),y=meanvalue))+
+  geom_point(aes(color=mnitems,shape=mnitems),
+             stat = "identity",position = position_dodge(width=0.9),size=10)+
+  geom_text(aes(label=round(meanvalue,digits = 1)),fontface="bold")+
+  theme_lz()+theme(axis.text.y =element_text(face = 'bold'))+labs(title="",x="",y="")+
+  scale_color_manual(values=c(mycolors[7],mycolors[3],mycolors[6]),name="",labels=c("AAC","Advisor","Counseling"))+
+  scale_shape_manual(name = "", labels = c("AAC","Advisor","Counseling"), values = c(15,16,17))+
+  scale_y_continuous(limits = c(1,6), breaks=(seq(1, 6, 1)),labels=c("Extremely Dissatisfied","2","3","4","5","Extremely Satisfied")) +
+  facet_wrap(~factor(Ethnicity,levels = c("Two or more Races","Asian","White","Black or African American","Hispanic"),labels=c("Multi-races (n=4)","Asian (n=6)","White (n=112)","Black (n=20)","Hispanic (n=32)")),nrow=1, strip.position="bottom") 
   
   #scale_y_continuous(breaks = seq(1, 6, by = 1) ,labels=scales::percent_format(accuracy = 1))
   #scale_y_discrete(labels=c("Extremly Dissatisfied","","","","","Extremly Satisfied"))
@@ -1035,7 +1058,7 @@ ethdiff<-fis.num%>%group_by(Ethnicity)%>%summarise(svmn=mean(service.counseling,
 ## Counseling Service Satisfaction
 
 ```{r display ethdiff, include=TRUE, fig.height=4}
-ethdiff
+ethdiff2
 ```
 
 

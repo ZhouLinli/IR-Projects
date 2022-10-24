@@ -1044,7 +1044,7 @@ ethdiff2<-fis.num%>%group_by(Ethnicity)%>%summarise(
              stat = "identity",position = position_dodge(width=0.9),size=10)+
   geom_text(aes(label=round(meanvalue,digits = 1)),fontface="bold")+
   theme_lz()+theme(axis.text.y =element_text(face = 'bold'))+labs(title="",x="",y="")+
-  scale_color_manual(values=c(mycolors[7],mycolors[3],mycolors[6]),name="",labels=c("AAC","Advisor","Counseling"))+
+  scale_color_manual(values=c("grey","grey70",mycolors[6]),name="",labels=c("AAC","Advisor","Counseling"))+
   scale_shape_manual(name = "", labels = c("AAC","Advisor","Counseling"), values = c(15,16,17))+
   scale_y_continuous(limits = c(1,6), breaks=(seq(1, 6, 1)),labels=c("Extremely Dissatisfied","2","3","4","5","Extremely Satisfied")) +
   facet_wrap(~factor(Ethnicity,levels = c("Two or more Races","Asian","White","Black or African American","Hispanic"),labels=c("Multi-races (n=4)","Asian (n=6)","White (n=112)","Black (n=20)","Hispanic (n=32)")),nrow=1, strip.position="bottom") 

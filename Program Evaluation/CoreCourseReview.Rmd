@@ -91,8 +91,10 @@ sectiontally<-sectiontally%>%mutate(term=factor(term,levels = c("2018 Fall","201
 
 ```{r sectiont tally - number of section offered}
 #For each term (fall/spring): # courses/ sections offered in each core segment -- SECTION TALLY
+
 #number of total section offered
-sectiontally%>%group_by(CourseGroup)%>%summarise(section_n=n())
+#sectiontally%>%group_by(CourseGroup)%>%summarise(section_n=n())
+
 #number of term section offered
 sectiontally%>%group_by(CourseGroup,term)%>%summarise(section_n=n())%>%
   pivot_wider(names_from = term, values_from = section_n)%>%
@@ -100,15 +102,23 @@ sectiontally%>%group_by(CourseGroup,term)%>%summarise(section_n=n())%>%
   select(CourseGroup,`2018 Fall`,`2019 Spring`,`2019 Fall`,`2020 Spring`,`2020 Fall`,`2021 Spring`,`2021 Fall`,`2022 Spring`)%>%
   View()
 
-#number of course offered
-sectiontally%>%count(CourseGroup,coursecode)%>%count(CourseGroup)#how many times a group appear when matching with unique coursecodes
+#investigate why no 2018fall 2019 spring data for writing?
+#sectiontally%>%filter(coursecode%in%c("WRT101", "WRT102"))%>%count(term,coursecode)
+
+
+#number of course offered:how many times a group appear when matching with unique coursecodes
+#sectiontally%>%count(CourseGroup,coursecode)%>%count(CourseGroup)
 #the same: sectiontally%>%count(CourseGroup,term,coursecode)%>%count(term,CourseGroup)#how many times a group appear when matching with unique coursecodes
 ```
 
 
 ```{r sectiont tally - number of registration}
 # For each term (fall/spring): # registration in each core segment -- SECTION TALLY 
-
+sectiontally%>%group_by(CourseGroup,term)%>%summarise(enrollment=sum(Current_Enrollment))%>%
+  pivot_wider(names_from = term, values_from = enrollment)%>%
+  #reorder cols
+  select(CourseGroup,`2018 Fall`,`2019 Spring`,`2019 Fall`,`2020 Spring`,`2020 Fall`,`2021 Spring`,`2021 Fall`,`2022 Spring`)%>%
+  View()
 ```
 
 

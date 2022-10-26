@@ -196,20 +196,65 @@ stucrs.grade<-stucrs%>%filter(Final_Grade%in%c("F", "W", "A", "A-", "B+", "B", "
         GPA=case_when(Final_Grade=="F"~"0",Final_Grade=="A"~"4.0",Final_Grade=="A-"~"3.7",
                       Final_Grade=="B+"~"3.3",Final_Grade=="B"~"3",Final_Grade=="B-"~"2.7",
                       Final_Grade=="C+"~"2.3",Final_Grade=="C"~"2",Final_Grade=="C-"~"1.7",
-                      Final_Grade=="D+"~"1.3",Final_Grade=="D"~"1",Final_Grade=="D-"~"0.7"))
+                      Final_Grade=="D+"~"1.3",Final_Grade=="D"~"1",Final_Grade=="D-"~"0.7"),
+        GPA=as.numeric(GPA))
 #save: write_xlsx(stucrs.grade,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 Core Curriculum/data files/StudentInfoCourse_18FA-22SP_Core Curriculum.xlsx")
 ```
 
 
-```{r GPA for each segment}
-# % of pass (not F or W) for each segment
-stucrs.grade%>%group_by(term,CourseGroup,grade)%>%summarise(cnt=n())%>%mutate(prt=cnt/sum(cnt))%>%View()
-  enro
+```{r C/Pass/Withdraw}
 # % of C or better (A, A-, B+, B, B-, C+, C or P)
-
+# % of pass (not F or W) for each segment
 # % of Withdrawal (W)
+stucrs.grade%>%group_by(term,grade)%>%summarise(cnt=n())%>%
+  mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
+  select(-cnt)%>%pivot_wider(names_from = term,values_from = prt)%>%View()
 
-# Average GPA (and SD): keep only "F, W, A, A-, B+, B, B-, C+, C"
+# by segment/coursegroup
+
+##figuring out how to order vars in group by:
+#stucrs.grade%>%filter(term=="2018 FALL")%>%
+#  group_by(CourseGroup,grade)%>%summarise(cnt=n())%>%
+#  mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
+#  select(-cnt)%>%pivot_wider(names_from = grade,values_from = prt)%>%View()
+
+##OVERALL
+stucrs.grade%>%
+  group_by(term,CourseGroup,grade)%>%summarise(cnt=n())%>%
+  mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
+  select(-cnt)%>%pivot_wider(names_from = term,values_from = prt)%>%
+  View()
+
+#C or better by coursegroup
+stucrs.grade%>%
+  group_by(term,CourseGroup,grade)%>%summarise(cnt=n())%>%
+  mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
+  filter(grade%in%c("C or better","D"))%>%
+  select(-cnt)%>%pivot_wider(names_from = grade, values_from = prt)%>%
+  mutate(pass=`C or better`+D)%>%select(-`C or better`,-D)%>%
+  pivot_wider(names_from = term,values_from = pass)%>%
+  View()
+
+#withdrawl by coursegroup
+stucrs.grade%>%
+  group_by(term,CourseGroup,grade)%>%summarise(cnt=n())%>%
+  mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
+  select(-cnt)%>%pivot_wider(names_from = term,values_from = prt)%>%
+  filter(grade=="W")%>%
+  View()
+```
+
+
+```{r GPA}
+# Average GPA (and SD): 
+stucrs.grade%>%group_by(term)%>%summarise(mn=round(mean(GPA,na.rm=T),digits = 2),
+                                          sd=round(sd(GPA,na.rm=T),digits = 2))%>%View()#tanspose when paste
+#GPA by segment/coursegroup
+stucrs.grade%>%group_by(term,CourseGroup)%>%summarise(mn=round(mean(GPA,na.rm=T),digits = 2))%>%
+  pivot_wider(names_from = term,values_from = mn)%>%
+  View()
+
+stucrs.grade%>%count(CourseGroup)
 ```
 
 

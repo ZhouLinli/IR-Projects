@@ -1069,6 +1069,9 @@ mod<-lm(service.counseling~Ethnicity,data=fis.num)
 summary(mod)#options(scipen=999)#options(scipen=0)
 jtools::summ(mod, digits = 1)#broom::tidy(mod, conf.int = TRUE)
 
+summary(aov(service.counseling~Ethnicity,data=fis.num))
+
+
 #viz the difference
 #fis.num%>%filter(Ethnicity %in% c("Black or African American","Hispanic","White","Race and Ethnicity Unknown","Two or more Races"))%>%
 #  ggplot(aes(x=Ethnicity,y=service.counseling,label=Ethnicity))+

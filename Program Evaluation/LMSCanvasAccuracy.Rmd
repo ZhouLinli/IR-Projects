@@ -16,7 +16,6 @@ always_allow_html: true
 #  word_document: default
 #  html_document:
 #    keep_md: yes
-
 #knitr::opts_chunk$set(echo = TRUE, include = TRUE, warning=FALSE, message=FALSE, fig.align = "center") #both code and results
 
 knitr::opts_chunk$set(echo = FALSE, include = FALSE, warning=FALSE, message=FALSE, fig.align = "center") #show only results
@@ -24,6 +23,8 @@ knitr::opts_chunk$set(fig.pos = 'H')#hold figure position in output
 #echo=FALSE meaning code chunk won't be shown
 #include=false: not to include results from any r chunk unless specify include=true to include the output; 
 #warning=false do not include warning
+
+#load libraries
 library(knitr)
 library(ggplot2)
 library(readxl)
@@ -40,7 +41,7 @@ library(ggnewscale)#for 2 scale_corlor_manual which is for 2 legend both based c
 library(flextable)
 library(officer)
 
-#set up color
+#set up color and theme
 mycolors<-c("#13294b","#5c88da","#69b3e7","#fcb53b","#6C6F70","#641F45")
 scale_color_manual(values=mycolors)
 
@@ -66,16 +67,179 @@ theme_lz <- function(){
 ```
 
 
-
-```{r load dataset, include=FALSE} 
-#include=FALSE meaning output won't be shown
-
-#for windows
-#canvrp<-read_excel("S:/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/gradalign_working.xlsx")
-#for mac
-#canvrp<-read_excel("/Volumes/Faculty_Staff_Shares$/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/gradalign_working.xlsx")
-canvrp<-read_excel("/Users/linlizhou/Documents/LASELL/data/progameval/gradalign_working.xlsx")
+```{r method-analysis plan, include=FALSE}
+#goal: compare canvas and registar grades
+#step 1: convert both numeric 0-100 (canvas) and letter grade (registar) into 4.0 scale grades
+#step 2: create a unique identifier column by combining people id and course id in both data files
+#step 3: mutate registar's grade into canvas data for each row (based on unique identifier)
+#step 4: mutate difference (canvas-registar grade) column
+##calculate the average difference between registar column with canvas column, 
+##group the difference into significant vs nonsignificant vs exact match groups for each course/terms
 ```
+
+
+```{r load and merge SAVE canvas21, include=FALSE}
+# set up: load data files of different sessions
+canvas21f<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/1.grade_export_2021FallMain.csv")
+#read canvas data, read_csv read as a tibble ; read.csv as a regular data frame
+canvas21f1<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/3.grade_export_2021Fall1.csv")
+canvas21f2<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/4.grade_export_2021Fall2.csv")
+canvas21s<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/2.grade_export_2022SpringMain.csv")
+canvas21s1<-read.csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/grade_export_Spring1_2022.csv")
+canvas21s2<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/grade_export_Spring2_2022.csv" )
+canvas21sm<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/grade_export_SummerMain_2021.csv")
+canvas21sm1<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/grade_export_Summer1_2021.csv")
+canvas21sm2<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/grade_export_Summer2_2021.csv")
+# fix names of canvas21s1 to match the names of all other datasets
+names(canvas21s1) <- gsub("\\."," ",names(canvas21s1))
+#append/stacking into one dataset
+canvas21<- bind_rows(canvas21f,canvas21f1,canvas21f2,canvas21s,canvas21s1,canvas21s2,canvas21sm,canvas21sm1,canvas21sm2)
+#save merged canvas data
+#write_xlsx(canvas21,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/working/merged21canvas.xlsx")
+```
+
+
+```{r load and merge SAVE registrar21, include=FALSE}
+#read registar data
+registrar21<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/raw data/2021-2022all.Student Info by Course and Fiscal Year.xlsx", skip=1)
+#skipped the first row because real column name starts from the second row
+
+#save a copy of registrar data
+#write_xlsx(registrar21,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/working/merged21transcript.xlsx")
+```
+
+```{r VIZ score in canvas21-origional}
+canvas21%>%mutate(scoregroup=if_else(is.na(`current score`),"Missing",
+                                    if_else(`current score`>110,">110",
+                                     if_else(`current score`<0,"<0","0-110"))),
+                  scoregroup=factor(scoregroup,labels = c("Missing","0-110",">110")))%>%
+  count(scoregroup)%>%
+  ggplot(aes(scoregroup,y=n,fill=scoregroup))+
+  geom_bar(stat="identity",position = position_dodge(),width=0.9)+
+  scale_fill_manual(values = c("#da291c","#69b3e7","#da291c"))+
+  geom_text(aes(label=n),size=3,vjust=0,hjust=0.7,fontface="bold",position = position_dodge(0.9))+
+  labs(title="Count of Canvas Scores in AY21-22",x="",y="",fill="")+
+  theme_lz()+theme(legend.position = "none",axis.text.y = element_blank())
+```
+
+
+```{r convert canvas grades, include=FALSE}
+#step 1: convert both numeric 0-110 (canvas) and letter grade (registar) into 4.0 scale grades
+canvas21<- canvas21 %>% 
+  mutate(canvasgpa=case_when(# use case_when to mutate new var canvasgpa
+    `current score`<=110 &`current score`>=93 ~ 4,
+    `current score`<93 & `current score`>=90 ~ 3.7,
+    `current score`<90 & `current score`>=87 ~ 3.3,
+    `current score`<87 & `current score`>=83 ~ 3,
+    `current score`<83 & `current score`>=80 ~ 2.7,
+    `current score`<80 & `current score`>=77 ~ 2.3,
+    `current score`<77 & `current score`>=73 ~ 2,
+    `current score`<73 & `current score`>=70 ~ 1.7,
+    `current score`<70 & `current score`>=67 ~ 1.3,
+    `current score`<67 & `current score`>=63 ~ 1,
+    `current score`<63 & `current score`>59 ~ 0.7,
+    `current score`<=59 &`current score`>=0 ~ 0
+  ))
+#check: canvas21%>% group_by(canvasgpa)%>%count()#count each category; 798 NA that are missing a canvas grade, 178 of them are >110 or <0
+```
+
+```{r VIZ score in registrar21}
+registrar21%>%count(`Course Name`)%>%nrow()#1000 courses we are talking about here
+registrar21%>%nrow()#24,712 grades we are talking about here
+
+#VIZ score outliers
+registrar21%>%mutate(scoregroup=if_else(is.na(`Final Grade`),"Missing",
+                                    if_else(`Final Grade`%in%c("A","A-","B","B+","B-","C+","C","C-","D","D+","D-","F"),"Valid score (A-D,F)","Not valid")))%>%count(scoregroup)%>%
+  ggplot(aes(x=scoregroup,y=n,fill=scoregroup))+
+  geom_bar(stat="identity",position = position_dodge(),width=0.9)+
+  scale_fill_manual(values = c("#da291c","#da291c","#69b3e7"))+
+  geom_text(aes(label=n),size=3,vjust=0,hjust=0.7,fontface="bold",position = position_dodge(0.9))+
+  labs(title="Count of Scores in Registrar",x="",y="",fill="")+
+  theme_lz()+theme(legend.position = "none",axis.text.y = element_blank())
+
+#table of score outliers
+#registrar21%>%mutate(scoregroup=if_else(is.na(`Final Grade`),"Missing",
+#                                    if_else(`Final Grade`%in%c("A","A-","B","B+","B-","C+","C","C-","D","D+","D-","F"),"Valid score (A-D,F)","Not valid")))%>%count(scoregroup,`Course Name`)
+```
+
+```{r convert registrar grades, include=FALSE}
+registrar21<- registrar21 %>% # use case_when to mutate new var registrargpa
+  mutate(registrargpa=case_when(
+    `Final Grade`=="A" ~ 4,
+    `Final Grade`=="A-" ~ 3.7,
+    `Final Grade`=="B+" ~ 3.3,
+    `Final Grade`=="B" ~ 3,
+    `Final Grade`=="B-" ~ 2.7,
+    `Final Grade`=="C+" ~ 2.3,
+    `Final Grade`=="C" ~ 2,
+    `Final Grade`=="C-" ~ 1.7,
+    `Final Grade`=="D+" ~ 1.3,
+    `Final Grade`=="D" ~ 1,
+    `Final Grade`=="D-" ~ 0.7,
+    `Final Grade`=="F" ~ 0))
+#check: registrar21%>% group_by(registrargpa)%>%count()#count each category
+```
+
+
+```{r merge using unique identifier, include=FALSE}
+#step 2: create a unique identifier column by combining people id and course id in both data files
+#convert course id in canvas to match the format of course id in registar data; mutate the new formatted course id in canvas data
+canvas21<- canvas21 %>% mutate(cvcrsid=unlist(lapply(strsplit(canvas21$course, "[.]"), '[[',1)))##split course value string by .; select the first element in the nested list; unlist to convert a list into vector
+#concatenate peopleid+courseid together in canvas data
+canvas21<- canvas21 %>% mutate(matchid=paste(canvas21$`student sis`,canvas21$`cvcrsid`,sep=""))
+#concatenate peopleid+courseid together in registrar data
+registrar21<- registrar21 %>% mutate(matchid=paste(registrar21$`People Code ID`,registrar21$`Course ID`,sep=""))
+
+#step 3: merge registar's grade into canvas data for each row (based on unique identifier)
+canvrp<-inner_join(canvas21, registrar21, by="matchid")%>%select(matchid, canvasgpa, registrargpa,`Course Department`, `Academic Year`,`Academic Term`,`Academic Session`,`Course ID`,`Course Name`,`Course Credits`,`Add Drop`,`Gender`,`Ethnicity`,`Program`,`Major`, `Semester GPA`,`Cumulative GPA`)
+#step 4 option 1: export cleaned data and do analyze/viz in excel
+write_xlsx(canvrp,"S:/IR/Data and Analyses/Ad Hoc Projects/2021-2022/Canvas Grades_2022/gradalign_working.xlsx")
+```
+
+
+```{r VIZ score in canvas21-considering canvas21 not in registrar21 as missing also}
+#grade merge purely
+cv.s<-canvas21%>%select(canvasgpa,cvcrsid,matchid)%>%filter(!is.na(canvasgpa))%>%unique()
+rg.s<-registrar21%>%select(registrargpa,`Course ID`,matchid)%>%filter(!is.na(registrargpa))%>%unique()
+
+#missing grades in canvas
+sum(rg.s$`Course ID`%in%cv.s$cvcrsid)#14540 grades to compare
+sum((rg.s$`Course ID`%in%cv.s$cvcrsid)==FALSE)#862 missing in canvas
+
+#origionally within canvas21
+#canvas21%>%mutate(scoregroup=if_else(is.na(`current score`),"Missing",
+ #                                   if_else(`current score`>110,">110",
+   #                                  if_else(`current score`<0,"<0","0-110"))),
+  #                scoregroup=factor(scoregroup,labels = c("Missing","0-110",">110")))%>%
+  #count(scoregroup)
+
+#add origional na values (in canvas 21) with those missing when comparing to registrar21
+#tibble(scoregroup=c("0-110",">110","Missing"),
+#       n=c(14540,609,1051))%>%#manually considering missing in canvas21 dataset
+#  mutate(scoregroup=factor(scoregroup,labels = c("0-110",">110","Missing")))can't get the order right
+tibble(">110"=609,"0-110"=14540,"Missing"=1051) %>%
+  pivot_longer(cols = c(`>110`,`0-110`,Missing), names_to = "scoregroup", values_to = "n")%>%
+  mutate(scoregroup=factor(scoregroup,labels = c("Missing","0-110",">110")))%>%#the best I can to reorder, cannot change the lable orders --if so the number won't match with the lable anymore 
+
+  ggplot(aes(scoregroup,y=n,fill=scoregroup))+
+  geom_bar(stat="identity",position = position_dodge(),width=0.9)+
+  scale_fill_manual(values = c("#da291c","#69b3e7","#da291c"))+
+  geom_text(aes(label=n),size=3,vjust=0,hjust=0.7,fontface="bold",position = position_dodge(0.9))+
+  labs(title="Count of Canvas Grades in AY21-22",x="",y="",fill="")+
+  theme_lz()+theme(legend.position = "none",axis.text.y = element_blank())
+
+#how many courses are missing values
+#the 862 missing when comparing to registrar
+rg.s%>%filter((`Course ID`%in%cv.s$cvcrsid)==FALSE)%>%count(`Course ID`)%>%arrange(-n)%>%View()# 25 courses have more than 10 missing grades, 120 have 0-10 missing grades
+
+#how many courses have invalid values
+canvas21%>%filter(`current score`>110)%>%count(cvcrsid)%>%arrange(-n)#7 courses have more than 10 invalid grades, the rest 8 have 1-10 invalid grades
+
+#valid grades
+rg.s%>%filter((`Course ID`%in%cv.s$cvcrsid)==TRUE)%>%count(`Course ID`)%>%arrange(-n)# comes from 588 courses
+```
+
+
 
 ```{r dataset prep - poppulation&semester, include=FALSE}
 #We focus on undergraduate and graduate student in fall, spring, and summer semesters. We thus filtered out students in other level of study (professional, certificate, or non-matriculated students) and in students in winter semesters (which may be input error).
@@ -121,6 +285,7 @@ canvrp_ugg%>%group_by(`Academic Session`)%>%count()
 canvrp_ugg <-canvrp_ugg %>% mutate(canvasgpa_match=case_when(
   canvasgpa!="NA" & registrargpa!="NA" ~ canvasgpa
 ))
+
 # for existing gpa in both system, duplicate registrar gpa
 canvrp_ugg <-canvrp_ugg %>% mutate(registrargpa_match=case_when(
   canvasgpa!="NA" & registrargpa!="NA" ~ registrargpa

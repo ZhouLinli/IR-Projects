@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.10.18)  22 OCT 2022 21:25
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.10.18)  27 OCT 2022 09:59
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -858,15 +858,8 @@ LaTeX Font Info:    Font shape `TU/HelveticaLight(0)/m/n' will be
 (Font)              scaled to size 12.0pt on input line 93.
 LaTeX Font Info:    Font shape `TU/HelveticaLight(0)/b/n' will be
 (Font)              scaled to size 12.0pt on input line 93.
-File: FirstImpSurvey_files/figure-latex/display resp_rate and combined figure-1.pdf Graphic file (type pdf)
-<use FirstImpSurvey_files/figure-latex/display resp_rate and combined figure-1.pdf>
-File: FirstImpSurvey_files/figure-latex/display eth figure-1.pdf Graphic file (type pdf)
-<use FirstImpSurvey_files/figure-latex/display eth figure-1.pdf>
-File: FirstImpSurvey_files/figure-latex/display satis figure-1.pdf Graphic file (type pdf)
-<use FirstImpSurvey_files/figure-latex/display satis figure-1.pdf>
-
-Underfull \vbox (badness 4291) has occurred while \output is active []
-
+LaTeX Font Info:    Font shape `TU/HelveticaLight(0)/b/n' will be
+(Font)              scaled to size 10.0pt on input line 100.
 File: /Users/linlizhou/Documents/Rprojects/IR.png Graphic file (type bmp)
 </Users/linlizhou/Documents/Rprojects/IR.png>
 
@@ -879,21 +872,15 @@ Package fancyhdr Warning: \headheight is too small (31.91684pt):
 [1
 
 ]
+File: FirstImpSurvey_files/figure-latex/display resp_rate and combined figure-1.pdf Graphic file (type pdf)
+<use FirstImpSurvey_files/figure-latex/display resp_rate and combined figure-1.pdf>
+File: FirstImpSurvey_files/figure-latex/display eth figure-1.pdf Graphic file (type pdf)
+<use FirstImpSurvey_files/figure-latex/display eth figure-1.pdf>
+[2]
+File: FirstImpSurvey_files/figure-latex/display satis figure-1.pdf Graphic file (type pdf)
+<use FirstImpSurvey_files/figure-latex/display satis figure-1.pdf>
 File: FirstImpSurvey_files/figure-latex/display satis.life figure-1.pdf Graphic file (type pdf)
 <use FirstImpSurvey_files/figure-latex/display satis.life figure-1.pdf>
-File: FirstImpSurvey_files/figure-latex/display service figure-1.pdf Graphic file (type pdf)
-<use FirstImpSurvey_files/figure-latex/display service figure-1.pdf>
-File: FirstImpSurvey_files/figure-latex/display service.satis figure-1.pdf Graphic file (type pdf)
-<use FirstImpSurvey_files/figure-latex/display service.satis figure-1.pdf>
-File: FirstImpSurvey_files/figure-latex/display empfaculty fig-1.pdf Graphic file (type pdf)
-<use FirstImpSurvey_files/figure-latex/display empfaculty fig-1.pdf>
-LaTeX Font Info:    Font shape `TU/HelveticaLight(0)/b/n' will be
-(Font)              scaled to size 10.0pt on input line 140.
-[2]
-File: FirstImpSurvey_files/figure-latex/display numfigure-1.pdf Graphic file (type pdf)
-<use FirstImpSurvey_files/figure-latex/display numfigure-1.pdf>
-File: FirstImpSurvey_files/figure-latex/display ethdiff-1.pdf Graphic file (type pdf)
-<use FirstImpSurvey_files/figure-latex/display ethdiff-1.pdf>
 File: /Users/linlizhou/Documents/Rprojects/IR.png Graphic file (type bmp)
 </Users/linlizhou/Documents/Rprojects/IR.png>
 
@@ -904,44 +891,38 @@ Package fancyhdr Warning: \headheight is too small (31.91684pt):
 (fancyhdr)                \addtolength{\topmargin}{-8.67242pt}.
 
 [3]
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 8.47859pt on input line 205.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 6.05614pt on input line 205.
-LaTeX Font Info:    Trying to load font information for OML+lmm on input line 205.
-(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/lm/omllmm.fd
-File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-)
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 12.1135pt on input line 205.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 8.47945pt on input line 205.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 6.05675pt on input line 205.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 12.11105pt on input line 205.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 8.47774pt on input line 205.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 6.05553pt on input line 205.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 205.
-(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsa.fd
-File: umsa.fd 2013/01/14 v3.01 AMS symbols A
-)
-LaTeX Font Info:    Trying to load font information for U+msb on input line 205.
-(/Users/linlizhou/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd
-File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-) [4] (./FirstImpSurvey.aux)
+File: FirstImpSurvey_files/figure-latex/display service figure-1.pdf Graphic file (type pdf)
+<use FirstImpSurvey_files/figure-latex/display service figure-1.pdf>
+File: FirstImpSurvey_files/figure-latex/display service.satis figure-1.pdf Graphic file (type pdf)
+<use FirstImpSurvey_files/figure-latex/display service.satis figure-1.pdf>
+[4]
+File: FirstImpSurvey_files/figure-latex/display empfaculty fig-1.pdf Graphic file (type pdf)
+<use FirstImpSurvey_files/figure-latex/display empfaculty fig-1.pdf>
+File: FirstImpSurvey_files/figure-latex/display numfigure-1.pdf Graphic file (type pdf)
+<use FirstImpSurvey_files/figure-latex/display numfigure-1.pdf>
+File: /Users/linlizhou/Documents/Rprojects/IR.png Graphic file (type bmp)
+</Users/linlizhou/Documents/Rprojects/IR.png>
+
+Package fancyhdr Warning: \headheight is too small (31.91684pt): 
+(fancyhdr)                Make it at least 40.58926pt, for example:
+(fancyhdr)                \setlength{\headheight}{40.58926pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+(fancyhdr)                \addtolength{\topmargin}{-8.67242pt}.
+
+[5]
+File: FirstImpSurvey_files/figure-latex/display ethdiff-1.pdf Graphic file (type pdf)
+<use FirstImpSurvey_files/figure-latex/display ethdiff-1.pdf>
+[6] (./FirstImpSurvey.aux)
 Package rerunfilecheck Info: File `FirstImpSurvey.out' has not changed.
-(rerunfilecheck)             Checksum: A4B67AB1848CDAF7C4999C41B258C973;2729.
+(rerunfilecheck)             Checksum: 64EC4BE270BB80CA6BD650B8A444AB93;2565.
  ) 
 Here is how much of TeX's memory you used:
- 18336 strings out of 477743
- 341413 string characters out of 5842915
- 820186 words of memory out of 5000000
- 39114 multiletter control sequences out of 15000+600000
- 472958 words of font info for 68 fonts, out of 8000000 for 9000
+ 18269 strings out of 477743
+ 339643 string characters out of 5842915
+ 824253 words of memory out of 5000000
+ 39075 multiletter control sequences out of 15000+600000
+ 470121 words of font info for 51 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 86i,12n,122p,418b,463s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 86i,12n,122p,381b,328s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on FirstImpSurvey.pdf (4 pages).
+Output written on FirstImpSurvey.pdf (6 pages).

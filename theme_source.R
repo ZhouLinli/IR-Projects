@@ -34,8 +34,8 @@ theme_lz <- function(){
   theme_minimal() %+replace%    #replace elements already strips axis lines, 
     theme(
       #plot.margin = margin(t = 20, r = 10, b = 40,l = 10,unit = "pt"), 
-      plot.margin=unit(c(2,0,
-                    1.5,0),"cm"),
+      plot.margin=unit(c(0.5,0,
+                    0,0),"cm"),
       panel.grid.major = element_blank(),    #no major gridlines
       panel.grid.minor = element_blank(),    #no minor gridlines
       plot.title = element_text(family = font, size = 8, face = 'bold',hjust = 0, vjust = 0),#hjust=0 left, vjust=-1 close to graph (move to the bottom)

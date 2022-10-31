@@ -229,9 +229,21 @@ stucrs.grade%>%
 stucrs.grade%>%
   group_by(term,CourseGroup,grade)%>%summarise(cnt=n())%>%
   mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
+  filter(grade%in%c("C or better"))%>%
+  select(-cnt)%>%pivot_wider(names_from = grade, values_from = prt)%>%
+  pivot_wider(names_from = term,values_from = `C or better`)%>%
+  View()
+
+#pass
+stucrs.grade%>%
+  group_by(term,CourseGroup,grade)%>%summarise(cnt=n())%>%
+  #mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
+  mutate(prt=cnt/sum(cnt))%>%
   filter(grade%in%c("C or better","D"))%>%
   select(-cnt)%>%pivot_wider(names_from = grade, values_from = prt)%>%
+  replace(is.na(.), 0)%>%
   mutate(pass=`C or better`+D)%>%select(-`C or better`,-D)%>%
+  mutate(pass=formattable::percent(pass,digits = 0))%>%
   pivot_wider(names_from = term,values_from = pass)%>%
   View()
 
@@ -259,6 +271,14 @@ stucrs.grade%>%count(CourseGroup)
 
 
 
+```{r WRI in 18fall/19}
+sectiontally%>%filter(term=="2018 Fall")%>%
+  count(coursecode,event_long_name)
+```
+
+```{r}
+
+```
 
 
 

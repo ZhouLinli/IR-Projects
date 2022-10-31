@@ -18,12 +18,12 @@ header-includes:
     
     \renewcommand{\headrulewidth}{0pt}
 output: 
-  word_document:
-    toc: no
-    reference_docx: /Users/linlizhou/Documents/Rprojects/lasell.report.IN-USE.docx
   pdf_document:
     latex_engine: xelatex
     fig_height: 2
+  word_document:
+    toc: no
+    reference_docx: /Users/linlizhou/Documents/Rprojects/lasell.report.IN-USE.docx
 mainfont: Helvetica Light
 fontsize: 10pt
 ---
@@ -935,7 +935,7 @@ across(starts_with(c("emphasize.","service.")),as.numeric))
 #str(fis.num)
 ```
 
-```{r distill one NUMERIC MEAN for aggregated vars and SAVE numdf}
+```{r mutate aggregated NUMERIC MEAN}
 #r aggregate items in fis.num
 #aggregate satis, connect, faculty
 fis.num<-fis.num%>%mutate(satis=rowSums(.[grepl("^satis.",names(.)) & !grepl(".cm$",names(.))]),
@@ -952,6 +952,16 @@ academic=satis.overallcourse+satis.majorcourse+satis.acchallenge+satis.accommit+
 life=satis.foodav+satis.foodav+satis.residhall+service.counseling+service.health+service.techhelp+service.shuttle,
 soc=satis.activity+connect+emphasize.socoppo+emphasize.campactivity+emphasize.issueevents+interact.outside)
 #check: lapply(fis.num, unique)
+```
+
+
+```{r fis.num final touch - adding more vars}
+#mutate more vars in fis.num
+fis.num<-cbind(fis.num,fis.s[,c("RCstatus","gender","FT/PT","ppid")])
+```
+
+
+```{r cal current.num and merge historical.num SAVE numdf}
 
 ##calculate numeric means
 current.num<-tibble(
@@ -1054,8 +1064,8 @@ num.figure
 
 ```{r lm ethnicity on outcome vars}
 #check N: fis.num%>%count(Ethnicity)
-summary(lm(service~Ethnicity,data=fis.num))
-summary(lm(life~Ethnicity,data=fis.num))
+##summary(lm(service~Ethnicity,data=fis.num))
+##summary(lm(life~Ethnicity,data=fis.num))
 #viz the difference
 #fis.num%>%group_by(Ethnicity)%>%summarise(svmn=mean(service,na.rm=TRUE))%>%
 #  filter(svmn>0,!is.na(Ethnicity))%>%
@@ -1065,11 +1075,30 @@ summary(lm(life~Ethnicity,data=fis.num))
 #  ggplot(aes(x=life,y=service))+geom_point(aes(color=Ethnicity))#+geom_line(aes(color=Ethnicity))
 
 #further investigate which service/life: found conseling
-mod<-lm(service.counseling~Ethnicity,data=fis.num)
-summary(mod)#options(scipen=999)#options(scipen=0)
-jtools::summ(mod, digits = 1)#broom::tidy(mod, conf.int = TRUE)
+##summary(aov(service.counseling~Ethnicity,data=fis.num))#different eth groups have different means
+##mod<-lm(service.counseling~Ethnicity,data=fis.num)#how being in each of the eth change the mean (as show in each group's coefficient)
+##summary(mod)#options(scipen=999)#options(scipen=0)
+##jtools::summ(mod, digits = 1)#broom::tidy(mod, conf.int = TRUE)
 
-summary(aov(service.counseling~Ethnicity,data=fis.num))
+#SET REFERENCE LEVEL IN LM
+#make ordinal as a factor is more accurate when lm
+#set the reference level of Ethnicity intentionally, to make the lm intercept that reference level 
+##eth2<-relevel(factor(fis.num$Ethnicity),"White")#reference level change from alpabetic to white
+##summary(lm(factor(service.counseling)~eth2,data=fis.num))
+#coefficient and p value are interpreted compared to the reference level; 
+#if not set reference level, then lm will auto-set the first reference level;
+#if intentionally include all level in lm, then we are comparing whether each var is different from zero
+#intentionally include all level (A,B,C): lm(y~I(1*(xvar=="A")+I(1*(xvar=="B"), data=data))#this set C as the reference level
+#lm(y~I(1*(xvar=="A")+I(1*(xvar=="B")+I(1*(xvar=="C"), data=data))#this set no reference level
+
+
+#MODEL SELECTION: use step-by-step nested model for variable selection:
+#mod1<-lm(service.counseling~eth2,data=fis.num); summary(mod1)$coefficients
+#mod2<-update(mod, service.counseling~eth2+gender); summary(mod2)$coefficients
+#1.If the result is NA coefficient for newvar, then that newvar is a combination of the other vars already included
+#2.anova(mod1,mod2)#if sig then adding additional var is meaningful for the y outcome
+
+#USE THE LM FOR PREDICTION: predict(mod2,newdata=)
 
 
 #viz the difference
@@ -1145,7 +1174,15 @@ ethdiff
 
 
 
+# Summary
 
+* Over 90% first year students are satisfied with __academic experiences__ at Lasell. The academic satisfaction have been consistently high across the past years. 
+
+* Life experiences receive less satisfaction (average of 82%) among first year students. For example, __food availability__ only receives 63% satisfaction this year. Also, even though __student connection__ has slightly increased, still only 75% first year students are satisfied with their social lives including __activities and connections__ on campus.
+
+* Usage of __academic services__ have increased by 20% this year. Around 50% of first year students are using AAC and neeting with their academic advisers. However, usage of __Counseling Center and Shuttle__ remains as low as 20%. 
+
+* Satisfactions with Lasell __student services__ are over 85% among first year students. __Counseling center and Shuttle__ receive 7-12% higher satisfaction among first year students than last year. However, different __ethnicity__ groups seem to have different satisfactions towards counseling center. 
 
 ```{r lm}
 #outcome vars: meetexpect, satis, connect, emphasize, faculty

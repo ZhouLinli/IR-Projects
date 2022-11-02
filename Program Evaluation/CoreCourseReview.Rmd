@@ -321,9 +321,28 @@ stucrs.grade%>%filter(CourseGroup%in%c("Scientific Inquiry & Problem Solving"))%
   View()
 ```
 
+# AAC 102, 103, 104
 
-```{r AAC102/3/4}
-# GPA of 2.0 or higher across all courses that semester for a student.
+```{r aac.crs df created}
+#merge crs from 5 years and create aac.crs
+aac.crs<-plyr::join_all(list(crs18_19,crs19_20,crs20_21,crs21_22), type="full")%>%
+#only fall-spring term
+filter(academic_term%in%c("FALL","SPRING"))%>%
+#exclude suffix in Course_ID: extract any number of LETTER followed by any number of NUMBER 
+mutate(coursecode=str_extract(Course_ID,"[A-Z]+[0-9]+"))%>%#check: %>%count(coursecode)
+#only keep AAC courses
+filter(coursecode %in% c("AAC102","AAC103","AAC104"))%>%unique()#check: %>%count(coursecode)
+
+#factorize term for convinience showing
+aac.crs<-aac.crs%>%mutate(
+term=paste(academic_year,academic_term,sep=" "),
+term=factor(term,levels = c("2018 FALL","2019 SPRING","2019 FALL","2020 SPRING","2020 FALL","2021 SPRING","2021 FALL","2022 SPRING")))
+
+#save: write_xlsx(stucrs.grade,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 AAC/StudentInfoCourse_18FA-22SP_aac10234.xlsx")
+```
+
+
+```{r pass vs fail by semester GPA}
 # count of students pass AAC103
 # AAC students' semester&cumulative GPA (2.0 threshold) by pass/fail of AAC
 

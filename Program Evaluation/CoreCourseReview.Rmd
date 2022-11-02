@@ -125,6 +125,16 @@ sectiontally%>%group_by(CourseGroup,term)%>%summarise(enrollment=sum(Current_Enr
   View()
 ```
 
+```{r solve NA problem in WRI in 18fall/19}
+#since we have NA section for WRI101/102 in 18fall/19spring, we investigated the raw data
+sp19.sec%>%#filter(term=="2018 Fall")%>%
+  #count(coursecode,event_long_name)
+  filter(str_detect(event_long_name,"Writing"))%>%count(event_long_name,event_id)
+#found ENG101/102 as writing course too -- edited corecourse list and everything else updated done
+```
+
+
+
 # Student Info by Course dataset
 
 ```{r load student data}
@@ -157,36 +167,45 @@ stucrs<-stucrs%>%mutate(CourseGroup=factor(CourseGroup,levels = c("Writing","Mat
 #mutate and factorize term for convinience showing
 stucrs<-stucrs%>%mutate(term=paste(academic_year,academic_term,sep=" "),
                         term=factor(term,levels = c("2018 FALL","2019 SPRING","2019 FALL","2020 SPRING","2020 FALL","2021 SPRING","2021 FALL","2022 SPRING")))
-
-#save: write_xlsx(stucrs,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 Core Curriculum/data files/StudentInfoCourse_18FA-22SP_Core Curriculum.xlsx")
-#check course and section combination is unique: 
-
-stucrs%>%count(people_code_id,coursecode,Course_section,Course_Name,Instructor_ids,Add_Drop, term)%>%filter(n>1)
-
-stucrs%>%filter(people_code_id=="P000053284",coursecode=="CHEM203",Course_section=="B",term=="2019 FALL")
-
-stucrs%>%count(Final_Grade)
 ```
 
-```{r dediplicated headcount}
-# All core course enrollment and transfer proportion -- deduplicated student count in STU INFO BY COURSE
-## filter students who have valid final grade (count only those with an A in the Add_Drop column--hopefually they all have a nonNA final grade), and deduplicate them
-stucrs.18fa<-stucrs%>%filter(term=="2018 FALL")%>%distinct(people_code_id)%>%nrow()
-stucrs.19sp<-stucrs%>%filter(term=="2019 SPRING")%>%distinct(people_code_id)%>%nrow()
-stucrs.19fa<-stucrs%>%filter(term=="2019 FALL")%>%distinct(people_code_id)%>%nrow()
-stucrs.20sp<-stucrs%>%filter(term=="2020 SPRING")%>%distinct(people_code_id)%>%nrow()
-stucrs.20fa<-stucrs%>%filter(term=="2020 FALL")%>%distinct(people_code_id)%>%nrow()
-stucrs.21sp<-stucrs%>%filter(term=="2021 SPRING")%>%distinct(people_code_id)%>%nrow()
-stucrs.21fa<-stucrs%>%filter(term=="2021 FALL")%>%distinct(people_code_id)%>%nrow()
-stucrs.22sp<-stucrs%>%filter(term=="2022 SPRING")%>%distinct(people_code_id)%>%nrow()
+# Unduplicated student taking core courses
 
-tibble( term=c("2018 FALL","2019 SPRING","2019 FALL","2020 SPRING","2020 FALL","2021 SPRING","2021 FALL","2022 SPRING"),enrolled=c(stucrs.18fa,stucrs.19sp,stucrs.19fa,stucrs.20sp,stucrs.20fa,stucrs.21sp,stucrs.21fa,stucrs.22sp))%>%pivot_wider(names_from = term, values_from = enrolled)%>%View()
+```{r deduplicated student count by term}
+stucrs%>%group_by(term)%>%summarise(n=n_distinct(people_code_id))
+#%>%select(n)%>%colSums(n)#10549 ppid adding separate terms together
+  pivot_wider(names_from = term,values_from = n)%>%View()
 ```
 
+```{r unduplicated student list for transfer status}
+#unduplicated student list: distinctive ppid for each term
+stucrs.id<-stucrs%>%group_by(term)%>%distinct(people_code_id)
+
+#transfer status in dtm
+dmt<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/DataMart To Date/Final Datamart up to Date 09262022.xlsx")
+dmt.transfer<-dmt%>%select(PC_ID,TRANSFER_YN)
+#merge
+stucrs.id<-left_join(stucrs.id,dmt.transfer,by=c("people_code_id"="PC_ID"))
+
+#transfer status percent
+stucrs.id%>%group_by(term,TRANSFER_YN)%>%summarise(cnt=n())%>%
+  mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
+  filter(TRANSFER_YN=="Y")%>%select(term,prt)%>%
+  pivot_wider(names_from = term, values_from = prt)%>%View()
+```
+
+
+# stucrs.grade: Valid grade filtered
 
 ```{r clean stucrs.grade}
+#check course and section combination is unique: 
+stucrs%>%count(people_code_id,coursecode,Course_section,Course_Name,Instructor_ids,Add_Drop, term)%>%filter(n>1)#appeared twice
+#check one of those twice appearance: stucrs%>%filter(people_code_id=="P000053284",coursecode=="CHEM203",Course_section=="B",term=="2019 FALL")
+##it's due to two different final grades (one for lab)
+
+#investigate final grades:
 stucrs%>%count(Final_Grade)
-#clean
+#clean final grades
 stucrs.grade<-stucrs%>%filter(Final_Grade%in%c("F", "W", "A", "A-", "B+", "B", "B-", "C+", "C", "P",
                                                "D","D+","D-"))%>%
 #regroup
@@ -273,15 +292,22 @@ stucrs.grade%>%count(CourseGroup)
 
 
 
-```{r WRI in 18fall/19}
-sectiontally%>%#filter(term=="2018 Fall")%>%
-  #count(coursecode,event_long_name)
-  filter(str_detect(event_long_name,"Writing"))%>%count(event_long_name,coursecode,term)
-#found ENG402 as writing course too
+
+
+```{r focus on FYS/SciInq}
+#In grade table, FYS in spring and SciInq in fall has weried pattern of being sig. lower. To investigate what are the most at-risk courses: 
+#lay out all FYS/SciInq courses by term (fall vs spring) w/t % pass
+
 ```
 
-```{r}
 
+```{r AAC102/3/4}
+# GPA of 2.0 or higher across all courses that semester for a student.
+# count of students pass AAC103
+# AAC students' semester&cumulative GPA (2.0 threshold) by pass/fail of AAC
+
+#How many students PASS AAC103 and finish the semester with a 2.0 or higher vs lower semester GPA; 
+#How many students FAIL AAC103 and finish the semester with a 2.0 or higher vs lower than a 2.0 semester GPA
 ```
 
 

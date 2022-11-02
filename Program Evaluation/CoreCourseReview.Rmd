@@ -221,7 +221,7 @@ stucrs.grade<-stucrs%>%filter(Final_Grade%in%c("F", "W", "A", "A-", "B+", "B", "
 ```
 
 
-```{r C/Pass/Withdraw}
+```{r report C/Pass/Withdraw}
 # % of C or better (A, A-, B+, B, B-, C+, C or P)
 # % of pass (not F or W) for each segment
 # % of Withdrawal (W)
@@ -278,7 +278,7 @@ stucrs.grade%>%
 ```
 
 
-```{r GPA}
+```{r report GPA}
 # Average GPA (and SD): 
 stucrs.grade%>%group_by(term)%>%summarise(mn=round(mean(GPA,na.rm=T),digits = 2),
                                           sd=round(sd(GPA,na.rm=T),digits = 2))%>%View()#tanspose when paste
@@ -286,18 +286,39 @@ stucrs.grade%>%group_by(term)%>%summarise(mn=round(mean(GPA,na.rm=T),digits = 2)
 stucrs.grade%>%group_by(term,CourseGroup)%>%summarise(mn=round(mean(GPA,na.rm=T),digits = 2))%>%
   pivot_wider(names_from = term,values_from = mn)%>%
   View()
-
-stucrs.grade%>%count(CourseGroup)
 ```
-
-
-
 
 
 ```{r focus on FYS/SciInq}
 #In grade table, FYS in spring and SciInq in fall has weried pattern of being sig. lower. To investigate what are the most at-risk courses: 
 #lay out all FYS/SciInq courses by term (fall vs spring) w/t % pass
 
+#stucrs.grade%>%count(CourseGroup)
+#FYS
+stucrs.grade%>%filter(CourseGroup%in%c("FYS"))%>%
+  group_by(term,coursecode,grade)%>%summarise(cnt=n())%>%
+  #mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
+  mutate(prt=cnt/sum(cnt))%>%
+  filter(grade%in%c("C or better","D"))%>%
+  select(-cnt)%>%pivot_wider(names_from = grade, values_from = prt)%>%
+  replace(is.na(.), 0)%>%
+  mutate(pass=`C or better`+D)%>%select(-`C or better`,-D)%>%
+  mutate(pass=formattable::percent(pass,digits = 0))%>%
+  pivot_wider(names_from = term,values_from = pass)%>%
+  View()
+
+#SciInq
+stucrs.grade%>%filter(CourseGroup%in%c("Scientific Inquiry & Problem Solving"))%>%
+  group_by(term,coursecode,grade)%>%summarise(cnt=n())%>%
+  #mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
+  mutate(prt=cnt/sum(cnt))%>%
+  filter(grade%in%c("C or better","D"))%>%
+  select(-cnt)%>%pivot_wider(names_from = grade, values_from = prt)%>%
+  replace(is.na(.), 0)%>%
+  mutate(pass=`C or better`+D)%>%select(-`C or better`,-D)%>%
+  mutate(pass=formattable::percent(pass,digits = 0))%>%
+  pivot_wider(names_from = term,values_from = pass)%>%
+  View()
 ```
 
 

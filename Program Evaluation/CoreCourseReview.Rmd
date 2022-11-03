@@ -321,6 +321,181 @@ stucrs.grade%>%filter(CourseGroup%in%c("Scientific Inquiry & Problem Solving"))%
   View()
 ```
 
+# path of taking core courses
+
+```{r corepath df}
+#check: stucrs%>%count(CourseGroup); stucrs%>%count(term)
+
+#only those from 2018 cohort: which semester they take certain course
+corepath<-stucrs%>%filter(cohort_id=="2018")%>%
+  #relevant vars: who (background matched later using ppid) take which coursegroup & when
+  select(people_code_id,term,CourseGroup)%>%
+  #colapse the same person taking the same coursegroup (at the same term) into one row
+  unique()%>%
+  
+  #for a ppid, find each coursegroup's corresponding term
+ # mutate(math.term=if_else(CourseGroup=="Math",term,"not taken"),
+ #        wri.term=if_else(CourseGroup=="Writing",term,"not taken"),
+ #        FYS.term=if_else(CourseGroup=="FYS",term,"not taken"),
+ #        multid.term=if_else(CourseGroup=="Multidisciplinary",term,"not taken"),
+  #       phil.term=if_else(CourseGroup=="PHIL302",term,"not taken"),
+   #      aesCre.term=if_else(CourseGroup=="Aesthetics & Creativity",term,"not taken"),
+    #     globalHis.term=if_else(CourseGroup=="Global & Historical",term,"not taken"),
+     #    indSoc.term=if_else(CourseGroup=="Individuals & Society",term,"not taken"),
+      #   sciInq.term=if_else(CourseGroup=="Scientific Inquiry & Problem Solving",term,"not taken"),
+      #   intern.term=if_else(CourseGroup=="Internship",term,"not taken"),
+       #  capst.term=if_else(CourseGroup=="Capstone",term,"not taken"))%>%
+#what is the popular (max prt) term for each coursegroup
+#ppid  #grp   #term   #math.term #intern.term
+#ppid1 math   term1   term1        "not taken"     
+#ppid1 math   term2   term2        "not taken"
+
+#break it down as much as possible, code as 0, 1 so it's addable
+mutate(math.t1=case_when(term=="2018 FALL"&CourseGroup=="Math"~1),
+       math.t2=case_when(term=="2019 SPRING"&CourseGroup=="Math"~1),
+       math.t3=case_when(term=="2019 FALL"&CourseGroup=="Math"~1),
+       math.t4=case_when(term=="2020 SPRING"&CourseGroup=="Math"~1),
+       math.t5=case_when(term=="2020 FALL"&CourseGroup=="Math"~1),
+       math.t6=case_when(term=="2021 SPRING"&CourseGroup=="Math"~1),
+       math.t7=case_when(term=="2021 FALL"&CourseGroup=="Math"~1),
+       math.t8=case_when(term=="2022 SPRING"&CourseGroup=="Math"~1),
+       
+       wrt.t1=case_when(term=="2018 FALL"&CourseGroup=="Writing"~1),
+       wrt.t2=case_when(term=="2019 SPRING"&CourseGroup=="Writing"~1),
+       wrt.t3=case_when(term=="2019 FALL"&CourseGroup=="Writing"~1),
+       wrt.t4=case_when(term=="2020 SPRING"&CourseGroup=="Writing"~1),
+       wrt.t5=case_when(term=="2020 FALL"&CourseGroup=="Writing"~1),
+       wrt.t6=case_when(term=="2021 SPRING"&CourseGroup=="Writing"~1),
+       wrt.t7=case_when(term=="2021 FALL"&CourseGroup=="Writing"~1),
+       wrt.t8=case_when(term=="2022 SPRING"&CourseGroup=="Writing"~1),
+       
+       FYS.t1=case_when(term=="2018 FALL"&CourseGroup=="FYS"~1),
+       FYS.t2=case_when(term=="2019 SPRING"&CourseGroup=="FYS"~1),
+       FYS.t3=case_when(term=="2019 FALL"&CourseGroup=="FYS"~1),
+       FYS.t4=case_when(term=="2020 SPRING"&CourseGroup=="FYS"~1),
+       FYS.t5=case_when(term=="2020 FALL"&CourseGroup=="FYS"~1),
+       FYS.t6=case_when(term=="2021 SPRING"&CourseGroup=="FYS"~1),
+       FYS.t7=case_when(term=="2021 FALL"&CourseGroup=="FYS"~1),
+       FYS.t8=case_when(term=="2022 SPRING"&CourseGroup=="FYS"~1),
+       
+       multid.t1=case_when(term=="2018 FALL"&CourseGroup=="Multidisciplinary"~1),
+       multid.t2=case_when(term=="2019 SPRING"&CourseGroup=="Multidisciplinary"~1),
+       multid.t3=case_when(term=="2019 FALL"&CourseGroup=="Multidisciplinary"~1),
+       multid.t4=case_when(term=="2020 SPRING"&CourseGroup=="Multidisciplinary"~1),
+       multid.t5=case_when(term=="2020 FALL"&CourseGroup=="Multidisciplinary"~1),
+       multid.t6=case_when(term=="2021 SPRING"&CourseGroup=="Multidisciplinary"~1),
+       multid.t7=case_when(term=="2021 FALL"&CourseGroup=="Multidisciplinary"~1),
+       multid.t8=case_when(term=="2022 SPRING"&CourseGroup=="Multidisciplinary"~1),
+       
+       phil.t1=case_when(term=="2018 FALL"&CourseGroup=="PHIL302"~1),
+       phil.t2=case_when(term=="2019 SPRING"&CourseGroup=="PHIL302"~1),
+       phil.t3=case_when(term=="2019 FALL"&CourseGroup=="PHIL302"~1),
+       phil.t4=case_when(term=="2020 SPRING"&CourseGroup=="PHIL302"~1),
+       phil.t5=case_when(term=="2020 FALL"&CourseGroup=="PHIL302"~1),
+       phil.t6=case_when(term=="2021 SPRING"&CourseGroup=="PHIL302"~1),
+       phil.t7=case_when(term=="2021 FALL"&CourseGroup=="PHIL302"~1),
+       phil.t8=case_when(term=="2022 SPRING"&CourseGroup=="PHIL302"~1),
+       
+aesCre.t1=case_when(term=="2018 FALL"&CourseGroup=="Aesthetics & Creativity"~1),
+aesCre.t2=case_when(term=="2019 SPRING"&CourseGroup=="Aesthetics & Creativity"~1),
+aesCre.t3=case_when(term=="2019 FALL"&CourseGroup=="Aesthetics & Creativity"~1),
+aesCre.t4=case_when(term=="2020 SPRING"&CourseGroup=="Aesthetics & Creativity"~1),
+aesCre.t5=case_when(term=="2020 FALL"&CourseGroup=="Aesthetics & Creativity"~1),
+aesCre.t6=case_when(term=="2021 SPRING"&CourseGroup=="Aesthetics & Creativity"~1),
+aesCre.t7=case_when(term=="2021 FALL"&CourseGroup=="Aesthetics & Creativity"~1),
+aesCre.t8=case_when(term=="2022 SPRING"&CourseGroup=="Aesthetics & Creativity"~1),
+
+globalHis.t1=case_when(term=="2018 FALL"&CourseGroup=="Global & Historical"~1),
+globalHis.t2=case_when(term=="2019 SPRING"&CourseGroup=="Global & Historical"~1),
+globalHis.t3=case_when(term=="2019 FALL"&CourseGroup=="Global & Historical"~1),
+globalHis.t4=case_when(term=="2020 SPRING"&CourseGroup=="Global & Historical"~1),
+globalHis.t5=case_when(term=="2020 FALL"&CourseGroup=="Global & Historical"~1),
+globalHis.t6=case_when(term=="2021 SPRING"&CourseGroup=="Global & Historical"~1),
+globalHis.t7=case_when(term=="2021 FALL"&CourseGroup=="Global & Historical"~1),
+globalHis.t8=case_when(term=="2022 SPRING"&CourseGroup=="Global & Historical"~1),
+
+indSoc.t1=case_when(term=="2018 FALL"&CourseGroup=="Individuals & Society"~1),
+indSoc.t2=case_when(term=="2019 SPRING"&CourseGroup=="Individuals & Society"~1),
+indSoc.t3=case_when(term=="2019 FALL"&CourseGroup=="Individuals & Society"~1),
+indSoc.t4=case_when(term=="2020 SPRING"&CourseGroup=="Individuals & Society"~1),
+indSoc.t5=case_when(term=="2020 FALL"&CourseGroup=="Individuals & Society"~1),
+indSoc.t6=case_when(term=="2021 SPRING"&CourseGroup=="Individuals & Society"~1),
+indSoc.t7=case_when(term=="2021 FALL"&CourseGroup=="Individuals & Society"~1),
+indSoc.t8=case_when(term=="2022 SPRING"&CourseGroup=="Individuals & Society"~1),
+
+sciInq.t1=case_when(term=="2018 FALL"&CourseGroup=="Scientific Inquiry & Problem Solving"~1),
+sciInq.t2=case_when(term=="2019 SPRING"&CourseGroup=="Scientific Inquiry & Problem Solving"~1),
+sciInq.t3=case_when(term=="2019 FALL"&CourseGroup=="Scientific Inquiry & Problem Solving"~1),
+sciInq.t4=case_when(term=="2020 SPRING"&CourseGroup=="Scientific Inquiry & Problem Solving"~1),
+sciInq.t5=case_when(term=="2020 FALL"&CourseGroup=="Scientific Inquiry & Problem Solving"~1),
+sciInq.t6=case_when(term=="2021 SPRING"&CourseGroup=="Scientific Inquiry & Problem Solving"~1),
+sciInq.t7=case_when(term=="2021 FALL"&CourseGroup=="Scientific Inquiry & Problem Solving"~1),
+sciInq.t8=case_when(term=="2022 SPRING"&CourseGroup=="Scientific Inquiry & Problem Solving"~1),
+
+intern.t1=case_when(term=="2018 FALL"&CourseGroup=="Internship"~1),
+intern.t2=case_when(term=="2019 SPRING"&CourseGroup=="Internship"~1),
+intern.t3=case_when(term=="2019 FALL"&CourseGroup=="Internship"~1),
+intern.t4=case_when(term=="2020 SPRING"&CourseGroup=="Internship"~1),
+intern.t5=case_when(term=="2020 FALL"&CourseGroup=="Internship"~1),
+intern.t6=case_when(term=="2021 SPRING"&CourseGroup=="Internship"~1),
+intern.t7=case_when(term=="2021 FALL"&CourseGroup=="Internship"~1),
+intern.t8=case_when(term=="2022 SPRING"&CourseGroup=="Internship"~1),
+
+capst.t1=case_when(term=="2018 FALL"&CourseGroup=="Capstone"~1),
+capst.t2=case_when(term=="2019 SPRING"&CourseGroup=="Capstone"~1),
+capst.t3=case_when(term=="2019 FALL"&CourseGroup=="Capstone"~1),
+capst.t4=case_when(term=="2020 SPRING"&CourseGroup=="Capstone"~1),
+capst.t5=case_when(term=="2020 FALL"&CourseGroup=="Capstone"~1),
+capst.t6=case_when(term=="2021 SPRING"&CourseGroup=="Capstone"~1),
+capst.t7=case_when(term=="2021 FALL"&CourseGroup=="Capstone"~1),
+capst.t8=case_when(term=="2022 SPRING"&CourseGroup=="Capstone"~1))
+#ppid1 intern term1   "not taken"   term1
+#ppid  #grp   #term   #math.term1 #math.term2  #intern.term1   #intern.term2
+#ppid1 math   term1   1               0            0              0     
+#ppid1 math   term2   0               1            0              0
+#ppid1 intern term1   0               0            1              0
+
+
+
+#chronoligically, what are the courses taken by ppid
+#mutate(term1=case_when(term=="2018 FALL"~CourseGroup),
+#       term2=case_when(term=="2019 SPRING"~CourseGroup),
+ #      term3=case_when(term=="2019 FALL"~CourseGroup),
+  #     term4=case_when(term=="2020 SPRING"~CourseGroup),
+   #    term5=case_when(term=="2020 FALL"~CourseGroup),
+    #   term6=case_when(term=="2021 SPRING"~CourseGroup),
+     #  term7=case_when(term=="2021 FALL"~CourseGroup),
+      # term8=case_when(term=="2022 SPRING"~CourseGroup))%>%select(-term)
+#ppid  #grp   #term   #term1 #term2 
+#ppid1 math   term1   math      NA            
+#ppid1 math   term2   NA       math 
+#ppid1 intern term1   intern    NA
+```
+
+
+```{r path analysis}
+corepath%>%group_by(people_code_id,CourseGroup)%>%
+  count(names(corepath)[grepl("t1$",names(corepath))])%>%
+
+#write_xlsx("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 Core Curriculum/data files/path_2018cohort.xlsx")
+
+#select blank - shift cell up
+
+```
+
+```{r}
+stucrs%>%filter(cohort_id=="2018")%>%
+  group_by(people_code_id,term,CourseGroup)%>%count()%>%#check: pivot_wider(names_from = term, values_from = n)%>%
+  #remove ppid so that can group by coursegroup (one group each row)
+  select(-people_code_id)%>%group_by(term,CourseGroup)%>%
+  #unduplicated headcout
+  count()%>%
+  #duplicated headcount==enrollment: summarise(enroll=sum(n))%>%
+  pivot_wider(names_from = term, values_from = n)%>%
+  View()
+```
+
+
 # AAC 102, 103, 104: Semester/Cumulative_GPA
 
 ```{r aac.crs df created}
@@ -444,6 +619,13 @@ aac.crs%>%group_by(term,coursecode,passfail,semGPA)%>%summarise(cnt=n())%>%
 ```
 
 
+```{r path analysis}
+#how Studentsretake AAC103 impacts their success in the course.
+#compare ppid in different term, if appeared in any of the following term, then they are "re-take" the course
+#create a var called "retake y vs n" -- see their course/sem/cum GPA by term
+#for n their termrecode is "first time grade"
+#for y their termrecode is "multitime grade"
+```
 
 
 

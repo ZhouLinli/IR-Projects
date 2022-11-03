@@ -352,29 +352,59 @@ corepath<-corepath.ls%>%group_by(people_code_id,CourseGroup)%>%count(term)%>%sel
 
 ```{r corepath merge background info}
 #merge more background vars
-corepath.bk<-left_join(corepath,dmt[c("PC_ID","MATRIC_YT_YN")],by=c("people_code_id"="PC_ID"))
+corepath<-left_join(corepath,dmt[c("PC_ID","GRADUATED_YN")],by=c("people_code_id"="PC_ID"))
 
 #any of the term is “1” then they are
-y<-corepath.bk%>%mutate(matric=case_when(MATRIC_YT_YN=="1"~"Graduated",
-                                         MATRIC_YT_YN!="1"~"Not Graduate"))%>%
+y<-corepath%>%mutate(matric=case_when(GRADUATED_YN=="Y"~"Graduated",
+                                         GRADUATED_YN!="Y"~"Not Graduate"))%>%
   select(people_code_id,matric)%>%unique()%>%arrange(people_code_id)%>%
   filter(matric =="Graduated")#keep any grad values of new col
 
-n<-corepath.bk%>%filter(! people_code_id%in% y$people_code_id)%>% #for people_code_id with not settled
-  mutate(matric="Not Graduate")#all not settled with y will be not grad
+n<-corepath%>%filter(! people_code_id%in% y$people_code_id)%>% #for people_code_id with not settled
+  mutate(matric="Not Graduate")%>%#all not settled with y will be not grad
+  select(people_code_id,matric)%>%unique()%>%arrange(people_code_id)
 
 #merge settled in y and n
 matric.df<-full_join(y,n)
 
 #attach back (using matric) to the original dataset
-corepath.bk<-left_join(corepath.bk,matric.corepath.bk)%>%
-  select(-MATRIC_YT_YN)%>% unique()%>%arrange(people_code_id)#remove used MATRIC_YT_YN (used matric replace MATRIC_YT_YN)
-
-corepath.bk%>%count(matric)
-
+corepath<-left_join(corepath,matric.df)%>%
+  select(-GRADUATED_YN)%>% unique()%>%arrange(people_code_id)#remove used GRADUATED_YN (used matric replace GRADUATED_YN)
 
 #write_xlsx(corepath,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 Core Curriculum/path_2018cohort.xlsx")
 ```
+
+```{r prt term for coursegroup}
+#for each coursegroup, prt of each term - OVERALL
+#approach 1- need to manually replace NA with 0 (cannot use replace in formattable % format)
+#corepath.ls%>%group_by(CourseGroup,term)%>%summarise(cnt=n())%>%
+#  mutate(prt=formattable::percent(cnt/sum(cnt),digits = 1))%>%
+#  select(-cnt)%>%pivot_wider(names_from = CourseGroup, values_from = prt)%>%View()
+#approach 2- decimal points
+corepath.ls%>%group_by(CourseGroup,term)%>%summarise(cnt=n())%>%
+  mutate(prt=round(cnt/sum(cnt),digits = 3))%>%
+  select(-cnt)%>%pivot_wider(names_from = CourseGroup, values_from = prt)%>%
+  replace(is.na(.), 0)%>%#mutate(across(Writing:Capstone,funs(paste0(.* 100, "%"))))#failed to convert to %
+  View()
+
+#by graduated vs not graduated students
+corepath.ls<-left_join(corepath.ls,corepath[c("people_code_id","matric")])
+#graduated
+corepath.ls%>%filter(matric=="Graduated")%>%
+  group_by(CourseGroup,term)%>%summarise(cnt=n())%>%
+  mutate(prt=round(cnt/sum(cnt),digits = 3))%>%
+  select(-cnt)%>%pivot_wider(names_from = CourseGroup, values_from = prt)%>%
+  replace(is.na(.), 0)%>%#mutate(across(Writing:Capstone,funs(paste0(.* 100, "%"))))#failed to convert to %
+  View()
+#not graduated
+corepath.ls%>%filter(matric=="Not Graduate")%>%
+  group_by(CourseGroup,term)%>%summarise(cnt=n())%>%
+  mutate(prt=round(cnt/sum(cnt),digits = 3))%>%
+  select(-cnt)%>%pivot_wider(names_from = CourseGroup, values_from = prt)%>%
+  replace(is.na(.), 0)%>%#mutate(across(Writing:Capstone,funs(paste0(.* 100, "%"))))#failed to convert to %
+  View()
+```
+
 
 
 

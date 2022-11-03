@@ -335,28 +335,8 @@ corepath<-stucrs%>%filter(cohort_id=="2018")%>%
   #recode termfor easier readability
   mutate(term=case_when(
     term=="2018 FALL"~1,term=="2019 SPRING"~2,term=="2019 FALL"~3,term=="2020 SPRING"~4,
-    term=="2020 FALL"~5,term=="2021 SPRING"~6,term=="2021 FALL"~7,term=="2022 SPRING"~8))%>%
-  #for a ppid, find each coursegroup's corresponding term
-  mutate(math.term=if_else(CourseGroup=="Math",as.character(term),"NA"),
-         wri.term=if_else(CourseGroup=="Writing",as.character(term),"NA"),
-         FYS.term=if_else(CourseGroup=="FYS",as.character(term),"NA"),
-         multid.term=if_else(CourseGroup=="Multidisciplinary",as.character(term),"NA"),
-         phil.term=if_else(CourseGroup=="PHIL302",as.character(term),"NA"),
-         aesCre.term=if_else(CourseGroup=="Aesthetics & Creativity",as.character(term),"NA"),
-         globalHis.term=if_else(CourseGroup=="Global & Historical",as.character(term),"NA"),
-         indSoc.term=if_else(CourseGroup=="Individuals & Society",as.character(term),"NA"),
-         sciInq.term=if_else(CourseGroup=="Scientific Inquiry & Problem Solving",as.character(term),"NA"),
-         intern.term=if_else(CourseGroup=="Internship",as.character(term),"NA"),
-         capst.term=if_else(CourseGroup=="Capstone",as.character(term),"NA"))
-#what is the popular (max prt) term for each coursegroup
-#ppid  #grp   #term   #math.term #intern.term
-#ppid1 math   term1   term1        ""     
-#ppid1 math   term2   term2        ""
-#ppid1 intern term1   ""   term1
+    term=="2020 FALL"~5,term=="2021 SPRING"~6,term=="2021 FALL"~7,term=="2022 SPRING"~8))
 
-corepath[corepath=="NA"] <- NA
-
-  
 #corepath%>%group_by(people_code_id)%>%
  # summarise(term=Kmisc::paste_na(math.term, wri.term, FYS.term, multid.term, phil.term, aesCre.term, globalHis.term, indSoc.term, sciInq.term,sep = ""))
 
@@ -365,8 +345,17 @@ corepath[corepath=="NA"] <- NA
  # select(-n)%>%pivot_wider(names_from = term,values_from = CourseGroup)%>%View()
 
 #each course, what terms
-corepath%>%group_by(people_code_id,CourseGroup)%>%count(term)%>%
-  select(-n)%>%pivot_wider(names_from = CourseGroup,values_from = term)%>%View()
+corepath<-corepath%>%group_by(people_code_id,CourseGroup)%>%count(term)%>%
+  select(-n)%>%pivot_wider(names_from = CourseGroup,values_from = term)
+
+corepath%>%View()
+
+#check for n-per-key unique
+
+#cannot save with vector in one cell: write_xlsx(corepath,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 Core Curriculum/path_2018cohort.xlsx")
+
+
+
 ```
 
 

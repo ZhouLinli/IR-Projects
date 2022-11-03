@@ -327,35 +327,53 @@ stucrs.grade%>%filter(CourseGroup%in%c("Scientific Inquiry & Problem Solving"))%
 #check: stucrs%>%count(CourseGroup); stucrs%>%count(term)
 
 #only those from 2018 cohort: which semester they take certain course
-corepath<-stucrs%>%filter(cohort_id=="2018")%>%
+corepath.ls<-stucrs%>%filter(cohort_id=="2018")%>%
   #relevant vars: who (background matched later using ppid) take which coursegroup & when
   select(people_code_id,term,CourseGroup)%>%
   #colapse the same person taking the same coursegroup (at the same term) into one row
   unique()%>%
   #recode termfor easier readability
-  mutate(term=case_when(
-    term=="2018 FALL"~1,term=="2019 SPRING"~2,term=="2019 FALL"~3,term=="2020 SPRING"~4,
+  mutate(term=case_when(term=="2018 FALL"~1,term=="2019 SPRING"~2,term=="2019 FALL"~3,term=="2020 SPRING"~4,
     term=="2020 FALL"~5,term=="2021 SPRING"~6,term=="2021 FALL"~7,term=="2022 SPRING"~8))
 
-#corepath%>%group_by(people_code_id)%>%
- # summarise(term=Kmisc::paste_na(math.term, wri.term, FYS.term, multid.term, phil.term, aesCre.term, globalHis.term, indSoc.term, sciInq.term,sep = ""))
-
-#each term, what courses
-#corepath%>%group_by(people_code_id,CourseGroup)%>%count(term)%>%
- # select(-n)%>%pivot_wider(names_from = term,values_from = CourseGroup)%>%View()
+#corepath%>%group_by(people_code_id)%>%summarise(term=Kmisc::paste_na(math.term, wri.term, FYS.term, multid.term, phil.term, aesCre.term, globalHis.term, indSoc.term, sciInq.term,sep = ""))
 
 #each course, what terms
-corepath<-corepath%>%group_by(people_code_id,CourseGroup)%>%count(term)%>%
-  select(-n)%>%pivot_wider(names_from = CourseGroup,values_from = term)
+corepath<-corepath.ls%>%group_by(people_code_id,CourseGroup)%>%count(term)%>%select(-n)%>%
+#approach 1-manual copy paste from pivot wider output
+  pivot_wider(names_from = CourseGroup,values_from = term)%>%#%>%View()#united term together as vector; but need to manually copy View() to excel output
+#approach 2-based on approach 1, convert list-col to string so that can auto export as normal cell into excel
+  mutate(across(Writing:Internship, function(x) sapply(x, toString)))
+#shorten from: mutate(Writing = sapply(Writing, toString),...)
 
-corepath%>%View()
-
-#check for n-per-key unique
-
-#cannot save with vector in one cell: write_xlsx(corepath,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 Core Curriculum/path_2018cohort.xlsx")
+#check for n-per-key is unique: corepath.s%>%count(people_code_id)%>%filter(n>1)
+```
 
 
+```{r corepath merge background info}
+#merge more background vars
+corepath.bk<-left_join(corepath,dmt[c("PC_ID","MATRIC_YT_YN")],by=c("people_code_id"="PC_ID"))
 
+#any of the term is “1” then they are
+y<-corepath.bk%>%mutate(matric=case_when(MATRIC_YT_YN=="1"~"Graduated",
+                                         MATRIC_YT_YN!="1"~"Not Graduate"))%>%
+  select(people_code_id,matric)%>%unique()%>%arrange(people_code_id)%>%
+  filter(matric =="Graduated")#keep any grad values of new col
+
+n<-corepath.bk%>%filter(! people_code_id%in% y$people_code_id)%>% #for people_code_id with not settled
+  mutate(matric="Not Graduate")#all not settled with y will be not grad
+
+#merge settled in y and n
+matric.df<-full_join(y,n)
+
+#attach back (using matric) to the original dataset
+corepath.bk<-left_join(corepath.bk,matric.corepath.bk)%>%
+  select(-MATRIC_YT_YN)%>% unique()%>%arrange(people_code_id)#remove used MATRIC_YT_YN (used matric replace MATRIC_YT_YN)
+
+corepath.bk%>%count(matric)
+
+
+#write_xlsx(corepath,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 Core Curriculum/path_2018cohort.xlsx")
 ```
 
 

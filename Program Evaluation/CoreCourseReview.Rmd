@@ -17,15 +17,31 @@ source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R") #run c
 
 #Reporting Items
 
-1. For each term (fall/spring): # courses/ sections offered in each core segment -- SECTION TALLY
-2. For each term (fall/spring): # registration in each core segment -- SECTION TALLY 
+1. DONE-For each term (fall/spring): # courses/ sections offered in each core segment -- SECTION TALLY
+2. DONE-For each term (fall/spring): # registration in each core segment -- SECTION TALLY 
 
-3.  % of pass, C or better, and Withdrawal; Average GPA (and SD) of each courses -- STU INFO BY COURSE
-4. All core course enrollment and transfer proportion -- deduplicated student count in STU INFO BY COURSE
+3. DONE- % of pass, C or better, and Withdrawal; Average GPA (and SD) of each courses -- STU INFO BY COURSE
+4. DONE-All core course enrollment and transfer proportion -- deduplicated student count in STU INFO BY COURSE
 
 5. All core course retention -- STARFISH RETENTION REPORT
 6. Satisfaction -- 2018-2022 4 years of satisfaction prt in that one question containing "core"
-6. course-taking sequence -- 2018 COHORT BY GRADUATION IN 2022 OR NOT -- POWERCAMPUS TRANSCRIPT
+6. DONE-course-taking sequence -- 2018 COHORT BY GRADUATION IN 2022 OR NOT -- POWERCAMPUS TRANSCRIPT
+
+#Overview of data frames in this analysis
+
+1. section offered and num of enrollment
+sectiontally: coursecode, CourseGroup, Current_Enrollment
+
+2. GPA
+stucrs: coursecode, CourseGroup, Final_Grade
+stucrs.grades: Final_Grade(filtered only valid-grade rows), grade (group C or better, and D), GPA (convert Final_Grade to numeric)
+
+3. 2018 cohort
+Corepath.ls: ppid, term, CourseGroup
+Corepath: Writing: Capstone (term vectors for each row), ppid, matric
+
+4.AAC
+aac.crs (aac coursecode from stucrs): term,coursecode, Semester_GPA, Cumulative_GPA
 
 # Core Course List
 
@@ -177,20 +193,33 @@ stucrs%>%group_by(term)%>%summarise(n=n_distinct(people_code_id))%>%
   pivot_wider(names_from = term,values_from = n)%>%View()
 ```
 
+
 ```{r unduplicated student list for transfer status}
 #unduplicated student list: distinctive ppid for each term
-stucrs.id<-stucrs%>%group_by(term)%>%distinct(people_code_id)
+stucrs.id<-stucrs%>%group_by(term)%>%distinct(people_code_id)%>%unique()
+#unqiue now: stucrs.id%>%count(term,people_code_id)
+
 
 #transfer status in dtm
 dmt<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/DataMart To Date/Final Datamart up to Date 09262022.xlsx")
 dmt.transfer<-dmt%>%select(PC_ID,TRANSFER_YN)
 #merge
 stucrs.id<-left_join(stucrs.id,dmt.transfer,by=c("people_code_id"="PC_ID"))
+#not unique now: stucrs.id%>%count(term,people_code_id)
+
+#once transfer then transfer
+y<-stucrs.id%>%mutate(transfer=case_when(TRANSFER_YN=="Y"~TRANSFER_YN, TRANSFER_YN!="Y"~"N"))%>%select(people_code_id,transfer)%>%unique()%>%arrange(people_code_id)%>%filter(transfer =="Y")#keep any A values of new col
+n<-stucrs.id%>%filter(! people_code_id%in% y$people_code_id)%>%mutate(transfer ="N")%>%select(people_code_id,transfer)%>%unique()%>%arrange(people_code_id)##for ppid not settled with y will be notA
+
+#merge settled in y and n; #attach back (using transfer) to the original dataset
+yn<-full_join(y,n) #check: indeed one time appearance: yn%>%count(people_code_id)%>%count(n)
+stucrs.id<-left_join(stucrs.id,yn)%>%select(-TRANSFER_YN)%>% unique()%>%arrange(people_code_id)#remove used TRANSFER_YN (used transfer replace var)
+#once again unique: stucrs.id%>%count(term,people_code_id)
 
 #transfer status percent
-stucrs.id%>%group_by(term,TRANSFER_YN)%>%summarise(cnt=n())%>%
+stucrs.id%>%group_by(term,transfer)%>%summarise(cnt=n())%>%
   mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
-  filter(TRANSFER_YN=="Y")%>%select(term,prt)%>%
+  filter(transfer=="Y")%>%select(term,prt)%>%
   pivot_wider(names_from = term, values_from = prt)%>%View()
 ```
 
@@ -323,7 +352,7 @@ stucrs.grade%>%filter(CourseGroup%in%c("Scientific Inquiry & Problem Solving"))%
 
 # PATH of taking core courses
 
-```{r corepath df}
+```{r corepath.ls df}
 #check: stucrs%>%count(CourseGroup); stucrs%>%count(term)
 
 #only those from 2018 cohort: which semester they take certain course
@@ -337,7 +366,10 @@ corepath.ls<-stucrs%>%filter(cohort_id=="2018")%>%
     term=="2020 FALL"~5,term=="2021 SPRING"~6,term=="2021 FALL"~7,term=="2022 SPRING"~8))
 
 #corepath%>%group_by(people_code_id)%>%summarise(term=Kmisc::paste_na(math.term, wri.term, FYS.term, multid.term, phil.term, aesCre.term, globalHis.term, indSoc.term, sciInq.term,sep = ""))
+```
 
+
+```{r corepath df}
 #each course, what terms
 corepath<-corepath.ls%>%group_by(people_code_id,CourseGroup)%>%count(term)%>%select(-n)%>%
 #approach 1-manual copy paste from pivot wider output
@@ -347,35 +379,29 @@ corepath<-corepath.ls%>%group_by(people_code_id,CourseGroup)%>%count(term)%>%sel
 #shorten from: mutate(Writing = sapply(Writing, toString),...)
 
 #check for n-per-key is unique: corepath.s%>%count(people_code_id)%>%filter(n>1)
-```
 
-
-```{r corepath merge background info}
 #merge more background vars
 corepath<-left_join(corepath,dmt[c("PC_ID","GRADUATED_YN")],by=c("people_code_id"="PC_ID"))
 
 #any of the term is “1” then they are
-y<-corepath%>%mutate(matric=case_when(GRADUATED_YN=="Y"~"Graduated",
-                                         GRADUATED_YN!="Y"~"Not Graduate"))%>%
-  select(people_code_id,matric)%>%unique()%>%arrange(people_code_id)%>%
-  filter(matric =="Graduated")#keep any grad values of new col
-
+y<-corepath%>%mutate(matric=case_when(GRADUATED_YN=="Y"~"Graduated",GRADUATED_YN!="Y"~"Not Graduate"))%>%
+  select(people_code_id,matric)%>%unique()%>%arrange(people_code_id)%>%filter(matric =="Graduated")#keep any grad values of new col
 n<-corepath%>%filter(! people_code_id%in% y$people_code_id)%>% #for people_code_id with not settled
   mutate(matric="Not Graduate")%>%#all not settled with y will be not grad
   select(people_code_id,matric)%>%unique()%>%arrange(people_code_id)
-
 #merge settled in y and n
 matric.df<-full_join(y,n)
-
 #attach back (using matric) to the original dataset
 corepath<-left_join(corepath,matric.df)%>%
   select(-GRADUATED_YN)%>% unique()%>%arrange(people_code_id)#remove used GRADUATED_YN (used matric replace GRADUATED_YN)
 
 #write_xlsx(corepath,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 Core Curriculum/path_2018cohort.xlsx")
+##AFTER EXPORT TO EXCEL: I did conditional formatting for term 1-8, each cell that contains a term ("1") has a different color (1-4 is ascending blue, 5-8 is ascending green)
 ```
 
-```{r prt term for coursegroup}
-#for each coursegroup, prt of each term - OVERALL
+
+```{r report prt of term for coursegroup}
+#OVERALL - each coursegroup, prt of each term
 #approach 1- need to manually replace NA with 0 (cannot use replace in formattable % format)
 #corepath.ls%>%group_by(CourseGroup,term)%>%summarise(cnt=n())%>%
 #  mutate(prt=formattable::percent(cnt/sum(cnt),digits = 1))%>%
@@ -387,7 +413,9 @@ corepath.ls%>%group_by(CourseGroup,term)%>%summarise(cnt=n())%>%
   replace(is.na(.), 0)%>%#mutate(across(Writing:Capstone,funs(paste0(.* 100, "%"))))#failed to convert to %
   View()
 
-#by graduated vs not graduated students
+
+#graduated vs not graduated students
+#merge matrix status
 corepath.ls<-left_join(corepath.ls,corepath[c("people_code_id","matric")])
 #graduated
 corepath.ls%>%filter(matric=="Graduated")%>%
@@ -403,7 +431,10 @@ corepath.ls%>%filter(matric=="Not Graduate")%>%
   select(-cnt)%>%pivot_wider(names_from = CourseGroup, values_from = prt)%>%
   replace(is.na(.), 0)%>%#mutate(across(Writing:Capstone,funs(paste0(.* 100, "%"))))#failed to convert to %
   View()
+#AFTER COPY PASTE IN EXCEL: 1. I calculated the difference between grad vs not graduated - hilight high prt to show popular terms for each courses. 2. Used conditional formmatting for difference>0.1 or <-0.1 
+# in the path itself: I removed anything after the first course (i.e., for 1,2,3 meaning student aking the course in the 1st, 2nd, and 3rd semester, I only keep the 1st semester -- due to the definition of core course is the first course that student take in that course category)
 ```
+
 
 
 
@@ -537,6 +568,7 @@ aac.crs%>%group_by(term,coursecode,passfail,semGPA)%>%summarise(cnt=n())%>%
 #create a var called "retake y vs n" -- see their course/sem/cum GPA by term
 #for n their termrecode is "first time grade"
 #for y their termrecode is "multitime grade"
+#
 ```
 
 

@@ -34,11 +34,25 @@ source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R") #run c
 ```
 
 ```{r contact list}
+#from backup data - load data
 ug22fa<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Fall/Fall 2022 UG Backup Data Report.xlsx")
 gd22fa<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Fall/Graduate/2022 Fall Graduate Backup Data Report.xlsx")
 
-#ppid, first last name, email
-##need to be exactly "Email" as col name to be able to upload on alchemer
-##need to be exactly "First Name" and "Last Name" as col name to be able to upload on alchemer   
+#extract ppid, first last name, email
+##need to be exactly "Email","First Name", "Last Name" as col name to be able to upload on alchemer   
+
+ug22fa%>%filter(!is.na(`Matric Year`))%>%select(`People Code Id`,Name,`Lasell email`)%>%unique()%>%
+  mutate(`Last Name`=str_trim(str_split_fixed(Name,",",2)[,1]),
+         `First Name`=str_trim(str_split_fixed(Name,",",2)[,2]),
+         Email=`Lasell email`)%>%
+  select(`People Code Id`,`First Name`,`Last Name`,Email)%>%
+  write_xlsx("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Student Satisfaction Survey/2022-2023/alchemer contact list/ug22fa_matric.xlsx")
+
+gd22fa%>%filter(Matric_YN=="Y")%>%select(People_Code_Id,Name,Lasell_email)%>%unique()%>%
+  mutate(`Last Name`=str_trim(str_split_fixed(Name,",",2)[,1]),
+         `First Name`=str_trim(str_split_fixed(Name,",",2)[,2]),
+         Email=Lasell_email)%>%
+  select(People_Code_Id,`First Name`,`Last Name`,Email)%>%
+  write_xlsx("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Student Satisfaction Survey/2022-2023/alchemer contact list/gd22fa_matric.xlsx")
 ```
 

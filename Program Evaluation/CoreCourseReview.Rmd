@@ -214,7 +214,7 @@ n<-stucrs.id%>%filter(! people_code_id%in% y$people_code_id)%>%mutate(transfer =
 #merge settled in y and n; #attach back (using transfer) to the original dataset
 yn<-full_join(y,n) #check: indeed one time appearance: yn%>%count(people_code_id)%>%count(n)
 stucrs.id<-left_join(stucrs.id,yn)%>%select(-TRANSFER_YN)%>% unique()%>%arrange(people_code_id)#remove used TRANSFER_YN (used transfer replace var)
-#once again unique: stucrs.id%>%count(term,people_code_id)
+#once again unique: stucrs.id%>%count(term,people_code_id)%>%count(n)
 
 #transfer status percent
 stucrs.id%>%group_by(term,transfer)%>%summarise(cnt=n())%>%
@@ -222,6 +222,61 @@ stucrs.id%>%group_by(term,transfer)%>%summarise(cnt=n())%>%
   filter(transfer=="Y")%>%select(term,prt)%>%
   pivot_wider(names_from = term, values_from = prt)%>%View()
 ```
+
+```{r retention}
+fa18<-stucrs.id%>%filter(term=="2018 FALL")
+sp19<-stucrs.id%>%filter(term=="2019 SPRING")
+fa19<-stucrs.id%>%filter(term=="2019 FALL")
+sp20<-stucrs.id%>%filter(term=="2020 SPRING")
+fa20<-stucrs.id%>%filter(term=="2020 FALL")
+sp21<-stucrs.id%>%filter(term=="2021 SPRING")
+fa21<-stucrs.id%>%filter(term=="2021 FALL")
+sp22<-stucrs.id%>%filter(term=="2022 SPRING")
+
+#term to term retention
+ret18fa<-summary(fa18$people_code_id%in%sp19$people_code_id)%>%
+  as.array()%>%as.data.frame()%>%filter(Var1!="Mode")%>%
+  mutate(ret=as.numeric(Freq[2])/ (as.numeric(Freq[1])+as.numeric(Freq[2])))%>%
+  select(ret)%>%unique()
+
+ret19sp<-summary(sp19$people_code_id%in%fa19$people_code_id)%>%
+  as.array()%>%as.data.frame()%>%filter(Var1!="Mode")%>%
+  mutate(ret=as.numeric(Freq[2])/ (as.numeric(Freq[1])+as.numeric(Freq[2])))%>%
+  select(ret)%>%unique()
+
+ret19fa<-summary(fa19$people_code_id%in%sp20$people_code_id)%>%
+  as.array()%>%as.data.frame()%>%filter(Var1!="Mode")%>%
+  mutate(ret=as.numeric(Freq[2])/ (as.numeric(Freq[1])+as.numeric(Freq[2])))%>%
+  select(ret)%>%unique()
+
+ret20sp<-summary(sp20$people_code_id%in%fa20$people_code_id)%>%
+  as.array()%>%as.data.frame()%>%filter(Var1!="Mode")%>%
+  mutate(ret=as.numeric(Freq[2])/ (as.numeric(Freq[1])+as.numeric(Freq[2])))%>%
+  select(ret)%>%unique()
+
+ret20fa<-summary(fa20$people_code_id%in%sp21$people_code_id)%>%
+  as.array()%>%as.data.frame()%>%filter(Var1!="Mode")%>%
+  mutate(ret=as.numeric(Freq[2])/ (as.numeric(Freq[1])+as.numeric(Freq[2])))%>%
+  select(ret)%>%unique()
+
+ret21sp<-summary(sp21$people_code_id%in%fa21$people_code_id)%>%
+  as.array()%>%as.data.frame()%>%filter(Var1!="Mode")%>%
+  mutate(ret=as.numeric(Freq[2])/ (as.numeric(Freq[1])+as.numeric(Freq[2])))%>%
+  select(ret)%>%unique()
+
+ret21fa<-summary(fa21$people_code_id%in%sp22$people_code_id)%>%
+  as.array()%>%as.data.frame()%>%filter(Var1!="Mode")%>%
+  mutate(ret=as.numeric(Freq[2])/ (as.numeric(Freq[1])+as.numeric(Freq[2])))%>%
+  select(ret)%>%unique()
+
+#attach together
+tibble(term=c("2018 FALL","2019 SPRING","2019 FALL","2020 SPRING","2020 FALL","2021 SPRING","2021 FALL"),
+       retention=c(ret18fa,ret19sp,ret19fa,ret20sp,ret20fa,ret21sp,ret21fa))%>%
+  mutate(retention=formattable::percent(retention,digits = 0))%>%
+  pivot_wider(names_from = term, values_from = retention)%>%
+  View()
+```
+
 
 
 # stucrs.grade: Valid grade filtered

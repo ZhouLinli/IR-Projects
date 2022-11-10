@@ -128,7 +128,7 @@ sectiontally%>%group_by(CourseGroup,term)%>%summarise(section_n=n())%>%
 
 #number of course offered:how many times a group appear when matching with unique coursecodes
 #sectiontally%>%count(CourseGroup,coursecode)%>%count(CourseGroup)
-#the same: sectiontally%>%count(CourseGroup,term,coursecode)%>%count(term,CourseGroup)#how many times a group appear when matching with unique coursecodes
+#the Same: sectiontally%>%count(CourseGroup,term,coursecode)%>%count(term,CourseGroup)#how many times a group appear when matching with unique coursecodes
 ```
 
 
@@ -414,7 +414,7 @@ stucrs.grade%>%filter(CourseGroup%in%c("Scientific Inquiry & Problem Solving"))%
 corepath.ls<-stucrs%>%filter(cohort_id=="2018")%>%
   #relevant vars: who (background matched later using ppid) take which coursegroup & when
   select(people_code_id,term,CourseGroup)%>%
-  #colapse the same person taking the same coursegroup (at the same term) into one row
+  #colapse the Same person taking the Same coursegroup (at the Same term) into one row
   unique()%>%
   #recode termfor easier readability
   mutate(term=case_when(term=="2018 FALL"~1,term=="2019 SPRING"~2,term=="2019 FALL"~3,term=="2020 SPRING"~4,
@@ -658,19 +658,43 @@ semGPA.change.table<-retake103df%>%select(people_code_id,term_num,semGPA)%>%pivo
   separate(counts,c("semGPA_1sttime","semGPA_2ndtime","semGPA_3rdtime","semGPA_4thtime","semGPA_5thtime"),sep=",")
 
 
-retake.change<-full_join(grades.change.table,semGPA.change.table)
+retake.change<-full_join(grades.change.table,semGPA.change.table)%>%
+  mutate(grade_1to2=case_when(
+  grade_1sttime=="Pass"&grade_2ndtime=="Pass"~"Same Pass",
+  grade_1sttime=="Fail"&grade_2ndtime=="Fail"~"Same Fail",
+  grade_1sttime=="Fail"&grade_2ndtime=="Pass"~"Increase",
+  grade_1sttime=="Pass"&grade_2ndtime=="Fail"~"Decrease"),
+  
+  semGPA_1to2=case_when(
+  semGPA_1sttime=="higher than 2"&semGPA_2ndtime=="higher than 2"~"Same >2",
+  semGPA_1sttime=="lower than 2"&semGPA_2ndtime=="lower than 2"~"Same <2",
+  semGPA_1sttime=="lower than 2"&semGPA_2ndtime=="higher than 2"~"Increase",
+  semGPA_1sttime=="higher than 2"&semGPA_2ndtime=="lower than 2"~"Decrease"),
+  
+  grade_1to2=factor(grade_1to2,levels = c("Same Pass","Increase","Decrease","Same Fail")),
+  semGPA_1to2=factor(semGPA_1to2,levels = c("Same >2","Increase","Decrease","Same <2"))
+  )
 #write_xlsx(retake.change,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 AAC/aac103_retake_ordered.xlsx")
 ```
 
 
 ```{r report retake.aac103}
-#how many passed for the first time?
+#how many passed/semgpa for the first time?
+retake.change%>%group_by(semGPA_1sttime,grade_1sttime)%>%summarise(cnt=n())%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%select(-cnt)%>%
+  pivot_wider(names_from = grade_1sttime, values_from = prt)%>%
+  View()#around 14-21% students failed and a majority passed aac103; difference between different semGPA groups is only 7%
 
-#what's the semgpa for the first time?
 
-#compared grade in 2nd to 1st, increase/decrease/same?
+#compared grade in 2nd to 1st, Increase/Decrease/Same?
+retake.change%>%group_by(grade_1to2)%>%summarise(cnt=n())%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%select(-cnt)%>%
+  View()#
 
-#compared semgpa in 2nd to 1st, increase/decrease/same?
+#compared semgpa in 2nd to 1st, Increase/Decrease/Same?
+retake.change%>%group_by(semGPA_1to2)%>%summarise(cnt=n())%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%select(-cnt)%>%
+  View()#
+
+#those have more than 2 times retake, present raw data
+retake.change%>%filter(!is.na(grade_3rdtime))
 
 ```
 

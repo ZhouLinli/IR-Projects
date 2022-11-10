@@ -23,8 +23,8 @@ source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R") #run c
 3. DONE- % of pass, C or better, and Withdrawal; Average GPA (and SD) of each courses -- STU INFO BY COURSE
 4. DONE-All core course enrollment and transfer proportion -- deduplicated student count in STU INFO BY COURSE
 
-5. All core course retention -- STARFISH RETENTION REPORT
-6. Satisfaction -- 2018-2022 4 years of satisfaction prt in that one question containing "core"
+5. DONE/HIDE-All core course retention -- STARFISH RETENTION REPORT
+6. DONE-Satisfaction -- 2018-2022 4 years of satisfaction prt in that one question containing "core"
 6. DONE-course-taking sequence -- 2018 COHORT BY GRADUATION IN 2022 OR NOT -- POWERCAMPUS TRANSCRIPT
 
 #Overview of data frames in this analysis
@@ -617,20 +617,60 @@ aac.crs%>%group_by(term,coursecode,passfail,semGPA)%>%summarise(cnt=n())%>%
 ```
 
 
-```{r path analysis}
-#how Studentsretake AAC103 impacts their success in the course.
+```{r retake103 map out grades/gpa each term in time-order}
+#how Studentsretake AAC103 impacts their retakeAAC103grade & semester GPA
 
 # who are retaking courses:
 # for aac103, when ppid in more than one term (it will show as more than one row in ppid-term table), then count ppid in the table and filter apperance>1
-aac103retake<-aac.crs%>%filter(coursecode=="AAC103",!is.na(passfail))%>%
+retake103id<-aac.crs%>%filter(coursecode=="AAC103",!is.na(passfail))%>%
   count(people_code_id,term)%>%count(people_code_id)%>%filter(n>1)#90 students
 
 #save these retake students group
-aac.crs%>%filter(people_code_id%in%aac103retake$people_code_id,!is.na(passfail),coursecode=="AAC103")%>%
-  unique()%>%arrange(people_code_id)#check:%>%count(people_code_id)#write_xlsx("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 AAC/aac103_retake.xlsx")
+retake103df<-aac.crs%>%filter(people_code_id%in%retake103id$people_code_id,!is.na(passfail),coursecode=="AAC103")%>%
+  unique()%>%arrange(people_code_id)%>%
+  #distinguish term sequence
+  mutate(term=factor(term,levels = c("2018 FALL","2019 SPRING","2019 FALL","2020 SPRING","2020 FALL","2021 SPRING","2021 FALL","2022 SPRING")),
+    term_num=case_when(term=="2018 FALL"~1,term=="2019 SPRING"~2,term=="2019 FALL"~3,term=="2020 SPRING"~4,
+    term=="2020 FALL"~5,term=="2021 SPRING"~6,term=="2021 FALL"~7,term=="2022 SPRING"~8))
+  #check:%>%count(people_code_id)#write_xlsx("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 AAC/aac103_retake.xlsx")
 
-#distinguish term sequence
-#compare 1st term to last term - grade and semGPA - into 3 categories: increase vs decrease vs same
+#transform term num
+#retake103df%>%select(people_code_id,term_num,term)%>%pivot_wider(names_from = #term_num, values_from = term)%>%
+#  select(which(colSums(is.na(.))<nrow(.)))%>%#remove NA values cols
+#  unite(`1`,`2`,`3`,`4`,`5`,`6`,`7`,`8`, col = "counts", na.rm=TRUE, sep = #",")%>%#View()
+#  #separate_rows(counts, sep = ",")#split into different rows
+#  separate(counts,c("firstcount","secondcount","thirdcount","fourthcount","fifthcount"),sep=",")
+
+
+#transform pass/fail in term-order
+grades.change.table<-retake103df%>%select(people_code_id,term_num,passfail)%>%pivot_wider(names_from = term_num, values_from = passfail)%>%
+  select(which(colSums(is.na(.))<nrow(.)))%>%#remove NA values cols
+  unite(`1`,`2`,`3`,`4`,`5`,`6`,`7`,`8`, col = "counts", na.rm=TRUE, sep = ",")%>%#View()
+  #separate_rows(counts, sep = ",")#split into different rows
+  separate(counts,c("grade_1sttime","grade_2ndtime","grade_3rdtime","grade_4thtime","grade_5thtime"),sep=",")
+
+
+#transform semGPA for each term in the order of terms
+semGPA.change.table<-retake103df%>%select(people_code_id,term_num,semGPA)%>%pivot_wider(names_from = term_num, values_from = semGPA)%>%
+  select(which(colSums(is.na(.))<nrow(.)))%>%#remove NA values cols
+  unite(`1`,`2`,`3`,`4`,`5`,`6`,`7`,`8`, col = "counts", na.rm=TRUE, sep = ",")%>%#View()
+  #separate_rows(counts, sep = ",")#split into different rows
+  separate(counts,c("semGPA_1sttime","semGPA_2ndtime","semGPA_3rdtime","semGPA_4thtime","semGPA_5thtime"),sep=",")
+
+
+retake.change<-full_join(grades.change.table,semGPA.change.table)
+#write_xlsx(retake.change,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 AAC/aac103_retake_ordered.xlsx")
+```
+
+
+```{r report retake.aac103}
+#how many passed for the first time?
+
+#what's the semgpa for the first time?
+
+#compared grade in 2nd to 1st, increase/decrease/same?
+
+#compared semgpa in 2nd to 1st, increase/decrease/same?
 
 ```
 

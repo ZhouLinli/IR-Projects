@@ -619,11 +619,19 @@ aac.crs%>%group_by(term,coursecode,passfail,semGPA)%>%summarise(cnt=n())%>%
 
 ```{r path analysis}
 #how Studentsretake AAC103 impacts their success in the course.
-#compare ppid in different term, if appeared in any of the following term, then they are "re-take" the course
-#create a var called "retake y vs n" -- see their course/sem/cum GPA by term
-#for n their termrecode is "first time grade"
-#for y their termrecode is "multitime grade"
-#
+
+# who are retaking courses:
+# for aac103, when ppid in more than one term (it will show as more than one row in ppid-term table), then count ppid in the table and filter apperance>1
+aac103retake<-aac.crs%>%filter(coursecode=="AAC103",!is.na(passfail))%>%
+  count(people_code_id,term)%>%count(people_code_id)%>%filter(n>1)#90 students
+
+#save these retake students group
+aac.crs%>%filter(people_code_id%in%aac103retake$people_code_id,!is.na(passfail),coursecode=="AAC103")%>%
+  unique()%>%arrange(people_code_id)#check:%>%count(people_code_id)#write_xlsx("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 AAC/aac103_retake.xlsx")
+
+#distinguish term sequence
+#compare 1st term to last term - grade and semGPA - into 3 categories: increase vs decrease vs same
+
 ```
 
 

@@ -664,15 +664,31 @@ retake.change<-full_join(grades.change.table,semGPA.change.table)%>%
   grade_1sttime=="Fail"&grade_2ndtime=="Fail"~"Same Fail",
   grade_1sttime=="Fail"&grade_2ndtime=="Pass"~"Increase",
   grade_1sttime=="Pass"&grade_2ndtime=="Fail"~"Decrease"),
-  
+  #compare 1st to 2nd time taking aac103
   semGPA_1to2=case_when(
   semGPA_1sttime=="higher than 2"&semGPA_2ndtime=="higher than 2"~"Same >2",
   semGPA_1sttime=="lower than 2"&semGPA_2ndtime=="lower than 2"~"Same <2",
   semGPA_1sttime=="lower than 2"&semGPA_2ndtime=="higher than 2"~"Increase",
   semGPA_1sttime=="higher than 2"&semGPA_2ndtime=="lower than 2"~"Decrease"),
-  
+  #reorder
   grade_1to2=factor(grade_1to2,levels = c("Same Pass","Increase","Decrease","Same Fail")),
-  semGPA_1to2=factor(semGPA_1to2,levels = c("Same >2","Increase","Decrease","Same <2"))
+  semGPA_1to2=factor(semGPA_1to2,levels = c("Same >2","Increase","Decrease","Same <2")),
+  
+  #compare 2nd to 3rd time taking aac103
+  grade_2to3=case_when(
+  grade_2ndtime=="Pass"&grade_3rdtime=="Pass"~"Same Pass",
+  grade_2ndtime=="Fail"&grade_3rdtime=="Fail"~"Same Fail",
+  grade_2ndtime=="Fail"&grade_3rdtime=="Pass"~"Increase",
+  grade_2ndtime=="Pass"&grade_3rdtime=="Fail"~"Decrease"),
+  
+  semGPA_2to3=case_when(
+  semGPA_2ndtime=="higher than 2"&semGPA_3rdtime=="higher than 2"~"Same >2",
+  semGPA_2ndtime=="lower than 2"&semGPA_3rdtime=="lower than 2"~"Same <2",
+  semGPA_2ndtime=="lower than 2"&semGPA_3rdtime=="higher than 2"~"Increase",
+  semGPA_2ndtime=="higher than 2"&semGPA_3rdtime=="lower than 2"~"Decrease"),
+  #reorder
+  grade_2to3=factor(grade_2to3,levels = c("Same Pass","Increase","Decrease","Same Fail")),
+  semGPA_2to3=factor(semGPA_2to3,levels = c("Same >2","Increase","Decrease","Same <2"))
   )
 #write_xlsx(retake.change,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 AAC/aac103_retake_ordered.xlsx")
 ```
@@ -693,8 +709,22 @@ retake.change%>%group_by(grade_1to2)%>%summarise(cnt=n())%>%mutate(prt=formattab
 retake.change%>%group_by(semGPA_1to2)%>%summarise(cnt=n())%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%select(-cnt)%>%
   View()#
 
-#those have more than 2 times retake, present raw data
-retake.change%>%filter(!is.na(grade_3rdtime))
+#how many have a 3rd term
+retake.change%>%filter(!is.na(grade_2to3))%>%nrow()
+
+#compared grade in 3rd to 2nd, Increase/Decrease/Same?
+retake.change%>%filter(!is.na(grade_2to3))%>%
+  group_by(grade_2to3)%>%summarise(cnt=n())%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%select(-cnt)%>%
+  View()#
+
+#compared semgpa in 3rd to 2nd, Increase/Decrease/Same?
+retake.change%>%filter(!is.na(semGPA_2to3))%>%
+  group_by(semGPA_2to3)%>%summarise(cnt=n())%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%select(-cnt)%>%
+  View()#
+
+
+#those have more than 3 times retake, present raw data
+retake.change%>%filter(!is.na(grade_4thtime))
 
 ```
 

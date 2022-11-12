@@ -1,0 +1,12 @@
+---
+title: "CommonDataset"
+author: "Linli Zhou"
+date: "`r Sys.Date()`"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+

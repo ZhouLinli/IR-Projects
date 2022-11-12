@@ -24,56 +24,57 @@ library(stringr)
 #####direclty use Graduation Term Snapshot which contains all cols (PCID,level,degree,major,gradd,race,gender) I wanted####
 #read  data (from report manager-IR-Graduation Term Snapshot)
 #AY21-22
-grad21sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/21sum.csv")
-grad21f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/21f.csv")
-grad22spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/22spr.csv")
+#grad21sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/21sum.csv")
+#grad21f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/21f.csv")
+#grad22spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/22spr.csv")
 #AY20-21
-grad20sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/20sum.csv")
-grad20f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/20f.csv")
-grad21spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/21spr.csv")
+#grad20sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/20sum.csv")
+#grad20f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/20f.csv")
+#grad21spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/21spr.csv")
 #AY19-20
-grad19sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/19sum.csv")
-grad19f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/19f.csv")
-grad20spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/20spr.csv")
+#grad19sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/19sum.csv")
+#grad19f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/19f.csv")
+#grad20spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/20spr.csv")
 #AY-18-19
-grad18sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/18sum.csv")
-grad18f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/18f.csv")
-grad19spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/19spr.csv")
+#grad18sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/18sum.csv")
+#grad18f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/18f.csv")
+#grad19spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/19spr.csv")
 #AY17-18
-grad17sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/17sum.csv")
-grad17f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/17f.csv")
-grad18spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/18spr.csv")
+#grad17sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/17sum.csv")
+#grad17f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/17f.csv")
+#grad18spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/18spr.csv")
 #AY16-17
-grad16sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/16sum.csv")
-grad16f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/16f.csv")
-grad17spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/17spr.csv")
+#grad16sum<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/16sum.csv")
+#grad16f<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/16f.csv")
+#grad17spr<-read.csv("/Users/linlizhou/Documents/LASELL/data/completion/RptMgr.grdbydg/17spr.csv")
 #merge
-ipeds.complete16_crt<-
-  join_all(list(grad21sum,grad22spr,grad21f,
-                grad20sum,grad21spr,grad20f,
-                grad19sum,grad20spr,grad19f,
-                grad18sum,grad19spr,grad18f,
-                grad17sum,grad18spr,grad17f,
-                grad16sum,grad17spr,grad16f),
-           type="full",match="first")%>%
-  select(people_code_id,program,degree,major,graduation_date,Reporting_Ethnicity,gender)%>%
-  dplyr::rename(PCID=people_code_id,level=program,gradd=graduation_date,race=Reporting_Ethnicity)
+#ipeds.complete16_crt<-
+#  join_all(list(grad21sum,grad22spr,grad21f,
+#                grad20sum,grad21spr,grad20f,
+#                grad19sum,grad20spr,grad19f,
+ #               grad18sum,grad19spr,grad18f,
+  #              grad17sum,grad18spr,grad17f,
+   #             grad16sum,grad17spr,grad16f),
+    #       type="full",match="first")%>%
+  #select(people_code_id,program,degree,major,graduation_date,Reporting_Ethnicity,gender)%>%
+  #dplyr::rename(PCID=people_code_id,level=program,gradd=graduation_date,race=Reporting_Ethnicity)
 #remove
-rm(grad21sum,grad22spr,grad21f,
-   grad20sum,grad21spr,grad20f,
-   grad19f,grad19sum,grad20spr,
-   grad18f,grad18sum,grad19spr,
-   grad17sum,grad18spr,grad17f,
-   grad16sum,grad17spr,grad16f)
+#rm(grad21sum,grad22spr,grad21f,
+ #  grad20sum,grad21spr,grad20f,
+  # grad19f,grad19sum,grad20spr,
+   #grad18f,grad18sum,grad19spr,
+#   grad17sum,grad18spr,grad17f,
+ #  grad16sum,grad17spr,grad16f)
 
 #####reformat date#####
-class(ipeds.complete16_crt$gradd)#it's character
+#class(ipeds.complete16_crt$gradd)#it's character
 #convert the mdy formated character to date format
-ipeds.complete16_crt$gradd<-mdy_hms(ipeds.complete16_crt$gradd)
-class(ipeds.complete16_crt$gradd)#now it's date
+#ipeds.complete16_crt$gradd<-mdy_hms(ipeds.complete16_crt$gradd)
+#class(ipeds.complete16_crt$gradd)#now it's date
 
 #save merged data
-write_xlsx(ipeds.complete16_crt,"/Users/linlizhou/Documents/LASELL/data/completion/16-current.xlsx")
+#write_xlsx(ipeds.complete16_crt,"/Users/linlizhou/Documents/LASELL/data/completion/16-current.xlsx")
+ipeds.complete16_crt<-read_csv("/Users/linlizhou/Documents/LASELL/data/completion/16-current.xlsx")
 ```
 
 ```{r refining ipeds.compeltes}
@@ -187,7 +188,7 @@ ipeds.complete16_crt$gender<-ipeds.complete16_crt$gender%>%recode(
 )
 
 #save cleaned data
-write_xlsx(ipeds.complete16_crt,"/Users/linlizhou/Documents/LASELL/data/completion/16-current.xlsx")
+#write_xlsx(ipeds.complete16_crt,"/Users/linlizhou/Documents/LASELL/data/completion/16-current.xlsx")
 ```
 
 
@@ -396,11 +397,11 @@ major.program=="UNDERLiberal Arts"~"24.0000",
 # rgs.cp%>%filter(ppid%in% dup.id$ppid)%>%arrange(ppid)#it's all due to concentration and nothing else
 
 #save
-write_xlsx(rgs.cp,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/Completions/Final List of Graduates By Date Range-Including Certs From Registrar_clean.xlsx")
+#write_xlsx(rgs.cp,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/Completions/Final List of Graduates By Date Range-Including Certs From Registrar_clean.xlsx")
 ```
 
 ```{r IPEDS.CP CREATED}
-rgs.cp<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/Completions/Final List of Graduates By Date Range-Including Certs From Registrar_clean.xlsx")
+rgs.cp<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/Completions/archive/Final List of Graduates By Date Range-Including Certs From Registrar_clean.xlsx")
 
 #select vars needed
 ipeds.cp<-rgs.cp%>%select(ppid, Program, Major,cip,Degree,`Graduation Date`)%>%unique()#547 rows

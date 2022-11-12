@@ -429,7 +429,7 @@ age.calc <- function(dob, age.day = "2021-07-01", units = "years", floor = TRUE)
 ug.gd<-ug.gd%>%mutate(age=age.calc(`Birth Date`, age.day = "2021-07-01"))
 
 #save all
-write_xlsx(ug.gd,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ug.gd_21-22_rerun2.xlsx")
+#write_xlsx(ug.gd,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ug.gd_21-22_rerun2.xlsx")
 ```
 
 # IPEDS NOW!!
@@ -464,7 +464,7 @@ ipeds.enroll<-plyr::join_all(list(ipeds.enroll, ipeds.enroll.names), type = "lef
 ipeds.enroll%>%group_by(NewRet,transfer)%>%count()
 
 #save all
-write.xlsx(ipeds.enroll,file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ipeds_21-22_rerun2.xlsx")
+#write.xlsx(ipeds.enroll,file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/ipeds_21-22_rerun2.xlsx")
 ```
 
 ```{r UGtable1.FT.M}
@@ -713,7 +713,7 @@ crs22sum1.main<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/
 crs<-plyr::join_all(list(crs21sum2,crs21fall,crs21winter,crs22spring,crs22sum1.main),type = "full")%>%
   rename(ppid=people_code_id)#for convenience of recalling
 
-write_xlsx(crs,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/NO-Option_Course21-22.xlsx")
+#write_xlsx(crs,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/NO-Option_Course21-22.xlsx")
 
 crs<-crs%>%select(ppid,event_type)%>%#the event_type is what we only need from this dataset
   unique()# no worries that the same event_type will merge, as long as it has different event types, it will be separate records, that separate event types (not the count of event type) is what we care about
@@ -760,7 +760,7 @@ type.missing<-crs.ipeds.enroll%>%filter(is.na(merged.type))%>%arrange(ppid)#36 e
 ```{r dealing with missing students}
 ###############name of the courses that miss types
 #can find in the student info by course and fiscal year file
-stuInfoCourse<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/distanceEd/Student Info by Course and Fiscal Year.csv")
+stuInfoCourse<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/merged course data/Student Info by Course and Fiscal Year.csv")
 
 missing.crsname<-stuInfoCourse%>% 
   #only concerned about those missing ppid
@@ -781,7 +781,7 @@ sectally22sum1main<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surv
 #merge one year data
 sectally<-plyr::join_all(list(sectally21sum2,sectally21fall,sectally22spring,sectally22winter,sectally22sum1main),type="full")
 
-write_xlsx(sectally,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/course data/sectionInfo.xlsx")
+#write_xlsx(sectally,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/course data/sectionInfo.xlsx")
 
 sectally<-sectally%>%
   select(event_id,section,Course_type)%>%#vars needed
@@ -837,7 +837,7 @@ crs.ipeds.enroll$type.c[is.na(crs.ipeds.enroll$type.c)] <-c("ONLN","ONLN","ONLN"
 #factorize for order
 crs.ipeds.enroll<-crs.ipeds.enroll%>%mutate(type.c=factor(type.c,levels = c("ONLN","HYB","CAMP")))
 #save
-write.xlsx(crs.ipeds.enroll,file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/crs.ipeds.enroll.matched_21-22_rerun.xlsx")
+#write.xlsx(crs.ipeds.enroll,file="/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/12-month enrollment/crs.ipeds.enroll.matched_21-22_rerun.xlsx")
 ```
 
 ```{r distance ed report}

@@ -511,12 +511,21 @@ aac.crs<-aac.crs%>%mutate(coursecode=factor(coursecode,levels = c("AAC102","AAC1
 term=paste(academic_year,academic_term,sep=" "),
 term=factor(term,levels = c("2018 FALL","2019 SPRING","2019 FALL","2020 SPRING","2020 FALL","2021 SPRING","2021 FALL","2022 SPRING")))
 
-#save: write_xlsx(stucrs.grade,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 AAC/StudentInfoCourse_18FA-22SP_aac10234.xlsx")
+#save: writexl::write_xlsx(aac.crs,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 AAC/StudentInfoCourse_18FA-22SP_aac.xlsx")
+#openxlsx::write.xlsx(aac.crs, file = "/Users/linlizhou/Downloads/AACcoursereview11.10.xlsx", sheetName="rawcrs", append=TRUE)
+#library(openxlsx)
+wb<-loadWorkbook("/Users/linlizhou/Downloads/AACcoursereview11.10.xlsx")
+addWorksheet(wb,"rawcrs")
+writeData(wb,"rawcrs", x = aac.crs)
+#worksheetOrder(OUT) <- c(2,1)
+saveWorkbook(wb,"/Users/linlizhou/Downloads/AACcoursereview11.18.xlsx",overwrite = TRUE)
 ```
 
 
 ```{r unduplicated enrollment}
-aac.crs%>%group_by(term,coursecode)%>%summarise(n=n_distinct(people_code_id))%>%
+#exclude students who dropped the class
+aac.crs%>%filter(Add_Drop!="D")%>%
+group_by(term,coursecode)%>%summarise(n=n_distinct(people_code_id))%>%
 #%>%select(n)%>%colSums(n)#10549 ppid adding separate terms together
   pivot_wider(names_from = term,values_from = n)%>%View()
 ```

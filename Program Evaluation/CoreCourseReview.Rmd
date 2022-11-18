@@ -533,11 +533,12 @@ group_by(term,coursecode)%>%summarise(n=n_distinct(people_code_id))%>%
 
 ```{r pass vs fail}
 #add category var (pass vs fail of aac course)
-aac.crs<-aac.crs%>%mutate(passfail=case_when(Final_Grade%in%c("A","P")~"Pass",
-                                    Final_Grade=="F"~"Fail"))#check:%>%count(passfail)
+aac.crs<-aac.crs%>%mutate(passfail=case_when(Final_Grade=="P"~"Pass",
+                                    Final_Grade%in%c("F")~"Fail"))#check:%>%count(passfail)
 
 # report prt students pass
-aac.crs%>%group_by(term,coursecode,passfail)%>%summarise(cnt=n())%>%
+aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
+  group_by(term,coursecode,passfail)%>%summarise(cnt=n())%>%
   mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
   filter(passfail%in%c("Pass"))%>%
   select(-cnt)%>%pivot_wider(names_from = passfail, values_from = prt)%>%
@@ -547,14 +548,16 @@ aac.crs%>%group_by(term,coursecode,passfail)%>%summarise(cnt=n())%>%
 
 ```{r pass vs fail by mean semester GPA}
 #PASSED students' mean semester GPA
-aac.crs%>%group_by(term,coursecode,passfail)%>%
+aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
+  group_by(term,coursecode,passfail)%>%
   summarise(mn=round(mean(Semester_GPA,na.rm=TRUE),digits=1))%>%
   filter(passfail%in%c("Pass"))%>%
   pivot_wider(names_from = passfail, values_from = mn)%>%
   pivot_wider(names_from = term,values_from = Pass)%>%
   View()
 #FAILED students' mean semester GPA
-aac.crs%>%group_by(term,coursecode,passfail)%>%
+aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
+  group_by(term,coursecode,passfail)%>%
   summarise(mn=round(mean(Semester_GPA,na.rm=TRUE),digits=1))%>%
   filter(passfail%in%c("Fail"))%>%
   pivot_wider(names_from = passfail, values_from = mn)%>%
@@ -564,14 +567,16 @@ aac.crs%>%group_by(term,coursecode,passfail)%>%
 
 ```{r pass vs fail by mean cumulative GPA}
 #PASSED students' mean cumulative GPA
-aac.crs%>%group_by(term,coursecode,passfail)%>%
+aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
+  group_by(term,coursecode,passfail)%>%
   summarise(mn=round(mean(Cumulative_GPA,na.rm=TRUE),digits=1))%>%
   filter(passfail%in%c("Pass"))%>%
   pivot_wider(names_from = passfail, values_from = mn)%>%
   pivot_wider(names_from = term,values_from = Pass)%>%
   View()
 #FAILED students' mean cumulative GPA
-aac.crs%>%group_by(term,coursecode,passfail)%>%
+aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
+  group_by(term,coursecode,passfail)%>%
   summarise(mn=round(mean(Cumulative_GPA,na.rm=TRUE),digits=1))%>%
   filter(passfail%in%c("Fail"))%>%
   pivot_wider(names_from = passfail, values_from = mn)%>%
@@ -589,7 +594,8 @@ aac.crs<-aac.crs%>%mutate(semGPA=case_when(Semester_GPA>=2~"higher than 2",
 #How many students PASS AAC103 and finish the semester with a 2.0 or higher vs lower semester GPA
 #count for those who PASSED,  
 #semGPA that higher than 2.0
-aac.crs%>%group_by(term,coursecode,passfail,semGPA)%>%summarise(cnt=n())%>%
+aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
+  group_by(term,coursecode,passfail,semGPA)%>%summarise(cnt=n())%>%
   mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
   filter(passfail%in%c("Pass"))%>%
   select(-cnt)%>%pivot_wider(names_from = passfail, values_from = prt)%>%
@@ -597,7 +603,8 @@ aac.crs%>%group_by(term,coursecode,passfail,semGPA)%>%summarise(cnt=n())%>%
   filter(semGPA=="higher than 2")%>%select(-semGPA)%>%
   View()
 #semGPA that lower than 2.0
-aac.crs%>%group_by(term,coursecode,passfail,semGPA)%>%summarise(cnt=n())%>%
+aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
+  group_by(term,coursecode,passfail,semGPA)%>%summarise(cnt=n())%>%
   mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
   filter(passfail%in%c("Pass"))%>%
   select(-cnt)%>%pivot_wider(names_from = passfail, values_from = prt)%>%
@@ -608,7 +615,8 @@ aac.crs%>%group_by(term,coursecode,passfail,semGPA)%>%summarise(cnt=n())%>%
 #How many students FAIL AAC103 and finish the semester with a 2.0 or higher vs lower than a 2.0 semester GPA
 #count for those who FAILED,  
 #semGPA that higher than 2.0
-aac.crs%>%group_by(term,coursecode,passfail,semGPA)%>%summarise(cnt=n())%>%
+aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
+  group_by(term,coursecode,passfail,semGPA)%>%summarise(cnt=n())%>%
   mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
   filter(passfail%in%c("Fail"))%>%
   select(-cnt)%>%pivot_wider(names_from = passfail, values_from = prt)%>%
@@ -616,7 +624,8 @@ aac.crs%>%group_by(term,coursecode,passfail,semGPA)%>%summarise(cnt=n())%>%
   filter(semGPA=="higher than 2")%>%select(-semGPA)%>%
   View()
 #semGPA that lower than 2.0
-aac.crs%>%group_by(term,coursecode,passfail,semGPA)%>%summarise(cnt=n())%>%
+aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
+  group_by(term,coursecode,passfail,semGPA)%>%summarise(cnt=n())%>%
   mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
   filter(passfail%in%c("Fail"))%>%
   select(-cnt)%>%pivot_wider(names_from = passfail, values_from = prt)%>%
@@ -625,6 +634,7 @@ aac.crs%>%group_by(term,coursecode,passfail,semGPA)%>%summarise(cnt=n())%>%
   View()
 ```
 
+# retaking AAC103
 
 ```{r retake103 map out grades/gpa each term in time-order}
 #how Studentsretake AAC103 impacts their retakeAAC103grade & semester GPA

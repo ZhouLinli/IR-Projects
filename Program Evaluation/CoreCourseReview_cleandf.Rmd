@@ -70,7 +70,7 @@ source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
 9.  aac.crs: filter aac courses from stucrs_1822allcrs; term,coursecode,
     Semester_GPA, Cumulative_GPA
 
-10. aac103retake: based on aac.crs, filter out those who retake aac103
+10. retake103df: based on aac.crs, filter out those who retake aac103
     (appear more than once when groupby ppid and course and then count
     ppid in that list)
 
@@ -81,7 +81,7 @@ source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
     #save: 
     write_xlsx(aac.crs,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 AAC/data files/StudentInfoCourse_1822aac.xlsx")
 
-    write_xlsx(aac103retake,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 AAC/data files/aac103retake_stuinfo.xlsx")
+    write_xlsx(retake103df,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 AAC/data files/aac103retake_stuinfo.xlsx")
 
     write_xlsx(retake.change,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 AAC/data files/aac103retake_termchanges.xlsx")
     ```

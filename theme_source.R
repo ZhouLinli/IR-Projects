@@ -1,14 +1,22 @@
 #common used library
+#reading data
 library(readxl)
+#cleaning/wrangling data: include readr,tibble, stringr, forcats, dplyr, tidyr, purrr, ggplot2
 library(tidyverse)
-library(formattable)
-library(stringr)
-library(ggrepel)
+#save df
 library(writexl)
+library(openxlsx)
+#viz
+library(formattable)
+library(ggrepel)
 library(waffle)
 library(patchwork)
 library(wordcloud)
 library(broom)
+#for regression table
+library(apaTables)
+library(sjPlot)
+
 
 mycolors<-c("#13294b","#5c88da","#69b3e7","#da291c","#641F45","#fcb53b","#6C6F70")#1-3blue,4-5red,6yellow,7grey
 

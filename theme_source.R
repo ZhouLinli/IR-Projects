@@ -1,3 +1,7 @@
+knitr::opts_chunk$set(echo = FALSE, include = FALSE, warning=FALSE, message=FALSE) #show only results for specified chunks
+
+
+
 #common used library
 #reading data
 library(readxl)

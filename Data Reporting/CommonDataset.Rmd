@@ -7,6 +7,15 @@ output: word_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+#any enrollment is fall 2022; 
+#any completion is academic year 2021-2022
+#"c&d-admission; h-financialaid; g-business office (we can fill out this year2022); i-1)class size: registar2)faculty-eric turner/aca affairs 3)once get faculty we calculate ratio; 
+#the rest we can do (a,b,e,f,j) e/f-might be a question for someone else
+#b(UG part)/j can complete now"
 ```
 
+```{r enrollment}
+#cmd+opt+i
+
+```
 

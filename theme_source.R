@@ -1,4 +1,4 @@
-knitr::opts_chunk$set(echo = FALSE, include = TRUE, warning=FALSE, message=FALSE) #show results for chunks
+knitr::opts_chunk$set(echo = FALSE, include = FALSE, warning=FALSE, message=FALSE) #show results only for specified chunks
 
 
 
@@ -18,9 +18,14 @@ library(waffle)
 library(patchwork)
 library(wordcloud)
 library(broom)
+#viz table
+library(gt)
+library(kableExtra)#for good-looking static tables
+library(DT)#for filtering/interactive tables
 #for regression table
 library(apaTables)
 library(sjPlot)
+
 
 
 #mycolors<-c("#13294b","#5c88da","#69b3e7","#da291c","#641F45","#fcb53b","#6C6F70")#1-3blue,4-5red,6yellow,7grey

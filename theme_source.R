@@ -1,4 +1,4 @@
-knitr::opts_chunk$set(echo = FALSE, include = FALSE, warning=FALSE, message=FALSE) #show only results for specified chunks
+knitr::opts_chunk$set(echo = FALSE, include = TRUE, warning=FALSE, message=FALSE) #show results for chunks
 
 
 

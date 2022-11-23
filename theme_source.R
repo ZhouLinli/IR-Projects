@@ -7,6 +7,7 @@ knitr::opts_chunk$set(echo = FALSE, include = FALSE, warning=FALSE, message=FALS
 library(readxl)
 #cleaning/wrangling data: include readr,tibble, stringr, forcats, dplyr, tidyr, purrr, ggplot2
 library(tidyverse)
+library(janitor)
 #save df
 library(writexl)
 library(openxlsx)
@@ -22,7 +23,29 @@ library(apaTables)
 library(sjPlot)
 
 
-mycolors<-c("#13294b","#5c88da","#69b3e7","#da291c","#641F45","#fcb53b","#6C6F70")#1-3blue,4-5red,6yellow,7grey
+#mycolors<-c("#13294b","#5c88da","#69b3e7","#da291c","#641F45","#fcb53b","#6C6F70")#1-3blue,4-5red,6yellow,7grey
+
+color_bluedark<-"#13294b"
+color_bluedeepsea<-"#5c88da"
+color_bluelightsky<-"#69b3e7"
+
+color_redmaroon<-"#641F45"
+color_redvivid<-"#da291c"
+color_redpink<-"#ff726f"
+#color_redwhite<-"#ffc6c4"
+
+#color_yellowdarker<-"#f59c04"
+color_yellowdark<-"#fcb53b"
+color_yellowvivid<-"#ffff00"
+color_yellowlight<-"#FFCB4F"
+#color_yellowwhite<-"#ffe6bf"
+
+
+color_greydark<-"#6C6F70"
+color_grey<-"#aaaaaa"
+color_greylight<-"#cccccc"
+
+
 
 #define themes functions
 #

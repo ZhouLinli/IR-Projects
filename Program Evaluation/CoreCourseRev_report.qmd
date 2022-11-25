@@ -1,12 +1,12 @@
 ---
-title: "CoreCourseReview_report"
+title: "Core Course Review (2018 Fall-2022 Spring)"
 format: html
 editor: visual
 editor_options: 
-  chunk_output_type: inline
+  chunk_output_type: console
 ---
 
-```{r setup, include=FALSE}
+```{r loaddf, include=FALSE}
 #load all necessary packages and themes, global optin chunk
 source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
 
@@ -43,26 +43,7 @@ retake.change<-read_xlsx("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and
 #DONE-course-taking sequence – 2018 COHORT BY GRADUATION IN 2022 OR NOT – POWERCAMPUS TRANSCRIPT
 ```
 
-# Core Course Review (2018 Fall-2022 Spring)
-
-## Number of section offered
-
-```{r tab.numsec}
-#vars needed: coursecode, CourseGroup
-#For each term (fall/spring): # courses/ sections offered in each core segment -- SECTION TALLY
-
-#number of total section offered
-#sectiontally%>%group_by(CourseGroup)%>%summarise(section_n=n())
-
-#number of term section offered
-tab.numsec<-sectiontally%>%group_by(CourseGroup,term)%>%
-  summarise(section_n=n())%>%
-  mutate(Total=sum(section_n))%>%
-  pivot_wider(names_from = term, values_from = section_n)%>%
-  select(CourseGroup,Total,`2018 Fall`,`2019 Spring`,`2019 Fall`,`2020 Spring`,`2020 Fall`,`2021 Spring`,`2021 Fall`,`2022 Spring`)
-```
-
-```{r def.col_cf}
+```{r funs}
 #define conditional formatting
 cf<-function(x,a=20,b=10,
              col1=color_bluedeepsea,col2=color_bluelightsky,col3=color_grey){
@@ -71,49 +52,67 @@ cf<-function(x,a=20,b=10,
                     col3))}#if value<=10, then use color3
 
 #define column conditional format: n-th column, white text, background condfmt
-col_cf<-function(i=1,kbl=static_tab.numsec,df=tab.numsec){column_spec(
-  kable_input=kbl,column=i,color = "white",background =cf(df[i]))}
+#col_cf<-function(i=1,kbl=static_tab.sec,df=tab.sec){column_spec(
+ # kable_input=kbl,column=i,color = "white",background =cf(df[i]))}
 ```
 
-```{r static_tab.numsec}
+# Sections offered
+
+```{r tab.sec}
+#vars needed: coursecode, CourseGroup
+#For each term (fall/spring): # courses/ sections offered in each core segment -- SECTION TALLY
+
+#number of total section offered
+#sectiontally%>%group_by(CourseGroup)%>%summarise(section_n=n())
+
+#number of term section offered
+tab.sec<-sectiontally%>%group_by(CourseGroup,term)%>%
+  summarise(section_n=n())%>%
+  mutate(Total=sum(section_n))%>%
+  pivot_wider(names_from = term, values_from = section_n)%>%
+  select(CourseGroup,Total,`2018 Fall`,`2019 Spring`,`2019 Fall`,`2020 Spring`,`2020 Fall`,`2021 Spring`,`2021 Fall`,`2022 Spring`)
+```
+
+```{r static_tab.sec}
 #show the table
-static_tab.numsec<-tab.numsec%>%adorn_totals()%>%#add total row this won't saved in df
-kbl(label="tab.numsec",#in-text reference
+static_tab.sec<-tab.sec%>%adorn_totals()%>%#add total row this won't saved in df
+kbl(label="tab.sec",#in-text reference
     caption = "Core course section offered each term", #table title
-    col.names =c("",names(tab.numsec)[2:ncol(tab.numsec)])) %>%#header names
+    col.names =c("",names(tab.sec)[2:ncol(tab.sec)])) %>%#header names
 #set overall style
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 #the same as: kable_material(c("striped", "hover")) 
                 #less than 3 row then use: kable_minimal()
 #fill the page width-wise,#header stay when scroll
-              full_width = F, position = "float_left",fixed_thead = T, font_size = 12)
-#failed attempt set total row's condfmt based on row value: mutate(across(1:ncol(tab.numsec2),~cell_spec(.x,color=ifelse(CourseGroup=="Total"&.x>100,"blue","white"))))
+              full_width = F, position = "float_left",fixed_thead = T, font_size = 12)%>%
+#failed attempt set total row's condfmt based on row value: mutate(across(1:ncol(tab.sec2),~cell_spec(.x,color=ifelse(CourseGroup=="Total"&.x>100,"blue","white"))))
 
-#apply col_cf to all columns
-for (i in 3:nrow(tab.numsec)-1){
-  static_tab.numsec<-col_cf(i)
-  i=i+1
-  static_tab.numsec}
-
-static_tab.numsec<- static_tab.numsec%>%
 #set total col
-column_spec(2, background =cf(x=tab.numsec[2],a=169,b=148,col1 =color_yellowdark,col2=color_greylight,col3=color_grey))%>%
+column_spec(2, color="black",background =cf(x=tab.sec[2],a=169,b=148,col1 =color_yellowdark,col2=color_yellowlight,col3="white"))%>%
 #set total row
-row_spec(nrow(tab.numsec)+1,color="black",background = "white")%>%
+row_spec(nrow(tab.sec)+1,color="black",background = "white")%>%
 #set header row
 row_spec(0,align = "c",color="black")%>%
 #set first column: 
   column_spec(1, bold = T, border_right = F, background = "white", width = "15em",color="black")
-#optional tolltip: popover = paste("am:", tab.numsec$`2018 Fall`)
-#%>%footnote("")#ncol(tab.numsec)
+#optional tolltip: popover = paste("am:", tab.sec$`2018 Fall`)
+#%>%footnote("")#ncol(tab.sec)
 #inctead of kbl; can use gt::gt()%>%tab_header(title = "How many core course sections are offered each term?")
+
+#apply cf to multi columns
+for (i in 3:ncol(tab.sec)){
+static_tab.sec<-column_spec(
+  kable_input=static_tab.sec,
+  column=i,color = "white",background =cf(tab.sec[i]))
+i=i+1
+static_tab.sec}
 ```
 
-```{r interactive_tab.numsec}
+```{r interactive_tab.sec}
 #interactive table
-interactive_tab.numsec<-datatable(
+interactive_tab.sec<-datatable(
   #which table to show
-  data = tab.numsec,
+  data = tab.sec,
   #table show in compact format
   class = "compact",#display
   #set table's font family
@@ -123,14 +122,14 @@ interactive_tab.numsec<-datatable(
   #set table caption
   caption = "Core course section offered each term",
   #column/header names
-  colnames =c("",names(tab.numsec)[2:ncol(tab.numsec)]),
+  colnames =c("",names(tab.sec)[2:ncol(tab.sec)]),
   #place filter at the top
-  filter = "top")#%>%DT::formatStyle(columns = colnames(tab.numsec), fontSize = '50%')
+  filter = "top")#%>%DT::formatStyle(columns = colnames(tab.sec), fontSize = '50%')
 ```
 
-```{r plot.numsec}
+```{r plot.sec}
 #found that this is not necessary; just add a total row in the table with conditional formatting would work
-plot.numsec<-sectiontally%>%group_by(term,CourseGroup)%>%summarise(section_n=n())%>%
+plot.sec<-sectiontally%>%group_by(term,CourseGroup)%>%summarise(section_n=n())%>%
   mutate(term_cnt=sum(section_n))%>%#mutate(prt=term_cnt/sum(term_cnt))%>%
   select(term,term_cnt)%>%unique()%>%
   mutate(term_cnt_group=if_else(term_cnt>169,"high",
@@ -147,36 +146,105 @@ plot.numsec<-sectiontally%>%group_by(term,CourseGroup)%>%summarise(section_n=n()
 ```
 
 ```{r}
-tab.numsec%>%pivot_longer(cols = `2018 Fall`:`2022 Spring`,names_to = "term",values_to = "#section")%>%
+tab.sec%>%pivot_longer(cols = `2018 Fall`:`2022 Spring`,names_to = "term",values_to = "#section")%>%
 ggplot(aes(x=term,y=`#section`,fill=CourseGroup))
 ```
 
-```{r showviz, include=TRUE}
-static_tab.numsec
-interactive_tab.numsec
-plot.numsec
+```{r showviz.sec, include=TRUE}
+static_tab.sec
+interactive_tab.sec
+plot.sec
 ```
 
-## Number of registration/enrollment (using sectiontally)
+# Enrollments
 
-```{r sectiont tally - number of registration}
+```{r tab.reg}
 #vars needed: Current_Enrollment
 # For each term (fall/spring): # registration in each core segment -- SECTION TALLY 
-sectiontally%>%group_by(CourseGroup,term)%>%summarise(enrollment=sum(Current_Enrollment))%>%
-  pivot_wider(names_from = term, values_from = enrollment)%>%
+tab.reg<-sectiontally%>%group_by(CourseGroup,term)%>%summarise(enrollment=sum(Current_Enrollment))%>%mutate(Total=sum(enrollment))%>%
+  mutate(prt=formattable::percent(enrollment/Total,digit=0))%>%select(-enrollment)%>%
+  pivot_wider(names_from = term, values_from = prt)%>%
   #reorder cols
-  select(CourseGroup,`2018 Fall`,`2019 Spring`,`2019 Fall`,`2020 Spring`,`2020 Fall`,`2021 Spring`,`2021 Fall`,`2022 Spring`)#%>%View()
+  select(CourseGroup,Total,`2018 Fall`,`2019 Spring`,`2019 Fall`,`2020 Spring`,`2020 Fall`,`2021 Spring`,`2021 Fall`,`2022 Spring`)#%>%View()
 ```
 
-# Reporting Student Grades
+```{r static_tab.reg}
+#show the table
+static_tab.reg<-tab.reg%>%#adorn_totals()%>%add total row this won't saved in df
+kbl(label="tab.reg",#in-text reference
+    caption = "Core course enrollment each term", #table title
+    col.names =c("",names(tab.reg)[2:ncol(tab.reg)])) %>%#header names
+#set overall style
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                #the same as: kable_material(c("striped", "hover")) 
+                #less than 3 row then use: kable_minimal()
+#fill the page width-wise,#header stay when scroll
+              full_width = F, position = "float_left",fixed_thead = T, font_size = 12)%>%
+#set total col
+column_spec(2, color="black",background =cf(x=tab.reg[2],a=3000,b=2500,col1 =color_yellowdark,col2=color_yellowlight,col3="white"))%>%
+#set total row: row_spec(nrow(tab.reg)+1,color="black",background = "white")%>%
+#set header row
+row_spec(0,align = "c",color="black")%>%
+#set first column: 
+  column_spec(1, bold = T, border_right = F, background = "white", width = "15em",color="black")
 
-```{r deduplicated student count by term}
-stucrs%>%group_by(term)%>%summarise(n=n_distinct(people_code_id))%>%
+#apply cf to multi columns
+for (i in 3:ncol(tab.reg)){
+static_tab.reg<-column_spec(
+  kable_input=static_tab.reg,
+  column=i,color = "white",background =cf(tab.reg[i],a=0.2,b=0.1))
+i=i+1
+static_tab.reg}
+```
+
+```{r showviz.reg, include=TRUE}
+static_tab.reg
+```
+
+## Un-duplicated Headcount
+
+```{r tab.stu-deduplicated student count by term}
+tab.stu<-stucrs%>%group_by(term)%>%summarise(n=n_distinct(people_code_id))%>%
 #%>%select(n)%>%colSums(n)#10549 ppid adding separate terms together
-  pivot_wider(names_from = term,values_from = n)#%>%View()
+  pivot_wider(names_from = term,values_from = n)%>%
+  mutate(Term="Unduplicated Headcount")
+
+names(tab.stu)<-names(tab.stu)%>%str_replace("FALL","Fall")%>%str_replace("SPRING","Spring")
+
+tab.stu<-tab.stu%>%
+  select(Term,`2018 Fall`,`2019 Spring`,`2019 Fall`,`2020 Spring`,`2020 Fall`,`2021 Spring`,`2021 Fall`,`2022 Spring`)#%>%View()
 ```
 
-## Transfer status of de-duplicated students (using stucrs.id)
+```{r}
+static_tab.stu<-tab.stu%>%
+kbl(label="tab.stu",#in-text reference
+    caption = "Student headcount each term", #table title
+    col.names =c("",names(tab.stu)[2:ncol(tab.stu)])) %>%#header names
+#set overall style
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+#fill the page width-wise,#header stay when scroll
+              full_width = F, position = "float_left",fixed_thead = T, font_size = 12)%>%
+#set total col: column_spec(2, color="black",background =cf(x=tab.reg[2],a=3000,b=2500,col1 =color_yellowdark,col2=color_yellowlight,col3="white"))%>%
+#set total row: row_spec(nrow(tab.reg)+1,color="black",background = "white")%>%
+#set header row
+row_spec(0,align = "c",color="black")%>%
+#set first column: 
+  column_spec(1, bold = T, border_right = F, background = "white", width = "15em",color="black")
+
+#apply cf to multi columns
+for (i in 2:ncol(tab.stu)){
+static_tab.stu<-column_spec(
+  kable_input=static_tab.stu,
+  column=i,color = "white",background =cf(tab.stu[i],a=1300,b=1200))
+i=i+1
+static_tab.stu}
+```
+
+```{r showviz.stu, include=TRUE}
+static_tab.stu
+```
+
+## Transfer status
 
 ```{r transfer status of students}
 #transfer status percent
@@ -240,6 +308,8 @@ tibble(term=c("2018 FALL","2019 SPRING","2019 FALL","2020 SPRING","2020 FALL","2
   mutate(retention=formattable::percent(retention,digits = 0))%>%
   pivot_wider(names_from = term, values_from = retention)#%>%View()
 ```
+
+# Reporting Student Grades
 
 ## C/Pass/Withdraw (using stucrs)
 

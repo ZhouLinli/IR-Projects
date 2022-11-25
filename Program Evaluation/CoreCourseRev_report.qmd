@@ -62,60 +62,51 @@ tab.numsec<-sectiontally%>%group_by(CourseGroup,term)%>%
   select(CourseGroup,Total,`2018 Fall`,`2019 Spring`,`2019 Fall`,`2020 Spring`,`2020 Fall`,`2021 Spring`,`2021 Fall`,`2022 Spring`)
 ```
 
-```{r static_tab.numsec}
+```{r def.col_cf}
 #define conditional formatting
-condfmt1<-function(x,a=20,b=10,
-                   col1=color_bluedeepsea,
-                   col2=color_bluelightsky,
-                   col3=color_grey){
+cf<-function(x,a=20,b=10,
+             col1=color_bluedeepsea,col2=color_bluelightsky,col3=color_grey){
     if_else(x>a,col1,#if value>20, then use color1
             if_else(x>b,col2,#if 20>value>10, then use color2
                     col3))}#if value<=10, then use color3
 
-#prep total row
-tab.numsec2<-tab.numsec%>%
-  adorn_totals()#add total row but not saved in df, so need to assign to tab.numsec2
+#define column conditional format: n-th column, white text, background condfmt
+col_cf<-function(i=1,kbl=static_tab.numsec,df=tab.numsec){column_spec(
+  kable_input=kbl,column=i,color = "white",background =cf(df[i]))}
+```
 
+```{r static_tab.numsec}
 #show the table
-static_tab.numsec<-tab.numsec2%>%kbl(label="tab.numsec",#in-text reference
-      caption = "Core course section offered each term", #table title
-      col.names =c("",names(tab.numsec)[2:ncol(tab.numsec)])) %>%#header names
+static_tab.numsec<-tab.numsec%>%adorn_totals()%>%#add total row this won't saved in df
+kbl(label="tab.numsec",#in-text reference
+    caption = "Core course section offered each term", #table title
+    col.names =c("",names(tab.numsec)[2:ncol(tab.numsec)])) %>%#header names
 #set overall style
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
                 #the same as: kable_material(c("striped", "hover")) 
                 #less than 3 row then use: kable_minimal()
-              full_width = F, #fill the page width-wise
-              position = "float_left",#table float left
-              fixed_thead = T,#header stay when scroll
-              font_size = 12)%>%#table fonts
-#failed attempt set total row's condfmt based on row value: mutate(across(1:ncol(tab.numsec2),~cell_spec(.x,color=ifelse(CourseGroup=="Total"&.x>100,"blue","white"))))%>%
-#set total row
-row_spec(nrow(tab.numsec2),color="black",background = color_yellowlight)%>%
-#it seems cannot conditional formatting by row values
-##background = ifelse(tab.numsec2$CourseGroup=="Total">150,"yellow","white"))
-##background =condfmt1(x=tab.numsec2$CourseGroup=="Total",a=169,b=148,col1 =color_yellowdark,col2=color_greylight,col3=color_grey ))
+#fill the page width-wise,#header stay when scroll
+              full_width = F, position = "float_left",fixed_thead = T, font_size = 12)
+#failed attempt set total row's condfmt based on row value: mutate(across(1:ncol(tab.numsec2),~cell_spec(.x,color=ifelse(CourseGroup=="Total"&.x>100,"blue","white"))))
 
+#apply col_cf to all columns
+for (i in 3:nrow(tab.numsec)-1){
+  static_tab.numsec<-col_cf(i)
+  i=i+1
+  static_tab.numsec}
+
+static_tab.numsec<- static_tab.numsec%>%
+#set total col
+column_spec(2, background =cf(x=tab.numsec[2],a=169,b=148,col1 =color_yellowdark,col2=color_greylight,col3=color_grey))%>%
+#set total row
+row_spec(nrow(tab.numsec)+1,color="black",background = "white")%>%
 #set header row
-row_spec(0,align = "c")%>%
-#set first column
-column_spec(1, bold = T, border_right = F, background = "white", width = "15em") %>%
-  
-#column-wise conditional formatting: for n-th column, texts are white, background condfmt
-column_spec(2,color = "white",background =condfmt1(tab.numsec[2]))%>%
-column_spec(3,color = "white", background =condfmt1(x=tab.numsec[3]))%>%
-column_spec(4,color = "white", background =condfmt1(x=tab.numsec[4]))%>%
-column_spec(5,color = "white", background =condfmt1(x=tab.numsec[5]))%>%
-column_spec(6,color = "white", background =condfmt1(x=tab.numsec[6]))%>%
-column_spec(7,color = "white", background =condfmt1(x=tab.numsec[7]))%>%
-column_spec(8,color = "white", background =condfmt1(x=tab.numsec[8]))%>%
-column_spec(9,color = "white", background =condfmt1(x=tab.numsec[9]))
-  #optional tolltip: popover = paste("am:", tab.numsec$`2018 Fall`)
+row_spec(0,align = "c",color="black")%>%
+#set first column: 
+  column_spec(1, bold = T, border_right = F, background = "white", width = "15em",color="black")
+#optional tolltip: popover = paste("am:", tab.numsec$`2018 Fall`)
 #%>%footnote("")#ncol(tab.numsec)
 #inctead of kbl; can use gt::gt()%>%tab_header(title = "How many core course sections are offered each term?")
-```
-
-```{r static2_tab.numsec}
-  
 ```
 
 ```{r interactive_tab.numsec}
@@ -153,6 +144,11 @@ plot.numsec<-sectiontally%>%group_by(term,CourseGroup)%>%summarise(section_n=n()
   geom_text(aes(label=term_cnt),size=3,vjust=0.5, hjust=0.7, fontface="bold")+
   labs(title="Total number of core course sections each term",x="",y="")+
   theme_lz()+theme(axis.text.x = element_text(),legend.position = "none")
+```
+
+```{r}
+tab.numsec%>%pivot_longer(cols = `2018 Fall`:`2022 Spring`,names_to = "term",values_to = "#section")%>%
+ggplot(aes(x=term,y=`#section`,fill=CourseGroup))
 ```
 
 ```{r showviz, include=TRUE}

@@ -31,12 +31,15 @@ library(sjPlot)
 #mycolors<-c("#13294b","#5c88da","#69b3e7","#da291c","#641F45","#fcb53b","#6C6F70")#1-3blue,4-5red,6yellow,7grey
 
 color_bluedark<-"#13294b"
-color_bluedeepsea<-"#5c88da"
-color_bluelightsky<-"#69b3e7"
+color_blue_lasell<-"#5c88da"
+color_blue<-"#69b3e7"
+color_bluelight<-"#a7d2f0"
 
-color_redmaroon<-"#641F45"
-color_redvivid<-"#da291c"
-color_redpink<-"#ff726f"
+
+
+color_reddark<-"#641F45"
+color_red<-"#da291c"
+color_redlight<-"#ff726f"
 #color_redwhite<-"#ffc6c4"
 
 #color_yellowdarker<-"#f59c04"
@@ -49,10 +52,6 @@ color_yellowlight<-"#ffe099"
 color_greydark<-"#6C6F70"
 color_grey<-"#aaaaaa"
 color_greylight<-"#cccccc"
-
-color_greendark<-"#228B22"
-color_green<-"#50C878"
-color_greenlight<-"#93C572"
 
 
 

@@ -46,7 +46,7 @@ retake.change<-read_xlsx("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and
 ```{r funs}
 #define conditional formatting
 cf<-function(x,a=20,b=10,
-             col1=color_bluedeepsea,col2=color_bluelightsky,col3=color_grey){
+             col1=color_blue,col2=color_bluelight,col3="white"){
     if_else(x>a,col1,#if value>20, then use color1
             if_else(x>b,col2,#if 20>value>10, then use color2
                     col3))}#if value<=10, then use color3
@@ -75,7 +75,7 @@ tab.sec<-sectiontally%>%group_by(CourseGroup,term)%>%
 
 ```{r static_tab.sec}
 #show the table
-static_tab.sec<-tab.sec%>%adorn_totals()%>%#add total row this won't saved in df
+static_tab.sec<-tab.sec%>%#adorn_totals()%>%#add total row this won't saved in df
 kbl(label="tab.sec",#in-text reference
     caption = "Core course section offered each term", #table title
     col.names =c("",names(tab.sec)[2:ncol(tab.sec)])) %>%#header names
@@ -89,8 +89,7 @@ kbl(label="tab.sec",#in-text reference
 
 #set total col
 column_spec(2, color="black",background =cf(x=tab.sec[2],a=169,b=148,col1 =color_yellowdark,col2=color_yellowlight,col3="white"))%>%
-#set total row
-row_spec(nrow(tab.sec)+1,color="black",background = "white")%>%
+#set total row:row_spec(nrow(tab.sec)+1,color="black",background = "white")%>%
 #set header row
 row_spec(0,align = "c",color="black")%>%
 #set first column: 
@@ -103,7 +102,7 @@ row_spec(0,align = "c",color="black")%>%
 for (i in 3:ncol(tab.sec)){
 static_tab.sec<-column_spec(
   kable_input=static_tab.sec,
-  column=i,color = "white",background =cf(tab.sec[i]))
+  column=i,background =cf(tab.sec[i],a=29,b=25))
 i=i+1
 static_tab.sec}
 ```
@@ -152,8 +151,8 @@ ggplot(aes(x=term,y=`#section`,fill=CourseGroup))
 
 ```{r showviz.sec, include=TRUE}
 static_tab.sec
-interactive_tab.sec
-plot.sec
+#interactive_tab.sec
+#plot.sec
 ```
 
 # Enrollments
@@ -192,7 +191,7 @@ row_spec(0,align = "c",color="black")%>%
 for (i in 3:ncol(tab.reg)){
 static_tab.reg<-column_spec(
   kable_input=static_tab.reg,
-  column=i,color = "white",background =cf(tab.reg[i],a=0.2,b=0.1))
+  column=i,background =cf(tab.reg[i],a=0.2,b=0.155))
 i=i+1
 static_tab.reg}
 ```
@@ -235,7 +234,7 @@ row_spec(0,align = "c",color="black")%>%
 for (i in 2:ncol(tab.stu)){
 static_tab.stu<-column_spec(
   kable_input=static_tab.stu,
-  column=i,color = "white",background =cf(tab.stu[i],a=1300,b=1200))
+  column=i,background =cf(tab.stu[i],a=1400,b=1300))
 i=i+1
 static_tab.stu}
 ```
@@ -260,7 +259,7 @@ colnames(tab.stutrans)<-c("Term","Headcount","Transfer")
 static_tab.stutrans<-tab.stutrans%>%
 kable(label="tab.stutrans",#in-text reference
     caption = "Student headcounts and percentage of transfer students", #table title
-    col.names =c(names(tab.stutrans)[1:ncol(tab.stutrans)])) %>%#header names
+    col.names =c("",names(tab.stutrans)[2:ncol(tab.stutrans)])) %>%#header names
 #set overall style
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
 #fill the page width-wise,#header stay when scroll
@@ -270,10 +269,10 @@ kable(label="tab.stutrans",#in-text reference
 #set header row
 row_spec(0,align = "c",color="black")%>%
 #set first column: 
-  column_spec(1, bold = T, border_right = F, background = "white", width = "7em",color="black")%>%
+column_spec(1, border_right = F, background = "white", width = "8em",color="black")%>%
 #cond formatting using different rules
-column_spec(2,color = "white",background =cf(tab.stutrans[2],a=1300,b=1200))%>%
-column_spec(3,color = "white",background =cf(tab.stutrans[3],a=0.185,b=0.15))
+column_spec(2,color = "balck",background =cf(tab.stutrans[2],a=1400,b=1300))%>%
+column_spec(3,color = "black",background =cf(tab.stutrans[3],a=0.3,b=0.195))
 ```
 
 ```{r showviz.stu, include=TRUE}
@@ -385,6 +384,9 @@ tab.pass<-stucrs%>%
 
 names(tab.pass)<-names(tab.pass)%>%str_replace("FALL","Fall")%>%str_replace("SPRING","Spring")
 
+tab.pass<-tab.pass%>%select(CourseGroup,`2018 Fall`,`2019 Spring`,`2019 Fall`,`2020 Spring`,`2020 Fall`,`2021 Spring`,`2021 Fall`,`2022 Spring`)
+
+
 #withdrawl by coursegroup -- worth reporting
 tab.withdraw<-stucrs%>%
   group_by(term,CourseGroup,grade)%>%summarise(cnt=n())%>%
@@ -392,10 +394,11 @@ tab.withdraw<-stucrs%>%
   mutate(prt=cnt/sum(cnt))%>%
   filter(grade=="W")%>%
   select(-cnt,-grade)%>%pivot_wider(names_from = term,values_from = prt,values_fill = 0)%>%
-mutate(across(`2018 FALL`:`2022 SPRING`, function(x) percent(x, digit=0)))  #assign NA to ".."
+mutate(across(`2018 FALL`:`2022 SPRING`, function(x) percent(x, digit=0)))
 
 names(tab.withdraw)<-names(tab.withdraw)%>%str_replace("FALL","Fall")%>%str_replace("SPRING","Spring")
   
+tab.withdraw<-tab.withdraw%>%select(CourseGroup,`2018 Fall`,`2019 Spring`,`2019 Fall`,`2020 Spring`,`2020 Fall`,`2021 Spring`,`2021 Fall`,`2022 Spring`)
 ```
 
 ```{r static_tab.passwithdraw}
@@ -415,7 +418,7 @@ row_spec(0,align = "c",color="black")%>%
 for (i in 2:ncol(tab.pass)){
 static_tab.pass<-column_spec(
   kable_input=static_tab.pass,
-  column=i,color = "white",background =cf(tab.pass[i],a=.94,b=.75))
+  column=i,color = "black",background =cf(tab.pass[i],a=.89,b=.8,col1 = "white",col2 = color_greylight,col3=color_grey))
 i=i+1
 static_tab.pass}
 
@@ -437,7 +440,7 @@ row_spec(0,align = "c",color="black")%>%
 for (i in 2:ncol(tab.withdraw)){
 static_tab.withdraw<-column_spec(
   kable_input=static_tab.withdraw,
-  column=i,color = "white",background =cf(tab.withdraw[i],a=.10,b=.05))
+  column=i,color = "black",background =cf(tab.withdraw[i],a=.10,b=.055,col1 = color_grey,col2 = color_greylight,col3="white"))
 i=i+1
 static_tab.withdraw}
 ```
@@ -480,7 +483,6 @@ static_tab.withdraw
 #static_tab.gpa-- actually the same as %pass
 ```
 
-## Courses in First Year Seminar
 
 ```{r hideFYS}
 #In grade table, FYS in spring and SciInq in fall has weried pattern of being sig. lower. To investigate what are the most at-risk courses: 
@@ -529,6 +531,8 @@ tab.sci<-stucrs%>%filter(CourseGroup%in%c("Scientific Inquiry & Problem Solving"
   pivot_wider(names_from = term,values_from = pass)#%>%View()
 
 names(tab.sci)<-names(tab.sci)%>%str_replace("FALL","Fall")%>%str_replace("SPRING","Spring")
+
+#tab.sci<-tab.sci%>%select(CourseGroup,`2018 Fall`,`2019 Spring`,`2019 Fall`,`2020 Spring`,`2020 Fall`,`2021 Spring`,`2021 Fall`,`2022 Spring`)
 ```
 
 ```{r static_tab.sci}
@@ -548,12 +552,12 @@ row_spec(0,align = "c",color="black")%>%
 for (i in 2:ncol(tab.sci)){
 static_tab.sci<-column_spec(
   kable_input=static_tab.sci,
-  column=i,color = "black",background =cf(tab.sci[i],a=.94,b=.6,col2 = "white"))
+  column=i,color = "black",background =cf(tab.sci[i],a=.7,b=.6,col3 = color_grey,col2 = color_greylight,col1="white"))
 i=i+1
 static_tab.sci}
 ```
 
-```{r}
+```{r showviz.sci, include=TRUE}
 static_tab.sci
 ```
 
@@ -561,18 +565,11 @@ static_tab.sci
 
 ```{r report prt of term for coursegroup}
 #OVERALL - each coursegroup, prt of each term
-#approach 1- need to manually replace NA with 0 (cannot use replace in formattable % format)
-#corepath.ls%>%group_by(CourseGroup,term)%>%summarise(cnt=n())%>%
-#  mutate(prt=formattable::percent(cnt/sum(cnt),digits = 1))%>%
-#  select(-cnt)%>%pivot_wider(names_from = CourseGroup, values_from = prt)#%>%View()
-#approach 2- decimal points
 corepath.ls%>%group_by(CourseGroup,term)%>%summarise(cnt=n())%>%
   mutate(prt=round(cnt/sum(cnt),digits = 3))%>%
   select(-cnt)%>%pivot_wider(names_from = CourseGroup, values_from = prt)%>%
   replace(is.na(.), 0)#%>%View()#mutate(across(Writing:Capstone,funs(paste0(.* 100, "%"))))#failed to convert to %
   
-
-
 #graduated vs not graduated students
 #graduated
 corepath.ls%>%filter(matric=="Graduated")%>%
@@ -594,7 +591,7 @@ corepath.ls%>%filter(matric=="Not Graduate")%>%
 
 # AAC Review
 
-## Enrollment (using aac.crs)
+## Enrollment (using aac.crs)#
 
 ```{r unduplicated enrollment}
 aac.crs%>%group_by(term,coursecode)%>%summarise(n=n_distinct(people_code_id))%>%

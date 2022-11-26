@@ -46,7 +46,7 @@ retake.change<-read_xlsx("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and
 ```{r funs}
 #define conditional formatting
 cf<-function(x,a=20,b=10,
-             col1=color_blue,col2=color_bluelight,col3="white"){
+             col1=color_grey,col2=color_greylight,col3="white"){
     if_else(x>a,col1,#if value>20, then use color1
             if_else(x>b,col2,#if 20>value>10, then use color2
                     col3))}#if value<=10, then use color3
@@ -87,8 +87,8 @@ kbl(label="tab.sec",#in-text reference
               full_width = F, position = "float_left",fixed_thead = T, font_size = 12)%>%
 #failed attempt set total row's condfmt based on row value: mutate(across(1:ncol(tab.sec2),~cell_spec(.x,color=ifelse(CourseGroup=="Total"&.x>100,"blue","white"))))
 
-#set total col
-column_spec(2, color="black",background =cf(x=tab.sec[2],a=169,b=148,col1 =color_yellowdark,col2=color_yellowlight,col3="white"))%>%
+#set total col#col1 =color_yellowdark,col2=color_yellowlight,col3="white"
+column_spec(2, color="black",background =cf(x=tab.sec[2],a=169,b=148))%>%
 #set total row:row_spec(nrow(tab.sec)+1,color="black",background = "white")%>%
 #set header row
 row_spec(0,align = "c",color="black")%>%
@@ -179,8 +179,8 @@ kbl(label="tab.reg",#in-text reference
                 #less than 3 row then use: kable_minimal()
 #fill the page width-wise,#header stay when scroll
               full_width = F, position = "float_left",fixed_thead = T, font_size = 12)%>%
-#set total col
-column_spec(2, color="black",background =cf(x=tab.reg[2],a=3000,b=2500,col1 =color_yellowdark,col2=color_yellowlight,col3="white"))%>%
+#set total col:,col1 =color_yellowdark,col2=color_yellowlight,col3="white"
+column_spec(2, color="black",background =cf(x=tab.reg[2],a=3000,b=2500))%>%
 #set total row: row_spec(nrow(tab.reg)+1,color="black",background = "white")%>%
 #set header row
 row_spec(0,align = "c",color="black")%>%

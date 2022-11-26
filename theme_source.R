@@ -41,14 +41,18 @@ color_redpink<-"#ff726f"
 
 #color_yellowdarker<-"#f59c04"
 color_yellowdark<-"#fcb53b"
-color_yellowvivid<-"#ffff00"
-color_yellowlight<-"#FFCB4F"
+color_yellow<-"#FFCB4F"
+color_yellowlight<-"#ffe099"
 #color_yellowwhite<-"#ffe6bf"
 
 
 color_greydark<-"#6C6F70"
 color_grey<-"#aaaaaa"
 color_greylight<-"#cccccc"
+
+color_greendark<-"#228B22"
+color_green<-"#50C878"
+color_greenlight<-"#93C572"
 
 
 

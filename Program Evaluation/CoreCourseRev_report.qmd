@@ -215,7 +215,7 @@ tab.stu<-tab.stu%>%
   select(Term,`2018 Fall`,`2019 Spring`,`2019 Fall`,`2020 Spring`,`2020 Fall`,`2021 Spring`,`2021 Fall`,`2022 Spring`)#%>%View()
 ```
 
-```{r}
+```{r static_tab.stu}
 static_tab.stu<-tab.stu%>%
 kbl(label="tab.stu",#in-text reference
     caption = "Student headcount each term", #table title
@@ -229,7 +229,7 @@ kbl(label="tab.stu",#in-text reference
 #set header row
 row_spec(0,align = "c",color="black")%>%
 #set first column: 
-  column_spec(1, bold = T, border_right = F, background = "white", width = "15em",color="black")
+  column_spec(1, bold = T, border_right = F, background = "white", width = "10em",color="black")
 
 #apply cf to multi columns
 for (i in 2:ncol(tab.stu)){
@@ -240,23 +240,47 @@ i=i+1
 static_tab.stu}
 ```
 
-```{r showviz.stu, include=TRUE}
-static_tab.stu
-```
-
-## Transfer status
-
-```{r transfer status of students}
+```{r tab.stutrans}
 #transfer status percent
-stucrs.id%>%group_by(term,transfer)%>%summarise(cnt=n())%>%
+tab.stutrans<-stucrs.id%>%group_by(term,transfer)%>%summarise(cnt=n())%>%
   mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
-  filter(transfer=="Y")%>%select(term,prt)%>%
-  pivot_wider(names_from = term, values_from = prt)#%>%View()
+  filter(transfer=="Y")%>%select(term,prt)
+
+#combine with tab.stu
+tab.stutrans<-stucrs%>%group_by(term)%>%summarise(n=n_distinct(people_code_id))%>%
+  mutate(tab.stutrans)
+
+#rename terms
+tab.stutrans$term<-tab.stutrans$term%>%str_replace("FALL","Fall")%>%str_replace("SPRING","Spring")
+
+colnames(tab.stutrans)<-c("Term","Headcount","Transfer")
 ```
 
-## Retention term to term (using stucrs.id)
+```{r static_tab.stutrans}
+static_tab.stutrans<-tab.stutrans%>%
+kable(label="tab.stutrans",#in-text reference
+    caption = "Student headcounts and percentage of transfer students", #table title
+    col.names =c(names(tab.stutrans)[1:ncol(tab.stutrans)])) %>%#header names
+#set overall style
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+#fill the page width-wise,#header stay when scroll
+              full_width = F, position = "float_left",fixed_thead = T, font_size = 12)%>%
+#set total col: column_spec(2, color="black",background =cf(x=tab.reg[2],a=3000,b=2500,col1 =color_yellowdark,col2=color_yellowlight,col3="white"))%>%
+#set total row: row_spec(nrow(tab.reg)+1,color="black",background = "white")%>%
+#set header row
+row_spec(0,align = "c",color="black")%>%
+#set first column: 
+  column_spec(1, bold = T, border_right = F, background = "white", width = "7em",color="black")%>%
+#cond formatting using different rules
+column_spec(2,color = "white",background =cf(tab.stutrans[2],a=1300,b=1200))%>%
+column_spec(3,color = "white",background =cf(tab.stutrans[3],a=0.185,b=0.15))
+```
 
-```{r retention}
+```{r showviz.stu, include=TRUE}
+static_tab.stutrans
+```
+
+```{r hideretention}
 fa18<-stucrs.id%>%filter(term=="2018 FALL")
 sp19<-stucrs.id%>%filter(term=="2019 SPRING")
 fa19<-stucrs.id%>%filter(term=="2019 FALL")
@@ -309,14 +333,14 @@ tibble(term=c("2018 FALL","2019 SPRING","2019 FALL","2020 SPRING","2020 FALL","2
   pivot_wider(names_from = term, values_from = retention)#%>%View()
 ```
 
-# Reporting Student Grades
+# Student Grades
 
-## C/Pass/Withdraw (using stucrs)
-
-```{r report C/Pass/Withdraw}
+```{r explore C/Pass/Withdraw}
 # % of C or better (A, A-, B+, B, B-, C+, C or P)
 # % of pass (not F or W) for each segment
 # % of Withdrawal (W)
+
+#grade by term: hide
 stucrs%>%group_by(term,grade)%>%summarise(cnt=n())%>%
   mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
   select(-cnt)%>%pivot_wider(names_from = term,values_from = prt)#%>%View()
@@ -329,7 +353,7 @@ stucrs%>%group_by(term,grade)%>%summarise(cnt=n())%>%
 #  mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
 #  select(-cnt)%>%pivot_wider(names_from = grade,values_from = prt)#%>%View()
 
-##OVERALL
+##grade for each coursegroup by term: too many grades
 stucrs%>%
   group_by(term,CourseGroup,grade)%>%summarise(cnt=n())%>%
   mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
@@ -343,8 +367,12 @@ stucrs%>%
   select(-cnt)%>%pivot_wider(names_from = grade, values_from = prt)%>%
   pivot_wider(names_from = term,values_from = `C or better`)#%>%View()
 
-#pass
-stucrs%>%
+
+```
+
+```{r tab.passwithdraw}
+#pass: c or better + D -- worth reporting
+tab.pass<-stucrs%>%
   group_by(term,CourseGroup,grade)%>%summarise(cnt=n())%>%
   #mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
   mutate(prt=cnt/sum(cnt))%>%
@@ -355,36 +383,111 @@ stucrs%>%
   mutate(pass=formattable::percent(pass,digits = 0))%>%
   pivot_wider(names_from = term,values_from = pass)#%>%View()
 
-#withdrawl by coursegroup
-stucrs%>%
+names(tab.pass)<-names(tab.pass)%>%str_replace("FALL","Fall")%>%str_replace("SPRING","Spring")
+
+#withdrawl by coursegroup -- worth reporting
+tab.withdraw<-stucrs%>%
   group_by(term,CourseGroup,grade)%>%summarise(cnt=n())%>%
   #mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
-  mutate(prt=cnt/sum(cnt))%>%filter(grade=="W")%>%
-  replace(is.na(.), 0)%>%#actually prt have no NA values
-  select(-cnt)%>%pivot_wider(names_from = term,values_from = prt)#%>%View()#it is after pivotwider that some terms do not have a value (i.e. have NA)
- # replace(is.na(.), 0)%>%#actually prt have no NA values
+  mutate(prt=cnt/sum(cnt))%>%
+  filter(grade=="W")%>%
+  select(-cnt,-grade)%>%pivot_wider(names_from = term,values_from = prt,values_fill = 0)%>%
+mutate(across(`2018 FALL`:`2022 SPRING`, function(x) percent(x, digit=0)))  #assign NA to ".."
+
+names(tab.withdraw)<-names(tab.withdraw)%>%str_replace("FALL","Fall")%>%str_replace("SPRING","Spring")
   
 ```
 
-## GPA (using stucrs)
+```{r static_tab.passwithdraw}
+static_tab.pass<-tab.pass%>%
+kbl(label="tab.pass",#in-text reference
+    caption = "Core course pass rates", #table title
+    col.names =c("",names(tab.pass)[2:ncol(tab.pass)])) %>%#header names
+#set overall style
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+              full_width = F, position = "float_left",fixed_thead = T, font_size = 12)%>%
+#set header row
+row_spec(0,align = "c",color="black")%>%
+#set first column: 
+  column_spec(1, bold = T, border_right = F, background = "white", width = "15em",color="black")
 
-```{r report GPA}
-# Average GPA (and SD): 
+#apply cf to multi columns
+for (i in 2:ncol(tab.pass)){
+static_tab.pass<-column_spec(
+  kable_input=static_tab.pass,
+  column=i,color = "white",background =cf(tab.pass[i],a=.94,b=.75))
+i=i+1
+static_tab.pass}
+
+#a=quantile(tab.pass[i],prob=.75),b=median(tab.pass[i])
+
+static_tab.withdraw<-tab.withdraw%>%
+kbl(label="tab.withdraw",#in-text reference
+    caption = "Core course withdraw rates", #table title
+    col.names =c("",names(tab.withdraw)[2:ncol(tab.withdraw)])) %>%#header names
+#set overall style
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+              full_width = F, position = "float_left",fixed_thead = T, font_size = 12)%>%
+#set header row
+row_spec(0,align = "c",color="black")%>%
+#set first column: 
+  column_spec(1, bold = T, border_right = F, background = "white", width = "15em",color="black")
+
+#apply cf to multi columns
+for (i in 2:ncol(tab.withdraw)){
+static_tab.withdraw<-column_spec(
+  kable_input=static_tab.withdraw,
+  column=i,color = "white",background =cf(tab.withdraw[i],a=.10,b=.05))
+i=i+1
+static_tab.withdraw}
+```
+
+```{r tab.gpa}
+# explore Average GPA (and SD): hide
 stucrs%>%group_by(term)%>%summarise(mn=round(mean(GPA,na.rm=T),digits = 2),
                                           sd=round(sd(GPA,na.rm=T),digits = 2))#%>%View()#tanspose when paste
-#GPA by segment/coursegroup
-stucrs%>%group_by(term,CourseGroup)%>%summarise(mn=round(mean(GPA,na.rm=T),digits = 2))%>%
+
+#GPA by segment/coursegroup: worth reporting -- actually the same as %pass
+tab.gpa<-stucrs%>%group_by(term,CourseGroup)%>%summarise(mn=round(mean(GPA,na.rm=T),digits = 2))%>%
   pivot_wider(names_from = term,values_from = mn)#%>%View()
 ```
 
-### Investigate FYS/SciInq (using stucrs)
+```{r static_tab.gpa}
+static_tab.gpa<-tab.gpa%>%
+kbl(label="tab.gpa",#in-text reference
+    caption = "Core course GPA mean", #table title
+    col.names =c("",names(tab.gpa)[2:ncol(tab.gpa)])) %>%#header names
+#set overall style
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+              full_width = F, position = "float_left",fixed_thead = T, font_size = 12)%>%
+#set header row
+row_spec(0,align = "c",color="black")%>%
+#set first column: 
+  column_spec(1, bold = T, border_right = F, background = "white", width = "15em",color="black")
 
-```{r focus on FYS/SciInq}
+#apply cf to multi columns
+for (i in 2:ncol(tab.gpa)){
+static_tab.gpa<-column_spec(
+  kable_input=static_tab.gpa,
+  column=i,color = "white",background =cf(tab.gpa[i],a=3.5,b=3.0))
+i=i+1
+static_tab.gpa}
+```
+
+```{r showviz.passwithdraw, include=TRUE}
+static_tab.pass
+static_tab.withdraw
+#static_tab.gpa-- actually the same as %pass
+```
+
+## Courses in First Year Seminar
+
+```{r hideFYS}
 #In grade table, FYS in spring and SciInq in fall has weried pattern of being sig. lower. To investigate what are the most at-risk courses: 
 #lay out all FYS/SciInq courses by term (fall vs spring) w/t % pass
 
 #stucrs%>%count(CourseGroup)
-#FYS
+#FYS: not worth showing; only fys and 100% honors course
 stucrs%>%filter(CourseGroup%in%c("FYS"))%>%
   group_by(term,coursecode,grade)%>%summarise(cnt=n())%>%
   #mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
@@ -393,23 +496,68 @@ stucrs%>%filter(CourseGroup%in%c("FYS"))%>%
   select(-cnt)%>%pivot_wider(names_from = grade, values_from = prt)%>%
   replace(is.na(.), 0)%>%
   mutate(pass=`C or better`+D)%>%select(-`C or better`,-D)%>%
-  mutate(pass=formattable::percent(pass,digits = 0))%>%
-  pivot_wider(names_from = term,values_from = pass)#%>%View()
+ mutate(pass=formattable::percent(pass,digits = 0))%>%
+  pivot_wider(names_from = term,values_from = pass)
 
-#SciInq
-stucrs%>%filter(CourseGroup%in%c("Scientific Inquiry & Problem Solving"))%>%
+```
+
+## Scientific Inquiry
+
+```{r tab.sci}
+#explore which courses SciInq caused low pass rate in 19fall and 21fall
+stucrs%>%filter(CourseGroup%in%c("Scientific Inquiry & Problem Solving"),
+                term%in%c("2019 FALL","2021 FALL"))%>%
   group_by(term,coursecode,grade)%>%summarise(cnt=n())%>%
   #mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
   mutate(prt=cnt/sum(cnt))%>%
   filter(grade%in%c("C or better","D"))%>%
   select(-cnt)%>%pivot_wider(names_from = grade, values_from = prt)%>%
-  replace(is.na(.), 0)%>%
+  mutate(pass=`C or better`+D)%>%select(-`C or better`,-D)%>%
+  filter(pass<0.8)%>%#it's BIO101 and CHEM203
+  mutate(pass=formattable::percent(pass,digits = 0))%>%
+  pivot_wider(names_from = term,values_from = pass)#%>%View()
+
+tab.sci<-stucrs%>%filter(CourseGroup%in%c("Scientific Inquiry & Problem Solving"),
+                coursecode%in%c("BIO101","CHEM203"))%>%
+  group_by(term,coursecode,grade)%>%summarise(cnt=n())%>%
+  #mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
+  mutate(prt=cnt/sum(cnt))%>%
+  filter(grade%in%c("C or better","D"))%>%
+  select(-cnt)%>%pivot_wider(names_from = grade, values_from = prt)%>%
   mutate(pass=`C or better`+D)%>%select(-`C or better`,-D)%>%
   mutate(pass=formattable::percent(pass,digits = 0))%>%
   pivot_wider(names_from = term,values_from = pass)#%>%View()
+
+names(tab.sci)<-names(tab.sci)%>%str_replace("FALL","Fall")%>%str_replace("SPRING","Spring")
 ```
 
-## Reporting enrollment across term (using corepath.ls)
+```{r static_tab.sci}
+static_tab.sci<-tab.sci%>%
+kbl(label="tab.sci",#in-text reference
+    caption = "Pass rates of seleted scientific inquiry courses", #table title
+    col.names =c("",names(tab.sci)[2:ncol(tab.sci)])) %>%#header names
+#set overall style
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+              full_width = F, position = "float_left",fixed_thead = T, font_size = 12)%>%
+#set header row
+row_spec(0,align = "c",color="black")%>%
+#set first column: 
+  column_spec(1, bold = T, border_right = F, background = "white", width = "15em",color="black")
+
+#apply cf to multi columns
+for (i in 2:ncol(tab.sci)){
+static_tab.sci<-column_spec(
+  kable_input=static_tab.sci,
+  column=i,color = "black",background =cf(tab.sci[i],a=.94,b=.6,col2 = "white"))
+i=i+1
+static_tab.sci}
+```
+
+```{r}
+static_tab.sci
+```
+
+# Enrollment Path
 
 ```{r report prt of term for coursegroup}
 #OVERALL - each coursegroup, prt of each term

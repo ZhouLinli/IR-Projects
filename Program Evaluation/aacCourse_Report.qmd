@@ -44,7 +44,7 @@ cf_color<-function(x,a=20,b=10,
 
 #define column conditional format: n-th column, white text, background condfmt
 #col_cf<-function(i=1,kbl=static_tab.sec,df=tab.sec){column_spec(
- # kable_input=kbl,column=i,color = "white",background =cf(df[i]))}
+ # kable_input=kbl,column=i,color = "white",background =cf_color(df[i]))}
 ```
 
 # Academic Achievement Center Review
@@ -82,7 +82,7 @@ row_spec(0,align = "c",color="black")%>%
 for (i in 2:ncol(tab.aacenroll)){
 static_tab.aacenroll<-column_spec(
   kable_input=static_tab.aacenroll,
-  column=i,background =cf(tab.aacenroll[i],a=70,b=50))
+  column=i,background =cf_color(tab.aacenroll[i],a=70,b=50))
 i=i+1
 static_tab.aacenroll}
 ```
@@ -102,8 +102,7 @@ tab.aacpass<-aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not 
   filter(passfail%in%c("Pass"))%>%
   select(-cnt)%>%pivot_wider(names_from = passfail, values_from = prt)%>%
   pivot_wider(names_from = term,values_from = Pass)%>%
-mutate(across(`2018 FALL`:`2022 SPRING`, ~percent(.x, digit=0)))%>%
-mutate(across(`2018 FALL`:`2022 SPRING`, ~ifelse(is.na(.x), "-",as.character(.x))))
+mutate(across(`2018 FALL`:`2022 SPRING`, ~percent(.x, digit=0)))
 
 names(tab.aacpass)<-names(tab.aacpass)%>%str_replace("FALL","Fall")%>%str_replace("SPRING","Spring")
 
@@ -127,7 +126,8 @@ row_spec(0,align = "c",color="black")%>%
 for (i in 2:ncol(tab.aacpass)){
 static_tab.aacpass<-column_spec(
   kable_input=static_tab.aacpass,
-  column=i,color = "black",background =cf_color(tab.aacpass[i],a=.9,b=.8))
+  column=i,color = "black",
+  background =cf_color(tab.aacpass[i],a=.9,b=.8))
 i=i+1
 static_tab.aacpass}
 ```
@@ -137,7 +137,7 @@ static_tab.aacpass
 ```
 
 
-## Semester GPA (using aac.crs)
+## Semester GPA
 
 ```{r semester GPA by passfail}
 #PASSED students' mean semester GPA

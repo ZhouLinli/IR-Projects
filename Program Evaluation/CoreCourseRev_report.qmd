@@ -582,4 +582,3 @@ corepath.ls%>%filter(matric=="Not Graduate")%>%
 #AFTER COPY PASTE IN EXCEL: 1. I calculated the difference between grad vs not graduated - hilight high prt to show popular terms for each courses. 2. Used conditional formmatting for difference>0.1 or <-0.1 
 # in the path itself: I removed anything after the first course (i.e., for 1,2,3 meaning student aking the course in the 1st, 2nd, and 3rd semester, I only keep the 1st semester -- due to the definition of core course is the first course that student take in that course category)
 ```
-

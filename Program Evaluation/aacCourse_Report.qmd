@@ -1,0 +1,248 @@
+---
+title: "AACcoursereview"
+format: html
+editor: visual
+---
+```{r load.df.funs, include=FALSE}
+#load all necessary packages and themes, global optin chunk
+source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
+
+#change format: html (for render in Viewer) 
+#to the following for the word doc. version report
+#format: 
+#  docx:
+#    reference-doc: /Users/linlizhou/Documents/Rprojects/lasell.report.IN-USE.docx
+#    prefer-html: true
+
+#the following df are created from "/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R" 
+#enrollment of core courses
+#grades of aac courses
+aac.crs<-read_xlsx("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 AAC/data files/StudentInfoCourse_1822aac.xlsx")
+#for those who take aac103 more than once, their term comparison
+retake.change<-read_xlsx("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 AAC/data files/aac103retake_termchanges.xlsx")
+
+
+#reporting-goal/items
+
+#DONE-For each term (fall/spring): # courses/ sections offered in each core segment – SECTION TALLY
+#DONE-For each term (fall/spring): # registration in each core segment – SECTION TALLY
+#DONE- % of pass, C or better, and Withdrawal; Average GPA (and SD) of each courses – STU INFO BY COURSE
+#DONE-All core course enrollment and transfer proportion – deduplicated student count in STU INFO BY COURSE
+#DONE/HIDE-All core course retention – STARFISH RETENTION REPORT
+#DONE-Satisfaction – 2018-2022 4 years of satisfaction prt in that one question containing "core"
+#DONE-course-taking sequence – 2018 COHORT BY GRADUATION IN 2022 OR NOT – POWERCAMPUS TRANSCRIPT
+
+#define conditional formatting
+cf<-function(x,a=20,b=10,
+             col1=color_yellow,col2=color_yellowlight,col3="white"
+             #col1=color_grey,col2=color_greylight,col3="white"
+             ){
+    if_else(x>a,col1,#if value>20, then use color1
+            if_else(x>b,col2,#if 20>value>10, then use color2
+                    col3))}#if value<=10, then use color3
+
+#define column conditional format: n-th column, white text, background condfmt
+#col_cf<-function(i=1,kbl=static_tab.sec,df=tab.sec){column_spec(
+ # kable_input=kbl,column=i,color = "white",background =cf(df[i]))}
+```
+
+
+# Academic Achievement Center Review
+
+## Enrollment
+
+```{r tab.aacenroll-unduplicated enrollment}
+#for each term and each course, how many unique students are enrolled/exist in the dataset
+tab.aacenroll<-aac.crs%>%group_by(term,coursecode)%>%summarise(n=n_distinct(people_code_id))%>%
+  pivot_wider(names_from = term,values_from = n,values_fill = 0)
+
+#rename capital letter
+names(tab.aacenroll)<-names(tab.aacenroll)%>%str_replace("FALL","Fall")%>%str_replace("SPRING","Spring")
+
+#reorder cols
+tab.aacenroll<-tab.aacenroll%>%select(coursecode,`2018 Fall`,`2019 Spring`,`2019 Fall`,`2020 Spring`,`2020 Fall`,`2021 Spring`,`2021 Fall`,`2022 Spring`)#%>%View()
+```
+
+```{r static_tab.aacenroll}
+#show the table
+static_tab.aacenroll<-tab.aacenroll%>%
+kbl(label="tab.aacenroll",#in-text reference
+    caption = "AAC course enrollment by term", #table title
+    col.names =c("",names(tab.aacenroll)[2:ncol(tab.aacenroll)])) %>%#header names
+#set overall style
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+#fill the page width-wise,#header stay when scroll
+              full_width = F, position = "float_left",fixed_thead = T, font_size = 12)%>%
+#set header row
+row_spec(0,align = "c",color="black")%>%
+#set first column: 
+  column_spec(1, bold = T, border_right = F, background = "white", width = "5em",color="black")
+
+#apply cf to multi columns
+for (i in 2:ncol(tab.aacenroll)){
+static_tab.aacenroll<-column_spec(
+  kable_input=static_tab.aacenroll,
+  column=i,background =cf(tab.aacenroll[i],a=70,b=50))
+i=i+1
+static_tab.aacenroll}
+```
+
+```{r showviz.aacenroll, include=TRUE}
+static_tab.aacenroll
+```
+
+## Pass%
+
+```{r tab.aacpass-pass vs fail}
+# report prt students pass
+tab.aacpass<-aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
+  group_by(term,coursecode,passfail)%>%summarise(cnt=n())%>%
+  #mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
+  mutate(prt=cnt/sum(cnt))%>%
+  filter(passfail%in%c("Pass"))%>%
+  select(-cnt)%>%pivot_wider(names_from = passfail, values_from = prt)%>%
+  pivot_wider(names_from = term,values_from = Pass)%>%
+mutate(across(`2018 FALL`:`2022 SPRING`, .fns = ~percent(.x, digit=0)))
+
+names(tab.aacpass)<-names(tab.aacpass)%>%str_replace("FALL","Fall")%>%str_replace("SPRING","Spring")
+
+tab.aacpass<-tab.aacpass%>%select(coursecode,`2018 Fall`,`2019 Spring`,`2019 Fall`,`2020 Spring`,`2020 Fall`,`2021 Spring`,`2021 Fall`,`2022 Spring`)
+```
+
+## Semester GPA (using aac.crs)
+
+```{r semester GPA by passfail}
+#PASSED students' mean semester GPA
+aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
+  group_by(term,coursecode,passfail)%>%
+  summarise(mn=round(mean(Semester_GPA,na.rm=TRUE),digits=1))%>%
+  filter(passfail%in%c("Pass"))%>%
+  pivot_wider(names_from = passfail, values_from = mn)%>%
+  pivot_wider(names_from = term,values_from = Pass)#%>%View()
+#FAILED students' mean semester GPA
+aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
+  group_by(term,coursecode,passfail)%>%
+  summarise(mn=round(mean(Semester_GPA,na.rm=TRUE),digits=1))%>%
+  filter(passfail%in%c("Fail"))%>%
+  pivot_wider(names_from = passfail, values_from = mn)%>%
+  pivot_wider(names_from = term,values_from = Fail)#%>%View()
+```
+
+## Semester GPA Category (using aac.crs)
+
+```{r semester GPA category by pass fail}
+#How many students PASS AAC103 and finish the semester with a 2.0 or higher vs lower semester GPA
+#count for those who PASSED,  
+#semGPA that higher than 2.0
+aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
+  group_by(term,coursecode,passfail,semGPA)%>%summarise(cnt=n())%>%
+  mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
+  filter(passfail%in%c("Pass"))%>%
+  select(-cnt)%>%pivot_wider(names_from = passfail, values_from = prt)%>%
+  pivot_wider(names_from = term,values_from = Pass)%>%
+  filter(semGPA=="higher than 2")%>%select(-semGPA)#%>%View()
+#semGPA that lower than 2.0
+aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
+  group_by(term,coursecode,passfail,semGPA)%>%summarise(cnt=n())%>%
+  mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
+  filter(passfail%in%c("Pass"))%>%
+  select(-cnt)%>%pivot_wider(names_from = passfail, values_from = prt)%>%
+  pivot_wider(names_from = term,values_from = Pass)%>%
+  filter(semGPA=="lower than 2")%>%select(-semGPA)#%>%View()
+
+#How many students FAIL AAC103 and finish the semester with a 2.0 or higher vs lower than a 2.0 semester GPA
+#count for those who FAILED,  
+#semGPA that higher than 2.0
+aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
+  group_by(term,coursecode,passfail,semGPA)%>%summarise(cnt=n())%>%
+  mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
+  filter(passfail%in%c("Fail"))%>%
+  select(-cnt)%>%pivot_wider(names_from = passfail, values_from = prt)%>%
+  pivot_wider(names_from = term,values_from = Fail)%>%
+  filter(semGPA=="higher than 2")%>%select(-semGPA)#%>%View()
+#semGPA that lower than 2.0
+aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
+  group_by(term,coursecode,passfail,semGPA)%>%summarise(cnt=n())%>%
+  mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
+  filter(passfail%in%c("Fail"))%>%
+  select(-cnt)%>%pivot_wider(names_from = passfail, values_from = prt)%>%
+  pivot_wider(names_from = term,values_from = Fail)%>%
+  filter(semGPA=="lower than 2")%>%select(-semGPA)#%>%View()
+```
+
+## Cumulative GPA (using aac.crs)
+
+```{r cumulative GPA by passfail}
+#PASSED students' mean cumulative GPA
+aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
+  group_by(term,coursecode,passfail)%>%
+  summarise(mn=round(mean(Cumulative_GPA,na.rm=TRUE),digits=1))%>%
+  filter(passfail%in%c("Pass"))%>%
+  pivot_wider(names_from = passfail, values_from = mn)%>%
+  pivot_wider(names_from = term,values_from = Pass)#%>%View()
+#FAILED students' mean cumulative GPA
+aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
+  group_by(term,coursecode,passfail)%>%
+  summarise(mn=round(mean(Cumulative_GPA,na.rm=TRUE),digits=1))%>%
+  filter(passfail%in%c("Fail"))%>%
+  pivot_wider(names_from = passfail, values_from = mn)%>%
+  pivot_wider(names_from = term,values_from = Fail)#%>%View()
+```
+
+## Retaking AAC103 (using retake.change)
+
+```{r report retake.aac103}
+#how many passed/semgpa for the first time?
+retake.change%>%group_by(semGPA_1sttime,grade_1sttime)%>%summarise(cnt=n())%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%select(-cnt)%>%
+  pivot_wider(names_from = grade_1sttime, values_from = prt)#%>%View()#around 14-21% students failed and a majority passed aac103; difference between different semGPA groups is only 7%
+#report N
+retake.change%>%count(semGPA_1sttime)
+
+#compared grade in 2nd to 1st, Increase/Decrease/Same?
+retake.change%>%group_by(grade_1to2)%>%summarise(cnt=n())%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%select(-cnt)#%>%View()#
+
+#compared semgpa in 2nd to 1st, Increase/Decrease/Same?
+retake.change%>%group_by(semGPA_1to2)%>%summarise(cnt=n())%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%select(-cnt)#%>%View()#
+
+
+
+#how many have a 3rd term
+retake.change%>%filter(!is.na(grade_2to3))%>%nrow()
+
+#compared grade in 3rd to 2nd, Increase/Decrease/Same?
+retake.change%>%filter(!is.na(grade_2to3))%>%
+  group_by(grade_2to3)%>%summarise(cnt=n())%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%select(-cnt)#%>%View()#
+
+#compared semgpa in 3rd to 2nd, Increase/Decrease/Same?
+retake.change%>%filter(!is.na(semGPA_2to3))%>%
+  group_by(semGPA_2to3)%>%summarise(cnt=n())%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%select(-cnt)#%>%View()#
+
+
+
+
+#how many have a 4th term
+retake.change%>%filter(!is.na(grade_3to4))%>%nrow()
+
+#compared grade in 3rd to 2nd, Increase/Decrease/Same?
+retake.change%>%filter(!is.na(grade_3to4))%>%
+  group_by(grade_3to4)%>%summarise(cnt=n())%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%select(-cnt)#%>%View()#
+
+#compared semgpa in 3rd to 2nd, Increase/Decrease/Same?
+retake.change%>%filter(!is.na(semGPA_3to4))%>%
+  group_by(semGPA_3to4)%>%summarise(cnt=n())%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%select(-cnt)#%>%View()#
+
+
+
+
+#how many have a 5th term
+retake.change%>%filter(!is.na(grade_4to5))%>%nrow()
+
+#compared grade in 3rd to 2nd, Increase/Decrease/Same?
+retake.change%>%filter(!is.na(grade_4to5))%>%
+  group_by(grade_4to5)%>%summarise(cnt=n())%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%select(-cnt)#%>%View()#
+
+#compared semgpa in 3rd to 2nd, Increase/Decrease/Same?
+retake.change%>%filter(!is.na(semGPA_4to5))%>%
+  group_by(semGPA_4to5)%>%summarise(cnt=n())%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%select(-cnt)#%>%View()#
+
+```

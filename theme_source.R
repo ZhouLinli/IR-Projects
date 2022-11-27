@@ -1,5 +1,5 @@
 knitr::opts_chunk$set(echo = FALSE, include = FALSE, warning=FALSE, message=FALSE) #show results only for specified chunks
-
+options(knitr.kable.NA = '')#in kable, show NA as blank
 
 
 #common used library

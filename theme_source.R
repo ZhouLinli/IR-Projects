@@ -53,6 +53,28 @@ color_greydark<-"#6C6F70"
 color_grey<-"#aaaaaa"
 color_greylight<-"#cccccc"
 
+#define kable conditional formatting "colors based on condition function"
+cf_color<-function(x,a=20,b=10,
+                   col1=color_yellow,col2=color_yellowlight,col3="white"
+                   #col1=color_grey,col2=color_greylight,col3="white"
+){
+  if_else(is.na(x),"white",
+          if_else(x>a,col1,
+                  if_else(x>b,col2,
+                          col3)))}#if value<=10, then use color3
+
+#usage: 
+#tab<-table%>%kable()
+#column_spec(tab,column=2,
+#             background =cf(tab[2],a=70,b=50,col1=color_grey,col2=color_greylight)
+
+#usage in for loop: 
+#for (i in 2:ncol(tab)){
+#static_tab<-column_spec(
+#kable_input=static_tab,
+#column=i,background =cf(tab[i],a=70,b=50))
+#i=i+1
+#static_tab}
 
 
 #define themes functions

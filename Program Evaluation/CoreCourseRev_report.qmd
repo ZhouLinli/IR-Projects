@@ -46,7 +46,9 @@ retake.change<-read_xlsx("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and
 ```{r funs}
 #define conditional formatting
 cf<-function(x,a=20,b=10,
-             col1=color_grey,col2=color_greylight,col3="white"){
+             col1=color_yellow,col2=color_yellowlight,col3="white"
+             #col1=color_grey,col2=color_greylight,col3="white"
+             ){
     if_else(x>a,col1,#if value>20, then use color1
             if_else(x>b,col2,#if 20>value>10, then use color2
                     col3))}#if value<=10, then use color3
@@ -483,7 +485,6 @@ static_tab.withdraw
 #static_tab.gpa-- actually the same as %pass
 ```
 
-
 ```{r hideFYS}
 #In grade table, FYS in spring and SciInq in fall has weried pattern of being sig. lower. To investigate what are the most at-risk courses: 
 #lay out all FYS/SciInq courses by term (fall vs spring) w/t % pass
@@ -591,24 +592,64 @@ corepath.ls%>%filter(matric=="Not Graduate")%>%
 
 # AAC Review
 
-## Enrollment (using aac.crs)#
+## Enrollment (using aac.crs)
 
-```{r unduplicated enrollment}
-aac.crs%>%group_by(term,coursecode)%>%summarise(n=n_distinct(people_code_id))%>%
-#%>%select(n)%>%colSums(n)#10549 ppid adding separate terms together
-  pivot_wider(names_from = term,values_from = n)#%>%View()
+```{r tab.aacenroll-unduplicated enrollment}
+#for each term and each course, how many unique students are enrolled/exist in the dataset
+tab.aacenroll<-aac.crs%>%group_by(term,coursecode)%>%summarise(n=n_distinct(people_code_id))%>%
+  pivot_wider(names_from = term,values_from = n,values_fill = 0)
+
+#rename capital letter
+names(tab.aacenroll)<-names(tab.aacenroll)%>%str_replace("FALL","Fall")%>%str_replace("SPRING","Spring")
+
+#reorder cols
+tab.aacenroll<-tab.aacenroll%>%select(coursecode,`2018 Fall`,`2019 Spring`,`2019 Fall`,`2020 Spring`,`2020 Fall`,`2021 Spring`,`2021 Fall`,`2022 Spring`)#%>%View()
+```
+
+```{r static_tab.aacenroll}
+#show the table
+static_tab.aacenroll<-tab.aacenroll%>%
+kbl(label="tab.aacenroll",#in-text reference
+    caption = "AAC course enrollment by term", #table title
+    col.names =c("",names(tab.aacenroll)[2:ncol(tab.aacenroll)])) %>%#header names
+#set overall style
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+#fill the page width-wise,#header stay when scroll
+              full_width = F, position = "float_left",fixed_thead = T, font_size = 12)%>%
+#set header row
+row_spec(0,align = "c",color="black")%>%
+#set first column: 
+  column_spec(1, bold = T, border_right = F, background = "white", width = "5em",color="black")
+
+#apply cf to multi columns
+for (i in 2:ncol(tab.aacenroll)){
+static_tab.aacenroll<-column_spec(
+  kable_input=static_tab.aacenroll,
+  column=i,background =cf(tab.aacenroll[i],a=70,b=50))
+i=i+1
+static_tab.aacenroll}
+```
+
+```{r showviz.aacenroll, include=TRUE}
+static_tab.aacenroll
 ```
 
 ## Pass% (using aac.crs)
 
-```{r pass vs fail}
+```{r tab.aacpass-pass vs fail}
 # report prt students pass
-aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
+tab.aacpass<-aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
   group_by(term,coursecode,passfail)%>%summarise(cnt=n())%>%
-  mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
+  #mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
+  mutate(prt=cnt/sum(cnt))%>%
   filter(passfail%in%c("Pass"))%>%
   select(-cnt)%>%pivot_wider(names_from = passfail, values_from = prt)%>%
-  pivot_wider(names_from = term,values_from = Pass)#%>%View()
+  pivot_wider(names_from = term,values_from = Pass)%>%
+mutate(across(`2018 FALL`:`2022 SPRING`, .fns = ~percent(.x, digit=0)))
+
+names(tab.aacpass)<-names(tab.aacpass)%>%str_replace("FALL","Fall")%>%str_replace("SPRING","Spring")
+
+tab.aacpass<-tab.aacpass%>%select(coursecode,`2018 Fall`,`2019 Spring`,`2019 Fall`,`2020 Spring`,`2020 Fall`,`2021 Spring`,`2021 Fall`,`2022 Spring`)
 ```
 
 ## Semester GPA (using aac.crs)

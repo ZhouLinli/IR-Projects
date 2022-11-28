@@ -107,7 +107,7 @@ kbl(align = "c",booktabs = T,label="tab.aacenroll",#in-text reference
 for (i in 3:ncol(tab.aacenroll)){
 static_tab.aacenroll<-column_spec(
   kable_input=static_tab.aacenroll,
-  column=i, width = "3em",background =cf_color(tab.aacenroll[i],a=70,b=50))
+  column=i, width = "3em",background =cf_color(tab.aacenroll[i],a=70,b=60))
 i=i+1
 static_tab.aacenroll}
 ```
@@ -239,7 +239,7 @@ kbl(align = "c",booktabs = T,label="tab.semgpa_pass",#in-text reference
 #set first column: 
   column_spec(1, border_right = F, background = "white", width = "7em",color="black")%>%
 #set difference column:
-column_spec(4, width = "4em", background = if_else(tab.semgpa_pass[4]>.3,color_grey,if_else(tab.semgpa_pass[4]>.18,color_greylight,"white")))
+column_spec(4, width = "4em", background = if_else(tab.semgpa_pass[4]>.5,color_grey,if_else(tab.semgpa_pass[4]>.4,color_greylight,"white")))
 
 #apply cf_color to multi columns
 for (i in 2:3){
@@ -294,7 +294,7 @@ for (i in 2:ncol(tab.semGPA)){
 static_tab.semGPA<-column_spec(
   kable_input=static_tab.semGPA,
   column=i,color = "black",width = "3em",
-  background =cf_color(tab.semGPA[i],a=.8,b=.7))
+  background =cf_color(tab.semGPA[i],a=.9,b=.8))
 i=i+1
 static_tab.semGPA}
 ```
@@ -342,7 +342,7 @@ for (i in 2:ncol(tab.semGPA_passfail)){
 static_tab.semGPA_passfail<-column_spec(
   kable_input=static_tab.semGPA_passfail,
   column=i,color = "black",width = "3em",
-  background =cf_color(tab.semGPA_passfail[i],a=.8,b=.7))
+  background =cf_color(tab.semGPA_passfail[i],a=.9,b=.8))
 i=i+1
 static_tab.semGPA_passfail}
 ```
@@ -512,7 +512,7 @@ kbl(align = "c",booktabs = T,label="tab.retake_semGPA",#in-text reference
 #set header row row_spec(0,align = "c",color="black")%>%
 #set first column: 
   column_spec(1, border_right = F, background = "white", color="black")%>%
-  column_spec(2,width = "4em",background = cf_color(tab.retake_semGPA[2],a=.8,b=.7))%>%
+  column_spec(2,width = "4em",background = cf_color(tab.retake_semGPA[2],a=.9,b=.8))%>%
   column_spec(3,width = "3em")
 ```
 

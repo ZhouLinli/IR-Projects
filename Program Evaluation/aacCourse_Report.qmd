@@ -4,8 +4,7 @@ subtitle: "(2018 Fall - 2022 Spring)"
 author: 'Lasell University Institutional Research'
 date: "`r Sys.Date()`"
 format: 
-  docx:
-    prefer-html: true
+  pdf:
     include-in-header:
       - text:
           \usepackage{fancyhdr}

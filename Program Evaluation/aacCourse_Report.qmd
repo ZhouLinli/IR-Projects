@@ -93,7 +93,7 @@ kbl(align = "c",booktabs = T,label="tab.aacenroll",#in-text reference
 #set header row: have to remove header row setting to successfully set width in column_spec
 #row_spec(0,align = "c",color="black")%>%
 #set first column: 
-  column_spec(1, bold = T, border_right = F, background = "white", width = "5em",color="black")
+  column_spec(1, bold = T, border_right = F, background = "white", width = "4em",color="black")
 
 #apply cf to multi columns
 for (i in 2:ncol(tab.aacenroll)){
@@ -140,7 +140,7 @@ kbl(align = "c",booktabs = T,label="tab.aacpass",#in-text reference
 #set header row
 #row_spec(0,align = "c",color="black")%>%
 #set first column: 
-  column_spec(1, bold = T, border_right = F, background = "white", width = "5em",color="black")
+  column_spec(1, bold = T, border_right = F, background = "white", width = "4em",color="black")
 
 #apply cf_color to multi columns
 for (i in 2:ncol(tab.aacpass)){
@@ -216,7 +216,7 @@ kbl(align = "c",booktabs = T,label="tab.semgpa_pass",#in-text reference
               full_width = F, fixed_thead = T, font_size = 12)%>%
 #set header row row_spec(0,align = "c",color="black")%>%
 #set first column: 
-  column_spec(1, bold = T, border_right = F, background = "white", width = "10em",color="black")%>%
+  column_spec(1, border_right = F, background = "white", width = "7em",color="black")%>%
 #set difference column:
 column_spec(4, width = "4em", background = if_else(tab.semgpa_pass[4]>.3,color_grey,if_else(tab.semgpa_pass[4]>.18,color_greylight,"white")))
 
@@ -263,7 +263,7 @@ kbl(align = "c",booktabs = T,label="tab.semGPA",#in-text reference
               full_width = F, fixed_thead = T, font_size = 12)%>%
 #set header row row_spec(0,align = "c",color="black")%>%
 #set first column: 
-  column_spec(1, bold = T, border_right = F, background = "white", width = "10em",color="black")
+  column_spec(1, bold = T, border_right = F, background = "white", width = "3em",color="black")
 
 #apply cf_color to multi columns
 for (i in 2:ncol(tab.semGPA)){
@@ -307,7 +307,7 @@ kbl(align = "c",booktabs = T,label="tab.semGPA_passfail",#in-text reference
               full_width = F, fixed_thead = T, font_size = 12)%>%
 #set header row row_spec(0,align = "c",color="black")%>%
 #set first column: 
-  column_spec(1, border_right = F, background = "white", width = "10em",color="black")
+  column_spec(1, border_right = F, background = "white", width = "2em",color="black")
 
 for (i in 2:ncol(tab.semGPA_passfail)){
 static_tab.semGPA_passfail<-column_spec(
@@ -423,7 +423,7 @@ kbl(align = "c",booktabs = T,label="tab.retakepass",#in-text reference
 #set first column: 
   column_spec(1, border_right = F, background = "white", color="black")%>%
   column_spec(2,background = cf_color(tab.retakepass[2],a=.9,b=.8))%>%
-  column_spec(3,width = "4em")
+  column_spec(3,width = "3em")
 ```
 
 ```{r showviz.retakepass, include=TRUE}
@@ -475,7 +475,7 @@ kbl(align = "c",booktabs = T,label="tab.retake_semGPA",#in-text reference
 #set first column: 
   column_spec(1, border_right = F, background = "white", color="black")%>%
   column_spec(2,width = "4em",background = cf_color(tab.retake_semGPA[2],a=.8,b=.7))%>%
-  column_spec(3,width = "4em")
+  column_spec(3,width = "3em")
 ```
 
 ```{r showviz.retake_semGP, include=TRUE}

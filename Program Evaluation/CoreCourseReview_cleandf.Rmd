@@ -227,6 +227,9 @@ mutate(semGPA=case_when(Semester_GPA>=2~"> 2",Semester_GPA<2~"< 2"),
        semGPA=factor(semGPA,levels = c("> 2","< 2")))%>%#check: %>%count(semGPA)
 mutate(passfail=factor(passfail,levels = c("Pass","Fail")))#reorder
 #check: aac.crs%>%count(Add_Drop); aac.crs%>%count(Final_Grade)
+
+#rename to better format
+aac.crs$term<-aac.crs$term%>%str_replace("FALL","Fall")%>%str_replace("SPRING","Spring")
 ```
 
 ## Retaking AAC103 (retake103df)

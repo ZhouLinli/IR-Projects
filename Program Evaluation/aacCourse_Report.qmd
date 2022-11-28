@@ -1,5 +1,5 @@
 ---
-title: "AACcoursereview"
+title: "Academic Achievement Center Review"
 format: html
 editor: visual
 ---
@@ -47,26 +47,34 @@ cf_color<-function(x,a=20,b=10,
  # kable_input=kbl,column=i,color = "white",background =cf_color(df[i]))}
 ```
 
-# Academic Achievement Center Review
+# Summary
 
-## Enrollment
+* Among the past 5 years (2018 Fall to 2022 Spring), AAC 103 course has an average enrollment of 50 students.
+* Average pass rate for AAC 103 course is 82%.
+* Students with higher than 2.0 semester GPA usually have higher pass rate in AAC103 than students with lower than 2.0 semester GPA.
+* An average of 73% students in AAC 103 course have a higher than 2.0 semester GPA. 
+* Among those who pass AAC 103, 77% have a higher than 2.0 GPA and 23% do not have a good enough semester GPA. Among those who failed AAC 103, 58% still have a higher than 2.0 semester GPA (without succeeding in AAC 1O3 course).
+* Taking AAC 103 the second and third times does not improve pass rate or percentage of obtaining higher than 2.0 semester GPA.
+
+# Enrollment
 
 ```{r tab.aacenroll-unduplicated enrollment}
 #for each term and each course, how many unique students are enrolled/exist in the dataset
-tab.aacenroll<-aac.crs%>%group_by(term,coursecode)%>%summarise(n=n_distinct(people_code_id))%>%
-  pivot_wider(names_from = term,values_from = n,values_fill = 0)
+tab.aacenroll<-aac.crs%>%group_by(coursecode,term)%>%summarise(n=n_distinct(people_code_id))%>%
+  mutate(Average=round(mean(n),digits = 0))%>%
+  pivot_wider(names_from = term,values_from = n)
 
 #rename capital letter
 names(tab.aacenroll)<-names(tab.aacenroll)%>%str_replace("FALL","Fall")%>%str_replace("SPRING","Spring")
 
 #reorder cols
-tab.aacenroll<-tab.aacenroll%>%select(coursecode,`2018 Fall`,`2019 Spring`,`2019 Fall`,`2020 Spring`,`2020 Fall`,`2021 Spring`,`2021 Fall`,`2022 Spring`)#%>%View()
+tab.aacenroll<-tab.aacenroll%>%select(coursecode,Average,`2018 Fall`,`2019 Spring`,`2019 Fall`,`2020 Spring`,`2020 Fall`,`2021 Spring`,`2021 Fall`,`2022 Spring`)#%>%View()
 ```
 
 ```{r static_tab.aacenroll}
 #show the table
 static_tab.aacenroll<-tab.aacenroll%>%
-kbl(label="tab.aacenroll",#in-text reference
+kbl(align = "c",label="tab.aacenroll",#in-text reference
     caption = "AAC course enrollment by term", #table title
     col.names =c("",names(tab.aacenroll)[2:ncol(tab.aacenroll)])) %>%#header names
 #set overall style
@@ -91,27 +99,30 @@ static_tab.aacenroll}
 static_tab.aacenroll
 ```
 
-## Pass%
+Among the past 5 years (2018 Fall to 2022 Spring), AAC courses enrollment range from 34 to 79. An average enrollment for AAC103 is 50 students.
+
+# Pass Rate
 
 ```{r tab.aacpass-pass vs fail}
 # report prt students pass
 tab.aacpass<-aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
-  group_by(term,coursecode,passfail)%>%summarise(cnt=n())%>%
+  group_by(coursecode,term,passfail)%>%summarise(cnt=n())%>%
   #mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
   mutate(prt=cnt/sum(cnt))%>%
-  filter(passfail%in%c("Pass"))%>%
-  select(-cnt)%>%pivot_wider(names_from = passfail, values_from = prt)%>%
-  pivot_wider(names_from = term,values_from = Pass)%>%
-mutate(across(`2018 FALL`:`2022 SPRING`, ~percent(.x, digit=0)))
+  filter(passfail%in%c("Pass"))%>%select(-cnt)
 
-names(tab.aacpass)<-names(tab.aacpass)%>%str_replace("FALL","Fall")%>%str_replace("SPRING","Spring")
+tab.aacpass_avg<-tab.aacpass%>%select(-passfail)%>%
+  group_by(coursecode)%>%summarize(Average=mean(prt))
 
-tab.aacpass<-tab.aacpass%>%select(coursecode,`2018 Fall`,`2019 Spring`,`2019 Fall`,`2020 Spring`,`2020 Fall`,`2021 Spring`,`2021 Fall`,`2022 Spring`)
+tab.aacpass<-left_join(tab.aacpass,tab.aacpass_avg)%>%select(-passfail)%>%
+  pivot_wider(names_from = term, values_from = prt)%>%
+  select(coursecode,Average,`2018 Fall`,`2019 Spring`,`2019 Fall`,`2020 Spring`,`2020 Fall`,`2021 Spring`,`2021 Fall`,`2022 Spring`)%>%
+mutate(across(Average:`2022 Spring`, ~percent(.x, digit=0)))
 ```
 
-```{r}
+```{r static_tab.aacpass}
 static_tab.aacpass<-tab.aacpass%>%
-kbl(label="tab.aacpass",#in-text reference
+kbl(align = "c",label="tab.aacpass",#in-text reference
     caption = "AAC courses pass rates", #table title
     col.names =c("",names(tab.aacpass)[2:ncol(tab.aacpass)])) %>%#header names
 #set overall style
@@ -136,10 +147,26 @@ static_tab.aacpass}
 static_tab.aacpass
 ```
 
+Average pass rate for AAC courses are above 82% across the past 5 academic years.
 
-## Semester GPA
+```{r explore cumulative GPA by passfail}
+#PASSED students' mean cumulative GPA
+aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
+  group_by(term,coursecode,passfail)%>%
+  summarise(mn=round(mean(Cumulative_GPA,na.rm=TRUE),digits=1))%>%
+  filter(passfail%in%c("Pass"))%>%
+  pivot_wider(names_from = passfail, values_from = mn)%>%
+  pivot_wider(names_from = term,values_from = Pass)#%>%View()
+#FAILED students' mean cumulative GPA
+aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
+  group_by(term,coursecode,passfail)%>%
+  summarise(mn=round(mean(Cumulative_GPA,na.rm=TRUE),digits=1))%>%
+  filter(passfail%in%c("Fail"))%>%
+  pivot_wider(names_from = passfail, values_from = mn)%>%
+  pivot_wider(names_from = term,values_from = Fail)#%>%View()
+```
 
-```{r semester GPA by passfail}
+```{r explore semester GPA mean by passfail}
 #PASSED students' mean semester GPA
 aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
   group_by(term,coursecode,passfail)%>%
@@ -156,19 +183,154 @@ aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pa
   pivot_wider(names_from = term,values_from = Fail)#%>%View()
 ```
 
-## Semester GPA Category (using aac.crs)
+## AAC103 Pass rate for students with different semester GPA
 
-```{r semester GPA category by pass fail}
-#How many students PASS AAC103 and finish the semester with a 2.0 or higher vs lower semester GPA
-#count for those who PASSED,  
-#semGPA that higher than 2.0
-aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
-  group_by(term,coursecode,passfail,semGPA)%>%summarise(cnt=n())%>%
+```{r tab.semgpa_pass}
+#Rate of passing AAC103 for different semester GPA
+tab.semgpa_pass<-aac.crs%>%filter(!is.na(passfail),coursecode=="AAC103")%>%#remove anything that was not defined by pass or fail
+  group_by(term,semGPA,passfail)%>%summarise(cnt=n())%>%
   mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
-  filter(passfail%in%c("Pass"))%>%
-  select(-cnt)%>%pivot_wider(names_from = passfail, values_from = prt)%>%
-  pivot_wider(names_from = term,values_from = Pass)%>%
-  filter(semGPA=="higher than 2")%>%select(-semGPA)#%>%View()
+  filter(passfail=="Pass")%>%select(-passfail,-cnt)%>%
+  pivot_wider(names_from = semGPA,values_from = prt)%>%
+  mutate(Diff=`> 2`-`< 2`)%>%select(term,`> 2`,`< 2`,Diff)%>%
+  rename("Semester GPA >2"="> 2","Semester GPA <2"="< 2","Difference"="Diff")
+
+```
+
+```{r static_tab.semgpa_pass}
+static_tab.semgpa_pass<-tab.semgpa_pass%>%
+kbl(align = "c",label="tab.semgpa_pass",#in-text reference
+    caption = "AAC103 pass rates by semester GPA", #table title
+    col.names =c("",names(tab.semgpa_pass[2:ncol(tab.semgpa_pass)]))) %>%#header names
+#set overall style
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+              full_width = F, position = "float_left",fixed_thead = T, font_size = 12)%>%
+#set header row
+row_spec(0,align = "c",color="black")%>%
+#set first column: 
+  column_spec(1, bold = T, border_right = F, background = "white", width = "10em",color="black")%>%
+#set difference column:
+column_spec(4, width = "5em", background = if_else(tab.semgpa_pass[4]>.3,color_grey,if_else(tab.semgpa_pass[4]>.18,color_greylight,"white")))
+
+#apply cf_color to multi columns
+for (i in 2:3){
+static_tab.semgpa_pass<-column_spec(
+  kable_input=static_tab.semgpa_pass,
+  column=i,color = "black",width = "5em",
+  background =cf_color(tab.semgpa_pass[i],a=.9,b=.8))
+i=i+1
+static_tab.semgpa_pass}
+```
+
+```{r showviz.semgpa_pass, include=TRUE}
+static_tab.semgpa_pass
+```
+
+Students with higher than 2.0 semester GPA usually have higher pass rate in AAC103 than students with lower than 2.0 semester GPA. The difference of AAC103 pass rate for students from different semester GPA is as large as 34% in 2020 Fall.
+
+# Semester GPA
+
+```{r tab.semGPA}
+tab.semGPA<-aac.crs%>%filter(!is.na(passfail))%>%
+  group_by(coursecode,term,semGPA)%>%summarise(cnt=n())%>%
+  mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
+  filter(semGPA=="> 2")%>%select(-semGPA,-cnt)
+
+tab.semGPA_avg<-tab.semGPA%>%group_by(coursecode)%>%
+  summarise(Average=mean(prt))
+
+tab.semGPA<-left_join(tab.semGPA,tab.semGPA_avg)%>%
+  #rename("Semester GPA >2"="prt")%>%
+  pivot_wider(names_from = term,values_from = prt)%>%
+   select(coursecode,Average,`2018 Fall`,`2019 Spring`,`2019 Fall`,`2020 Spring`,`2020 Fall`,`2021 Spring`,`2021 Fall`,`2022 Spring`)
+```
+
+```{r static_tab.semGPA}
+static_tab.semGPA<-tab.semGPA%>%
+kbl(align = "c",label="tab.semGPA",#in-text reference
+    caption = "Percentage of higher than 2.0 semester GPA", #table title
+    col.names =c("",names(tab.semGPA)[2:ncol(tab.semGPA)])) %>%#header names
+#set overall style
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+              full_width = F, position = "float_left",fixed_thead = T, font_size = 12)%>%
+#set header row
+row_spec(0,align = "c",color="black")%>%
+#set first column: 
+  column_spec(1, bold = T, border_right = F, background = "white", width = "10em",color="black")
+
+#apply cf_color to multi columns
+for (i in 2:ncol(tab.semGPA)){
+static_tab.semGPA<-column_spec(
+  kable_input=static_tab.semGPA,
+  column=i,color = "black",width = "5em",
+  background =cf_color(tab.semGPA[i],a=.8,b=.7))
+i=i+1
+static_tab.semGPA}
+```
+
+```{r showviz.semGPA, include=TRUE}
+static_tab.semGPA
+```
+
+An average of 85% students in AAC 102 course have a higher than 2.0 semester GPA in the past 5 years. The average percentage of higher than 2.0 semester GPA for AAC 103 course is 73%. 
+
+## Semester GPA for students who pass or fail AAC103
+
+```{r tab.semGPA_passfail}
+#whether taking AAC would help semester GPA increase
+tab.semGPA_passfail<-aac.crs%>%filter(!is.na(passfail),coursecode=="AAC103")%>%
+  group_by(term,passfail,semGPA)%>%summarise(cnt=n())%>%
+  mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
+  filter(semGPA=="> 2")%>%select(-semGPA,-cnt)
+
+tab.semGPA_passfail_avg<-tab.semGPA_passfail%>%group_by(passfail)%>%summarise(Average=mean(prt))
+
+tab.semGPA_passfail<-left_join(tab.semGPA_passfail,tab.semGPA_passfail_avg)%>%
+  pivot_wider(names_from = term,values_from = prt)%>%
+   select(passfail,Average,`2018 Fall`,`2019 Spring`,`2019 Fall`,`2020 Spring`,`2020 Fall`,`2021 Spring`,`2021 Fall`,`2022 Spring`)
+```
+
+```{r static_tab.semGPA_passfail}
+static_tab.semGPA_passfail<-tab.semGPA_passfail%>%
+kbl(align = "c",label="tab.semGPA_passfail",#in-text reference
+    caption = "Percentage of higher than 2.0 semester GPA among students who passed or failed AAC103", #table title
+    col.names =c("",names(tab.semGPA_passfail)[2:ncol(tab.semGPA_passfail)])) %>%#header names
+#set overall style
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+              full_width = F, position = "float_left",fixed_thead = T, font_size = 12)%>%
+#set header row
+row_spec(0,align = "c",color="black")%>%
+#set first column: 
+  column_spec(1, border_right = F, background = "white", width = "10em",color="black")
+
+for (i in 2:ncol(tab.semGPA_passfail)){
+static_tab.semGPA_passfail<-column_spec(
+  kable_input=static_tab.semGPA_passfail,
+  column=i,color = "black",width = "5em",
+  background =cf_color(tab.semGPA_passfail[i],a=.8,b=.7))
+i=i+1
+static_tab.semGPA_passfail}
+```
+
+```{r showviz.semGPA_passfail, include=TRUE}
+static_tab.semGPA_passfail
+```
+
+Among students who passed AAC 103, an average of 77% students have a higher than 2.0 semester GPA. In contrast, only an average of 58% students have a higher than 2.0 semester GPA among students who failed AAC 103.
+
+
+```{r hide tab.pass_semgpa}
+#Rate of passing AAC103 for different semester GPA: hard to interpretate -- hide
+tab.pass_semgpa<-aac.crs%>%filter(!is.na(passfail),coursecode=="AAC103")%>%#remove anything that was not defined by pass or fail
+  group_by(term,passfail,semGPA)%>%summarise(cnt=n())%>%
+  mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
+  filter(semGPA=="> 2")%>%select(-semGPA,-cnt)%>%
+  pivot_wider(names_from = passfail,values_from = prt)
+
+tab.pass_semgpa$term<-tab.pass_semgpa$term%>%str_replace("FALL","Fall")%>%str_replace("SPRING","Spring")
+```
+
+```{r explore semester GPA categories}
 #semGPA that lower than 2.0
 aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
   group_by(term,coursecode,passfail,semGPA)%>%summarise(cnt=n())%>%
@@ -198,33 +360,134 @@ aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pa
   filter(semGPA=="lower than 2")%>%select(-semGPA)#%>%View()
 ```
 
-## Cumulative GPA (using aac.crs)
 
-```{r cumulative GPA by passfail}
-#PASSED students' mean cumulative GPA
-aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
-  group_by(term,coursecode,passfail)%>%
-  summarise(mn=round(mean(Cumulative_GPA,na.rm=TRUE),digits=1))%>%
-  filter(passfail%in%c("Pass"))%>%
-  pivot_wider(names_from = passfail, values_from = mn)%>%
-  pivot_wider(names_from = term,values_from = Pass)#%>%View()
-#FAILED students' mean cumulative GPA
-aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
-  group_by(term,coursecode,passfail)%>%
-  summarise(mn=round(mean(Cumulative_GPA,na.rm=TRUE),digits=1))%>%
-  filter(passfail%in%c("Fail"))%>%
-  pivot_wider(names_from = passfail, values_from = mn)%>%
-  pivot_wider(names_from = term,values_from = Fail)#%>%View()
+# Retaking AAC103
+
+
+In analysis, we found 4 students took AAC 103 4 times and 2 of them took the course 5 times. Due to the small sample size, we exclude those students from pass rate reviewing. The following tables reported students who took AAC 103 for the 1st, 2nd, and 3rd time. 
+
+## Pass rate when retaking
+
+```{r tab.retakepass}
+#pass rate across cols
+pass.1st<-retake.change%>%filter(!is.na(grade_1sttime))%>%
+  count(grade_1sttime)%>%mutate(prt=n/sum(n))%>%
+  filter(grade_1sttime=="Pass")%>%select(-n,-grade_1sttime)%>%rename(`1st`=prt)
+
+pass.2nd<-retake.change%>%filter(!is.na(grade_2ndtime))%>%
+  count(grade_2ndtime)%>%mutate(prt=n/sum(n))%>%
+  filter(grade_2ndtime=="Pass")%>%select(-n,-grade_2ndtime)%>%rename(`2nd`=prt)
+
+pass.3rd<-retake.change%>%filter(!is.na(grade_3rdtime))%>%
+  count(grade_3rdtime)%>%mutate(prt=n/sum(n))%>%
+  filter(grade_3rdtime=="Pass")%>%select(-n,-grade_3rdtime)%>%rename(`3rd`=prt)
+
+pass.4th<-retake.change%>%filter(!is.na(grade_4thtime))%>%
+  count(grade_4thtime)%>%mutate(prt=n/sum(n))%>%
+  filter(grade_4thtime=="Pass")%>%select(-n,-grade_4thtime)%>%rename(`4th`=prt)
+
+pass.5th<-retake.change%>%filter(!is.na(grade_5thtime))%>%
+  count(grade_5thtime)%>%mutate(prt=n/sum(n))%>%
+  filter(grade_5thtime=="Pass")%>%select(-n,-grade_5thtime)%>%rename(`5th`=prt)
+
+tab.retakepass<-cbind(pass.1st,pass.2nd,pass.3rd,pass.4th,pass.5th)%>%
+  mutate(across(everything(),~percent(.x,digits = 0)))%>%
+  pivot_longer(cols = `1st`:`5th`,names_to = "Times", values_to = "Pass rate")
+
+N<-c(sum(is.na(retake.change$grade_1sttime)==FALSE),
+          sum(is.na(retake.change$grade_2ndtime)==FALSE),
+          sum(is.na(retake.change$grade_3rdtime)==FALSE),
+          sum(is.na(retake.change$grade_4thtime)==FALSE),
+          sum(is.na(retake.change$grade_5thtime)==FALSE))
+
+tab.retakepass<-tab.retakepass%>%mutate(N)%>%filter(N>10)
+
+
 ```
 
-## Retaking AAC103 (using retake.change)
+```{r static_tab.retakepass}
+static_tab.retakepass<-tab.retakepass%>%
+kbl(align = "c",label="tab.retakepass",#in-text reference
+    caption = "AAC103 pass rates for different times of retaking the course", #table title
+    col.names =c(names(tab.retakepass))) %>%#header names
+#set overall style
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+              full_width = F, position = "float_left",fixed_thead = T, font_size = 12)%>%
+#set header row
+row_spec(0,align = "c",color="black")%>%
+#set first column: 
+  column_spec(1, border_right = F, background = "white", color="black")%>%
+  column_spec(2,background = cf_color(tab.retakepass[2],a=.9,b=.8))%>%
+  column_spec(3,width = "4em")
+```
 
-```{r report retake.aac103}
+```{r showviz.retakepass, include=TRUE}
+static_tab.retakepass
+```
+
+First time takers has the highest pass rate of 83%. In other words, AAC 103's pass rate did not increase for along with students times of retaking the course. 
+
+## Semester GPA when retaking
+
+```{r tab.retake_semGPA}
+#pass rate across cols
+semGPA.1st<-retake.change%>%filter(!is.na(semGPA_1sttime))%>%
+  count(semGPA_1sttime)%>%mutate(prt=n/sum(n))%>%
+  filter(semGPA_1sttime=="> 2")%>%select(-n,-semGPA_1sttime)%>%rename(`1st`=prt)
+
+semGPA.2nd<-retake.change%>%filter(!is.na(semGPA_2ndtime))%>%
+  count(semGPA_2ndtime)%>%mutate(prt=n/sum(n))%>%
+  filter(semGPA_2ndtime=="> 2")%>%select(-n,-semGPA_2ndtime)%>%rename(`2nd`=prt)
+
+semGPA.3rd<-retake.change%>%filter(!is.na(semGPA_3rdtime))%>%
+  count(semGPA_3rdtime)%>%mutate(prt=n/sum(n))%>%
+  filter(semGPA_3rdtime=="> 2")%>%select(-n,-semGPA_3rdtime)%>%rename(`3rd`=prt)
+
+semGPA.4th<-retake.change%>%filter(!is.na(semGPA_4thtime))%>%
+  count(semGPA_4thtime)%>%mutate(prt=n/sum(n))%>%
+  filter(semGPA_4thtime=="> 2")%>%select(-n,-semGPA_4thtime)%>%rename(`4th`=prt)
+
+semGPA.5th<-retake.change%>%filter(!is.na(semGPA_5thtime))%>%
+  count(semGPA_5thtime)%>%mutate(prt=n/sum(n))%>%
+  filter(semGPA_5thtime=="> 2")%>%select(-n,-semGPA_5thtime)%>%rename(`5th`=prt)
+
+tab.retake_semGPA<-cbind(semGPA.1st,semGPA.2nd,semGPA.3rd,semGPA.4th,semGPA.5th)%>%
+  mutate(across(everything(),~percent(.x,digits = 0)))%>%
+  pivot_longer(cols = `1st`:`5th`,names_to = "Times", values_to = "Semester GPA >2")
+
+tab.retake_semGPA<-tab.retake_semGPA%>%mutate(N)%>%filter(N>10)
+```
+
+```{r static_tab.retake_semGPA}
+static_tab.retake_semGPA<-tab.retake_semGPA%>%
+kbl(align = "c",label="tab.retake_semGPA",#in-text reference
+    caption = "Higher than 2.0 Semester GPA for different times of retaking the course", #table title
+    col.names =c(names(tab.retake_semGPA))) %>%#header names
+#set overall style
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+              full_width = F, position = "float_left",fixed_thead = T, font_size = 12)%>%
+#set header row
+row_spec(0,align = "c",color="black")%>%
+#set first column: 
+  column_spec(1, border_right = F, background = "white", color="black")%>%
+  column_spec(2,background = cf_color(tab.retake_semGPA[2],a=.8,b=.7))%>%
+  column_spec(3,width = "4em")
+```
+
+```{r showviz.retake_semGP, include=TRUE}
+static_tab.retake_semGPA
+```
+
+Percentage of higher than 2.0 semester GPA among AAC 103 retakers range from 46%-73%. The second time that students taking AAC 103 has 73%, the highest percentage, of higher than 2.0 GPA. 
+
+
+```{r explore retake.aac103}
 #how many passed/semgpa for the first time?
 retake.change%>%group_by(semGPA_1sttime,grade_1sttime)%>%summarise(cnt=n())%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%select(-cnt)%>%
   pivot_wider(names_from = grade_1sttime, values_from = prt)#%>%View()#around 14-21% students failed and a majority passed aac103; difference between different semGPA groups is only 7%
 #report N
 retake.change%>%count(semGPA_1sttime)
+
 
 #compared grade in 2nd to 1st, Increase/Decrease/Same?
 retake.change%>%group_by(grade_1to2)%>%summarise(cnt=n())%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%select(-cnt)#%>%View()#

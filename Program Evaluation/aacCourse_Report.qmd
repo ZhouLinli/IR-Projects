@@ -1,6 +1,24 @@
 ---
-title: "Academic Achievement Center (AAC) Courses Review"
-format: pdf
+title: "Academic Achievement Center (AAC) Courses Enrollment and Grades Review (2018 Fall - 2022 Spring)"
+author: 'Lasell University Institutional Research'
+date: "`r Sys.Date()`"
+format: 
+  pdf:
+    include-in-header:
+      - text: |
+          \usepackage{fancyhdr}
+          \addtolength{\headheight}{0.7cm}
+    
+          \pagestyle{fancy} 
+          \fancyhead{}
+          \fancyfoot{}
+    
+          \fancyhead[LO]{\includegraphics[height=1.3cm]{/Users/linlizhou/Documents/Rprojects/IR.png}}
+          \fancyhead[RE]{\vspace{4mm}\textbf{2022 First Impression Survey Results}}
+          \fancyfoot[R]{\thepage}
+          \fancyfoot[L]{Please contact ir@lasell.edu for questions}
+    
+          \renewcommand{\headrulewidth}{0pt}
 ---
 
 ```{r load.df.funs, include=FALSE}

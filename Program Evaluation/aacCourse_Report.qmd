@@ -86,7 +86,8 @@ kbl(align = "c",booktabs = T,label="tab.aacenroll",#in-text reference
                  #str_wrap(names(tab.aacenroll)[2:ncol(tab.aacenroll)],width = 5)
                  )) %>%#header names
 #set overall style
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+  kable_styling(latex_options = c('hold_position', 'striped'),#for non html output
+                bootstrap_options = c("striped", "hover", "condensed", "responsive"),#for html output
                 #have to remove left_flot position to render pdf successfully
 #fill the page width-wise,#header stay when scroll
               full_width = F, fixed_thead = T, font_size = 12)%>%
@@ -135,7 +136,7 @@ kbl(align = "c",booktabs = T,label="tab.aacpass",#in-text reference
     caption = "AAC courses pass rates", #table title
     col.names =c("",names(tab.aacpass)[2:ncol(tab.aacpass)])) %>%#header names
 #set overall style
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+  kable_styling(latex_options = c('hold_position', 'striped'),bootstrap_options = c("striped", "hover", "condensed", "responsive"),
               full_width = F, fixed_thead = T, font_size = 12)%>%
 #set header row
 #row_spec(0,align = "c",color="black")%>%
@@ -212,7 +213,7 @@ kbl(align = "c",booktabs = T,label="tab.semgpa_pass",#in-text reference
     caption = "AAC103 pass rates by semester GPA", #table title
     col.names =c("",names(tab.semgpa_pass[2:ncol(tab.semgpa_pass)]))) %>%#header names
 #set overall style
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+  kable_styling(latex_options = c('hold_position', 'striped'),bootstrap_options = c("striped", "hover", "condensed", "responsive"),
               full_width = F, fixed_thead = T, font_size = 12)%>%
 #set header row row_spec(0,align = "c",color="black")%>%
 #set first column: 
@@ -259,11 +260,11 @@ kbl(align = "c",booktabs = T,label="tab.semGPA",#in-text reference
     caption = "Percentage of higher than 2.0 semester GPA", #table title
     col.names =c("",names(tab.semGPA)[2:ncol(tab.semGPA)])) %>%#header names
 #set overall style
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+  kable_styling(latex_options = c('hold_position', 'striped'),bootstrap_options = c("striped", "hover", "condensed", "responsive"),
               full_width = F, fixed_thead = T, font_size = 12)%>%
 #set header row row_spec(0,align = "c",color="black")%>%
 #set first column: 
-  column_spec(1, bold = T, border_right = F, background = "white", width = "3em",color="black")
+  column_spec(1, bold = T, border_right = F, background = "white", width = "4em",color="black")
 
 #apply cf_color to multi columns
 for (i in 2:ncol(tab.semGPA)){
@@ -303,7 +304,7 @@ kbl(align = "c",booktabs = T,label="tab.semGPA_passfail",#in-text reference
     caption = "Percentage of higher than 2.0 semester GPA among students who passed or failed AAC103", #table title
     col.names =c("",names(tab.semGPA_passfail)[2:ncol(tab.semGPA_passfail)])) %>%#header names
 #set overall style
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+  kable_styling(latex_options = c('hold_position', 'striped'),bootstrap_options = c("striped", "hover", "condensed", "responsive"),
               full_width = F, fixed_thead = T, font_size = 12)%>%
 #set header row row_spec(0,align = "c",color="black")%>%
 #set first column: 
@@ -417,7 +418,7 @@ kbl(align = "c",booktabs = T,label="tab.retakepass",#in-text reference
     caption = "AAC103 pass rates for different times of retaking the course", #table title
     col.names =c(names(tab.retakepass))) %>%#header names
 #set overall style
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+  kable_styling(latex_options = c('hold_position', 'striped'),bootstrap_options = c("striped", "hover", "condensed", "responsive"),
               full_width = F, fixed_thead = T, font_size = 12)%>%
 #set header row row_spec(0,align = "c",color="black")%>%
 #set first column: 
@@ -469,7 +470,7 @@ kbl(align = "c",booktabs = T,label="tab.retake_semGPA",#in-text reference
     caption = "Higher than 2.0 Semester GPA for different times of retaking the course", #table title
     col.names =c(names(tab.retake_semGPA))) %>%#header names
 #set overall style
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+  kable_styling(latex_options = c('hold_position', 'striped'),bootstrap_options = c("striped", "hover", "condensed", "responsive"),
               full_width = F, fixed_thead = T, font_size = 12)%>%
 #set header row row_spec(0,align = "c",color="black")%>%
 #set first column: 

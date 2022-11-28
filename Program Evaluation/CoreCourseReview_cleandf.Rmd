@@ -15,76 +15,6 @@ editor_options:
 source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
 ```
 
-# Overview of data frames created
-
-1.  corelist: CourseCode, CourseGroup
-
-2.  sectiontally_1822allcrs: merging 18-22 fall and spring from "section
-    tally" files,
-
-    \*coursecode=str_extract(event_id,"[A-Z]+[0-9]+")
-
-3.  sectiontally_1822core: leftjoin core list, filter
-    "Current_Enrollment"\>0, factorize "term" and "CourseGroup"
-
-    ```{r}
-    #save: 
-    write_xlsx(sectiontally_1822allcrs,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 Core Curriculum/data files/Section Tally_1822allcrs.xlsx")
-
-    write_xlsx(sectiontally_1822core,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 Core Curriculum/data files/Section Tally_1822core.xls")
-    ```
-
-4.  stucrs_1822allcrs: merging 18-22 fall and spring files from "student
-    info by course" files, only keep valid grades in "Final_Grade", only
-    keep valid (\>0) "Semester_GPA", only keep active students (not
-    dropped the class) in "Add_Drop", grade (C or better, D, F, W, P),
-    convert letter grade to numeric "GPA"
-
-5.  stucrs_1822core: leftjoin core list, factorize term and CourseGroup
-
-6.  stucrs.id: distinct ppid by term, merge with dtm (TRANSFER_YN var)
-    and deduplicate TRANSFER_YN
-
-    ```{r}
-    #save: 
-    write_xlsx(stucrs_1822allcrs,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 Core Curriculum/data files/StudentInfoCourse_1822allcrs.xlsx")
-
-    write_xlsx(stucrs_1822core,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 Core Curriculum/data files/StudentInfoCourse_1822core.xlsx")
-
-    write_xlsx(stucrs.id,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 Core Curriculum/data files/StudentInfoCourse_1822core_dedupid.xlsx")
-    ```
-
-7.  Corepath.ls: 2018 cohort ppid, term, CourseGroup , matric
-
-8.  Corepath (viz of corepath.ls): ppid, coursegroup as cols; term as
-    values; matric category
-
-    ```{r}
-    #save
-    write_xlsx(corepath,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 Core Curriculum/data files/path_18cohort.xlsx")
-
-    write_xlsx(corepath.ls,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 Core Curriculum/data files/path_df_18cohort.xlsx")
-    ##AFTER EXPORT TO EXCEL: I did conditional formatting for term 1-8, each cell that contains a term ("1") has a different color (1-4 is ascending blue, 5-8 is ascending green)
-    ```
-
-9.  aac.crs: filter aac courses from stucrs_1822allcrs; term,coursecode,
-    Semester_GPA, Cumulative_GPA
-
-10. retake103df: based on aac.crs, filter out those who retake aac103
-    (appear more than once when groupby ppid and course and then count
-    ppid in that list)
-
-11. retake.change: "passfail" and "semGPA" for each ppid (row) each term
-    (col), more cols: compare previous term to later term
-
-    ```{r}
-    #save: 
-    write_xlsx(aac.crs,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 AAC/data files/StudentInfoCourse_1822aac.xlsx")
-
-    write_xlsx(retake103df,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 AAC/data files/aac103retake_stuinfo.xlsx")
-
-    write_xlsx(retake.change,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 AAC/data files/aac103retake_termchanges.xlsx")
-    ```
 
 # Core Course List (corelist)
 
@@ -293,8 +223,9 @@ term=factor(term,levels = c("2018 FALL","2019 SPRING","2019 FALL","2020 SPRING",
 #add category var (pass vs fail of aac course)
 mutate(passfail=case_when(Final_Grade%in%c("P","A")~"Pass",Final_Grade%in%c("F","W")~"Fail"))%>%#check:%>%count(passfail)
 #add category var (2.0 semester GPA)
-mutate(semGPA=case_when(Semester_GPA>=2~"higher than 2",Semester_GPA<2~"lower than 2"))#check: %>%count(semGPA)
-
+mutate(semGPA=case_when(Semester_GPA>=2~"> 2",Semester_GPA<2~"< 2"),
+       semGPA=factor(semGPA,levels = c("> 2","< 2")))%>%#check: %>%count(semGPA)
+mutate(passfail=factor(passfail,levels = c("Pass","Fail")))#reorder
 #check: aac.crs%>%count(Add_Drop); aac.crs%>%count(Final_Grade)
 ```
 
@@ -412,3 +343,74 @@ retake.change<-full_join(grades.change.table,semGPA.change.table)%>%
   )
 
 ```
+
+# Overview of data frames created
+
+1.  corelist: CourseCode, CourseGroup
+
+2.  sectiontally_1822allcrs: merging 18-22 fall and spring from "section
+    tally" files,
+
+    \*coursecode=str_extract(event_id,"[A-Z]+[0-9]+")
+
+3.  sectiontally_1822core: leftjoin core list, filter
+    "Current_Enrollment"\>0, factorize "term" and "CourseGroup"
+
+    ```{r}
+    #save: 
+    write_xlsx(sectiontally_1822allcrs,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 Core Curriculum/data files/Section Tally_1822allcrs.xlsx")
+
+    write_xlsx(sectiontally_1822core,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 Core Curriculum/data files/Section Tally_1822core.xls")
+    ```
+
+4.  stucrs_1822allcrs: merging 18-22 fall and spring files from "student
+    info by course" files, only keep valid grades in "Final_Grade", only
+    keep valid (\>0) "Semester_GPA", only keep active students (not
+    dropped the class) in "Add_Drop", grade (C or better, D, F, W, P),
+    convert letter grade to numeric "GPA"
+
+5.  stucrs_1822core: leftjoin core list, factorize term and CourseGroup
+
+6.  stucrs.id: distinct ppid by term, merge with dtm (TRANSFER_YN var)
+    and deduplicate TRANSFER_YN
+
+    ```{r}
+    #save: 
+    write_xlsx(stucrs_1822allcrs,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 Core Curriculum/data files/StudentInfoCourse_1822allcrs.xlsx")
+
+    write_xlsx(stucrs_1822core,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 Core Curriculum/data files/StudentInfoCourse_1822core.xlsx")
+
+    write_xlsx(stucrs.id,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 Core Curriculum/data files/StudentInfoCourse_1822core_dedupid.xlsx")
+    ```
+
+7.  Corepath.ls: 2018 cohort ppid, term, CourseGroup , matric
+
+8.  Corepath (viz of corepath.ls): ppid, coursegroup as cols; term as
+    values; matric category
+
+    ```{r}
+    #save
+    write_xlsx(corepath,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 Core Curriculum/data files/path_18cohort.xlsx")
+
+    write_xlsx(corepath.ls,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 Core Curriculum/data files/path_df_18cohort.xlsx")
+    ##AFTER EXPORT TO EXCEL: I did conditional formatting for term 1-8, each cell that contains a term ("1") has a different color (1-4 is ascending blue, 5-8 is ascending green)
+    ```
+
+9.  aac.crs: filter aac courses from stucrs_1822allcrs; term,coursecode,
+    Semester_GPA, Cumulative_GPA
+
+10. retake103df: based on aac.crs, filter out those who retake aac103
+    (appear more than once when groupby ppid and course and then count
+    ppid in that list)
+
+11. retake.change: "passfail" and "semGPA" for each ppid (row) each term
+    (col), more cols: compare previous term to later term
+
+    ```{r}
+    #save: 
+    write_xlsx(aac.crs,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 AAC/data files/StudentInfoCourse_1822aac.xlsx")
+
+    write_xlsx(retake103df,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 AAC/data files/aac103retake_stuinfo.xlsx")
+
+    write_xlsx(retake.change,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 AAC/data files/aac103retake_termchanges.xlsx")
+    ```

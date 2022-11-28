@@ -1,7 +1,6 @@
 ---
-title: "Academic Achievement Center Review"
-format: html
-editor: visual
+title: "Academic Achievement Center (AAC) Courses Review"
+format: pdf
 ---
 
 ```{r load.df.funs, include=FALSE}
@@ -9,12 +8,19 @@ editor: visual
 source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
 
 #change format: html (for render in Viewer) 
+#format: html
 #to the following for the word doc. version report
 #format: 
 #  docx:
 #    reference-doc: /Users/linlizhou/Documents/Rprojects/lasell.report.IN-USE.docx
 #    prefer-html: true
-
+#format:
+#    pdf:
+ #       toc: true
+  #      toc-depth: 2
+   #     toc-title: Table of contents
+    #    number-sections: true
+     #   highlight-style: github
 #the following df are created from "/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R" 
 #enrollment of core courses
 #grades of aac courses
@@ -80,7 +86,7 @@ kbl(align = "c",label="tab.aacenroll",#in-text reference
 #set overall style
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
 #fill the page width-wise,#header stay when scroll
-              full_width = F, position = "float_left",fixed_thead = T, font_size = 12)%>%
+              full_width = F, fixed_thead = T, font_size = 12)%>%
 #set header row
 row_spec(0,align = "c",color="black")%>%
 #set first column: 
@@ -127,7 +133,7 @@ kbl(align = "c",label="tab.aacpass",#in-text reference
     col.names =c("",names(tab.aacpass)[2:ncol(tab.aacpass)])) %>%#header names
 #set overall style
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
-              full_width = F, position = "float_left",fixed_thead = T, font_size = 12)%>%
+              full_width = F, fixed_thead = T, font_size = 12)%>%
 #set header row
 row_spec(0,align = "c",color="black")%>%
 #set first column: 
@@ -204,7 +210,7 @@ kbl(align = "c",label="tab.semgpa_pass",#in-text reference
     col.names =c("",names(tab.semgpa_pass[2:ncol(tab.semgpa_pass)]))) %>%#header names
 #set overall style
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
-              full_width = F, position = "float_left",fixed_thead = T, font_size = 12)%>%
+              full_width = F, fixed_thead = T, font_size = 12)%>%
 #set header row
 row_spec(0,align = "c",color="black")%>%
 #set first column: 
@@ -252,7 +258,7 @@ kbl(align = "c",label="tab.semGPA",#in-text reference
     col.names =c("",names(tab.semGPA)[2:ncol(tab.semGPA)])) %>%#header names
 #set overall style
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
-              full_width = F, position = "float_left",fixed_thead = T, font_size = 12)%>%
+              full_width = F, fixed_thead = T, font_size = 12)%>%
 #set header row
 row_spec(0,align = "c",color="black")%>%
 #set first column: 
@@ -297,7 +303,7 @@ kbl(align = "c",label="tab.semGPA_passfail",#in-text reference
     col.names =c("",names(tab.semGPA_passfail)[2:ncol(tab.semGPA_passfail)])) %>%#header names
 #set overall style
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
-              full_width = F, position = "float_left",fixed_thead = T, font_size = 12)%>%
+              full_width = F, fixed_thead = T, font_size = 12)%>%
 #set header row
 row_spec(0,align = "c",color="black")%>%
 #set first column: 
@@ -412,7 +418,7 @@ kbl(align = "c",label="tab.retakepass",#in-text reference
     col.names =c(names(tab.retakepass))) %>%#header names
 #set overall style
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
-              full_width = F, position = "float_left",fixed_thead = T, font_size = 12)%>%
+              full_width = F, fixed_thead = T, font_size = 12)%>%
 #set header row
 row_spec(0,align = "c",color="black")%>%
 #set first column: 
@@ -465,7 +471,7 @@ kbl(align = "c",label="tab.retake_semGPA",#in-text reference
     col.names =c(names(tab.retake_semGPA))) %>%#header names
 #set overall style
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
-              full_width = F, position = "float_left",fixed_thead = T, font_size = 12)%>%
+              full_width = F, fixed_thead = T, font_size = 12)%>%
 #set header row
 row_spec(0,align = "c",color="black")%>%
 #set first column: 

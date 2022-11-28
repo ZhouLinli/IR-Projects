@@ -55,12 +55,19 @@ cf_color<-function(x,a=20,b=10,
 
 # Summary
 
-* Among the past 5 years (2018 Fall to 2022 Spring), AAC 103 course has an average enrollment of 50 students.
-* Average pass rate for AAC 103 course is 82%.
-* Students with higher than 2.0 semester GPA usually have higher pass rate in AAC103 than students with lower than 2.0 semester GPA.
-* An average of 73% students in AAC 103 course have a higher than 2.0 semester GPA. 
-* Among those who pass AAC 103, 77% have a higher than 2.0 GPA and 23% do not have a good enough semester GPA. Among those who failed AAC 103, 58% still have a higher than 2.0 semester GPA (without succeeding in AAC 1O3 course).
-* Taking AAC 103 the second and third times does not improve pass rate or percentage of obtaining higher than 2.0 semester GPA.
+-   Among the past 5 years (2018 Fall to 2022 Spring), AAC 103 course
+    has an average enrollment of 50 students.
+-   Average pass rate for AAC 103 course is 82%.
+-   Students with higher than 2.0 semester GPA usually have higher pass
+    rate in AAC103 than students with lower than 2.0 semester GPA.
+-   An average of 73% students in AAC 103 course have a higher than 2.0
+    semester GPA.
+-   Among those who pass AAC 103, 77% have a higher than 2.0 GPA and 23%
+    do not have a good enough semester GPA. Among those who failed AAC
+    103, 58% still have a higher than 2.0 semester GPA (without
+    succeeding in AAC 1O3 course).
+-   Taking AAC 103 the second and third times does not improve pass rate
+    or percentage of obtaining higher than 2.0 semester GPA.
 
 # Enrollment
 
@@ -86,7 +93,7 @@ kbl(align = "c",booktabs = T,label="tab.aacenroll",#in-text reference
                  #str_wrap(names(tab.aacenroll)[2:ncol(tab.aacenroll)],width = 5)
                  )) %>%#header names
 #set overall style
-  kable_styling(latex_options = c('hold_position', 'striped'),#for non html output
+  kable_styling(latex_options = c('hold_position'),#for non html output
                 bootstrap_options = c("striped", "hover", "condensed", "responsive"),#for html output
                 #have to remove left_flot position to render pdf successfully
 #fill the page width-wise,#header stay when scroll
@@ -97,7 +104,7 @@ kbl(align = "c",booktabs = T,label="tab.aacenroll",#in-text reference
   column_spec(1, bold = T, border_right = F, background = "white", width = "4em",color="black")
 
 #apply cf to multi columns
-for (i in 2:ncol(tab.aacenroll)){
+for (i in 3:ncol(tab.aacenroll)){
 static_tab.aacenroll<-column_spec(
   kable_input=static_tab.aacenroll,
   column=i, width = "3em",background =cf_color(tab.aacenroll[i],a=70,b=50))
@@ -109,7 +116,18 @@ static_tab.aacenroll}
 static_tab.aacenroll
 ```
 
-Among the past 5 years (2018 Fall to 2022 Spring), AAC courses enrollment range from 34 to 79. An average enrollment for AAC103 is 50 students.
+```{r reportvalues.enroll}
+n_aacenroll<-aac.crs%>%group_by(coursecode,term)%>%summarise(n=n_distinct(people_code_id))%>%
+  mutate(Average=round(mean(n),digits = 0))
+
+n_aacenroll[n_aacenroll$coursecode=="AAC103","Average"][[1]][1]
+```
+
+Among the past 5 years (2018 Fall to 2022 Spring), AAC courses
+enrollment range from `r min(n_aacenroll$n)` to `r max(n_aacenroll$n)`.
+An average enrollment for AAC103 is
+`r n_aacenroll[n_aacenroll$coursecode=="AAC103","Average"][[1]][1]`
+students.
 
 # Pass Rate
 
@@ -157,7 +175,9 @@ static_tab.aacpass}
 static_tab.aacpass
 ```
 
-Average pass rate for AAC courses are above 82% across the past 5 academic years.
+Average pass rate for AAC courses are above
+`r mean(tab.aacpass_avg$Average)%>%percent(digit=0)` across the past 5
+academic years.
 
 ```{r explore cumulative GPA by passfail}
 #PASSED students' mean cumulative GPA
@@ -235,7 +255,10 @@ static_tab.semgpa_pass}
 static_tab.semgpa_pass
 ```
 
-Students with higher than 2.0 semester GPA usually have higher pass rate in AAC103 than students with lower than 2.0 semester GPA. The difference of AAC103 pass rate for students from different semester GPA is as large as 34% in 2020 Fall.
+Students with higher than 2.0 semester GPA usually have a
+`r min(tab.semgpa_pass$Difference)` to
+`r max(tab.semgpa_pass$Difference)` higher AAC 103 pass rate than
+students with lower than 2.0 semester GPA.
 
 # Semester GPA
 
@@ -280,7 +303,12 @@ static_tab.semGPA}
 static_tab.semGPA
 ```
 
-An average of 85% students in AAC 102 course have a higher than 2.0 semester GPA in the past 5 years. The average percentage of higher than 2.0 semester GPA for AAC 103 course is 73%. 
+An average of
+`r tab.semGPA_avg[tab.semGPA_avg$coursecode=="AAC102","Average"][[1]][1]`
+students in AAC 102 course have a higher than 2.0 semester GPA in the
+past 5 years. The average percentage of higher than 2.0 semester GPA for
+AAC 103 course is
+`r tab.semGPA_avg[tab.semGPA_avg$coursecode=="AAC103","Average"][[1]][1]`.
 
 ## Semester GPA for students who pass or fail AAC103
 
@@ -323,8 +351,13 @@ static_tab.semGPA_passfail}
 static_tab.semGPA_passfail
 ```
 
-Among students who passed AAC 103, an average of 77% students have a higher than 2.0 semester GPA. In contrast, only an average of 58% students have a higher than 2.0 semester GPA among students who failed AAC 103.
-
+Among students who passed AAC 103, an average of
+`r tab.semGPA_passfail_avg[tab.semGPA_passfail_avg$passfail=="Pass","Average"][[1]][1]`
+students have a higher than 2.0 semester GPA. In contrast, only an
+average of
+`r tab.semGPA_passfail_avg[tab.semGPA_passfail_avg$passfail=="Fail","Average"][[1]][1]`
+students have a higher than 2.0 semester GPA among students who failed
+AAC 103.
 
 ```{r hide tab.pass_semgpa}
 #Rate of passing AAC103 for different semester GPA: hard to interpretate -- hide
@@ -367,11 +400,7 @@ aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pa
   filter(semGPA=="lower than 2")%>%select(-semGPA)#%>%View()
 ```
 
-
 # Retaking AAC103
-
-
-In analysis, we found 4 students took AAC 103 4 times and 2 of them took the course 5 times. Due to the small sample size, we exclude those students from pass rate reviewing. The following tables reported students who took AAC 103 for the 1st, 2nd, and 3rd time. 
 
 ## Pass rate when retaking
 
@@ -408,8 +437,6 @@ N<-c(sum(is.na(retake.change$grade_1sttime)==FALSE),
           sum(is.na(retake.change$grade_5thtime)==FALSE))
 
 tab.retakepass<-tab.retakepass%>%mutate(N)%>%filter(N>10)
-
-
 ```
 
 ```{r static_tab.retakepass}
@@ -431,7 +458,17 @@ kbl(align = "c",booktabs = T,label="tab.retakepass",#in-text reference
 static_tab.retakepass
 ```
 
-First time takers has the highest pass rate of 83%. In other words, AAC 103's pass rate did not increase for along with students times of retaking the course. 
+In analysis, we found `r N[4]` students took AAC 103 4 times and
+`r N[5]` of them took the course 5 times. Due to the small sample size,
+we exclude those students from pass rate reviewing. The following tables
+reported students who took AAC 103 for the 1st, 2nd, and 3rd time.
+
+First time takers has the highest pass rate of
+`r tab.retakepass[1,"Pass rate"]`, while the pass rate decreased to
+`r tab.retakepass[2,"Pass rate"]` and `r tab.retakepass[3,"Pass rate"]`
+when students retaking the course for the second and third time. In
+other words, AAC 103's pass rate did not increase for along with
+students times of retaking the course.
 
 ## Semester GPA when retaking
 
@@ -483,8 +520,11 @@ kbl(align = "c",booktabs = T,label="tab.retake_semGPA",#in-text reference
 static_tab.retake_semGPA
 ```
 
-Percentage of higher than 2.0 semester GPA among AAC 103 retakers range from 46%-73%. The second time that students taking AAC 103 has 73%, the highest percentage, of higher than 2.0 GPA. 
-
+Percentage of higher than 2.0 semester GPA among AAC 103 retakers range
+from `r min(tab.retake_semGPA[,"Semester GPA >2"])%>%percent(digit=0)`
+to `r max(tab.retake_semGPA[,"Semester GPA >2"])%>%percent(digit=0)`,
+with the second time being the highest percentage of higher than 2.0
+GPA.
 
 ```{r explore retake.aac103}
 #how many passed/semgpa for the first time?

@@ -112,8 +112,7 @@ Final_Grade=="B+"~"3.3",Final_Grade=="B"~"3",Final_Grade=="B-"~"2.7",
 Final_Grade=="C+"~"2.3",Final_Grade=="C"~"2",Final_Grade=="C-"~"1.7",
 Final_Grade=="D+"~"1.3",Final_Grade=="D"~"1",Final_Grade=="D-"~"0.7"),
 GPA=as.numeric(GPA))%>%
-# only kep valid semester GPA
-filter(Semester_GPA>0)%>%
+# DO NOT only keep semester GPA>0 since people can fail all courses: filter(Semester_GPA>0)%>%
 #exclude students who dropped the class from calculating/reporting enrollment or gpa
 filter(Add_Drop!="D")
 #check: stucrs_1822allcrs%>%count(Add_Drop)
@@ -142,8 +141,12 @@ mutate(term=paste(academic_year,academic_term,sep=" "),
 
 ```{r unduplicated student list for transfer status}
 #transfer status in dtm
-dmt<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/DataMart To Date/Final Datamart up to Date 09262022.xlsx")
-dmt.transfer<-dmt%>%select(PC_ID,TRANSFER_YN)
+#instead of reading dmt (huge file) every time, save a portion of it and read the smaller new data file
+#dmt<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/DataMart To Date/Final Datamart up to Date 09262022.xlsx")
+#dmt.transfer<-dmt%>%select(PC_ID,TRANSFER_YN,GRADUATED_YN)
+#write_xlsx(dmt.transfer,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 AAC/data files/dmt.transfer.xlsx")
+
+dmt.transfer<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 AAC/data files/dmt.transfer.xlsx")
 
 
 #unduplicated student list: distinctive ppid for each term: 
@@ -189,7 +192,7 @@ corepath<-corepath.ls%>%group_by(people_code_id,CourseGroup)%>%count(term)%>%sel
 
 ```{r corepath add matric col}
 #merge more background vars to corepath
-corepath<-left_join(corepath,dmt[c("PC_ID","GRADUATED_YN")],by=c("people_code_id"="PC_ID"))
+corepath<-left_join(corepath,dmt.transfer[c("PC_ID","GRADUATED_YN")],by=c("people_code_id"="PC_ID"))
 
 #de-duplicate: any of the term is “1” then they are
 y<-corepath%>%mutate(matric=case_when(GRADUATED_YN=="Y"~"Graduated",GRADUATED_YN!="Y"~"Not Graduate"))%>%
@@ -246,9 +249,9 @@ retake103id<-aac.crs%>%filter(coursecode=="AAC103",!is.na(passfail))%>%
 retake103df<-aac.crs%>%filter(people_code_id%in%retake103id$people_code_id,!is.na(passfail),coursecode=="AAC103")%>%
   unique()%>%arrange(people_code_id)%>%
   #distinguish term sequence
-  mutate(term=factor(term,levels = c("2018 FALL","2019 SPRING","2019 FALL","2020 SPRING","2020 FALL","2021 SPRING","2021 FALL","2022 SPRING")),
-    term_num=case_when(term=="2018 FALL"~1,term=="2019 SPRING"~2,term=="2019 FALL"~3,term=="2020 SPRING"~4,
-    term=="2020 FALL"~5,term=="2021 SPRING"~6,term=="2021 FALL"~7,term=="2022 SPRING"~8))
+  mutate(term=factor(term,levels = c("2018 Fall","2019 Spring","2019 Fall","2020 Spring","2020 Fall","2021 Spring","2021 Fall","2022 Spring")),
+    term_num=case_when(term=="2018 Fall"~1,term=="2019 Spring"~2,term=="2019 Fall"~3,term=="2020 Spring"~4,
+    term=="2020 Fall"~5,term=="2021 Spring"~6,term=="2021 Fall"~7,term=="2022 Spring"~8))
   #check:%>%count(people_code_id)
 
 #transform term num
@@ -367,8 +370,7 @@ retake.change<-full_join(grades.change.table,semGPA.change.table)%>%
     ```
 
 4.  stucrs_1822allcrs: merging 18-22 fall and spring files from "student
-    info by course" files, only keep valid grades in "Final_Grade", only
-    keep valid (\>0) "Semester_GPA", only keep active students (not
+    info by course" files, only keep valid grades in "Final_Grade", only keep active students (not
     dropped the class) in "Add_Drop", grade (C or better, D, F, W, P),
     convert letter grade to numeric "GPA"
 

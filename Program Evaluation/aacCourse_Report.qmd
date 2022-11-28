@@ -1,12 +1,11 @@
 ---
-title: |
-  | Academic Achievement Center (AAC) Courses 
-  | Enrollments and Grades Review 
+title: "Academic Achievement Center (AAC) Courses  \nEnrollments and Grades Review"
 subtitle: "(2018 Fall - 2022 Spring)"
 author: 'Lasell University Institutional Research'
 date: "`r Sys.Date()`"
 format: 
-  pdf:
+  docx:
+    prefer-html: true
     include-in-header:
       - text:
           \usepackage{fancyhdr}

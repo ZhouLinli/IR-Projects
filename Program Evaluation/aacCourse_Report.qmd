@@ -4,7 +4,9 @@ subtitle: "(2018 Fall - 2022 Spring)"
 author: 'Lasell University Institutional Research'
 date: "`r Sys.Date()`"
 format: 
-  pdf:
+  docx:
+    reference-doc: /Users/linlizhou/Documents/Rprojects/IR-Projects/lasell.report.template.docx
+    prefer-html: true
     include-in-header:
       - text:
           \usepackage{fancyhdr}
@@ -15,9 +17,8 @@ format:
           \fancyfoot{}
     
           \fancyhead[LO]{\includegraphics[height=1.3cm]{/Users/linlizhou/Documents/Rprojects/IR.png}}
-          \fancyhead[RE]{\vspace{4mm}\textbf{2022 First Impression Survey Results}}
-          \fancyfoot[R]{\thepage}
-          \fancyfoot[L]{Please contact ir@lasell.edu for questions}
+          \fancyhead[RE]{\vspace{4mm}\textbf{AAC Courses Review}}
+          \fancyfoot[C]{\thepage}
     
           \renewcommand{\headrulewidth}{0pt}
 ---
@@ -628,3 +629,4 @@ retake.change%>%filter(!is.na(semGPA_4to5))%>%
     `r tab.retake_semGPA[1,"Semester GPA >2"]%>%percent(digit=0)` and
     `r tab.retake_semGPA[2,"Semester GPA >2"]%>%percent(digit=0)`
 
+Please contact lzhou@lasell.edu for questions

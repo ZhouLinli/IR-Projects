@@ -5,8 +5,7 @@ author: 'Lasell University Institutional Research'
 date: "`r Sys.Date()`"
 format: 
   pdf:
-    documentclass: report
-    classoption: [twoside, landscape]
+    classoption: [twoside]
     include-in-header:
       - text: |
           \usepackage{fancyhdr}

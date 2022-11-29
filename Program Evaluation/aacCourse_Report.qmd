@@ -4,11 +4,11 @@ subtitle: "(2018 Fall - 2022 Spring)"
 author: 'Lasell University Institutional Research'
 date: "`r Sys.Date()`"
 format: 
-  docx:
-    reference-doc: /Users/linlizhou/Documents/Rprojects/IR-Projects/lasell.report.template.docx
-    prefer-html: true
+  pdf:
+    documentclass: report
+    classoption: [twoside, landscape]
     include-in-header:
-      - text:
+      - text: |
           \usepackage{fancyhdr}
           \addtolength{\headheight}{0.7cm}
     
@@ -32,7 +32,7 @@ source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
 #to the following for the word doc. version report
 #format: 
 #  docx:
-#    reference-doc: /Users/linlizhou/Documents/Rprojects/lasell.report.IN-USE.docx
+#    reference-doc: /Users/linlizhou/Documents/Rprojects/IR-Projects/lasell.report.template.docx
 #    prefer-html: true
 #format:
 #    pdf:
@@ -463,10 +463,13 @@ kbl(align = "c",booktabs = T,label="tab.retakepass",#in-text reference
 static_tab.retakepass
 ```
 
+:::{.callout-note}
 In analysis, we found `r N[4]` students took AAC 103 4 times and
 `r N[5]` of them took the course 5 times. Due to the small sample size,
 we exclude those students from pass rate reviewing. The following tables
 reported students who took AAC 103 for the 1st, 2nd, and 3rd time.
+:::
+
 
 First time takers has the highest pass rate of
 `r tab.retakepass[1,"Pass rate"]%>%percent(digit=0)`, while the pass rate decreased to

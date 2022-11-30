@@ -54,14 +54,18 @@ color_grey<-"#aaaaaa"
 color_greylight<-"#cccccc"
 
 #define kable conditional formatting "colors based on condition function"
-cf_color<-function(x,a=20,b=10,
-                   col1=color_yellow,col2=color_yellowlight,col3="white"
-                   #col1=color_grey,col2=color_greylight,col3="white"
-){
-  if_else(is.na(x),"white",
-          if_else(x>a,col1,
-                  if_else(x>b,col2,
-                          col3)))}#if value<=10, then use color3
+cf_color<-function(x,
+                   a=.9,b=.8,c=.6,d=.5,
+                   col1=color_yellow,
+                   col2=color_yellowlight,
+                   col3=color_grey,
+                   col4=color_greylight){
+  if_else(is.na(x),"white",if_else(
+    x>a,col1,if_else(#if not na and >90%, then col1;
+      x>b,col2,ifelse(#if <90% but >80%, then col2;
+        x>c,"white",ifelse(#if <80% but >60%, then "white";
+          x>d,col3,#if <60% but >40%, then col3;
+          col4)))))}#if <40%, then col4
 
 #usage: 
 #tab<-table%>%kable()

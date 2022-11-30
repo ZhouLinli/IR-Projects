@@ -57,21 +57,7 @@ retake.change<-read_xlsx("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and
 #DONE-Satisfaction – 2018-2022 4 years of satisfaction prt in that one question containing "core"
 #DONE-course-taking sequence – 2018 COHORT BY GRADUATION IN 2022 OR NOT – POWERCAMPUS TRANSCRIPT
 
-#define conditional formatting
-cf_color<-function(x,a=20,b=10,
-             col1=color_yellow,col2=color_yellowlight,col3="white"
-             #col1=color_grey,col2=color_greylight,col3="white"
-             ){
-    if_else(is.na(x),"white",
-            if_else(x>a,col1,
-                    if_else(x>b,col2,
-                    col3)))}#if value<=10, then use color3
-
-#define column conditional format: n-th column, white text, background condfmt
-#col_cf<-function(i=1,kbl=static_tab.sec,df=tab.sec){column_spec(
- # kable_input=kbl,column=i,color = "white",background =cf_color(df[i]))}
 ```
-
 
 # Enrollment
 
@@ -106,12 +92,13 @@ kbl(align = "c",booktabs = T,label="tab.aacenroll",#in-text reference
 #row_spec(0,align = "c",color="black")%>%
 #set first column: 
   column_spec(1, bold = T, border_right = F, background = "white", width = "4em",color="black")
+  
 
 #apply cf to multi columns
 for (i in 3:ncol(tab.aacenroll)){
-static_tab.aacenroll<-column_spec(
-  kable_input=static_tab.aacenroll,
-  column=i, width = "3em",background =cf_color(tab.aacenroll[i],a=70,b=60))
+static_tab.aacenroll<-
+  column_spec(kable_input=static_tab.aacenroll,
+  column=i, width = "3em",background =cf_color(tab.aacenroll[i],a=70,b=60,c=45,d=40))
 i=i+1
 static_tab.aacenroll}
 ```
@@ -127,9 +114,9 @@ n_aacenroll<-aac.crs%>%group_by(coursecode,term)%>%summarise(n=n_distinct(people
 n_aacenroll[n_aacenroll$coursecode=="AAC103","Average"][[1]][1]
 ```
 
-Among the past 5 years (2018 Fall to 2022 Spring), AAC courses
-enrollment range from `r min(n_aacenroll$n)` to `r max(n_aacenroll$n)`.
-An average enrollment for AAC103 is
+Among the past 5 years (2018 Fall to 2022 Spring), AAC course enrollment
+ranged from `r min(n_aacenroll$n)` to `r max(n_aacenroll$n)`. An average
+enrollment for AAC103 over that time is
 `r n_aacenroll[n_aacenroll$coursecode=="AAC103","Average"][[1]][1]`
 students.
 
@@ -155,7 +142,7 @@ mutate(across(Average:`2022 Spring`, ~percent(.x, digit=0)))
 ```{r static_tab.aacpass}
 static_tab.aacpass<-tab.aacpass%>%
 kbl(align = "c",booktabs = T,label="tab.aacpass",#in-text reference
-    caption = "AAC courses pass rates", #table title
+    caption = "AAC course pass rates", #table title
     col.names =c("",names(tab.aacpass)[2:ncol(tab.aacpass)])) %>%#header names
 #set overall style
   kable_styling(latex_options = c('hold_position'),bootstrap_options = c("striped", "hover", "condensed", "responsive"),
@@ -179,9 +166,10 @@ static_tab.aacpass}
 static_tab.aacpass
 ```
 
-Average pass rate for AAC courses are above
+Average pass rate for all AAC courses are above
 `r mean(tab.aacpass_avg$Average)%>%percent(digit=0)` across the past 5
-academic years.
+academic years, aside from AAC103 in 2020 Fall in which there was a 59%
+pass rate.
 
 ```{r explore cumulative GPA by passfail}
 #PASSED students' mean cumulative GPA
@@ -462,20 +450,20 @@ kbl(align = "c",booktabs = T,label="tab.retakepass",#in-text reference
 static_tab.retakepass
 ```
 
-:::{.callout-note}
+::: callout-note
 In analysis, we found `r N[4]` students took AAC 103 4 times and
 `r N[5]` of them took the course 5 times. Due to the small sample size,
 we exclude those students from pass rate reviewing. The following tables
 reported students who took AAC 103 for the 1st, 2nd, and 3rd time.
 :::
 
-
 First time takers has the highest pass rate of
-`r tab.retakepass[1,"Pass rate"]%>%percent(digit=0)`, while the pass rate decreased to
-`r tab.retakepass[2,"Pass rate"]%>%percent(digit=0)` and `r tab.retakepass[3,"Pass rate"]%>%percent(digit=0)`
-when students retaking the course for the second and third time. In
-other words, AAC 103's pass rate did not increase for along with
-students times of retaking the course.
+`r tab.retakepass[1,"Pass rate"]%>%percent(digit=0)`, while the pass
+rate decreased to `r tab.retakepass[2,"Pass rate"]%>%percent(digit=0)`
+and `r tab.retakepass[3,"Pass rate"]%>%percent(digit=0)` when students
+retaking the course for the second and third time. In other words, AAC
+103's pass rate did not increase for along with students times of
+retaking the course.
 
 ## Semester GPA when retaking
 
@@ -596,19 +584,19 @@ retake.change%>%filter(!is.na(semGPA_4to5))%>%
     has an average enrollment of
     `r n_aacenroll[n_aacenroll$coursecode=="AAC103","Average"][[1]][1]`
     students.
-    
+
 -   Average pass rate for AAC 103 course is
     `r mean(tab.aacpass_avg$Average)%>%percent(digit=0)` .
-    
+
 -   Students with higher than 2.0 semester GPA usually have a
     `r min(tab.semgpa_pass$Difference)` to
     `r max(tab.semgpa_pass$Difference)` higher AAC 103 pass rate than
     students with lower than 2.0 semester GPA.
-    
+
 -   An average of
     `r tab.semGPA_avg[tab.semGPA_avg$coursecode=="AAC103","Average"][[1]][1]`
     students in AAC 103 course have a higher than 2.0 semester GPA.
-    
+
 -   Among those who pass AAC 103,
     `r tab.semGPA_passfail_avg[tab.semGPA_passfail_avg$passfail=="Pass","Average"][[1]][1]`
     have a higher than 2.0 GPA, which means
@@ -618,17 +606,18 @@ retake.change%>%filter(!is.na(semGPA_4to5))%>%
     `r tab.semGPA_passfail_avg[tab.semGPA_passfail_avg$passfail=="Fail","Average"][[1]][1]`
     still have a higher than 2.0 semester GPA (without succeeding in AAC
     103 course).
-    
+
 -   Taking AAC 103 the second and third times does not improve pass
     rate. First time takers has the highest pass rate of
-    `r tab.retakepass[1,"Pass rate"]%>%percent(digit=0)`, while the pass rate decreased to
+    `r tab.retakepass[1,"Pass rate"]%>%percent(digit=0)`, while the pass
+    rate decreased to
     `r tab.retakepass[2,"Pass rate"]%>%percent(digit=0)` and
-    `r tab.retakepass[3,"Pass rate"]%>%percent(digit=0)` when students retaking the course
-    for the second and third time.
-    
+    `r tab.retakepass[3,"Pass rate"]%>%percent(digit=0)` when students
+    retaking the course for the second and third time.
+
 -   Percentage of obtaining higher than 2.0 semester GPA are similar for
     students who take AAC 103 for the first and second time, which are
     `r tab.retake_semGPA[1,"Semester GPA >2"]%>%percent(digit=0)` and
     `r tab.retake_semGPA[2,"Semester GPA >2"]%>%percent(digit=0)`
 
-Please contact lzhou@lasell.edu for questions
+Please contact lzhou\@lasell.edu for questions

@@ -5,7 +5,6 @@ author: 'Lasell University Institutional Research'
 date: "`r Sys.Date()`"
 format: 
   pdf:
-    classoption: [twoside]
     include-in-header:
       - text: |
           \usepackage{fancyhdr}
@@ -33,6 +32,11 @@ source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
 #  docx:
 #    reference-doc: /Users/linlizhou/Documents/Rprojects/IR-Projects/lasell.report.template.docx
 #    prefer-html: true
+#format: 
+#  pdf:
+#    classoption: [twoside]
+#    include-in-header:
+#      - text: |
 #format:
 #    pdf:
  #       toc: true
@@ -116,7 +120,7 @@ n_aacenroll[n_aacenroll$coursecode=="AAC103","Average"][[1]][1]
 
 Among the past 5 years (2018 Fall to 2022 Spring), AAC course enrollment
 ranged from `r min(n_aacenroll$n)` to `r max(n_aacenroll$n)`. An average
-enrollment for AAC103 over that time is
+enrollment for AAC103 over that time was
 `r n_aacenroll[n_aacenroll$coursecode=="AAC103","Average"][[1]][1]`
 students.
 
@@ -166,10 +170,19 @@ static_tab.aacpass}
 static_tab.aacpass
 ```
 
-Average pass rate for all AAC courses are above
-`r mean(tab.aacpass_avg$Average)%>%percent(digit=0)` across the past 5
-academic years, aside from AAC103 in 2020 Fall in which there was a 59%
-pass rate.
+```{r reportvalues.passrate}
+passrate.6<-aac.crs%>%filter(!is.na(passfail))%>%#remove anything that was not defined by pass or fail
+  group_by(coursecode,term,passfail)%>%summarise(cnt=n())%>%
+  #mutate(prt=formattable::percent(cnt/sum(cnt),digits = 0))%>%
+  mutate(prt=cnt/sum(cnt))%>%
+  filter(passfail%in%c("Pass"))%>%select(-cnt)%>%
+  filter(prt<.6)
+```
+
+Average pass rate across all AAC courses is
+`r mean(tab.aacpass_avg$Average)%>%percent(digit=0)` for the past 5
+academic years. However, AAC103 pass rate in 2020 Fall was
+`r passrate.6$prt%>%percent(digit=0)`.
 
 ```{r explore cumulative GPA by passfail}
 #PASSED students' mean cumulative GPA
@@ -247,10 +260,10 @@ static_tab.semgpa_pass}
 static_tab.semgpa_pass
 ```
 
-Students with higher than 2.0 semester GPA usually have a
+Students with a semester GPA higher than 2.0 usually have a
 `r min(tab.semgpa_pass$Difference)` to
 `r max(tab.semgpa_pass$Difference)` higher AAC 103 pass rate than
-students with lower than 2.0 semester GPA.
+students with a semester GPA below 2.0.
 
 # Semester GPA
 
@@ -272,7 +285,7 @@ tab.semGPA<-left_join(tab.semGPA,tab.semGPA_avg)%>%
 ```{r static_tab.semGPA}
 static_tab.semGPA<-tab.semGPA%>%
 kbl(align = "c",booktabs = T,label="tab.semGPA",#in-text reference
-    caption = "Percentage of higher than 2.0 semester GPA", #table title
+    caption = "Percentage of students with a higher than 2.0 semester GPA", #table title
     col.names =c("",names(tab.semGPA)[2:ncol(tab.semGPA)])) %>%#header names
 #set overall style
   kable_styling(latex_options = c('hold_position'),bootstrap_options = c("striped", "hover", "condensed", "responsive"),
@@ -297,9 +310,9 @@ static_tab.semGPA
 
 An average of
 `r tab.semGPA_avg[tab.semGPA_avg$coursecode=="AAC102","Average"][[1]][1]`
-students in AAC 102 course have a higher than 2.0 semester GPA in the
-past 5 years. The average percentage of higher than 2.0 semester GPA for
-AAC 103 course is
+of students in AAC102 course have a higher than 2.0 semester GPA over
+the past 5 years. The average percentage of higher than 2.0 semester GPA
+for AAC103 course is
 `r tab.semGPA_avg[tab.semGPA_avg$coursecode=="AAC103","Average"][[1]][1]`.
 
 ## Semester GPA for students who pass or fail AAC103
@@ -321,7 +334,7 @@ tab.semGPA_passfail<-left_join(tab.semGPA_passfail,tab.semGPA_passfail_avg)%>%
 ```{r static_tab.semGPA_passfail}
 static_tab.semGPA_passfail<-tab.semGPA_passfail%>%
 kbl(align = "c",booktabs = T,label="tab.semGPA_passfail",#in-text reference
-    caption = "Percentage of higher than 2.0 semester GPA among students who passed or failed AAC103", #table title
+    caption = "Percentage of students with a higher than 2.0 semester GPA among students by pass/ fail status", #table title
     col.names =c("",names(tab.semGPA_passfail)[2:ncol(tab.semGPA_passfail)])) %>%#header names
 #set overall style
   kable_styling(latex_options = c('hold_position'),bootstrap_options = c("striped", "hover", "condensed", "responsive"),
@@ -343,13 +356,13 @@ static_tab.semGPA_passfail}
 static_tab.semGPA_passfail
 ```
 
-Among students who passed AAC 103, an average of
+Among students who passed AAC103, an average of
 `r tab.semGPA_passfail_avg[tab.semGPA_passfail_avg$passfail=="Pass","Average"][[1]][1]`
-students have a higher than 2.0 semester GPA. In contrast, only an
+of students have a higher than 2.0 semester GPA. In contrast, only an
 average of
 `r tab.semGPA_passfail_avg[tab.semGPA_passfail_avg$passfail=="Fail","Average"][[1]][1]`
 students have a higher than 2.0 semester GPA among students who failed
-AAC 103.
+AAC103.
 
 ```{r hide tab.pass_semgpa}
 #Rate of passing AAC103 for different semester GPA: hard to interpretate -- hide
@@ -434,7 +447,7 @@ tab.retakepass<-tab.retakepass%>%mutate(N)%>%filter(N>10)
 ```{r static_tab.retakepass}
 static_tab.retakepass<-tab.retakepass%>%
 kbl(align = "c",booktabs = T,label="tab.retakepass",#in-text reference
-    caption = "AAC103 pass rates for different times of retaking the course", #table title
+    caption = "AAC103 pass rates for iteration of the course", #table title
     col.names =c(names(tab.retakepass))) %>%#header names
 #set overall style
   kable_styling(latex_options = c('hold_position'),bootstrap_options = c("striped", "hover", "condensed", "responsive"),
@@ -451,19 +464,19 @@ static_tab.retakepass
 ```
 
 ::: callout-note
-In analysis, we found `r N[4]` students took AAC 103 4 times and
-`r N[5]` of them took the course 5 times. Due to the small sample size,
-we exclude those students from pass rate reviewing. The following tables
-reported students who took AAC 103 for the 1st, 2nd, and 3rd time.
+From the analysis, we found `r N[4]` students took AAC103 4 times and
+`r N[5]` took the course 5 times. Due to the small sample size, we
+excluded those students from this analysis. The following tables
+reported students who took AAC103 for the 1st, 2nd, and 3rd time.
 :::
 
 First time takers has the highest pass rate of
 `r tab.retakepass[1,"Pass rate"]%>%percent(digit=0)`, while the pass
 rate decreased to `r tab.retakepass[2,"Pass rate"]%>%percent(digit=0)`
 and `r tab.retakepass[3,"Pass rate"]%>%percent(digit=0)` when students
-retaking the course for the second and third time. In other words, AAC
-103's pass rate did not increase for along with students times of
-retaking the course.
+completed the course for the second and third time. In other words,
+AAC103's pass rate decreasedfor students that completed the course
+multiple times.
 
 ## Semester GPA when retaking
 
@@ -499,7 +512,7 @@ tab.retake_semGPA<-tab.retake_semGPA%>%mutate(N)%>%filter(N>10)
 ```{r static_tab.retake_semGPA}
 static_tab.retake_semGPA<-tab.retake_semGPA%>%
 kbl(align = "c",booktabs = T,label="tab.retake_semGPA",#in-text reference
-    caption = "Higher than 2.0 Semester GPA for different times of retaking the course", #table title
+    caption = "Higher than 2.0 Semester GPA for iteration of the course", #table title
     col.names =c(names(tab.retake_semGPA))) %>%#header names
 #set overall style
   kable_styling(latex_options = c('hold_position'),bootstrap_options = c("striped", "hover", "condensed", "responsive"),
@@ -515,11 +528,11 @@ kbl(align = "c",booktabs = T,label="tab.retake_semGPA",#in-text reference
 static_tab.retake_semGPA
 ```
 
-Percentage of higher than 2.0 semester GPA among AAC 103 retakers range
-from `r min(tab.retake_semGPA[,"Semester GPA >2"])%>%percent(digit=0)`
-to `r max(tab.retake_semGPA[,"Semester GPA >2"])%>%percent(digit=0)`,
-with the second time being the highest percentage of higher than 2.0
-GPA.
+The percentage of higher than 2.0 semester GPA students among AAC103
+retakers range from
+`r min(tab.retake_semGPA[,"Semester GPA >2"])%>%percent(digit=0)` to
+`r max(tab.retake_semGPA[,"Semester GPA >2"])%>%percent(digit=0)`, with
+the second time being the highest percentage of higher than 2.0 GPA.
 
 ```{r explore retake.aac103}
 #how many passed/semgpa for the first time?
@@ -580,44 +593,42 @@ retake.change%>%filter(!is.na(semGPA_4to5))%>%
 
 # Summary
 
--   Among the past 5 years (2018 Fall to 2022 Spring), AAC 103 course
-    has an average enrollment of
-    `r n_aacenroll[n_aacenroll$coursecode=="AAC103","Average"][[1]][1]`
-    students.
++ Among the past 5 years (2018 Fall to 2022 Spring), the AAC103 course
+has an average enrollment of
+`r n_aacenroll[n_aacenroll$coursecode=="AAC103","Average"][[1]][1]`
+students.
 
--   Average pass rate for AAC 103 course is
-    `r mean(tab.aacpass_avg$Average)%>%percent(digit=0)` .
++ The average pass rate for AAC103 course is
+`r mean(tab.aacpass_avg$Average)%>%percent(digit=0)`.
 
--   Students with higher than 2.0 semester GPA usually have a
-    `r min(tab.semgpa_pass$Difference)` to
-    `r max(tab.semgpa_pass$Difference)` higher AAC 103 pass rate than
-    students with lower than 2.0 semester GPA.
++ Students with a higher than 2.0 semester GPA usually have a
+`r min(tab.semgpa_pass$Difference)` to
+`r max(tab.semgpa_pass$Difference)` higher AAC103 pass rate than
+students with a lower than 2.0 semester GPA.
 
--   An average of
-    `r tab.semGPA_avg[tab.semGPA_avg$coursecode=="AAC103","Average"][[1]][1]`
-    students in AAC 103 course have a higher than 2.0 semester GPA.
++ An average of
+`r tab.semGPA_avg[tab.semGPA_avg$coursecode=="AAC103","Average"][[1]][1]`
+of students in the AAC103 course have a higher than 2.0 semester GPA.
 
--   Among those who pass AAC 103,
-    `r tab.semGPA_passfail_avg[tab.semGPA_passfail_avg$passfail=="Pass","Average"][[1]][1]`
-    have a higher than 2.0 GPA, which means
-    `r 1-tab.semGPA_passfail_avg[tab.semGPA_passfail_avg$passfail=="Pass","Average"][[1]][1]`
-    do not have a good enough semester GPA. Among those who failed AAC
-    103,
-    `r tab.semGPA_passfail_avg[tab.semGPA_passfail_avg$passfail=="Fail","Average"][[1]][1]`
-    still have a higher than 2.0 semester GPA (without succeeding in AAC
-    103 course).
++ Among those who pass AAC103,
+`r tab.semGPA_passfail_avg[tab.semGPA_passfail_avg$passfail=="Pass","Average"][[1]][1]`
+have a higher than 2.0 GPA, which means
+`r 1-tab.semGPA_passfail_avg[tab.semGPA_passfail_avg$passfail=="Pass","Average"][[1]][1]`
+do not have a high enough semester GPA. Among those who failed AAC103,
+`r tab.semGPA_passfail_avg[tab.semGPA_passfail_avg$passfail=="Fail","Average"][[1]][1]`
+still have a higher than 2.0 semester GPA (without succeeding in the
+AAC103 course).
 
--   Taking AAC 103 the second and third times does not improve pass
-    rate. First time takers has the highest pass rate of
-    `r tab.retakepass[1,"Pass rate"]%>%percent(digit=0)`, while the pass
-    rate decreased to
-    `r tab.retakepass[2,"Pass rate"]%>%percent(digit=0)` and
-    `r tab.retakepass[3,"Pass rate"]%>%percent(digit=0)` when students
-    retaking the course for the second and third time.
++ Taking AAC103 the second and third time does not improve the pass rate
+for that particular course. First time takers have the highest pass rate
+of `r tab.retakepass[1,"Pass rate"]%>%percent(digit=0)`, while the pass
+rate decreased to `r tab.retakepass[2,"Pass rate"]%>%percent(digit=0)`
+and `r tab.retakepass[3,"Pass rate"]%>%percent(digit=0)` when students
+completed the course for the second and third time.
 
--   Percentage of obtaining higher than 2.0 semester GPA are similar for
-    students who take AAC 103 for the first and second time, which are
-    `r tab.retake_semGPA[1,"Semester GPA >2"]%>%percent(digit=0)` and
-    `r tab.retake_semGPA[2,"Semester GPA >2"]%>%percent(digit=0)`
++ The percentage of obtaining a higher than 2.0 semester GPA are similar
+for students who take AAC103 for the first and second time, which are
+`r tab.retake_semGPA[1,"Semester GPA >2"]%>%percent(digit=0)` and
+`r tab.retake_semGPA[2,"Semester GPA >2"]%>%percent(digit=0)`.
 
 Please contact lzhou\@lasell.edu for questions

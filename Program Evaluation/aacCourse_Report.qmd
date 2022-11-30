@@ -244,7 +244,7 @@ kbl(align = "c",booktabs = T,label="tab.semgpa_pass",#in-text reference
 #set first column: 
   column_spec(1, border_right = F, background = "white", width = "7em",color="black")%>%
 #set difference column:
-column_spec(4, width = "4em", background = if_else(tab.semgpa_pass[4]>.5,color_grey,if_else(tab.semgpa_pass[4]>.4,color_greylight,"white")))
+column_spec(4, width = "4em", background = if_else(tab.semgpa_pass[4]>.5,color_grey,if_else(tab.semgpa_pass[4]>.3,color_greylight,"white")))
 
 #apply cf_color to multi columns
 for (i in 2:3){

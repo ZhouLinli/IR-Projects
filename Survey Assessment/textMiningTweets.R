@@ -26,7 +26,8 @@ x_tokens_id <- token %>% filter(word == xword) %>% distinct(status_id)
 
 #get the id/text's associate words and sentiment
 token%>%filter(status_id%in%x_tokens_id$status_id)%>%count(word,sentiment,sort = T)%>%filter(word!=xword)%>%
-  pivot_wider(names_from = sentiment,values_from = n)%>%adorn_totals("row")#mutate(across(2:3,~sum(.x,na.rm = T)))
+  pivot_wider(names_from = sentiment,values_from = n,values_fill = 0)%>%adorn_totals("row")%>%#mutate(across(2:3,~sum(.x,na.rm = T)))
+  filter(positive>5 | negative >5)#top word associated, and sum pos vs neg in total
   
 
 #single id invest/experiment

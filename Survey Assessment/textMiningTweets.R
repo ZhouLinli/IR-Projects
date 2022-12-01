@@ -13,15 +13,21 @@ token<-raw_tweets%>%select(text,status_id)%>%#texts and their ids cols
 
 
 
+
+
 #summary: top sentiments
 token%>%count(sentiment,sort = T)
 
 
 #find the id that contains X word
-# make sure the word exist: grep("^d",token$word,value = T)
-x_tokens_id <- token %>% filter(word == "dictionary") %>% distinct(status_id)
-#get the id/text's overall sentiment
-token%>%filter(status_id%in%x_tokens_id$status_id)%>%count(sentiment)
+# make sure the word exist: grep("^t",token$word,value = T)
+xword<-"top"
+x_tokens_id <- token %>% filter(word == xword) %>% distinct(status_id)
+
+#get the id/text's associate words and sentiment
+token%>%filter(status_id%in%x_tokens_id$status_id)%>%count(word,sentiment,sort = T)%>%filter(word!=xword)%>%
+  pivot_wider(names_from = sentiment,values_from = n)%>%adorn_totals("row")#mutate(across(2:3,~sum(.x,na.rm = T)))
+  
 
 #single id invest/experiment
 n<-sample(1:nrow(x_tokens_id),size = 1)

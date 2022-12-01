@@ -8,6 +8,13 @@ library(readxl)
 #cleaning/wrangling data: include readr,tibble, stringr, forcats, dplyr, tidyr, purrr, ggplot2
 library(tidyverse)
 library(janitor)
+#text
+library(tidytext)
+library(rtweet) 
+library(dataedu) 
+library(randomNames) 
+library(tidygraph) 
+library(ggraph)
 #save df
 library(writexl)
 library(openxlsx)

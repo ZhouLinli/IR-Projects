@@ -10,6 +10,22 @@ source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
 
 ```{r I-ClassSize}
 secsize<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Course Count FA'22_clean.xlsx")
+#for convience of reporting
+secsize<-secsize%>%mutate(size=factor(size,levels =c("2-9","10-19","20-29","30-39") ))
 
 #section
+secsize%>%filter(type=="section")%>%
+  filter(!is.na(size))%>%#remove 1 individual enrolled classes
+  count(size)%>%
+  pivot_wider(names_from = size, values_from = n)#convnience to report
+
+#check type: secsize%>%count(type)
+#subsection: including lab and recitation
+secsize%>%filter(type%in%c("lab","recitation"))%>%
+  filter(!is.na(size))%>%#remove 1 individual enrolled classes
+  count(size)%>%
+  pivot_wider(names_from = size, values_from = n)#convnience to report
+
+#compared to 2021-22 data: looks similar
+# compared to raw(cleaned data): results are the same
 ```

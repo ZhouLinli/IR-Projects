@@ -1,0 +1,15 @@
+---
+title: "CommonDataset_report"
+format: pdf
+editor: visual
+---
+
+```{r set up}
+source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
+```
+
+```{r I-ClassSize}
+secsize<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Course Count FA'22_clean.xlsx")
+
+#section
+```

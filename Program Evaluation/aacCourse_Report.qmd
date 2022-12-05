@@ -5,6 +5,7 @@ author: 'Lasell University Institutional Research'
 date: "`r Sys.Date()`"
 format: 
   pdf:
+    keep-md: true
     include-in-header:
       - text: |
           \usepackage{fancyhdr}

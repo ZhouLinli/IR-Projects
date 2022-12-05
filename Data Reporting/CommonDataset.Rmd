@@ -6,16 +6,76 @@ output: word_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
 #any enrollment is fall 2022; 
 #any completion is academic year 2021-2022
-#"c&d-admission; h-financialaid; g-business office (we can fill out this year2022); i-1)class size: registar2)faculty-eric turner/aca affairs 3)once get faculty we calculate ratio; 
-#the rest we can do (a,b,e,f,j) e/f-might be a question for someone else
-#b(UG part)/j can complete now"
+
+#"c&d-admission; #h-financialaid; g-business office (we can fill out this year2022); #i-2)faculty-eric turner/aca affairs 3)once get faculty we calculate ratio; 
+#i-1)class size: registar#the rest we can do (a,b,e,f,j) e/f-might be a question for someone else#b(UG part)/j can complete now"
 ```
 
-```{r enrollment}
-#cmd+opt+i
+```{r CDS-I load data}
+# 22Fall UG class size (including online classes)
+# section: course for credit (exclude individual instruction/ intern/practicums/ independent study), count cross-reg only once
+# sub-section: supplementary (e.g. lab, recitation, discussion session) to a course for credit and non-individual (defined above)
 
+#data source: registar's office already have a clean course file: removed duplicated cross-registration, removed individual courses
+crstabs<-excel_sheets("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Fall/Course Count FA'22.xlsx")
+## results:"Course Count"     "Recitations"      "Labs"             "Directed Studies"
+sec.crscnt<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Fall/Course Count FA'22.xlsx",sheet = crstabs[1])
+subsec.recit<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Fall/Course Count FA'22.xlsx",sheet =crstabs[2])
+subsec.lab<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Fall/Course Count FA'22.xlsx",sheet = crstabs[3])
 ```
+
+
+```{r CDS-I clean data}
+#clean data
+sec.crscnt<-sec.crscnt%>%
+  #class size of each course
+  mutate(size=case_when(`Current Enrollment`>=2 & `Current Enrollment`<=9 ~ "2-9",
+                        `Current Enrollment`>=10 & `Current Enrollment`<=19 ~ "10-19",
+                        `Current Enrollment`>=20 & `Current Enrollment`<=29 ~ "20-29",
+                        `Current Enrollment`>=30 & `Current Enrollment`<=39 ~ "30-39",
+                        `Current Enrollment`>=40 & `Current Enrollment`<=49 ~ "40-49",
+                        `Current Enrollment`>=50 & `Current Enrollment`<=99 ~ "50-99",
+                        `Current Enrollment`>=100~ "100+"))
+
+#distinguish two types of subsec
+subsec.lab<-subsec.lab%>%mutate(type="lab")
+subsec.recit<-subsec.recit%>%mutate(type="recitation")
+#merge the two types of subsection together
+subsec<-full_join(subsec.lab,subsec.recit)%>%
+  #class size of each subsection
+  mutate(size=case_when(`Current Enrollment`>=2 & `Current Enrollment`<=9 ~ "2-9",
+                        `Current Enrollment`>=10 & `Current Enrollment`<=19 ~ "10-19",
+                        `Current Enrollment`>=20 & `Current Enrollment`<=29 ~ "20-29",
+                        `Current Enrollment`>=30 & `Current Enrollment`<=39 ~ "30-39",
+                        `Current Enrollment`>=40 & `Current Enrollment`<=49 ~ "40-49",
+                        `Current Enrollment`>=50 & `Current Enrollment`<=99 ~ "50-99",
+                        `Current Enrollment`>=100~ "100+"))
+
+#merge to one file
+sec.crscnt<-sec.crscnt%>%mutate(type="section")
+#merge sec with subsec
+classsize<-full_join(sec.crscnt, subsec)
+```
+
+
+```{r CDS-I save data}
+#save the two sheets
+#load raw
+wb<-loadWorkbook("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Course Count FA'22.xlsx")
+#add new sheet "clean" on raw
+addWorksheet(wb,"clean")
+#assign classsize as clean sheet
+writeData(wb,"clean", x = classsize)
+
+#check names: names(wb)
+#set order of sheets
+worksheetOrder(wb) <- c(5,1,2,3,4)
+#save all in a new file
+saveWorkbook(wb,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Course Count FA'22_clean.xlsx",overwrite = TRUE)
+```
+
+
 

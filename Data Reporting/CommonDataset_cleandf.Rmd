@@ -94,12 +94,33 @@ enrolled22fa<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registra
 degseek<-enrolled22fa%>%filter(Degree!="NON", #"BS", "AA", "BA", "CER"
                                Program!="LV")#exclude lasell villiage: Any Lasell Village student is non-matriculated, it does not matter what the indication in the degree column is.  
 #check each cols: lapply(degseek[,9:28], unique)
+```
 
+```{r explore degseek vars: LV - hardcode to non-matric}
 #explore:
 #LV is non matriculated or AA: Any Lasell Village student is non-matriculated, it does not matter what the indication in the degree column is.  
 enrolled22fa%>%filter(Program=="LV")%>%count(Degree)
 #non matriculated are non-matric and lasell village: enrolled22fa%>%filter(Degree=="NON")%>%count(Program,Curriculum)
- 
+```
+
+
+```{r degseek.ftfy}
+#list of "first-time, first-year degree-seeking" UG
+degseek.ftfy<-degseek%>%filter(
+  `Transfer YN`=="N",#not transfered-in (of all class level)->first time is at lasell
+  !str_detect(Curriculum, "[Cc]ompletion"), # not a completion program -- which is a non-trditional transfer student
+  `College Attend`=="NEW")#new/ the first actual year in the institution
+```
+
+```{r understand classLevel and newCollegeAttend}
+#class level: not "real year in school", but coded based on cum credits (SO>30,JR>60,SR>90), : degseek%>%group_by(`Class level`)%>%count(`Cum Credits`,sort = TRUE)
+
+#college attend new: "new/first actual/literal year at Lasell" (instead of returning Lasell)
+degseek%>%filter(`College Attend`=="NEW")%>%count(`Transfer YN`)# transfer in, but new to lasell
+```
+
+
+```{r understand CohortId and Matric Year}
 #matric year and cohort IDs for degseek students:
 enrolled22fa%>%filter(Degree!="NON", Program!="LV")%>%#degseek students
   count(`Matric Year`,`Cohort Id`)%>%#map matric and cohort
@@ -110,11 +131,15 @@ enrolled22fa%>%filter(Degree!="NON", Program!="LV")%>%#degseek students
   filter(diff!=0 | is.na(diff))%>%arrange(diff)%>%#see those inconsistency between matric and cohort
   mutate(`Matric Year`=format(`Matric Year`,format="%Y"),
          `Cohort Id`=format(`Cohort Id`,format="%Y"))#only care about year
+
 #comments from eric: 
-#first-time degree-seeking freshman will get a cohort ID (e.g. 2022, 2022 PT)
+
+#cohort ID  (e.g. 2022, 2022 PT): first time, new (college attend column, i.e. first actual year at Lasell) in 2022, degree seeking students
 enrolled22fa%>%count(`Cohort Id`)# 2022 CER means: students in UG Surgical Technology, a 1-year certificate program
-#NA cohort ID: transfer (not first time), bachelor's completion (transfer students looking to complete a Bachelor's degree that they have already started), non-matrics (not degree-seeking), workforce development (not degree-seeking)
+#cohort ID interger (e.g. 2022) means full time: degseek%>%filter(`Cohort Id`=="2022")%>%count(`FT/PT`)
 enrolled22fa%>%filter(!is.na(`Cohort Id`))%>%count(Degree)#only BA, BS first time degree seeking
+
+#NA cohort ID: transfer (not first time), bachelor's completion (transfer students looking to complete a Bachelor's degree that they have already started), non-matrics (not degree-seeking), workforce development (not degree-seeking)
 enrolled22fa%>%filter(is.na(`Cohort Id`))%>%count(Degree)#non-matric, transfer students in BA/BS, Lasell Village students in AA, 
 #and CER surgical tech from previous years (2022 CER has a cohort ID)
 enrolled22fa%>%filter(Degree=="CER")%>%count(`Transfer YN`,Curriculum,`College Attend`)
@@ -123,21 +148,29 @@ enrolled22fa%>%filter(Degree=="CER")%>%count(`Transfer YN`,Curriculum,`College A
 #For those with differences between the 2 codes, we would have to look them up individually to see what is going on, I don't think it's necessarily straight forward.
 ```
 
-```{r degseek.ftfy}
-#list of "first-time, first-year degree-seeking" UG
-degseek.ftfy<-degseek%>%filter(
-  `Transfer YN`=="N",#not transfered-in (of all class level)->first time is at lasell
-  `College Attend`=="NEW")#new/ the first actual year in the institution
-                                
-#cohort ID means full time: degseek%>%filter(`Cohort Id`=="2022")%>%count(`FT/PT`)
-#NA cohort ID: non-matrics, transfers, bachelor's completion, certificates, workforce development
+```{r verify degseek.ftfy with CohortId}
+#should be the same as cohort Id= 2022 ...(first time, new in 2022, degree seeking students)
 
-#class level is coded based on cum credits (SO>30,JR>60,SR>90), not "real year in school": degseek%>%group_by(`Class level`)%>%count(`Cum Credits`,sort = TRUE)
+#two filters and not exactly cohort Id= 2022 ...: have two extra NA
+degseek%>%filter(`Transfer YN`=="N", `College Attend`=="NEW",)%>%count(`Cohort Id`)# the NA are from bachelor's completion program(non-traditional transfer student)
 
-#check college attend should be new?
-degseek%>%filter(`Transfer YN`=="N",`College Attend`=="NEW")%>%
-  count(`Cohort Id`,Curriculum,Degree)%>%filter(is.na(`Cohort Id`))
-#what does college attend new means
-degseek%>%filter(`College Attend`=="NEW")%>%count(`Transfer YN`)#can be transfer in, but first year at lasell; It seems new college attend means "new to Lasell" (instead of returning Lasell).
+#three filters and exactly cohort Id= 2022 ...
+degseek%>%filter(`Transfer YN`=="N",!str_detect(Curriculum, "[Cc]ompletion"), `College Attend`=="NEW",)%>%count(`Cohort Id`)#remove curriculum contains completion (not first time students), then removed NA
+
+#so it's correct to use the three filters to identify first time first year students
 ```
+
+```{r combine degseek and degseek.fyft as one df}
+degseek<-degseek%>%mutate(fyft=if_else(
+  degseek$`People Code Id`%in%degseek.ftfy$`People Code Id`,
+  "Y","N"))#check:%>%count(fyft)
+#check:fyft "Y" is same with nrow(degseek.ftfy) #324 first time new/first year students
+
+#check no duplication: degseek%>%group_by(`People Code Id`)%>%count()%>%group_by(n)%>%count()#1236degseek students
+```
+
+```{r merge dmt-out of state}
+
+```
+
 

@@ -281,14 +281,46 @@ ipeds.complete<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Survey
 #check confirm ipeds submitted the same: ipeds.complete%>%group_by(cip,Program,Degree)%>%count()#same as submitted reports
 ```
 
-```{r}
+```{r recode degree awarded}
 #diplomas/certificates, associate, and bachelor’s degrees awarded==> no grad level
 #check: ipeds.complete%>%count(Degree)#should only include AA BA BS CER 
-ipeds.complete%>%filter(Degree%in%c("AA", "BA", "BS", "CER"))%>%#check: count(Program,Degree)#3CERgrad
-  group_by(cip)%>%count()
 
-#need to merge cip based on first two digit
-
+#recode for convience: only report Certificate, Associate, Bachelor
+##all raw values of master degree: master<-grep("^M",ipeds.complete$Degree,value=TRUE)
+##unique values of master degree:
+master.tbl<-ipeds.complete%>%count(Degree)%>%filter(str_detect(Degree,"^M"))
+##recode for convience: only report Certificate, Associate, Bachelor
+ipeds.complete<-ipeds.complete%>%mutate(degree_awarded=
+          case_when(Degree=="CER"~"certificates",
+                    Degree=="AA"~"associate",
+                    Degree%in%c("BA","BS")~"bachelor",
+                    Degree%in%master.tbl$Degree~"master"))#check:%>%count(degree_awarded,Degree)
 ```
+
+
+```{r recode cip}
+#check: ipeds.complete%>%count(cip)
+#ipeds.complete%>%count( str_sub(cip,1,2))
+#only need to keep the first two digit
+ipeds.complete<-ipeds.complete%>%mutate(cip.2g=str_sub(cip,1,2))#check:%>%count(cip,cip.2g)
+```
+
+```{r save ipeds.complete}
+#save the two sheets
+#load raw
+wb<-loadWorkbook("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Complete.with.Ethnicity_age.eric.editted.xlsx")
+
+#add new sheet "clean" on raw
+addWorksheet(wb,"clean")
+#assign new ipeds.complete as clean sheet
+writeData(wb,"clean", x = ipeds.complete)
+
+#check names: names(wb)
+#set order of sheets
+worksheetOrder(wb) <- c(2,1)
+#save all in a new file
+saveWorkbook(wb,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Complete.with.Ethnicity_age.eric.editted_cleanCDS-J.xlsx",overwrite = TRUE)
+```
+
 
 

@@ -10,11 +10,15 @@ source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
 
 # CDS-I Class Size
 
-```{r I-ClassSize}
+```{r load_secsize}
 secsize<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Course Count FA'22_cleanCDS-I.xlsx")
 #for convience of reporting
 secsize<-secsize%>%mutate(size=factor(size,levels =c("2-9","10-19","20-29","30-39") ))
 
+
+```
+
+```{r report_sec.size}
 #section
 secsize%>%filter(type=="section")%>%
   filter(!is.na(size))%>%#remove 1 individual enrolled classes
@@ -34,6 +38,89 @@ secsize%>%filter(type%in%c("lab","recitation"))%>%
 
 # CDS-F Fall Enrollment
 
-```{r}
+```{r load_degsk}
 degsk<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Fall 2022 UG Backup Data Report_cleanCDS-F.xlsx")
+```
+
+```{r report_alldegsk}
+#important vars are admit_region, fyft and others
+#admit region
+degsk%>%count(ADMIT_REGION)%>%
+  filter(ADMIT_REGION!="intl",#exclude international from numerator and denominator
+         !is.na(ADMIT_REGION))%>%#remove NA from discussion
+  mutate(prt=n/sum(n)*100)%>%
+  filter(ADMIT_REGION=="other states")#only report out of state prt
+
+#live on vs off campus
+degsk$`Res/Comm`<-recode(degsk$`Res/Comm`,C="off campus",R="on campus")#convinience
+
+degsk%>%count(`Res/Comm`)%>%
+  mutate(prt=n/sum(n)*100)
+
+#age
+degsk%>%mutate(age.gp=if_else(Age>=25,">=25","<25"))%>%
+  count(age.gp)%>%
+  filter(!is.na(age.gp))%>%#remove the one NA
+  mutate(prt=n/sum(n)*100)%>%
+  filter(age.gp==">=25")#only report 25 or older
+#check with raw data: 1186 <25; 1235 has age value; 96% is < 25
+
+#avg age of full time students
+degsk%>%filter(`FT/PT`=="FT")%>%#full time students
+  summarise(mn=mean(Age,na.rm=TRUE))
+
+#avg age of all students
+degsk%>%summarise(mn=mean(Age,na.rm=TRUE))
+```
+
+```{r report_ftfy}
+#admit region
+degsk%>%filter(fyft=="Y")%>%#only first time/non-transfer/complt first year/new students
+  count(ADMIT_REGION)%>%
+  filter(ADMIT_REGION!="intl",#exclude international from numerator and denominator
+         !is.na(ADMIT_REGION))%>%#remove NA from discussion
+  mutate(prt=n/sum(n)*100)%>%
+  filter(ADMIT_REGION=="other states")#only report out of state prt
+
+#live on vs off campus
+degsk%>%filter(fyft=="Y")%>%#only fyft students
+  count(`Res/Comm`)%>%
+  mutate(prt=n/sum(n)*100)
+
+#age
+degsk%>%filter(fyft=="Y")%>%#only fyft students
+  mutate(age.gp=if_else(Age>=25,">=25","<25"))%>%
+  count(age.gp)%>%
+  filter(!is.na(age.gp))%>%#remove the one NA
+  mutate(prt=n/sum(n)*100)%>%
+  filter(age.gp==">=25")#only report 25 or older
+#check with raw data: 315 <25; 324 has age value; 97% is < 25
+
+#avg age of full time students
+degsk%>%filter(fyft=="Y")%>%#only fyft students
+  filter(`FT/PT`=="FT")%>%#full time students
+  summarise(mn=mean(Age,na.rm=TRUE))
+
+#avg age of all students
+degsk%>%filter(fyft=="Y")%>%#only fyft students
+  summarise(mn=mean(Age,na.rm=TRUE))
+```
+
+# CDS-J Complete
+
+```{r load_ipedscomplete}
+complete<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Complete.with.Ethnicity_age.eric.editted_cleanCDS-J.xlsx")
+
+#for convinience of reporting
+complete<-complete%>%mutate(degree_awarded=factor(degree_awarded,
+              levels = c("bachelor","associate","certificates")))
+```
+
+```{r report_cip.prt}
+complete%>%filter(degree_awarded!="master")%>%#do not report master
+  group_by(cip.2g,degree_awarded)%>%summarise(cnt=n())%>%
+  ungroup()%>%#so that it's not prt within the second subgroup
+  mutate(prt=round(cnt/sum(cnt),digits = 4))%>%select(-cnt)%>%
+  pivot_wider(names_from = degree_awarded,values_from = prt, values_fill = 0)%>%
+  View()#for copy paste
 ```

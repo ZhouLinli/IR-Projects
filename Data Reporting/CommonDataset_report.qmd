@@ -111,13 +111,12 @@ degsk%>%filter(fyft=="Y")%>%#only fyft students
 ```{r load_ipedscomplete}
 complete<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Complete.with.Ethnicity_age.eric.editted_cleanCDS-J.xlsx")
 
-#for convinience of reporting
-complete<-complete%>%mutate(degree_awarded=factor(degree_awarded,
-              levels = c("bachelor","associate","certificates")))
+#for convinience of reporting: complete<-complete%>%mutate(degree_awarded=factor(degree_awarded, levels = c("bachelor","associate","certificates"))) #, turns out can't change order in pivot_wider
 ```
 
 ```{r report_cip.prt}
-complete%>%filter(degree_awarded!="master")%>%#do not report master
+complete%>%
+  filter(degree_awarded%in%c("bachelor","associate"))%>%#only report UG; no master/certificate: current certificates are all postbachelor
   group_by(cip.2g,degree_awarded)%>%summarise(cnt=n())%>%
   ungroup()%>%#so that it's not prt within the second subgroup
   mutate(prt=round(cnt/sum(cnt),digits = 4))%>%select(-cnt)%>%

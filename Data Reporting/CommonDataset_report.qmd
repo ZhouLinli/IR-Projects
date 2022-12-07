@@ -8,8 +8,10 @@ editor: visual
 source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
 ```
 
+# CDS-I Class Size
+
 ```{r I-ClassSize}
-secsize<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Course Count FA'22_clean.xlsx")
+secsize<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Course Count FA'22_cleanCDS-I.xlsx")
 #for convience of reporting
 secsize<-secsize%>%mutate(size=factor(size,levels =c("2-9","10-19","20-29","30-39") ))
 
@@ -28,4 +30,10 @@ secsize%>%filter(type%in%c("lab","recitation"))%>%
 
 #compared to 2021-22 data: looks similar
 # compared to raw(cleaned data): results are the same
+```
+
+# CDS-F Fall Enrollment
+
+```{r}
+degsk<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Fall 2022 UG Backup Data Report_cleanCDS-F.xlsx")
 ```

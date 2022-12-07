@@ -76,11 +76,11 @@ writeData(wb,"clean", x = classsize)
 #set order of sheets
 worksheetOrder(wb) <- c(5,1,2,3,4)
 #save all in a new file
-saveWorkbook(wb,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Course Count FA'22_clean.xlsx",overwrite = TRUE)
+saveWorkbook(wb,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Course Count FA'22_cleanCDS-I.xlsx",overwrite = TRUE)
 ```
 
 
-#CDS-F
+#CDS-F Fall Enrollment
 
 ```{r load UGbackup}
 #find list of "degree-seeking" UG, and "first-time, first-year degree-seeking" UG, both enrolled in 22Fall (include FT&PT)
@@ -169,7 +169,125 @@ degseek<-degseek%>%mutate(fyft=if_else(
 #check no duplication: degseek%>%group_by(`People Code Id`)%>%count()%>%group_by(n)%>%count()#1236degseek students
 ```
 
-```{r merge dmt-out of state}
+
+
+```{r load dmt-out of state}
+#read 22fall dmt
+dmtfa22<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/Test Run of Data Mart/FALL 2022/Test_run_datamart_FALL_ALL_sessions_20220926.xlsx")
+
+#admit state column
+#check:dmtfa22%>%select(starts_with("ADMIT"))%>%lapply(unique)#country and region are relevant
+#explore 21+66 country NA: dmtfa22%>%filter(is.na(ADMIT_COUNTRY))%>%count(ADMIT_REGION,ADMIT_STATE)%>%View()# 21 have region values of US
+#explore 33+66 region NA:dmtfa22%>%filter(is.na(ADMIT_REGION))%>%count(ADMIT_COUNTRY,ADMIT_STATE)%>%View() # 33 have region values of US
+#decide to merge first then, in the merged list, fill in NAs
+
+#select state relevant cols
+dmtfa22.state<-dmtfa22%>%select(PC_ID,ADMIT_STATE,ADMIT_COUNTRY,ADMIT_REGION)
+```
+
+```{r merge degseek.full}
+#merge
+degseek.full<-left_join(degseek,dmtfa22.state,by=c("People Code Id"="PC_ID"))%>%#check names(degseek.full)
+  unique()%>%##remove rows that has exact same value across all columns; no duplication now
+  rename(ppid=`People Code Id`)#for convnience
+#check duplication: degseek.full%>%group_by(ppid)%>%count()%>%group_by(n)%>%count()#1236degseek.full students
+
+#see what are the values: degseek.full%>%select(ADMIT_STATE,ADMIT_COUNTRY,ADMIT_REGION)%>%lapply(unique) #NA in state/country/region  
+#see NA: degseek.full%>%filter(is.na(ADMIT_COUNTRY)|is.na(ADMIT_REGION)|is.na(ADMIT_STATE))%>%select(ADMIT_STATE,ADMIT_COUNTRY,ADMIT_REGION)
+```
+
+```{r recode admit state_region_country}
+#use one to fill each other
+##recode country for counvience: degseek.full%>%count(ADMIT_COUNTRY)
+degseek.full<-degseek.full%>%mutate(ADMIT_COUNTRY=
+              if_else(is.na(ADMIT_COUNTRY),ADMIT_COUNTRY,
+                 if_else(ADMIT_COUNTRY=="United States","US","intl")))#check:%>%count(ADMIT_COUNTRY)
+
+##recode region for counvience: degseek.full%>%count(ADMIT_REGION)
+degseek.full<-degseek.full%>%mutate(ADMIT_REGION=
+              if_else(is.na(ADMIT_REGION),ADMIT_REGION,
+                 if_else(ADMIT_REGION=="Massachusetts","MA",
+                      if_else(ADMIT_REGION%in%c("Other New England","Other US"),"other states","intl"))))#check:%>%count(ADMIT_REGION)    
+
+##recode state for convinience: degseek.full%>%count(ADMIT_STATE)%>%View()
+degseek.full<-degseek.full%>%mutate(ADMIT_STATE=
+              if_else(is.na(ADMIT_STATE),ADMIT_STATE,
+                 if_else(ADMIT_STATE%in%c("MA","Massachusetts"),"MA",
+                      if_else(ADMIT_STATE%in%c("AL",  "AK",  "AZ",  "AR",  "CA",  "CO",  "CT",  "DE",  "FL",  "GA",  "HI",  "ID",  "IL",  "IN",  "IA",  "KS",  "KY",  "LA",  "ME",  "MD",  "MI",  "MN",  "MS",  "MO",  "MT",  "NE",  "NV",  "NH",  "NJ",  "NM",  "NY",  "NC",  "ND",  "OH",  "OK",  "OR",  "PA",  "RI",  "SC",  "SD",  "TN",  "TX",  "UT",  "VT",  "VA",  "WA",  "WV",  "WI",  "WY","Maine"),"other states","intl"))))   #check:%>%count(ADMIT_STATE)# AE (United Arab Emirates) is coded as intl
+```
+
+```{r fill region NA}
+#check: degseek.full%>%select(ADMIT_STATE,ADMIT_COUNTRY,ADMIT_REGION)%>%lapply(unique)
+#see NA: degseek.full%>%filter(is.na(ADMIT_COUNTRY)|is.na(ADMIT_REGION)|is.na(ADMIT_STATE))%>%select(ADMIT_STATE,ADMIT_COUNTRY,ADMIT_REGION)
+
+#use region to fill country: degseek.full%>%count(ADMIT_COUNTRY); degseek.full%>%count(ADMIT_REGION)
+#degseek.full<-degseek.full%>%mutate(ADMIT_COUNTRY=
+#              if_else(!is.na(ADMIT_COUNTRY),ADMIT_COUNTRY,
+#                 if_else(ADMIT_REGION%in%c("other states", "MA"),"US",
+#                    if_else(ADMIT_REGION=="intl","intl",ADMIT_COUNTRY))))
+              #check:%>%count(ADMIT_COUNTRY)#from 611 to 35
+              
+#use region to fill state: degseek.full%>%count(ADMIT_REGION); degseek.full%>%count(ADMIT_STATE)
+degseek.full<-degseek.full%>%mutate(ADMIT_STATE=
+              if_else(!is.na(ADMIT_STATE),ADMIT_STATE,
+                 if_else(ADMIT_REGION=="MA","MA",
+                      if_else(ADMIT_REGION=="other states","other states",
+                          if_else(ADMIT_REGION=="intl","intl",ADMIT_STATE)))))#check: %>%count(ADMIT_STATE)  #from 37 NA to 34
+
+#use state to fill region: degseek.full%>%count(ADMIT_REGION); degseek.full%>%count(ADMIT_STATE)
+degseek.full<-degseek.full%>%mutate(ADMIT_REGION=
+              if_else(!is.na(ADMIT_REGION),ADMIT_REGION,
+                 if_else(ADMIT_STATE=="MA","MA",
+                      if_else(ADMIT_STATE=="other states","other states",
+                          if_else(ADMIT_STATE=="intl","intl",ADMIT_REGION)))))
+              #check:%>%count(ADMIT_REGION)  #from 652 NA to 34
+
+#use country to fill region
+degseek.full<-degseek.full%>%mutate(ADMIT_REGION=
+              if_else(!is.na(ADMIT_REGION),ADMIT_REGION,
+                 if_else(ADMIT_COUNTRY=="intl","intl",ADMIT_REGION)))%>%count(ADMIT_REGION)#no change
+
+
+#see NA: degseek.full%>%filter(is.na(ADMIT_REGION)|is.na(ADMIT_STATE))%>%select(ADMIT_STATE,ADMIT_COUNTRY,ADMIT_REGION)%>%View()#34 NA cross all admit cols
+```
+
+```{r save degseek.full}
+#save the two sheets
+#load raw
+wb<-loadWorkbook("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Fall 2022 UG Backup Data Report.xlsx")
+#add new sheet "clean" on raw
+addWorksheet(wb,"clean")
+#assign classsize as clean sheet
+writeData(wb,"clean", x = degseek.full)
+
+#add new sheet "dmt" on raw
+addWorksheet(wb,"dmt")
+#assign classsize as clean sheet
+writeData(wb,"dmt", x = dmtfa22)
+
+#check names: names(wb)
+#set order of sheets
+worksheetOrder(wb) <- c(2,1,3)
+#save all in a new file
+saveWorkbook(wb,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Fall 2022 UG Backup Data Report_cleanCDS-F.xlsx",overwrite = TRUE)
+```
+
+
+# CDS-J Completion
+
+```{r load ipeds.complete}
+ipeds.complete<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/Completions/Complete.with.Ethnicity_age.eric.editted.xlsx")
+
+#check confirm ipeds submitted the same: ipeds.complete%>%group_by(cip,Program,Degree)%>%count()#same as submitted reports
+```
+
+```{r}
+#diplomas/certificates, associate, and bachelor’s degrees awarded==> no grad level
+#check: ipeds.complete%>%count(Degree)#should only include AA BA BS CER 
+ipeds.complete%>%filter(Degree%in%c("AA", "BA", "BS", "CER"))%>%#check: count(Program,Degree)#3CERgrad
+  group_by(cip)%>%count()
+
+#need to merge cip based on first two digit
 
 ```
 

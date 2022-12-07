@@ -91,8 +91,13 @@ enrolled22fa<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registra
 
 ```{r degseek}
 #list of "degree-seeking" UG
-degseek<-enrolled22fa%>%filter(Degree!="NON", #"BS", "AA", "BA", "CER"
-                               Program!="LV")#exclude lasell villiage: Any Lasell Village student is non-matriculated, it does not matter what the indication in the degree column is.  
+enrolled22fa<-enrolled22fa%>%mutate(degreeseek=
+          if_else(Degree=="NON"| #"BS", "AA", "BA", "CER"
+                    Program=="LV", #exclude lasell villiage: Any Lasell Village student is non-matriculated, it does not matter what the indication in the degree column is. 
+                  "N","Y"))#check:enrolled22fa%>%count(degreeseek)
+
+#degseek<-enrolled22fa%>%filter(Degree!="NON", #"BS", "AA", "BA", "CER"
+#                               Program!="LV")#exclude lasell villiage: Any Lasell Village student is non-matriculated, it does not matter what the indication in the degree column is.  
 #check each cols: lapply(degseek[,9:28], unique)
 ```
 
@@ -106,9 +111,12 @@ enrolled22fa%>%filter(Program=="LV")%>%count(Degree)
 
 ```{r degseek.ftfy}
 #list of "first-time, first-year degree-seeking" UG
-degseek.ftfy<-degseek%>%filter(
+degseek.ftfy<-enrolled22fa%>%filter(
+  degreeseek=="Y",#degree seeking students
+  
   `Transfer YN`=="N",#not transfered-in (of all class level)->first time is at lasell
   !str_detect(Curriculum, "[Cc]ompletion"), # not a completion program -- which is a non-trditional transfer student
+  
   `College Attend`=="NEW")#new/ the first actual year in the institution
 ```
 
@@ -152,21 +160,26 @@ enrolled22fa%>%filter(Degree=="CER")%>%count(`Transfer YN`,Curriculum,`College A
 #should be the same as cohort Id= 2022 ...(first time, new in 2022, degree seeking students)
 
 #two filters and not exactly cohort Id= 2022 ...: have two extra NA
-degseek%>%filter(`Transfer YN`=="N", `College Attend`=="NEW",)%>%count(`Cohort Id`)# the NA are from bachelor's completion program(non-traditional transfer student)
+degseek%>%filter(`Transfer YN`=="N",
+                 `College Attend`=="NEW",)%>%
+  count(`Cohort Id`)# the NA are from bachelor's completion program(non-traditional transfer student)
 
 #three filters and exactly cohort Id= 2022 ...
-degseek%>%filter(`Transfer YN`=="N",!str_detect(Curriculum, "[Cc]ompletion"), `College Attend`=="NEW",)%>%count(`Cohort Id`)#remove curriculum contains completion (not first time students), then removed NA
+degseek%>%filter(`Transfer YN`=="N",
+                 !str_detect(Curriculum, "[Cc]ompletion"), 
+                 `College Attend`=="NEW",)%>%
+  count(`Cohort Id`)#remove curriculum contains completion (not first time students), then removed NA
 
 #so it's correct to use the three filters to identify first time first year students
 ```
 
 ```{r combine degseek and degseek.fyft as one df}
-degseek<-degseek%>%mutate(fyft=if_else(
-  degseek$`People Code Id`%in%degseek.ftfy$`People Code Id`,
+enrolled22fa<-enrolled22fa%>%mutate(fyft=if_else(
+  enrolled22fa$`People Code Id`%in%degseek.ftfy$`People Code Id`,
   "Y","N"))#check:%>%count(fyft)
 #check:fyft "Y" is same with nrow(degseek.ftfy) #324 first time new/first year students
 
-#check no duplication: degseek%>%group_by(`People Code Id`)%>%count()%>%group_by(n)%>%count()#1236degseek students
+#check no duplication: enrolled22fa%>%group_by(`People Code Id`)%>%count()%>%group_by(n)%>%count()#1236degseek students;1247all enrolled students
 ```
 
 
@@ -185,57 +198,57 @@ dmtfa22<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart File
 dmtfa22.state<-dmtfa22%>%select(PC_ID,ADMIT_STATE,ADMIT_COUNTRY,ADMIT_REGION)
 ```
 
-```{r merge degseek.full}
+```{r merge enrolled22fa.full}
 #merge
-degseek.full<-left_join(degseek,dmtfa22.state,by=c("People Code Id"="PC_ID"))%>%#check names(degseek.full)
+enrolled22fa.full<-left_join(enrolled22fa,dmtfa22.state,by=c("People Code Id"="PC_ID"))%>%#check names(enrolled22fa.full)
   unique()%>%##remove rows that has exact same value across all columns; no duplication now
   rename(ppid=`People Code Id`)#for convnience
-#check duplication: degseek.full%>%group_by(ppid)%>%count()%>%group_by(n)%>%count()#1236degseek.full students
+#check duplication: enrolled22fa.full%>%group_by(ppid)%>%count()%>%group_by(n)%>%count()#1247enrolled22fa.full students
 
-#see what are the values: degseek.full%>%select(ADMIT_STATE,ADMIT_COUNTRY,ADMIT_REGION)%>%lapply(unique) #NA in state/country/region  
-#see NA: degseek.full%>%filter(is.na(ADMIT_COUNTRY)|is.na(ADMIT_REGION)|is.na(ADMIT_STATE))%>%select(ADMIT_STATE,ADMIT_COUNTRY,ADMIT_REGION)
+#see what are the values: enrolled22fa.full%>%select(ADMIT_STATE,ADMIT_COUNTRY,ADMIT_REGION)%>%lapply(unique) #NA in state/country/region  
+#see NA: enrolled22fa.full%>%filter(is.na(ADMIT_COUNTRY)|is.na(ADMIT_REGION)|is.na(ADMIT_STATE))%>%select(ADMIT_STATE,ADMIT_COUNTRY,ADMIT_REGION)
 ```
 
 ```{r recode admit state_region_country}
 #use one to fill each other
-##recode country for counvience: degseek.full%>%count(ADMIT_COUNTRY)
-degseek.full<-degseek.full%>%mutate(ADMIT_COUNTRY=
+##recode country for counvience: enrolled22fa.full%>%count(ADMIT_COUNTRY)
+enrolled22fa.full<-enrolled22fa.full%>%mutate(ADMIT_COUNTRY=
               if_else(is.na(ADMIT_COUNTRY),ADMIT_COUNTRY,
                  if_else(ADMIT_COUNTRY=="United States","US","intl")))#check:%>%count(ADMIT_COUNTRY)
 
-##recode region for counvience: degseek.full%>%count(ADMIT_REGION)
-degseek.full<-degseek.full%>%mutate(ADMIT_REGION=
+##recode region for counvience: enrolled22fa.full%>%count(ADMIT_REGION)
+enrolled22fa.full<-enrolled22fa.full%>%mutate(ADMIT_REGION=
               if_else(is.na(ADMIT_REGION),ADMIT_REGION,
                  if_else(ADMIT_REGION=="Massachusetts","MA",
                       if_else(ADMIT_REGION%in%c("Other New England","Other US"),"other states","intl"))))#check:%>%count(ADMIT_REGION)    
 
-##recode state for convinience: degseek.full%>%count(ADMIT_STATE)%>%View()
-degseek.full<-degseek.full%>%mutate(ADMIT_STATE=
+##recode state for convinience: enrolled22fa.full%>%count(ADMIT_STATE)%>%View()
+enrolled22fa.full<-enrolled22fa.full%>%mutate(ADMIT_STATE=
               if_else(is.na(ADMIT_STATE),ADMIT_STATE,
                  if_else(ADMIT_STATE%in%c("MA","Massachusetts"),"MA",
-                      if_else(ADMIT_STATE%in%c("AL",  "AK",  "AZ",  "AR",  "CA",  "CO",  "CT",  "DE",  "FL",  "GA",  "HI",  "ID",  "IL",  "IN",  "IA",  "KS",  "KY",  "LA",  "ME",  "MD",  "MI",  "MN",  "MS",  "MO",  "MT",  "NE",  "NV",  "NH",  "NJ",  "NM",  "NY",  "NC",  "ND",  "OH",  "OK",  "OR",  "PA",  "RI",  "SC",  "SD",  "TN",  "TX",  "UT",  "VT",  "VA",  "WA",  "WV",  "WI",  "WY","Maine"),"other states","intl"))))   #check:%>%count(ADMIT_STATE)# AE (United Arab Emirates) is coded as intl
+                      if_else(ADMIT_STATE%in%c("AL",  "AK",  "AZ",  "AR",  "CA",  "CO",  "CT",  "DE",  "FL",  "GA",  "HI",  "ID",  "IL",  "IN",  "IA",  "KS",  "KY",  "LA",  "ME",  "MD",  "MI",  "MN",  "MS",  "MO",  "MT",  "NE",  "NV",  "NH",  "NJ",  "NM",  "NY",  "NC",  "ND",  "OH",  "OK",  "OR",  "PA",  "RI",  "SC",  "SD",  "TN",  "TX",  "UT",  "VT",  "VA",  "WA",  "WV",  "WI",  "WY","Maine"),"other states","intl"))))   #check:enrolled22fa.full%>%count(ADMIT_STATE)# AE (United Arab Emirates) is coded as intl
 ```
 
 ```{r fill region NA}
-#check: degseek.full%>%select(ADMIT_STATE,ADMIT_COUNTRY,ADMIT_REGION)%>%lapply(unique)
-#see NA: degseek.full%>%filter(is.na(ADMIT_COUNTRY)|is.na(ADMIT_REGION)|is.na(ADMIT_STATE))%>%select(ADMIT_STATE,ADMIT_COUNTRY,ADMIT_REGION)
+#check: enrolled22fa.full%>%select(ADMIT_STATE,ADMIT_COUNTRY,ADMIT_REGION)%>%lapply(unique)
+#see NA: enrolled22fa.full%>%filter(is.na(ADMIT_COUNTRY)|is.na(ADMIT_REGION)|is.na(ADMIT_STATE))%>%select(ADMIT_STATE,ADMIT_COUNTRY,ADMIT_REGION)
 
-#use region to fill country: degseek.full%>%count(ADMIT_COUNTRY); degseek.full%>%count(ADMIT_REGION)
-#degseek.full<-degseek.full%>%mutate(ADMIT_COUNTRY=
+#use region to fill country: enrolled22fa.full%>%count(ADMIT_COUNTRY); enrolled22fa.full%>%count(ADMIT_REGION)
+#enrolled22fa.full<-enrolled22fa.full%>%mutate(ADMIT_COUNTRY=
 #              if_else(!is.na(ADMIT_COUNTRY),ADMIT_COUNTRY,
 #                 if_else(ADMIT_REGION%in%c("other states", "MA"),"US",
 #                    if_else(ADMIT_REGION=="intl","intl",ADMIT_COUNTRY))))
               #check:%>%count(ADMIT_COUNTRY)#from 611 to 35
               
-#use region to fill state: degseek.full%>%count(ADMIT_REGION); degseek.full%>%count(ADMIT_STATE)
-degseek.full<-degseek.full%>%mutate(ADMIT_STATE=
+#use region to fill state: enrolled22fa.full%>%count(ADMIT_REGION); enrolled22fa.full%>%count(ADMIT_STATE)
+enrolled22fa.full<-enrolled22fa.full%>%mutate(ADMIT_STATE=
               if_else(!is.na(ADMIT_STATE),ADMIT_STATE,
                  if_else(ADMIT_REGION=="MA","MA",
                       if_else(ADMIT_REGION=="other states","other states",
                           if_else(ADMIT_REGION=="intl","intl",ADMIT_STATE)))))#check: %>%count(ADMIT_STATE)  #from 37 NA to 34
 
-#use state to fill region: degseek.full%>%count(ADMIT_REGION); degseek.full%>%count(ADMIT_STATE)
-degseek.full<-degseek.full%>%mutate(ADMIT_REGION=
+#use state to fill region: enrolled22fa.full%>%count(ADMIT_REGION); enrolled22fa.full%>%count(ADMIT_STATE)
+enrolled22fa.full<-enrolled22fa.full%>%mutate(ADMIT_REGION=
               if_else(!is.na(ADMIT_REGION),ADMIT_REGION,
                  if_else(ADMIT_STATE=="MA","MA",
                       if_else(ADMIT_STATE=="other states","other states",
@@ -243,22 +256,22 @@ degseek.full<-degseek.full%>%mutate(ADMIT_REGION=
               #check:%>%count(ADMIT_REGION)  #from 652 NA to 34
 
 #use country to fill region
-degseek.full<-degseek.full%>%mutate(ADMIT_REGION=
+enrolled22fa.full<-enrolled22fa.full%>%mutate(ADMIT_REGION=
               if_else(!is.na(ADMIT_REGION),ADMIT_REGION,
-                 if_else(ADMIT_COUNTRY=="intl","intl",ADMIT_REGION)))%>%count(ADMIT_REGION)#no change
+                 if_else(ADMIT_COUNTRY=="intl","intl",ADMIT_REGION)))#check:%>%count(ADMIT_REGION)#no change
 
 
-#see NA: degseek.full%>%filter(is.na(ADMIT_REGION)|is.na(ADMIT_STATE))%>%select(ADMIT_STATE,ADMIT_COUNTRY,ADMIT_REGION)%>%View()#34 NA cross all admit cols
+#see NA: enrolled22fa.full%>%filter(is.na(ADMIT_REGION)|is.na(ADMIT_STATE))%>%select(ADMIT_STATE,ADMIT_COUNTRY,ADMIT_REGION)%>%View()#43 NA cross all admit cols
 ```
 
-```{r save degseek.full}
+```{r save enrolled22fa.full}
 #save the two sheets
 #load raw
 wb<-loadWorkbook("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Fall 2022 UG Backup Data Report.xlsx")
 #add new sheet "clean" on raw
 addWorksheet(wb,"clean")
 #assign classsize as clean sheet
-writeData(wb,"clean", x = degseek.full)
+writeData(wb,"clean", x = enrolled22fa.full)
 
 #add new sheet "dmt" on raw
 addWorksheet(wb,"dmt")
@@ -269,7 +282,7 @@ writeData(wb,"dmt", x = dmtfa22)
 #set order of sheets
 worksheetOrder(wb) <- c(2,1,3)
 #save all in a new file
-saveWorkbook(wb,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Fall 2022 UG Backup Data Report_cleanCDS-F.xlsx",overwrite = TRUE)
+saveWorkbook(wb,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Fall 2022 UG Backup Data Report_cleanCDS-FandB.xlsx",overwrite = TRUE)
 ```
 
 
@@ -291,10 +304,10 @@ ipeds.complete<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Survey
 master.tbl<-ipeds.complete%>%count(Degree)%>%filter(str_detect(Degree,"^M"))
 ##recode for convience: only report Certificate, Associate, Bachelor
 ipeds.complete<-ipeds.complete%>%mutate(degree_awarded=
-          case_when(Degree=="CER"~"certificates",
-                    Degree=="AA"~"associate",
-                    Degree%in%c("BA","BS")~"bachelor",
-                    Degree%in%master.tbl$Degree~"master"))#check:%>%count(degree_awarded,Degree)
+          case_when(Degree=="CER"~"postbachelor certificate",
+                    Degree=="AA"~"associate degree",
+                    Degree%in%c("BA","BS")~"bachelor's degree",
+                    Degree%in%master.tbl$Degree~"master's degree"))#check:%>%count(degree_awarded,Degree)
 ```
 
 

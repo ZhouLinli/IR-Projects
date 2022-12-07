@@ -36,7 +36,7 @@ secsize%>%filter(type%in%c("lab","recitation"))%>%
 # compared to raw(cleaned data): results are the same
 ```
 
-# CDS-F Fall Enrollment
+# CDS-F Fall Enrollment: state, res/com, age (degseek vs ftfy)
 
 ```{r load_degsk}
 degsk<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Fall 2022 UG Backup Data Report_cleanCDS-F.xlsx")
@@ -106,7 +106,28 @@ degsk%>%filter(fyft=="Y")%>%#only fyft students
   summarise(mn=mean(Age,na.rm=TRUE))
 ```
 
-# CDS-J Complete
+# CDS-B2 Degseek Fall Enrollment: race (degseek vs ftfy)
+
+```{r factorize}
+#for convnience of reporting
+degsk<-degsk%>%mutate(Ethnicity=factor(Ethnicity,
+            levels = c("Non Resident Alien","Hispanic","Black or African American",
+                       "White","Asian","Native Hawaiian or Other Pacific Islander",
+                       "Two or more Races","Race and Ethnicity Unknown")))
+
+```
+
+```{r report_alldegsk.race}
+#report all degsk race
+degsk%>%count(Ethnicity)
+```
+
+```{r report_ftfy.degsk.race}
+degsk%>%filter(fyft=="Y")%>%#only fyft students
+  count(Ethnicity)
+```
+
+# CDS-J Complete by CIP
 
 ```{r load_ipedscomplete}
 complete<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Complete.with.Ethnicity_age.eric.editted_cleanCDS-J.xlsx")
@@ -115,11 +136,21 @@ complete<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Comm
 ```
 
 ```{r report_cip.prt}
+#check: complete%>%count(Degree,degree_awarded)
 complete%>%
-  filter(degree_awarded%in%c("bachelor","associate"))%>%#only report UG; no master/certificate: current certificates are all postbachelor
+  filter(degree_awarded%in%c("bachelor's degree","associate degree"))%>%
+  #only report UG (bachelor's certificate, associate, and bachelor's); 
+  #no master/certificate: current certificates are all postbachelor
   group_by(cip.2g,degree_awarded)%>%summarise(cnt=n())%>%
   ungroup()%>%#so that it's not prt within the second subgroup
   mutate(prt=round(cnt/sum(cnt),digits = 4))%>%select(-cnt)%>%
   pivot_wider(names_from = degree_awarded,values_from = prt, values_fill = 0)%>%
   View()#for copy paste
+```
+
+# CDS-B3 Complete by Degree
+
+```{r report_degree.cnt}
+#check mapping: complete%>%count(Degree,degree_awarded)
+complete%>%count(degree_awarded)
 ```

@@ -295,13 +295,12 @@ finaid16fall<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid 
 #check no duplication: finaid16fall%>%count(`Student Ssn`)%>%count(n)
 ```
 
-
-```{r finaid_colums}
+```{r explore finaid_colums}
 ##find relevant vars
-glimpse(finaid16fall)
-names(finaid16fall)#find index
-lapply(finaid16fall[,48:54], unique)#use index to view unique values
-#relationship between pell related grants: finaid16fall%>%count(`Pell Award Calc`,`All Federal Grant awarded`)
+#glimpse(finaid16fall)
+#names(finaid16fall)#find index
+#lapply(finaid16fall[,48:54], unique)#use index to view unique values
+##relationship between pell related grants: finaid16fall%>%count(`Pell Award Calc`,`All Federal Grant awarded`)
 
 ##results
 #`Pell Award Calc`>0: "Recipients of a Federal Pell Grant"
@@ -309,7 +308,7 @@ lapply(finaid16fall[,48:54], unique)#use index to view unique values
 # `Pell Award Calc`==0, is.na(`Sub awarded`) | ==0: "Students who did not receive either a Pell Grant or a subsidized Stafford Loan"
 ```
 
-```{r load enrolled16fall data}
+```{r remove-load enroll16fall}
 enroll16fall<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2016 Fall/Undergrad/UGFall2016BackupData Report.xlsx",skip = 4)#%>%View()
 #one duplication: enroll16fall%>%count(`People Code Id`)%>%count(n) #due to total rows
 #duplicated NA rows: enroll16fall%>%count(`People Code Id`)%>%filter(n>1); enroll16fall%>%filter(is.na(`People Code Id`))
@@ -324,18 +323,90 @@ enroll16fall<-enroll16fall%>%filter(!is.na(`People Code Id`))
 #enroll16fall%>%filter(Degree=="NON")%>%select(Curriculum)#it's NONMAT
 #enroll16fall%>%count(Curriculum)%>%View()#LASVIL
 #check for transfer: enroll16fall%>%count(`Transfer YN`)
-#NOT SURE IF HAVE completion program: enroll16fall%>%str_detect(Curriculum, "[Cc]ompletion")
+#Before 2019, there are no completion program
 #full time: enroll16fall%>%count(`FT/PT`)
 ```
 
-```{r}
+```{r remove-cannot find ssn of dgskFTft students}
 #select ssn list of "first time, full time, dgsk" UG students
-dgsk.FT.ft_ssn<-enroll16fall%>%filter(
+dgskFTft.reg<-enroll16fall%>%filter(
   Degree!="NON",Curriculum!="LASVIL",#dgsk (not NON in degree and not LASVIL in program)
-  `Transfer YN`=="N",#first time (N transfer &   not in completion program)
-  `FT/PT`=="FT")%>%#full time
-    select(`People Code Id`)
+  `Transfer YN`=="N",#first time (N transfer & not in completion program)
+  `FT/PT`=="FT")#full time
 ```
+
+```{r load dmt16fa}
+dmt16fa<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/Test Run of Data Mart/Fall 2016/Test Run Fall 2016 as of 9_22_2016_third_run.xlsx")
+#check: glimpse(dmt16fa)
+#no duplication: dmt16fa%>%count(PC_ID)%>%count(n)
+
+##dgsk
+#dmt16fa%>%count(DEGREE_1)#"NON"
+#dmt16fa%>%count(MATRIC_YT_YN,DEGREE_1)# has 17 0 in MATRIC_YT_YN than the 5 NON in DEGREE_1--it turns out the MATRIC_YT_YN is a better capture of non matriculated
+#dmt16fa%>%filter(MATRIC_YT_YN==0)%>%count(MATRIC_YT_YN,DEGREE_1,PROGRAM_1)# I should use MATRIC_YT_YN since it code LV (lasell village) as non-matriculated, which is more accurate (than DEGREE_1).
+#dmt16fa%>%filter(DEGREE_1=="NON")%>%select(PROGRAM_1)#it's UNDER; thus, MATRIC_YT_YN is the most accurate to capture non-matriculated to avoid forgetting excluding UNDER (in PROGRAM_1) and AA (in DEGREE_1)
+
+#dmt16fa%>%count(PROGRAM_1)%>%View()#"LV"
+#dmt16fa%>%filter(PROGRAM_1=="LV")%>%select(MAJOR_1,DEGREE_1)#Lasell Village and AA
+
+
+#check for transfer: dmt16fa%>%count(TRANSFER_YN)
+#Before 2019, there are no completion program
+#full time: dmt16fa%>%count(FTPT_TOP_LEVEL,FTPT_CODE)
+```
+
+```{r verify dgskFTft.dmt = dgskFTft.reg}
+dgskFTft.dmt<-dmt16fa%>%filter(
+  MATRIC_YT_YN!=0,#same as: DEGREE_1!="NON", PROGRAM_1!="LV",#dgsk (0 is composed of= not NON in degree + not LASVIL in program)
+  TRANSFER_YN=="N",#first time (N transfer & not in completion program)
+  FTPT_CODE=="FT")#full time
+
+#finding dgFTft students based on enrollment backup data and from dmt data are the same: identical(sort(dgskFTft.reg$`People Code Id`),sort(dgskFTft.dmt$PC_ID))#they are the same!!!
+```
+
+```{r mutate dgskFTft vars to finaid}
+#mutated vars from dmt
+dmt_dgskFTft.vars<-dmt16fa%>%select(SSN,PC_ID,TRANSFER_YN,FTPT_CODE,MATRIC_YT_YN,DEGREE_1,PROGRAM_1,MAJOR_1)
+#same format: 00 as character in dmt; missing 00 as dbl format in finaid
+dmt_dgskFTft.vars$SSN<-as.numeric(dmt_dgskFTft.vars$SSN)
+#check: glimpse(finaid16fall$`Student Ssn`);glimpse(finaid16fall)
+#check: glimpse(dmt_dgskFTft.vars$SSN);glimpse(dmt_dgskFTft.vars)
+
+#mutate to finaid
+finaid16fall.merge_dgskFTft<-left_join(finaid16fall,dmt_dgskFTft.vars,by=c(`Student Ssn`="SSN"))%>%#1842
+  mutate(dgskFTft=if_else(
+  MATRIC_YT_YN!=0 & #dgsk
+  TRANSFER_YN=="N" & #first time
+  FTPT_CODE=="FT", #full time
+  "Y","N"))#check: %>%count(dgskFTft)#1436 yes in dgskFTft
+
+#approach2: finaid16fall%>%filter(`Student Ssn` %in% as.numeric(dgskFTft.dmt$SSN))%>%str()#1436 dgskFTft students
+```
+
+```{r save finaid16fall.merge_dgskFTft}
+wb<-createWorkbook()
+#add new sheet "finaid16fall"
+addWorksheet(wb,"finaid16fall")
+#assign classsize as clean sheet
+writeData(wb,"finaid16fall", x = finaid16fall)
+
+#add new sheet "dmt16fa" on raw
+addWorksheet(wb,"dmt16fall")
+#assign classsize as clean sheet
+writeData(wb,"dmt16fall", x = dmt16fa)
+
+#add new sheet "merged.dgskFTft" on raw
+addWorksheet(wb,"merged.dgskFTft")
+#assign classsize as clean sheet
+writeData(wb,"merged.dgskFTft", x = finaid16fall.merge_dgskFTft)
+
+#check names: names(wb)
+#set order of sheets: 
+worksheetOrder(wb) <- c(3,1,2)
+#save all in a new file
+saveWorkbook(wb,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Fall 2016 freeze file.cleanCDS-B4.xlsx",overwrite = TRUE)
+```
+
 
 
 

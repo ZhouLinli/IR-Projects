@@ -282,6 +282,44 @@ gdenroll%>%count(FT_PT,Gender)%>%
 #total gd: since no duplication: nrow(gdenroll)
 ```
 
+# CDS-B4: 2016 cohort finaid by dgskFTfy
+
+```{r load_finaid.full}
+finaid.full<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Fall 2016 freeze file.cleanCDS-B4.xlsx")
+
+#glimpse(finaid.full)
+```
+
+```{r recode receive vs not receive}
+finaid.full<-finaid.full%>%
+  mutate(pell=if_else(`Pell Award Calc`>0,"receive","not receive"),
+         stafford=if_else(is.na(`Sub awarded`),"not receive",
+                    if_else(`Sub awarded`>0,"receive","not receive")))
+#check:finaid.full%>%count(stafford,`Sub awarded`)
+```
+
+```{r report}
+#pell (`Pell Award Calc`>0): "Recipients of a Federal Pell Grant"
+finaid.full%>%filter(dgskFTft=="Y",#dgskFTft students
+                     pell=="receive")%>%#"Recipients of a Federal Pell Grant"
+  nrow()#438
+
+#stafford (!is.na(`Sub awarded`) & >0):  "Recipients of a Subsidized Stafford Loan who did not receive a pell"
+finaid.full%>%filter(dgskFTft=="Y",#dgskFTft students
+                    stafford=="receive",#Recipients of a Subsidized Stafford Loan"
+                    pell=="not receive")%>%#who did not receive a pell"
+  nrow()#617
+
+#"Students who did not receive either a Pell Grant or a subsidized Stafford Loan"
+finaid.full%>%filter(dgskFTft=="Y",#dgskFTft students
+                    pell=="not receive",#not receiving pell
+                    stafford=="not receive")%>%#not receiving stafford
+  nrow()#381
+
+#confirm all dgskFTft students: finaid.full%>%filter(dgskFTft=="Y")%>%nrow()#1436
+
+```
+
 # CDS-J Complete by UG CIP
 
 ```{r load_ipedscomplete}

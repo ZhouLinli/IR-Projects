@@ -32,8 +32,15 @@ library(gt)
 library(kableExtra)#for good-looking static tables
 library(DT)#for filtering/interactive tables
 #for regression table
-library(apaTables)
-library(sjPlot)
+library(apaTables)#show cor/reg table
+library(sjPlot)#show reg table
+library(lme4)#multilevel modeling
+library(performance)#calculate intra class correlation
+library(dummies)#lm already auto convert to dummy vars
+library(caret)#creating predictive models
+library(ranger)#random forest
+library(tidylog)#see process of random forest
+
 
 
 

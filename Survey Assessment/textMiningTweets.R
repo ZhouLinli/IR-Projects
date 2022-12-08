@@ -87,5 +87,7 @@ token%>%filter(status_id%in%pos_tokens_id$status_id)%>%
   mutate(dif=positive-negative)%>%filter(dif<0)
 #conclusion: cannot filter any id that contains positive and regard that id is a positive text...
 
-  
-  
+
+#viz1: wordcloud(words,countofwords,max.words=50,colors=colorset)
+#viz2: tibble(words,countofwords)%>%top_n(50)%>%
+#          ggplot(aes(x=reorder(words,countofwords),y=desc(countofwords)))+geom_col()

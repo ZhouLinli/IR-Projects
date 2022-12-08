@@ -164,7 +164,7 @@ fallenroll%>%filter(degreeseek=="Y",#degree seeking students
   count(Ethnicity)
 ```
 
-# CDS-B1 Fall Enrollment: FT/PT, gender
+# CDS-B1 Fall Enrollment: UG FT/PT, gender
 
 ```{r}
 #for convnience of reporting
@@ -235,6 +235,51 @@ filter(degreeseek=="Y")%>%#degree seeking
 fallenroll%>%#UG
   count(`FT/PT`,Gender)%>%
   pivot_wider(names_from = `FT/PT`,values_from = n)
+```
+
+# CDS-B1 Fall Enrollment: GD FT/PT, gender
+
+```{r load_gdenroll}
+gdenroll<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Fall/Graduate/2022 Fall Graduate Backup Data Report.xlsx")
+#check duplication: gdenroll%>%count(People_Code_Id)%>%count(n)#no duplication 392
+
+#check: glimpse(gdenroll)
+#all non-transfer: gdenroll%>%count(Transfer_YN)#none transfer students
+#dgsk: gdenroll%>%count(Degree,Curriculum)%>%View()#Degree!="NON" for dgsk students
+#Gender: gdenroll%>%count(Gender)#3 unknown gender
+#explore gender unknown: gdenroll%>%filter(Gender=="U")%>%select(People_Code_Id,Name,Age,New_Ret_Term_YN,Degree,Curriculum,Admit_Year)
+#assign gender to unknown gender based on names
+gdenroll[gdenroll$People_Code_Id=="P000057114","Gender"]<-"F"
+gdenroll[gdenroll$People_Code_Id=="P000056435","Gender"]<-"M"
+gdenroll[gdenroll$People_Code_Id=="P000038867","Gender"]<-"M"
+#check Gender: gdenroll%>%count(Gender)#no unknown now
+
+#reorder and recode Gender
+gdenroll$Gender<-factor(gdenroll$Gender,levels = c("M","F"))
+gdenroll$Gender<-recode(gdenroll$Gender,M="Men",F="Women")
+```
+
+```{r report}
+#did not ask to report dgsk first year
+
+#dgsk first time
+gdenroll%>%filter(Degree!="NON"#dgsk students 
+                  #all are first time
+                  )%>%count(FT_PT,Gender)%>%
+  pivot_wider(names_from = FT_PT,values_from = n)
+
+
+#no other dgsk (dgsk are all reported as dgsk first time, since non no-first-timer)
+
+#other enrolled: non-dgsk
+gdenroll%>%filter(Degree=="NON"#non-dgsk students 
+                  )%>%count(FT_PT,Gender)
+
+##confirm if all gd are reported
+gdenroll%>%count(FT_PT,Gender)%>%
+  pivot_wider(names_from = FT_PT,values_from = n)
+
+#total gd: since no duplication: nrow(gdenroll)
 ```
 
 # CDS-J Complete by UG CIP

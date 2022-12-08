@@ -14,7 +14,7 @@ source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
 #i-1)class size: registar#the rest we can do (a,b,e,f,j) e/f-might be a question for someone else#b(UG part)/j can complete now"
 ```
 
-#CDS-I Class Size
+#CDS-I: Class Size
 
 ```{r load reg crs data}
 # 22Fall UG class size (including online classes)
@@ -80,7 +80,7 @@ saveWorkbook(wb,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Da
 ```
 
 
-#CDS-F Fall Enrollment
+#CDS-B1,2 and F: UG Fall Enrollment
 
 ```{r load UGbackup}
 #find list of "degree-seeking" UG, and "first-time, first-year degree-seeking" UG, both enrolled in 22Fall (include FT&PT)
@@ -286,7 +286,60 @@ saveWorkbook(wb,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Da
 ```
 
 
-# CDS-J Completion
+#CDS-B1: GD Fall Enrollment: no need to clean, load in report directly
+#CDS-B4: FinAid
+
+```{r load finaid16fall data}
+finaid16fall<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/Fall 2016 freeze file.xlsx")
+#check: 
+#check no duplication: finaid16fall%>%count(`Student Ssn`)%>%count(n)
+```
+
+
+```{r finaid_colums}
+##find relevant vars
+glimpse(finaid16fall)
+names(finaid16fall)#find index
+lapply(finaid16fall[,48:54], unique)#use index to view unique values
+#relationship between pell related grants: finaid16fall%>%count(`Pell Award Calc`,`All Federal Grant awarded`)
+
+##results
+#`Pell Award Calc`>0: "Recipients of a Federal Pell Grant"
+#!is.na(`Sub awarded`) & >0:  "Recipients of a Subsidized Stafford Loan"
+# `Pell Award Calc`==0, is.na(`Sub awarded`) | ==0: "Students who did not receive either a Pell Grant or a subsidized Stafford Loan"
+```
+
+```{r load enrolled16fall data}
+enroll16fall<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2016 Fall/Undergrad/UGFall2016BackupData Report.xlsx",skip = 4)#%>%View()
+#one duplication: enroll16fall%>%count(`People Code Id`)%>%count(n) #due to total rows
+#duplicated NA rows: enroll16fall%>%count(`People Code Id`)%>%filter(n>1); enroll16fall%>%filter(is.na(`People Code Id`))
+#remove NA rows:
+enroll16fall<-enroll16fall%>%filter(!is.na(`People Code Id`))
+#check: enroll16fall%>%count(`People Code Id`)%>%count(n)#1788 unique rows
+
+#check: glimpse(enroll16fall)
+
+#check values for non-degsk
+#enroll16fall%>%count(Degree)#NON
+#enroll16fall%>%filter(Degree=="NON")%>%select(Curriculum)#it's NONMAT
+#enroll16fall%>%count(Curriculum)%>%View()#LASVIL
+#check for transfer: enroll16fall%>%count(`Transfer YN`)
+#NOT SURE IF HAVE completion program: enroll16fall%>%str_detect(Curriculum, "[Cc]ompletion")
+#full time: enroll16fall%>%count(`FT/PT`)
+```
+
+```{r}
+#select ssn list of "first time, full time, dgsk" UG students
+dgsk.FT.ft_ssn<-enroll16fall%>%filter(
+  Degree!="NON",Curriculum!="LASVIL",#dgsk (not NON in degree and not LASVIL in program)
+  `Transfer YN`=="N",#first time (N transfer &   not in completion program)
+  `FT/PT`=="FT")%>%#full time
+    select(`People Code Id`)
+```
+
+
+
+# CDS-J and B3: Completion
 
 ```{r load ipeds.complete}
 ipeds.complete<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Fall Collection/Completions/Complete.with.Ethnicity_age.eric.editted.xlsx")

@@ -414,15 +414,21 @@ retentionfile<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data an
 
 #check: glimpse(retentionfile)
 #relevant vars: 
+#cohort ID==2016
 #Ret Sem any 2-8 is "Y" ("complete in 4 years or less)
 #Ret Sem 8 is NA, but 9 or 10 is "Y" ("complete  more than 4 years but in 5 years or less)
 #Ret Sem 10 is NA, but 11 or 12 is "Y" ("complete  more than 5 years but in 6 years or less)
 #Ret Sem any 2-12 is "Y" ("complete in 6 years or less)
+
+#select releavnt 
 ```
 
 ```{r retention merge finaid16}
-finaid16fall<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/2016 Cohort Students.xlsx")
-
+finaid16fall<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/Fall 2016 freeze file.xlsx")
+#relevant vars
+#confirm if all cohort 2016 students are in this file 
+#confirm if their fall finaid status is the status, no more students is receiving in later semesters
+#
 ```
 
 

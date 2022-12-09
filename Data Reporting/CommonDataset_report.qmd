@@ -259,7 +259,7 @@ gdenroll$Gender<-factor(gdenroll$Gender,levels = c("M","F"))
 gdenroll$Gender<-recode(gdenroll$Gender,M="Men",F="Women")
 ```
 
-```{r report}
+```{r report_firsttime and others}
 #did not ask to report dgsk first year
 
 #dgsk first time
@@ -273,6 +273,33 @@ gdenroll%>%filter(Degree!="NON"#dgsk students
 
 #other enrolled: non-dgsk
 gdenroll%>%filter(Degree=="NON"#non-dgsk students 
+                  )%>%count(FT_PT,Gender)
+
+##confirm if all gd are reported
+gdenroll%>%count(FT_PT,Gender)%>%
+  pivot_wider(names_from = FT_PT,values_from = n)
+
+#total gd: since no duplication: nrow(gdenroll)
+```
+
+```{r report_firstyear and others}
+#assuming they mean to ask dgsk first year
+
+#dgsk first year
+gdenroll%>%filter(Degree!="NON",#dgsk students 
+                  New_Ret_Term_YN=="Y"#first year
+                  )%>%count(FT_PT,Gender)%>%
+  pivot_wider(names_from = FT_PT,values_from = n)
+
+
+#other dgsk: dgsk and non first year
+gdenroll%>%filter(Degree!="NON",#dgsk students 
+                  New_Ret_Term_YN=="N"#first year
+                  )%>%count(FT_PT,Gender)%>%
+  pivot_wider(names_from = FT_PT,values_from = n)
+
+#other enrolled: non-dgsk
+gdenroll%>%filter(Degree=="NON",#non-dgsk students 
                   )%>%count(FT_PT,Gender)
 
 ##confirm if all gd are reported

@@ -320,6 +320,12 @@ finaid.full%>%filter(dgskFTft=="Y",#dgskFTft students
 
 ```
 
+# CDS-B4: 2016 cohort retention
+
+```{r}
+
+```
+
 # CDS-J Complete by UG CIP
 
 ```{r load_ipedscomplete}

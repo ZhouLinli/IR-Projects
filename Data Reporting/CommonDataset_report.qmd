@@ -8,7 +8,7 @@ editor: visual
 source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
 ```
 
-# CDS-I Class Size UG
+# CDS-I3 Class Size UG
 
 ```{r load_secsize}
 secsize<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Course Count FA'22_cleanCDS-I.xlsx")
@@ -166,7 +166,7 @@ fallenroll%>%filter(degreeseek=="Y",#degree seeking students
 
 # CDS-B1 Fall Enrollment: UG FT/PT, gender
 
-```{r}
+```{r recode_gender}
 #for convnience of reporting
 fallenroll$Gender<-recode(fallenroll$Gender,M="Men",F="Women")
 #factorize order
@@ -244,6 +244,9 @@ gdenroll<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Re
 #check duplication: gdenroll%>%count(People_Code_Id)%>%count(n)#no duplication 392
 
 #check: glimpse(gdenroll)
+```
+
+```{r fulfill_genderNA}
 #all non-transfer: gdenroll%>%count(Transfer_YN)#none transfer students
 #dgsk: gdenroll%>%count(Degree,Curriculum)%>%View()#Degree!="NON" for dgsk students
 #Gender: gdenroll%>%count(Gender)#3 unknown gender
@@ -284,6 +287,20 @@ gdenroll%>%count(FT_PT,Gender)%>%
   pivot_wider(names_from = FT_PT,values_from = n)
 
 #total gd: since no duplication: nrow(gdenroll)
+```
+
+# CDS I2 Faculty-student ratio: based on B1 student number
+
+```{r ALLstudent_FTE}
+#full time equivalent=full time student headcount + 1/3* part time student headcount
+#UG students by FT/PT
+ug_n<-fallenroll%>%count(`FT/PT`)
+#GD students by FT/PT
+gd_n<-gdenroll%>%count(FT_PT)
+
+#FTE
+ug_n[ug_n$`FT/PT`=="FT",]$n+ gd_n[gd_n$FT_PT=="FT",]$n + #full time
+  1/3 * (ug_n[ug_n$`FT/PT`=="PT",]$n+ gd_n[gd_n$FT_PT=="PT",]$n )#part time
 ```
 
 # CDS-B4: 2016 cohort finaid and completion

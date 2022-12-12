@@ -294,6 +294,8 @@ do not use enroll data nor dmt data for 2016 cohort dgskFTft student:
 
 
 ```{r load fin16 data}
+# finaid 2016 file contains all students enrolled in 2016 fall, and thus include all students entered in 2016 fall (2016 cohort)
+# only students who received a finaid grant/load will be included in this file
 fin16<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/Fall 2016 freeze file.xlsx")
 #check: 
 #check no duplication: fin16%>%count(`Student Ssn`)%>%count(n)
@@ -337,26 +339,31 @@ cohort16<-ret%>%filter(Cohort=="2016")
 cohort16_fin<-left_join(cohort16,fin16_aidcols,by=c("SSN"="Student Ssn"))
 ```
 
-```{r save_cohort16_fin}
+```{r save_cohort16_fin and cohort_16}
 wb<-createWorkbook()
-#add new sheet "fin16"
-addWorksheet(wb,"fin16")
-#assign classsize as clean sheet
-writeData(wb,"fin16", x = fin16)
-
-#add new sheet "dmt16fa" on raw
-addWorksheet(wb,"retentionfile")
-#assign classsize as clean sheet
-writeData(wb,"retentionfile", x = ret)
 
 #add new sheet "cohort16fin" on raw
 addWorksheet(wb,"cohort16fin")
 #assign classsize as clean sheet
 writeData(wb,"cohort16fin", x = cohort16_fin)
 
+#add new sheet "cohort16fin" on raw
+addWorksheet(wb,"cohort16")
+#assign classsize as clean sheet
+writeData(wb,"cohort16", x = cohort16)
+
+#add new sheet "dmt16fa" on raw
+addWorksheet(wb,"retentionfile")
+#assign classsize as clean sheet
+writeData(wb,"retentionfile", x = ret)
+
+#add new sheet "fin16"
+addWorksheet(wb,"fin16")
+#assign classsize as clean sheet
+writeData(wb,"fin16", x = fin16)
+
 #check names: names(wb)
-#set order of sheets: 
-worksheetOrder(wb) <- c(3,1,2)
+#set order of sheets: worksheetOrder(wb) <- c(3,1,2)
 #save all in a new file
 saveWorkbook(wb,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Fall 2016 freeze file.cleanCDS-B4.xlsx",overwrite = TRUE)
 ```
@@ -461,30 +468,17 @@ worksheetOrder(wb) <- c(3,1,2)
 saveWorkbook(wb,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Fall 2016 freeze file.cleanCDS-B4.xlsx",overwrite = TRUE)
 ```
 
-#CDS-B4: 2016 cohort retention
+#CDS-B4: 2016 cohort completion
 
-```{r load retention file}
-
-
+```{r explore_completion.cols}
 #relevant vars: 
-#cohort ID==2016
-#count students in semester 2 enrolled file
-#("complete in 4 years or less): Ret Sem 2-8 (2016 Spring): any is "Y" 
-# mutate Ret Sem 9-12)()
-#("complete  more than 4 years but in 5 years or less): Ret Sem 8 is NA, but 9 or 10 is "Y" 
-#("complete  more than 5 years but in 6 years or less): Ret Sem 10 is NA, but 11 or 12 is "Y"
-#("complete in 6 years or less): Ret Sem any 2-12 is "Y" 
-
-#select releavnt 
-```
-
-```{r retention merge finaid16}
-fin16<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/Fall 2016 freeze file.xlsx")
-#relevant vars
-#confirm if all cohort 2016 students are in this file 
-#confirm if their fall finaid status is the status, no more students is receiving in later semesters
-#
-#use the retention file for any cohort- (fyft dgsk students-) only questions to form the cohort list
+glimpse(cohort16)
+#graduated (Y/N), grad date (Y-M-D), grad year (`complete year` actually)
+#"grad year calculation: 
+#1. transfer grad date to a 'grad year' that is based on "semester": spring/summer code as the year, fall is coded as the next year 
+#e.g. 2018 spring is coded as 2018; 2018 summer is coded as 2018; 2018 fall is coded as 2019
+#then, for each cohort (fall enroll students), completion year = `grad year` - cohort year
+#e.g. 14 fall entered UG: 18spring/summer are 4th year, 18fall is 5th year (based on academic year)
 ```
 
 

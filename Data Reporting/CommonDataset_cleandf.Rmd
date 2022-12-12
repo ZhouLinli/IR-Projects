@@ -289,26 +289,80 @@ saveWorkbook(wb,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Da
 #CDS-B1: GD Fall Enrollment: no need to clean, load in report directly
 #CDS-B4: FinAid
 
-```{r load finaid16fall data}
-finaid16fall<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/Fall 2016 freeze file.xlsx")
+use retention file to easily identify 2016 cohort student (they are all non-transfer, fall enrolled, full time dgsk students in 2016); 
+do not use enroll data nor dmt data for 2016 cohort dgskFTft student:
+
+
+```{r load fin16 data}
+fin16<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/Fall 2016 freeze file.xlsx")
 #check: 
-#check no duplication: finaid16fall%>%count(`Student Ssn`)%>%count(n)
+#check no duplication: fin16%>%count(`Student Ssn`)%>%count(n)
 ```
 
-```{r explore finaid_colums}
+```{r select fin16_aidcols}
 ##find relevant vars
-#glimpse(finaid16fall)
-#names(finaid16fall)#find index
-#lapply(finaid16fall[,48:54], unique)#use index to view unique values
-##relationship between pell related grants: finaid16fall%>%count(`Pell Award Calc`,`All Federal Grant awarded`)
+#glimpse(fin16)
+#names(fin16)#find index
+#lapply(fin16[,48:54], unique)#use index to view unique values
+##relationship between pell related grants: fin16%>%count(`Pell Award Calc`,`All Federal Grant awarded`)
+
+fin16_aidcols<-fin16%>%select(`Student Ssn`,`Pell Award Calc`,`Sub awarded`)
+
 
 ##results
 #`Pell Award Calc`>0: "Recipients of a Federal Pell Grant"
 #!is.na(`Sub awarded`) & >0:  "Recipients of a Subsidized Stafford Loan"
 # `Pell Award Calc`==0, is.na(`Sub awarded`) | ==0: "Students who did not receive either a Pell Grant or a subsidized Stafford Loan"
+
+fin16_aidcols<-fin16_aidcols%>%
+  mutate(pell=if_else(`Pell Award Calc`>0,"receive","not receive"),
+         stafford=if_else(is.na(`Sub awarded`),"not receive",
+                    if_else(`Sub awarded`>0,"receive","not receive")))
+#check:fin16_aidcols%>%count(stafford,`Sub awarded`)
 ```
 
-```{r remove-load enroll16fall}
+
+```{r load_rentionfile}
+ret<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Retention/2022-2023/Interactive UG Retention Analysis.xlsx",sheet = "Data")
+
+#check: glimpse(retentionfile)#cohort
+```
+
+```{r identify dgskFTft students}
+cohort16<-ret%>%filter(Cohort=="2016")
+#check: cohort16%>%count(SSN)%>%count(n) #no duplication
+```
+
+```{r merge_cohort16_fin}
+cohort16_fin<-left_join(cohort16,fin16_aidcols,by=c("SSN"="Student Ssn"))
+```
+
+```{r save_cohort16_fin}
+wb<-createWorkbook()
+#add new sheet "fin16"
+addWorksheet(wb,"fin16")
+#assign classsize as clean sheet
+writeData(wb,"fin16", x = fin16)
+
+#add new sheet "dmt16fa" on raw
+addWorksheet(wb,"retentionfile")
+#assign classsize as clean sheet
+writeData(wb,"retentionfile", x = ret)
+
+#add new sheet "cohort16fin" on raw
+addWorksheet(wb,"cohort16fin")
+#assign classsize as clean sheet
+writeData(wb,"cohort16fin", x = cohort16_fin)
+
+#check names: names(wb)
+#set order of sheets: 
+worksheetOrder(wb) <- c(3,1,2)
+#save all in a new file
+saveWorkbook(wb,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Fall 2016 freeze file.cleanCDS-B4.xlsx",overwrite = TRUE)
+```
+
+
+```{r remove_enroll-load enroll16fall}
 enroll16fall<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2016 Fall/Undergrad/UGFall2016BackupData Report.xlsx",skip = 4)#%>%View()
 #one duplication: enroll16fall%>%count(`People Code Id`)%>%count(n) #due to total rows
 #duplicated NA rows: enroll16fall%>%count(`People Code Id`)%>%filter(n>1); enroll16fall%>%filter(is.na(`People Code Id`))
@@ -327,7 +381,7 @@ enroll16fall<-enroll16fall%>%filter(!is.na(`People Code Id`))
 #full time: enroll16fall%>%count(`FT/PT`)
 ```
 
-```{r remove-cannot find ssn of dgskFTft students}
+```{r remove_enroll-cannot find ssn of dgskFTft students}
 #select ssn list of "first time, full time, dgsk" UG students
 dgskFTft.reg<-enroll16fall%>%filter(
   Degree!="NON",Curriculum!="LASVIL",#dgsk (not NON in degree and not LASVIL in program)
@@ -335,7 +389,7 @@ dgskFTft.reg<-enroll16fall%>%filter(
   `FT/PT`=="FT")#full time
 ```
 
-```{r load dmt16fa}
+```{r still-remove_dmt load dmt16fa}
 dmt16fa<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/Test Run of Data Mart/Fall 2016/Test Run Fall 2016 as of 9_22_2016_third_run.xlsx")
 #check: glimpse(dmt16fa)
 #no duplication: dmt16fa%>%count(PC_ID)%>%count(n)
@@ -355,7 +409,7 @@ dmt16fa<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart File
 #full time: dmt16fa%>%count(FTPT_TOP_LEVEL,FTPT_CODE)
 ```
 
-```{r verify dgskFTft.dmt = dgskFTft.reg}
+```{r still-remove_dmt verify dgskFTft.dmt = dgskFTft.reg}
 dgskFTft.dmt<-dmt16fa%>%filter(
   MATRIC_YT_YN!=0,#same as: DEGREE_1!="NON", PROGRAM_1!="LV",#dgsk (0 is composed of= not NON in degree + not LASVIL in program)
   TRANSFER_YN=="N",#first time (N transfer & not in completion program)
@@ -364,31 +418,31 @@ dgskFTft.dmt<-dmt16fa%>%filter(
 #finding dgFTft students based on enrollment backup data and from dmt data are the same: identical(sort(dgskFTft.reg$`People Code Id`),sort(dgskFTft.dmt$PC_ID))#they are the same!!!
 ```
 
-```{r mutate dgskFTft vars to finaid}
+```{r still-remove_dmt mutate dgskFTft vars to finaid}
 #mutated vars from dmt
 dmt_dgskFTft.vars<-dmt16fa%>%select(SSN,PC_ID,TRANSFER_YN,FTPT_CODE,MATRIC_YT_YN,DEGREE_1,PROGRAM_1,MAJOR_1)
 #same format: 00 as character in dmt; missing 00 as dbl format in finaid
 dmt_dgskFTft.vars$SSN<-as.numeric(dmt_dgskFTft.vars$SSN)
-#check: glimpse(finaid16fall$`Student Ssn`);glimpse(finaid16fall)
+#check: glimpse(fin16$`Student Ssn`);glimpse(fin16)
 #check: glimpse(dmt_dgskFTft.vars$SSN);glimpse(dmt_dgskFTft.vars)
 
 #mutate to finaid
-finaid16fall.merge_dgskFTft<-left_join(finaid16fall,dmt_dgskFTft.vars,by=c(`Student Ssn`="SSN"))%>%#1842
+fin16.merge_dgskFTft<-left_join(fin16,dmt_dgskFTft.vars,by=c(`Student Ssn`="SSN"))%>%#1842
   mutate(dgskFTft=if_else(
   MATRIC_YT_YN!=0 & #dgsk
   TRANSFER_YN=="N" & #first time
   FTPT_CODE=="FT", #full time
   "Y","N"))#check: %>%count(dgskFTft)#1436 yes in dgskFTft
 
-#approach2: finaid16fall%>%filter(`Student Ssn` %in% as.numeric(dgskFTft.dmt$SSN))%>%str()#1436 dgskFTft students
+#approach2: fin16%>%filter(`Student Ssn` %in% as.numeric(dgskFTft.dmt$SSN))%>%str()#1436 dgskFTft students
 ```
 
-```{r save finaid16fall.merge_dgskFTft}
+```{r still-remove_dmt save fin16.merge_dgskFTft}
 wb<-createWorkbook()
-#add new sheet "finaid16fall"
-addWorksheet(wb,"finaid16fall")
+#add new sheet "fin16"
+addWorksheet(wb,"fin16")
 #assign classsize as clean sheet
-writeData(wb,"finaid16fall", x = finaid16fall)
+writeData(wb,"fin16", x = fin16)
 
 #add new sheet "dmt16fa" on raw
 addWorksheet(wb,"dmt16fall")
@@ -398,7 +452,7 @@ writeData(wb,"dmt16fall", x = dmt16fa)
 #add new sheet "merged.dgskFTft" on raw
 addWorksheet(wb,"merged.dgskFTft")
 #assign classsize as clean sheet
-writeData(wb,"merged.dgskFTft", x = finaid16fall.merge_dgskFTft)
+writeData(wb,"merged.dgskFTft", x = fin16.merge_dgskFTft)
 
 #check names: names(wb)
 #set order of sheets: 
@@ -410,25 +464,27 @@ saveWorkbook(wb,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Da
 #CDS-B4: 2016 cohort retention
 
 ```{r load retention file}
-retentionfile<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Retention/2022-2023/Interactive UG Retention Analysis.xlsx",sheet = "Data")
 
-#check: glimpse(retentionfile)
+
 #relevant vars: 
 #cohort ID==2016
-#Ret Sem any 2-8 is "Y" ("complete in 4 years or less)
-#Ret Sem 8 is NA, but 9 or 10 is "Y" ("complete  more than 4 years but in 5 years or less)
-#Ret Sem 10 is NA, but 11 or 12 is "Y" ("complete  more than 5 years but in 6 years or less)
-#Ret Sem any 2-12 is "Y" ("complete in 6 years or less)
+#count students in semester 2 enrolled file
+#("complete in 4 years or less): Ret Sem 2-8 (2016 Spring): any is "Y" 
+# mutate Ret Sem 9-12)()
+#("complete  more than 4 years but in 5 years or less): Ret Sem 8 is NA, but 9 or 10 is "Y" 
+#("complete  more than 5 years but in 6 years or less): Ret Sem 10 is NA, but 11 or 12 is "Y"
+#("complete in 6 years or less): Ret Sem any 2-12 is "Y" 
 
 #select releavnt 
 ```
 
 ```{r retention merge finaid16}
-finaid16fall<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/Fall 2016 freeze file.xlsx")
+fin16<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/Fall 2016 freeze file.xlsx")
 #relevant vars
 #confirm if all cohort 2016 students are in this file 
 #confirm if their fall finaid status is the status, no more students is receiving in later semesters
 #
+#use the retention file for any cohort- (fyft dgsk students-) only questions to form the cohort list
 ```
 
 

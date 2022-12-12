@@ -288,39 +288,40 @@ gdenroll%>%count(FT_PT,Gender)%>%
 
 # CDS-B4: 2016 cohort finaid by dgskFTfy
 
-```{r load_finaid.full}
-finaid.full<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Fall 2016 freeze file.cleanCDS-B4.xlsx")
+```{r load_cohort16_fin}
+cohort16_fin<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Fall 2016 freeze file.cleanCDS-B4.xlsx")
 
-#glimpse(finaid.full)
+#glimpse(cohort16_fin)
+#check: cohort16_fin%>%count(Cohort)
 ```
 
-```{r recode receive vs not receive}
-finaid.full<-finaid.full%>%
-  mutate(pell=if_else(`Pell Award Calc`>0,"receive","not receive"),
-         stafford=if_else(is.na(`Sub awarded`),"not receive",
-                    if_else(`Sub awarded`>0,"receive","not receive")))
-#check:finaid.full%>%count(stafford,`Sub awarded`)
-```
+```{r report_2016cohort_fin}
+#all students are dgsk, full time, fall enrolled (first year/new), first time (non-transfer) students
 
-```{r report}
-#pell (`Pell Award Calc`>0): "Recipients of a Federal Pell Grant"
-finaid.full%>%filter(dgskFTft=="Y",#dgskFTft students
-                     pell=="receive")%>%#"Recipients of a Federal Pell Grant"
-  nrow()#438
+#1."Recipients of a Federal Pell Grant"
+cohort16_fin%>%filter(pell=="receive")%>%
+  nrow()#137
 
-#stafford (!is.na(`Sub awarded`) & >0):  "Recipients of a Subsidized Stafford Loan who did not receive a pell"
-finaid.full%>%filter(dgskFTft=="Y",#dgskFTft students
-                    stafford=="receive",#Recipients of a Subsidized Stafford Loan"
+#2."Recipients of a Subsidized Stafford Loan who did not receive a pell"
+cohort16_fin%>%filter(stafford=="receive",#Recipients of a Subsidized Stafford Loan"
                     pell=="not receive")%>%#who did not receive a pell"
-  nrow()#617
+  nrow()#186
 
-#"Students who did not receive either a Pell Grant or a subsidized Stafford Loan"
-finaid.full%>%filter(dgskFTft=="Y",#dgskFTft students
-                    pell=="not receive",#not receiving pell
-                    stafford=="not receive")%>%#not receiving stafford
-  nrow()#381
 
-#confirm all dgskFTft students: finaid.full%>%filter(dgskFTft=="Y")%>%nrow()#1436
+#3.part1-in the finaid file, "Students who did not receive either a Pell Grant or a subsidized Stafford Loan"
+cohort16_fin%>%filter(pell=="not receive",#not receiving pell-(but received other finaid)
+                    stafford=="not receive")%>%#not receiving stafford-(but received other finaid)
+  nrow()#89
+
+#3.part2-not even in the finaid file, "Students who did not receive either a Pell Grant or a subsidized Stafford Loan"
+#(students who did not receive any grant are not in the fin16 file) NA in pell and stafford (the two cols are mutated based on fin16 cols)
+cohort16_fin%>%filter(is.na(pell), 
+                    is.na(stafford))%>%
+  #not receiving any finaid at all
+  nrow()#25
+
+
+#confirm all dgskFTft students: cohort16_fin%>%nrow()#437
 
 ```
 

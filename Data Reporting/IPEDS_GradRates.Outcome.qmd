@@ -1,0 +1,38 @@
+---
+title: "IPEDS GradRate and Outcome Measure"
+format: pdf
+editor: visual
+---
+
+```{r libraries}
+source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
+```
+
+```{r load_retention.file}
+ret<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Retention/2022-2023/Interactive UG Retention Analysis.xlsx",sheet = "Data")
+
+#cohort here means: first time/non-transfer, first year/new, full time fall enrolled students 
+```
+
+# Graduate Rate: 2016 cohort
+
+```{r}
+#eth and gender of cohort 2016
+#who are bachelor
+
+```
+
+# Graduate Rate 200: 2014 cohort
+
+```{r}
+
+```
+
+# Outcome Measure: new/fy student in 14fall &15spring
+
+```{r}
+#First-time, full-time entering (FTFT):14 cohort + 15SPRING newFTnon-transfer students
+#First-time, part-time entering (FTPT): from 14Fall& 15SPRING backup without a cohort ID
+#Non-first-time, full-time entering (NFTFT) :from  14Fall& 15SPRING backup without a cohort ID
+#Non-first-time, part-time entering (NFTPT):from 14Fall& 15SPRING backup without a cohort ID
+```

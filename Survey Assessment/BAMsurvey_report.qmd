@@ -1,0 +1,85 @@
+---
+title: "BAM Impact Survey Report"
+format: 
+  pdf:
+    keep-md: true
+    include-in-header:
+      - text: |
+          \usepackage{fancyhdr}
+          \addtolength{\headheight}{0.7cm}
+    
+          \pagestyle{fancy} 
+          \fancyhead{}
+          \fancyfoot{}
+    
+          \fancyhead[LO]{\includegraphics[height=1.3cm]{/Users/linlizhou/Documents/Rprojects/IR.png}}
+          \fancyhead[RE]{\vspace{4mm}\textbf{AAC Courses Review}}
+          \fancyfoot[C]{\thepage}
+    
+          \renewcommand{\headrulewidth}{0pt}
+editor: visual
+---
+
+```{r output_format_notes}
+#change format: html (for render in Viewer) 
+#format: html
+#to the following for the word doc. version report
+#format: 
+#  docx:
+#    reference-doc: /Users/linlizhou/Documents/Rprojects/IR-Projects/lasell.report.template.docx
+#    prefer-html: true
+#format: 
+#  pdf:
+#    classoption: [twoside]
+#    include-in-header:
+#      - text: |
+#format:
+#    pdf:
+ #       toc: true
+  #      toc-depth: 2
+   #     toc-title: Table of contents
+    #    number-sections: true
+     #   highlight-style: github
+```
+
+## \# 2022 First Impression Survey
+
+\## Executive Summary
+
+Major findings from the 2022 First Impression Survey are listed below.
+They indicate several strengths and opportunities of improving
+first-year students experiences at Lasell University.
+
+\### Strengths
+
+\* \_\_Academic satisfaction\_\_ remain high (over 90% on average) among
+first-year students
+
+\* Usage of \_\_academic achievement center\_\_ and \_\_academic
+adviser\_\_ have increased for first-year students
+
+\* First-year students' satisfaction towards \_\_Tech HelpDesk\_\_ and
+\_\_Counseling Center\_\_ have increased
+
+\* \_\_Teaching quality\_\_ for first-year courses has been increasing
+steadily over the past three years
+
+\* \_\_Connection among first year students\_\_ increased compared to
+previous years
+
+\* First-year students from \_\_Hispanic and Black ethnicity\_\_ are
+highly satisfied with counseling services
+
+\### Opportunities
+
+\* Food availability can be improved
+
+-   First-year students want \_\_late night and weekend hours\_\_ for
+    food
+
+\* More \_\_events and activities\_\_ to help first-year students feel
+socially supported
+
+-   "Connections need time and opportunity to build"
+
+\\newpage

@@ -1,0 +1,190 @@
+---
+title: "BAMsurvey_clean"
+author: "Linli Zhou"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r libraries}
+source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
+```
+
+```{r load_raw.surveyexport}
+raw<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/BAM Impact Survey/rawSurveyExport20221212.csv")
+glimpse(raw)
+```
+
+```{r bam.remove_cols}
+#remove unnecessary starter cols
+bam<-raw%>%select(-(`Response ID`:`Date Submitted`),-(`Contact ID`:Source),-(`Invite Custom Field 1`:`Invite Custom Field 10`))%>%#remove unnecessary starter cols
+  janitor::remove_empty(c("rows", "cols"))#remove empty rows/cols (including header has to be NA)
+
+#remove NA cols
+bam<-bam[ , colSums(is.na(bam)) < nrow(bam)] #sum each col's # of NA rows, not all rows are NA
+
+#61 rows/observations
+```
+
+```{r bam.clean_names}
+#look at the survey instruction: lapply(bam, unique)
+# convinient col names:
+bam<-janitor::clean_names(bam)
+```
+
+```{r bam_rename}
+#rename cols: refer back to survey questions pdf
+
+#same question rename to same start_texts
+bam<-bam%>%rename(
+#question 1
+ acknowledge=i_have_read_the_information_on_the_previous_page_and_freely_consent_to_participate_in_this_research_i_understand_that_i_will_be_participating_in_a_study_on_the_impact_of_the_baseline_action_and_momentum_bam_programs_i_understand_that_my_participation_in_this_study_is_voluntary_and_i_may_withdraw_at_any_time_if_i_withdraw_from_the_study_then_all_measurements_and_questionnaire_data_from_me_will_be_destroyed_i_understand_that_every_effort_will_be_made_to_maintain_the_confidentiality_of_the_data_now_and_in_the_future,
+ 
+#question 2
+  act21_podseewhite=podcast_discussion_seeing_white_which_of_the_following_activities_did_you_engage_in_during_the_fall_2021_semester_select_all_that_apply,
+  
+  act21_bkhappen=book_discussion_what_happened_to_you_which_of_the_following_activities_did_you_engage_in_during_the_fall_2021_semester_select_all_that_apply,
+  
+  act21_docstuexp=video_documentary_the_student_experience_shown_at_fall_symposium_which_of_the_following_activities_did_you_engage_in_during_the_fall_2021_semester_select_all_that_apply,
+  
+  act21_ambassador=the_dei_ambassador_program_which_of_the_following_activities_did_you_engage_in_during_the_fall_2021_semester_select_all_that_apply,
+
+act21_otheroption=other_write_in_which_of_the_following_activities_did_you_engage_in_during_the_fall_2021_semester_select_all_that_apply_58,
+
+act21_otherwrite=other_write_in_which_of_the_following_activities_did_you_engage_in_during_the_fall_2021_semester_select_all_that_apply_59,
+  
+#question 3
+act22_podracist=podcast_discussion_be_antiracist_which_of_the_following_activities_did_you_engage_in_during_the_spring_2022_semester_select_all_that_apply,
+  
+act22_bkinequity=book_discussion_despite_the_best_intentions_how_racial_inequity_thrives_in_good_schools_which_of_the_following_activities_did_you_engage_in_during_the_spring_2022_semester_select_all_that_apply,
+
+act22_convadopt=bam_community_conversations_speaker_series_transracial_adoption_which_of_the_following_activities_did_you_engage_in_during_the_spring_2022_semester_select_all_that_apply,
+
+act22_convlgbtq=bam_community_conversations_speaker_series_lgbtq_colleagues_which_of_the_following_activities_did_you_engage_in_during_the_spring_2022_semester_select_all_that_apply,
+
+act22_convfirstgen=bam_community_conversations_speaker_series_first_gen_colleagues_which_of_the_following_activities_did_you_engage_in_during_the_spring_2022_semester_select_all_that_apply,
+
+act22_disable=the_student_experience_students_with_disabilities_which_of_the_following_activities_did_you_engage_in_during_the_spring_2022_semester_select_all_that_apply,
+
+act22_incluteach=accessible_connected_equitable_ace_learning_community_on_inclusive_teaching_which_of_the_following_activities_did_you_engage_in_during_the_spring_2022_semester_select_all_that_apply,
+
+act22_ambassador=the_dei_ambassador_program_which_of_the_following_activities_did_you_engage_in_during_the_spring_2022_semester_select_all_that_apply,
+
+act22_otheroption=other_write_in_which_of_the_following_activities_did_you_engage_in_during_the_spring_2022_semester_select_all_that_apply_68,
+
+act22_otherwrite=other_write_in_which_of_the_following_activities_did_you_engage_in_during_the_spring_2022_semester_select_all_that_apply_69,
+
+#question 4
+act_time=how_much_time_approximately_did_you_spend_in_your_participation_in_all_bam_activities_over_the_course_of_the_academic_year,
+
+#question 5
+impv_yes=the_time_ive_spent_has_been_beneficial_please_agree_disagree_with_the_following_statements_after_participating_in_bam_learning_activities,
+
+impv_recinequity=i_feel_more_able_to_recognize_issues_of_inequity_affecting_members_of_the_lasell_community_please_agree_disagree_with_the_following_statements_after_participating_in_bam_learning_activities,
+
+impv_job=i_feel_better_equipped_to_do_my_job_teaching_advising_publicity_institutional_storytelling_systems_building_service_to_clients_customers_students_staff_etc_please_agree_disagree_with_the_following_statements_after_participating_in_bam_learning_activities,
+
+impv_engagecolleague=i_feel_better_equipped_to_engage_with_colleagues_from_minoritized_backgrounds_please_agree_disagree_with_the_following_statements_after_participating_in_bam_learning_activities,
+
+impv_engagestu=i_feel_better_equipped_to_engage_with_students_from_minoritized_backgrounds_please_agree_disagree_with_the_following_statements_after_participating_in_bam_learning_activities,
+
+impv_talkinequity=i_feel_more_comfortable_participating_in_conversations_about_inequity_please_agree_disagree_with_the_following_statements_after_participating_in_bam_learning_activities,
+
+impv_change=i_believe_i_can_impact_change_on_campus_please_agree_disagree_with_the_following_statements_after_participating_in_bam_learning_activities,
+
+#question 6
+impv_minority=improve_the_lasell_experience_for_students_faculty_and_staff_with_minoritized_identities_i_e_black_indigenous_people_of_color_lgbtqi_disability_status_first_generation_college_student_please_agree_disagree_with_the_following_statements_i_believe_broad_participation_in_bam_learning_activities_will,
+
+impv_allexp=improve_the_lasell_experience_for_everyone_please_agree_disagree_with_the_following_statements_i_believe_broad_participation_in_bam_learning_activities_will,
+
+impv_deistory=generate_positive_institutional_storytelling_about_the_university_s_leadership_on_dei_please_agree_disagree_with_the_following_statements_i_believe_broad_participation_in_bam_learning_activities_will,
+
+impv_lifelearn=generate_positive_institutional_storytelling_about_the_extension_of_life_long_learning_to_all_please_agree_disagree_with_the_following_statements_i_believe_broad_participation_in_bam_learning_activities_will,
+
+impv_deiduty=generate_shared_personal_and_institutional_responsibility_for_continuous_dei_improvement_please_agree_disagree_with_the_following_statements_i_believe_broad_participation_in_bam_learning_activities_will,
+
+impv_collab=initiate_new_collaborations_ideas_and_work_efficiencies_from_folks_talking_across_unit_please_agree_disagree_with_the_following_statements_i_believe_broad_participation_in_bam_learning_activities_will,
+
+#question
+act_future=how_likely_are_you_to_continue_participating_in_bam_programs_and_events_in_the_upcoming_academic_year,
+
+#open ended
+qual_impv=please_describe_any_benefits_or_new_approaches_you_have_adopted_as_a_direct_result_of_bam_programs_and_participation_this_academic_year,
+
+qual_sug=please_share_any_additional_suggestions_for_or_concerns_regarding_bam_programming_we_want_to_improve_what_we_do,
+
+#demographics
+dem_gender=please_describe_your_gender_identity,
+dem_race=please_describe_your_racial_identity,
+dem_otherrace=please_describe_any_of_your_other_personal_identities,
+dem_othergd=some_other_race_write_in_please_describe_your_racial_identity,
+
+#sentiment vars
+qual_impv.stm=sentiment_please_describe_any_benefits_or_new_approaches_you_have_adopted_as_a_direct_result_of_bam_programs_and_participation_this_academic_year,
+
+qual_sug.stm=sentiment_please_share_any_additional_suggestions_for_or_concerns_regarding_bam_programming_we_want_to_improve_what_we_do,
+
+dem_other.stm=sentiment_please_describe_any_of_your_other_personal_identities
+)
+```
+
+```{r bam.long_group.cols}
+bam.long<-bam%>%
+  #group similar items together as one variable
+  pivot_longer(cols=starts_with("act21"),names_to="act21",values_to="act21_value")%>%
+  pivot_longer(cols=starts_with("act22"),names_to="act22",values_to="act22_value")%>%
+  pivot_longer(cols=impv_yes:impv_change,names_to="impved",values_to="impved_value")%>%
+  pivot_longer(cols=impv_minority:impv_collab,names_to="willimpv",values_to="willimpv_value")
+```
+
+```{r save_bam}
+
+```
+
+## Survey Responses
+
+```{r report_completestatus}
+#check: lapply(bam, unique)
+bam%>%group_by(status)%>%summarise(cnt=n())%>%mutate(prt=round(cnt/sum(cnt)*100,digits = 0))%>%
+ggplot(aes(x=2, y = prt, fill=status)) + xlim(0.5, 2.5)+ 
+  geom_bar(stat="identity") +coord_polar(theta="y",start=0)+ 
+  #circled coord, pie centered on 2; show .5-2.5 of pie (0-.5 is the hole)
+  scale_fill_manual(values = c("grey","#69b3e7"))+
+  annotate("text",x = 0.5, y = 0.5, fontface="bold", label = str_wrap( "61 Responses", width=10))+#0.5 is centered location+
+  #annotate("text",x = 0, y = 0.5, fontface="bold", label = ifelse(status=="Complete",as.character(cnt),""))+#0.5 is centered location+
+  geom_text(aes(label=cnt), 
+            size=3,vjust=0,hjust=0,fontface="bold",position = position_nudge())+
+    theme_lz()+labs(title="",x="",y="",fill="",subtitle = "")
+```
+
+```{}
+```
+
+```{r report_bam.long_act21}
+bam.long%>%count(act21,act21_value)%>%
+  ungroup()%>%group_by(act21)%>%mutate(prt=n/sum(n))%>%
+  select(act21_value,prt)%>%filter(!is.na(act21_value))
+```
+
+```{}
+```
+
+```{r confirm_bam_act21}
+#random check if prt the same using origional bam data: hooray
+bam%>%count(act21_podseewhite)%>%mutate(prt=n/sum(n))%>%select(-n)%>%
+  filter(!is.na(act21_podseewhite))#same with pivot_longer
+bam%>%count(act21_bkhappen)%>%mutate(prt=n/sum(n))%>%select(-n)%>%
+  filter(!is.na(act21_bkhappen))#same with pivot_longer
+```
+
+```{r}
+bam%>%filter(!is.na(itemvar))%>%group_by(fillvar,itemvar)%>%summarise(cnt=n())%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits=0))%>%
+  
+ggplot(aes(x = prt, y=reorder(itemvar,(-prt), fill=fillvar)) +  
+  geom_bar(stat="identity",position = position_dodge(),width=0.9)+
+  scale_fill_manual(values = c("grey","#69b3e7"))+
+
+  scale_y_discrete(labels=c("Commuters","Residents"))+#  scale_x_continuous(labels = scales::percent)+
+  geom_text(aes(label=paste0(prt)),size=3,vjust=0.5,hjust=0.7,fontface="bold",position = position_dodge(0.9))+
+  #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
+    labs(title="",x="",y="",fill="")+ +theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom/top"))
+```

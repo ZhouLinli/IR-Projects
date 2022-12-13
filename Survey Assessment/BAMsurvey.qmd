@@ -28,7 +28,6 @@ format:
           \fancyfoot[C]{\thepage}
     
           \renewcommand{\headrulewidth}{0pt}
-
 editor: visual
 ---
 
@@ -237,6 +236,7 @@ gridExtra::grid.arrange(plot.status,plot.gender,plot.race, nrow=1, widths=c(1,1,
 ```
 
 ## BAM Activities
+
 ```{r plot.act21}
 plot.act21<-bam.long%>%count(act21,act21_value)%>%
   ungroup()%>%group_by(act21)%>%mutate(prt=n/sum(n))%>%
@@ -247,10 +247,10 @@ plot.act21<-bam.long%>%count(act21,act21_value)%>%
   geom_bar(stat="identity",position = position_dodge(),width=0.9)+
   scale_fill_manual(values = c("grey","#69b3e7","grey","#69b3e7"))+
 
-  scale_y_discrete(labels=c(str_wrap("Book: What Happened to You?",width = 13),
-                            str_wrap("DEI Ambassador",width = 13),
-                            str_wrap("Podcast: Seeing White",width = 13),
-                            str_wrap("E-Documentary: The Student Experience",width = 13)))+  #scale_x_continuous(labels = scales::percent)+
+  scale_y_discrete(labels=c(str_wrap("Book: What Happened to You?",width = 17),
+                            str_wrap("DEI Ambassador",width = 17),
+                            str_wrap("Podcast: Seeing White",width = 17),
+                            str_wrap("E-Documentary: The Student Experience",width = 17)))+  #scale_x_continuous(labels = scales::percent)+
   geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0.5,hjust=0.7,fontface="bold",position = position_dodge(0.9))+
   #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
     labs(title="BAM 2021",x="",y="",fill="")+theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom/top")
@@ -321,8 +321,8 @@ ggplot(aes(x=2, y = prt, fill=act_future)) + geom_bar(stat="identity") +
 gridExtra::grid.arrange(plot.acttime,plot.actfuture, nrow=1, widths=c(1,1))
 ```
 
-
 ## Benefits
+
 ```{r plot.impved}
 plot.impved<-bam.long%>%#check: count(impved)
   mutate(impved_group=case_when(
@@ -338,7 +338,13 @@ plot.impved<-bam.long%>%#check: count(impved)
   geom_bar(stat="identity",position = position_dodge(),width=0.9,fill="#69b3e7")+
   #scale_fill_manual(values = c("grey","#69b3e7","grey","#69b3e7"))+
 
-  #scale_y_discrete(labels=c("Podcast: Seeing White","E-Documentary: The Student Experience","DEI Ambassador","Book: What Happened to You?"))+  #scale_x_continuous(labels = scales::percent)+
+  scale_y_discrete(labels=c("Impact change on campus",
+                            "Engage with minoritized colleagues",
+                            "Equipped to do my job",
+                            "Talk about inequity",
+                            "Engage with minoritized students",
+                            "Recognize inequity",
+                            "Time spent beneficial"))+  #scale_x_continuous(labels = scales::percent)+
   geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0.5,hjust=0.7,fontface="bold",position = position_dodge(0.9))+
   #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
     labs(title="After Participating BAM Activities",x="",y="",fill="")+theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom/top")
@@ -359,7 +365,12 @@ plot.willimpv<-bam.long%>%#check:count(willimpv_value)
   geom_bar(stat="identity",position = position_dodge(),width=0.9,fill="#69b3e7")+
   #scale_fill_manual(values = c("grey","#69b3e7","grey","#69b3e7"))+
 
-  #scale_y_discrete(labels=c("Podcast: Seeing White","E-Documentary: The Student Experience","DEI Ambassador","Book: What Happened to You?"))+  #scale_x_continuous(labels = scales::percent)+
+  scale_y_discrete(labels=c("Life-long Learning",
+                            "Expereinces of everyone",
+                            "Collaboration and conversation",
+                            "DEI Storytelling",
+                            "DEI Responsibility",
+                            "Expereinces of minority"))+  #scale_x_continuous(labels = scales::percent)+
   geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0.5,hjust=0.7,fontface="bold",position = position_dodge(0.9))+
   #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
     labs(title="Perceptions of BAM Benefits",x="",y="",fill="")+theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom/top")
@@ -368,5 +379,3 @@ plot.willimpv<-bam.long%>%#check:count(willimpv_value)
 ```{r report_impv, include = TRUE}
 gridExtra::grid.arrange(plot.impved,plot.willimpv, nrow=1, widths=c(1,1))
 ```
-
-

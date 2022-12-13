@@ -28,7 +28,6 @@ format:
           \fancyfoot[C]{\thepage}
     
           \renewcommand{\headrulewidth}{0pt}
-
 editor: visual
 ---
 

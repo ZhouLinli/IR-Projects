@@ -165,16 +165,25 @@ ggplot(aes(x=2, y = prt, fill=status)) + xlim(0.5, 2.5)+
     theme_lz()+labs(title="",x="",y="",fill="",subtitle = "")
 ```
 
-```{}
+```{r mergeact21.22}
+bam.long%>%mutate()
 ```
+
 
 ```{r report_bam.long_act21}
 bam.long%>%count(act21,act21_value)%>%
   ungroup()%>%group_by(act21)%>%mutate(prt=n/sum(n))%>%
-  select(act21_value,prt)%>%filter(!is.na(act21_value))
-```
+  filter(!is.na(act21_value),act21!="act21_otherwrite",act21!="act21_otheroption")%>%
+  ungroup()%>%select(act21_value,prt)%>%#must ungroup before selecting successfully
+  
+  ggplot(aes(x = prt, y=reorder(act21_value,-prt), fill=act21_value)) +  
+  geom_bar(stat="identity",position = position_dodge(),width=0.9)+
+  #scale_fill_manual(values = c("grey","#69b3e7"))+
 
-```{}
+  scale_y_discrete(labels=c("Podcast: Seeing White","E-Documentary: The Student Experience","DEI Ambassador","Book: What Happened to You?"))+  #scale_x_continuous(labels = scales::percent)+
+  geom_text(aes(label=paste0(prt)),size=3,vjust=0.5,hjust=0.7,fontface="bold",position = position_dodge(0.9))+
+  #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
+    labs(title="",x="",y="",fill="")+theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom/top")
 ```
 
 ```{r confirm_bam_act21}
@@ -183,17 +192,4 @@ bam%>%count(act21_podseewhite)%>%mutate(prt=n/sum(n))%>%select(-n)%>%
   filter(!is.na(act21_podseewhite))#same with pivot_longer
 bam%>%count(act21_bkhappen)%>%mutate(prt=n/sum(n))%>%select(-n)%>%
   filter(!is.na(act21_bkhappen))#same with pivot_longer
-```
-
-```{r}
-bam%>%filter(!is.na(itemvar))%>%group_by(fillvar,itemvar)%>%summarise(cnt=n())%>%mutate(prt=formattable::percent(cnt/sum(cnt),digits=0))%>%
-  
-ggplot(aes(x = prt, y=reorder(itemvar,(-prt), fill=fillvar)) +  
-  geom_bar(stat="identity",position = position_dodge(),width=0.9)+
-  scale_fill_manual(values = c("grey","#69b3e7"))+
-
-  scale_y_discrete(labels=c("Commuters","Residents"))+#  scale_x_continuous(labels = scales::percent)+
-  geom_text(aes(label=paste0(prt)),size=3,vjust=0.5,hjust=0.7,fontface="bold",position = position_dodge(0.9))+
-  #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
-    labs(title="",x="",y="",fill="")+ +theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom/top"))
 ```

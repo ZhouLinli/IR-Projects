@@ -137,6 +137,15 @@ bam.long<-bam%>%
 ```
 
 ```{r save_bam}
+wb<-createWorkbook()
+
+addWorksheet(wb,"bam")
+writeData(wb,sheet = "bam",x=bam)
+
+addWorksheet(wb,"bam.long")
+writeData(wb,"bam.long",x=bam.long)
+
+saveWorkbook(wb,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/BAM Impact Survey/bam_working.xlsx",overwrite = TRUE)
 
 ```
 

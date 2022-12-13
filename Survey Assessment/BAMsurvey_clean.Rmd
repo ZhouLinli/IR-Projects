@@ -165,23 +165,19 @@ ggplot(aes(x=2, y = prt, fill=status)) + xlim(0.5, 2.5)+
     theme_lz()+labs(title="",x="",y="",fill="",subtitle = "")
 ```
 
-```{r mergeact21.22}
-bam.long%>%mutate()
-```
-
-
-```{r report_bam.long_act21}
+## BAM Activity 2021
+```{r report_act21}
 bam.long%>%count(act21,act21_value)%>%
   ungroup()%>%group_by(act21)%>%mutate(prt=n/sum(n))%>%
   filter(!is.na(act21_value),act21!="act21_otherwrite",act21!="act21_otheroption")%>%
   ungroup()%>%select(act21_value,prt)%>%#must ungroup before selecting successfully
   
-  ggplot(aes(x = prt, y=reorder(act21_value,-prt), fill=act21_value)) +  
+  ggplot(aes(x = prt, y=reorder(act21_value,prt), fill=act21_value)) +  
   geom_bar(stat="identity",position = position_dodge(),width=0.9)+
-  #scale_fill_manual(values = c("grey","#69b3e7"))+
+  scale_fill_manual(values = c("grey","#69b3e7","grey","#69b3e7"))+
 
-  scale_y_discrete(labels=c("Podcast: Seeing White","E-Documentary: The Student Experience","DEI Ambassador","Book: What Happened to You?"))+  #scale_x_continuous(labels = scales::percent)+
-  geom_text(aes(label=paste0(prt)),size=3,vjust=0.5,hjust=0.7,fontface="bold",position = position_dodge(0.9))+
+  #scale_y_discrete(labels=c("Podcast: Seeing White","E-Documentary: The Student Experience","DEI Ambassador","Book: What Happened to You?"))+  #scale_x_continuous(labels = scales::percent)+
+  geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0.5,hjust=0.7,fontface="bold",position = position_dodge(0.9))+
   #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
     labs(title="",x="",y="",fill="")+theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom/top")
 ```
@@ -193,3 +189,141 @@ bam%>%count(act21_podseewhite)%>%mutate(prt=n/sum(n))%>%select(-n)%>%
 bam%>%count(act21_bkhappen)%>%mutate(prt=n/sum(n))%>%select(-n)%>%
   filter(!is.na(act21_bkhappen))#same with pivot_longer
 ```
+
+## BAM Activity 2022
+
+```{r report_act22}
+bam.long%>%count(act22,act22_value)%>%
+  ungroup()%>%group_by(act22)%>%mutate(prt=n/sum(n))%>%
+  filter(!is.na(act22_value),act22!="act22_otherwrite",act22!="act22_otheroption")%>%
+  ungroup()%>%select(act22_value,prt)%>%#must ungroup before selecting successfully
+  
+  ggplot(aes(x = prt, y=reorder(act22_value,prt))) +  
+  geom_bar(stat="identity",position = position_dodge(),width=0.9,fill="grey")+
+  #scale_fill_manual(values = c("grey","#69b3e7","grey","#69b3e7"))+
+
+  #scale_y_discrete(labels=c("Podcast: Seeing White","E-Documentary: The Student Experience","DEI Ambassador","Book: What Happened to You?"))+  #scale_x_continuous(labels = scales::percent)+
+  geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0.5,hjust=0.7,fontface="bold",position = position_dodge(0.9))+
+  #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
+    labs(title="",x="",y="")+theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom/top")
+```
+
+## Participation Time
+
+```{r report_act_time}
+bam%>%#check: count(act_time)
+  filter(!is.na(act_time),act_time!="uncertain",act_time!="100")%>%
+  mutate(act_time=as.numeric(act_time))%>%#chekc:%>%count(act_time)
+ # count(act_time)%>%mutate(prt=n/sum(n))%>%
+ggplot(aes(y = act_time, x=factor(0))) + geom_boxplot(fill="#69b3e7") +
+  #scale_y_continuous(limits = c(0,40), breaks=(seq(0, 40, 5)) )+
+  geom_text(aes(label=ifelse(act_time%in%c(0,5,10,12,20,36),act_time,"")),size=3)+
+  labs(title="",x="Hours of activity participation",y="")+
+  theme_lz()#+theme(axis.text.y = element_text())
+```
+
+## Future Participation
+
+```{r report_act_future}
+bam%>%filter(!is.na(act_future))%>%
+  group_by(act_future)%>%summarise(cnt=n())%>%mutate(prt=round(cnt/sum(cnt)*100,digits = 0))%>%
+ggplot(aes(x=2, y = prt, fill=act_future)) + geom_bar(stat="identity") +
+  xlim(0.5, 2.5)+ coord_polar(theta="y",start=0)+ #circled coord, pie centered on 2; show .5-2.5 of pie (0-.5 hole)
+
+  #geom_text(aes(label=paste0(prt,"%")), size=3,vjust=-2,hjust=3,fontface="bold",position = position_dodge(1))+
+  annotate("text",x = 0.5, y = 0.5, fontface="bold", label = str_wrap( "90% Continue Participation", width=10))+
+  annotate("text",x = 2, y = 0.75,vjust=0,hjust=-0.5, fontface="bold", label = str_wrap( "10%", width=10))+
+  annotate("text",x = 0.5, y = 0.75,vjust=0,hjust=4.5, fontface="bold", label = str_wrap( "37%", width=10))+
+  annotate("text",x = 0.5, y = 0.75,vjust=0,hjust=-4, fontface="bold", label = str_wrap( "53%", width=10))+
+  #0.5 is centered location+
+  #annotate("text",x = 0, y = 0.5, fontface="bold", label = ifelse(status=="Complete",as.character(cnt),""))+#0.5 is centered location+
+  scale_fill_manual(values = c("#69b3e7",color_blue_lasell,"grey"))+
+  theme_lz()+labs(title="",x="",y="",fill="",subtitle = "")
+```
+
+## Benefits of Participating BAM Activities
+```{r report_impved}
+bam.long%>%#check: count(impved)
+  mutate(impved_group=case_when(
+    impved_value%in%c("Agree","Strongly Agree")~"Positive",
+    impved_value%in%c("Disagree","Strongly disagree")~"Negative"))%>%
+  filter(!is.na(impved_group))%>%#exclude NA b/c NA does not mean anything (e.g.no-utility) in this question
+
+  count(impved,impved_group)%>%ungroup()%>%#ungroup so that it's not prt within subgroups
+  group_by(impved)%>%mutate(prt=n/sum(n))%>%#cal prt based on group of impved
+  filter(impved_group=="Positive")%>%#only report positive (b/c negative contains the same meaning)
+  
+  ggplot(aes(x = prt, y=reorder(impved,prt))) +  
+  geom_bar(stat="identity",position = position_dodge(),width=0.9,fill="#69b3e7")+
+  #scale_fill_manual(values = c("grey","#69b3e7","grey","#69b3e7"))+
+
+  #scale_y_discrete(labels=c("Podcast: Seeing White","E-Documentary: The Student Experience","DEI Ambassador","Book: What Happened to You?"))+  #scale_x_continuous(labels = scales::percent)+
+  geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0.5,hjust=0.7,fontface="bold",position = position_dodge(0.9))+
+  #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
+    labs(title="",x="",y="",fill="")+theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom/top")
+```
+
+## Perceptions of BAM Benefits
+```{r report_willimpv}
+bam.long%>%#check:count(willimpv_value)
+  mutate(willimpv_group=case_when(
+    willimpv_value%in%c("Agree","Strongly Agree")~"Positive",
+    willimpv_value%in%c("Disagree","Strongly Disagree")~"Negative"))%>%#check: %>%count(willimpv_group)
+  filter(!is.na(willimpv_group))%>%#exclude NA b/c NA does not mean anything (e.g.no-utility) in this question
+
+  count(willimpv,willimpv_group)%>%ungroup()%>%#ungroup so that it's not prt within subgroups
+  group_by(willimpv)%>%mutate(prt=n/sum(n))%>%#cal prt based on group of willimpv
+  filter(willimpv_group=="Positive")%>%#only report positive (b/c negative contains the same meaning)
+  
+  ggplot(aes(x = prt, y=reorder(willimpv,prt))) +  
+  geom_bar(stat="identity",position = position_dodge(),width=0.9,fill="#69b3e7")+
+  #scale_fill_manual(values = c("grey","#69b3e7","grey","#69b3e7"))+
+
+  #scale_y_discrete(labels=c("Podcast: Seeing White","E-Documentary: The Student Experience","DEI Ambassador","Book: What Happened to You?"))+  #scale_x_continuous(labels = scales::percent)+
+  geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0.5,hjust=0.7,fontface="bold",position = position_dodge(0.9))+
+  #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
+    labs(title="",x="",y="",fill="")+theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom/top")
+```
+
+## Demography
+
+```{r report_gender}
+bam%>%#check:count(dem_gender)
+  filter(!is.na(dem_gender),dem_gender!="Prefer not to say")%>%#check:count(dem_gender)
+  group_by(dem_gender)%>%summarise(cnt=n())%>%mutate(prt=round(cnt/sum(cnt)*100,digits = 0))%>%
+  
+ggplot(aes(x=2, y = prt, fill=dem_gender)) + geom_bar(stat="identity") +
+  xlim(0.5, 2.5)+ coord_polar(theta="y",start=0)+ #circled coord, pie centered on 2; show .5-2.5 of pie (0-.5 hole)
+  scale_fill_manual(values = c(color_blue_lasell,"#69b3e7","grey"))+
+  
+  #geom_text(aes(label=paste0(prt,"%")), size=3,vjust=-2,hjust=3,fontface="bold",position = position_dodge(1))+
+  annotate("text",x = 0.5, y = 0.5, fontface="bold", label = str_wrap( "Gender", width=10))+
+  annotate("text",x = 2, y = 0.75,vjust=0,hjust=0, fontface="bold", label = str_wrap( "3%", width=10))+
+  annotate("text",x = 0.5, y = 0.75,vjust=0,hjust=4.5, fontface="bold", label = str_wrap( "61%", width=10))+
+  annotate("text",x = 0.5, y = 0.75,vjust=0,hjust=-4, fontface="bold", label = str_wrap( "35%", width=10))+
+  #0.5 is centered location+
+  #annotate("text",x = 0, y = 0.5, fontface="bold", label = ifelse(status=="Complete",as.character(cnt),""))+#0.5 is centered location+
+  
+  theme_lz()+labs(title="",x="",y="",fill="",subtitle = "")
+```
+
+```{r report_race}
+bam%>%#check:count(dem_race)
+  filter(!is.na(dem_race),dem_race!="Some Other Race - Write In")%>%
+  group_by(dem_race)%>%summarise(cnt=n())%>%mutate(prt=round(cnt/sum(cnt)*100,digits = 0))%>%
+  
+ggplot(aes(x=2, y = prt, fill=dem_race)) + geom_bar(stat="identity") +
+  xlim(0.5, 2.5)+ coord_polar(theta="y",start=0)+ #circled coord, pie centered on 2; show .5-2.5 of pie (0-.5 hole)
+  scale_fill_manual(values = c(color_blue_lasell,"grey","#69b3e7"))+
+  #geom_text(aes(label=paste0(prt,"%")), size=3,vjust=-2,hjust=3,fontface="bold",position = position_dodge(1))+
+  annotate("text",x = 0.5, y = 0.5, fontface="bold", label = str_wrap( "Race", width=10))+
+  annotate("text",x = 2, y = 0.75,vjust=0,hjust=1, fontface="bold", label = str_wrap( "3%", width=10))+
+  annotate("text",x = 2, y = 0.75,vjust=0,hjust=2.5, fontface="bold", label = str_wrap( "3%", width=10))+
+  annotate("text",x = 0.5, y = 0.75,vjust=0,hjust=-3.5, fontface="bold", label = str_wrap( "94%", width=10))+
+  #0.5 is centered location+
+  #annotate("text",x = 0, y = 0.5, fontface="bold", label = ifelse(status=="Complete",as.character(cnt),""))+#0.5 is centered location+
+  
+  theme_lz()+labs(title="",x="",y="",fill="",subtitle = "")
+```
+
+

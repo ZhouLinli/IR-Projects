@@ -36,7 +36,7 @@ library(apaTables)#show cor/reg table
 library(sjPlot)#show reg table
 library(lme4)#multilevel modeling
 library(performance)#calculate intra class correlation
-library(dummies)#lm already auto convert to dummy vars
+#library(dummies)#lm already auto convert to dummy vars
 library(caret)#creating predictive models: e.g. partitioning training vs test datasets
 library(ranger)#random forest
 library(tidylog)#see process of random forest

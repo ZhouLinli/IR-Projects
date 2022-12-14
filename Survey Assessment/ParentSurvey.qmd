@@ -255,17 +255,20 @@ parent.evt<-parent.quan%>%select(starts_with("evt"))%>%
 #saveWorkbook(wb,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Parent Survey/fall 2022/parentsurveyworking.xlsx",overwrite = TRUE)
 ```
 
-## Survey Responses
-```{r responserate,include=TRUE}
+## Survey Responses and Overall Satisfaction
+```{r prep.response}
 contactlist<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Parent Survey/fall 2022/FY23 ALL Parents Email List.xls")
 #population N: nrow(contactlist)
 #sample N: nrow(parent)
 
 #sample by status
 sample.status<-parent%>%count(status)
+```
 
+
+```{r plot.response}
 #construct a tibble
-tibble(items=c("complete","partial","not respond"),
+plot.response<-tibble(items=c("complete","partial","not respond"),
        values=c(sample.status[sample.status$status=="Complete",]$n,
                 sample.status[sample.status$status=="Partial",]$n,
                 nrow(contactlist)-nrow(parent)))%>%
@@ -282,8 +285,71 @@ ggplot(aes(x=2, y = values, fill=items)) + geom_bar(stat="identity") +
     theme_lz()+labs(title="",x="",y="",fill="",subtitle = "")
 ```
 
-```{r}
+```{r plot.satisoverall}
+#lapply(parent.quan,unique)
+#names(parent.quan)
+plot.satisoverall<-parent%>%count(satis.overall)
+```
 
+## Satisfaction
+```{r plot.satis_aca}
+#5
+#"satis.overall"            "satis.aca_instruct"      "satis.aca_advise"         "satis.aca_tutor"         "satis.aca_faculty"
+```
+
+```{r plot.satis_sv}
+#9
+# "satis.sv_house"          "satis.sv_career"          "satis.sv_police"         "satis.sv_dine"            "satis.sv_health"          "satis.sv_mental"          "satis.sv_fin"            "satis.sv_account"         "satis.sv_parent" 
+```
+
+```{r plot.satis_life}
+#4
+#"satis.life_social"        "satis.life_belong"       "satis.life_safe"          "satis.life_race" 
+```
+
+```{r report_satis, include=TRUE}
+gridExtra::grid.arrange(plot1, plot2, plot3, nrow=1, widths=c(1,1,1))
+```
+
+## Information
+```{r plot.info_food}
+#3
+#"infofood_knowcommittee"   "infofood_attendcommittee" "infofood_try"
+```
+
+```{r plot.info_recv}
+#16
+#"inforecv_prtevent"       "inforecv_resource"        "inforecv_acapolicy"       "inforecv_house"           "inforecv_religion"       "inforecv_event"           "inforecv_safe"           "inforecv_stuorg"          "inforecv_athletic"       "inforecv_activity"        "inforecv_finaid"         "inforecv_finoption"       "inforecv_acasupport"      "inforecv_career"          "inforecv_health"         "inforecv_counsel"
+```
+
+```{r plot.info_rely}
+#7
+#"inforely_stu"            "inforely_mainweb"         "inforely_prtweb"          "inforely_facebook"        "inforely_call"           "inforely_email"           "inforely_parent"  
+```
+
+```{r plot.info_conv}
+#6
+#"infoconv_aca"             "infoconv_gradplan"       "infoconv_career"          "infoconv_fin"            
+"infoconv_campus"          "infoconv_health" 
+```
+
+```{r report_info, include=TRUE}
+gridExtra::grid.arrange(plot1, plot2, plot3, nrow=1, widths=c(1,1,1))
+```
+
+## Events
+```{r plot.evted}
+#3
+#"evted_townhall"           "evted_wkend"             "evted_recept"             
+```
+
+```{r plot.evtwill}
+#5
+#"evtwill_recept"          "evtwill_know"             "evtwill_staff"            "evtwill_senior"           "evtwill_social"
+```
+
+```{r report_info, include=TRUE}
+gridExtra::grid.arrange(plot1, plot2, plot3, nrow=1, widths=c(1,1,1))
 ```
 
 

@@ -1,7 +1,18 @@
 ---
-title: "ParentSurvey"
+title: "Parent Survey Results  \n2022 Fall"
+author: 'Lasell University Institutional Research'
+date: "`r Sys.Date()`"
 format: 
   pdf:
+    documentclass: article
+    classoption: []
+    fig-width: 8
+    geometry:
+      - top=25mm
+      - bottom=25mm
+      - left=20mm
+      - right=20mm
+      - textwidth=4.5in
     keep-md: true
     include-in-header:
       - text: |
@@ -19,6 +30,8 @@ format:
           \renewcommand{\headrulewidth}{0pt}
 editor: visual
 ---
+
+
 
 ```{r libraries, include = FALSE}
 source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
@@ -265,10 +278,9 @@ contactlist<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/L
 sample.status<-parent%>%count(status)
 ```
 
-
 ```{r plot.response}
 #construct a tibble
-plot.response<-tibble(items=c("complete","partial","not respond"),
+plot.response<-tibble(items=c("Complete","Partial","Not respond"),
        values=c(sample.status[sample.status$status=="Complete",]$n,
                 sample.status[sample.status$status=="Partial",]$n,
                 nrow(contactlist)-nrow(parent)))%>%
@@ -279,36 +291,193 @@ ggplot(aes(x=2, y = values, fill=items)) + geom_bar(stat="identity") +
   scale_fill_manual(values = c(color_blue_lasell,"grey","#69b3e7"))+#,labels=c("..","..",..);number of colors and legend labels are based on how many groups
 
   annotate("text",x = 0.5, y = 0.5, fontface="bold", label = str_wrap( "19% Response Rate", width=10))+#0.5 is centered location
-  annotate("text",x = 0.5, y = 0.75, hjust=2.8,fontface="bold", label = str_wrap( "81%", width=10))+#left data label
+  annotate("text",x = 0.5, y = 0.75, hjust=2.5,fontface="bold", label = str_wrap( "81%", width=10))+#left data label
   annotate("text",x = 2, y = 0.75, hjust=1.5,fontface="bold", label = str_wrap( "15%", width=10))+#right data label
   annotate("text",x = 2, y = 0.75,hjust=0, fontface="bold", label = str_wrap( "4%", width=10))+#upperright data label
-    theme_lz()+labs(title="",x="",y="",fill="",subtitle = "")
+    theme_lz()+labs(title="",x="",y="",fill="",subtitle = "")+theme(legend.position = "right",legend.direction = "vertical")
 ```
 
 ```{r plot.satisoverall}
 #lapply(parent.quan,unique)
 #names(parent.quan)
-plot.satisoverall<-parent%>%count(satis.overall)
+plot.satisoverall<-
+parent%>%#check:count(satis.overall)
+  mutate(satis.overall.gp=case_when(
+    satis.overall%in%c("Dissatisfied","Very dissatisfied")~"negative",
+    satis.overall%in%c("Satisfied","Very satisfied")~"positive",
+    satis.overall=="Neither satisfied or dissatisfied"~"neutral"))%>%
+  
+  count(satis.overall.gp)%>%mutate(prt=n/sum(n))%>%
+  
+ggplot(aes(x=2, y = prt, fill=satis.overall.gp)) + geom_bar(stat="identity") +
+   xlim(0.5, 2.5)+ coord_polar(theta="y",start=0)+ #circled coord, pie centered on 2; show .5-2.5 of pie (0-.5 is the hole)
+  scale_fill_manual(values = c("grey",color_yellowlight,color_blue),labels=c("Dissatisfied","Neutral","Satisfied"))+#number of colors and legend labels are based on how many groups
+
+  annotate("text",x = 0.5, y = 0.5, fontface="bold", label = str_wrap( "Overall Satisfaction", width=10))+#0.5 is centered location
+  annotate("text",x = 0.5, y = 0.75, hjust=-1.7,fontface="bold", label = str_wrap( "84%", width=10))+#right data label
+  
+  annotate("text",x = 2, y = 0.9, vjust=0,hjust=0.8,fontface="bold", label = str_wrap( "9%", width=10))+#left data label
+  
+  annotate("text",x = 2, y = 0.95,vjust=0,hjust=0.1, fontface="bold", label = str_wrap( "7%", width=10))+#upperright data label
+    theme_lz()+labs(title="",x="",y="",fill="",subtitle = "")+theme(legend.position = "right",legend.direction = "vertical")
+```
+
+```{r report_responserate.overall, fig.height=2.8,include=TRUE}
+gridExtra::grid.arrange(plot.response, plot.satisoverall, nrow=1, widths=c(1,1))
 ```
 
 ## Satisfaction
 ```{r plot.satis_aca}
 #5
 #"satis.overall"            "satis.aca_instruct"      "satis.aca_advise"         "satis.aca_tutor"         "satis.aca_faculty"
+
+#since we show more than one group in bar chart, we need to set y label's order 
+#the order of y lable is based on prt of the "positive" group
+satis_aca.setyorder<-parent.satis%>%#check: count(satis.aca_value)
+  filter(!is.na(satis.aca_value),satis.aca_value!="N/A")%>%
+  mutate(satis.aca_gp=case_when(
+    satis.aca_value%in%c("Satisfied","Very satisfied")~"positive",
+    satis.aca_value%in%c("Dissatisfied","Very Dissatisfied")~"negative",
+    satis.aca_value=="Neither satisfied or dissatisfied"~"neutral"))%>%
+  
+  count(satis.aca,satis.aca_gp)%>%#mutate(prt=n/sum(n))
+  ungroup()%>%group_by(satis.aca)%>%mutate(prt=n/sum(n))%>%
+  filter(satis.aca_gp=="positive")%>%arrange(prt)%>%mutate(yorder=factor(satis.aca))
+
+#lapply(parent.satis,unique)#satis.aca
+plot.satis_aca<-
+parent.satis%>%#check: count(satis.aca_value)
+  filter(!is.na(satis.aca_value),satis.aca_value!="N/A")%>%
+  mutate(satis.aca_gp=case_when(
+    satis.aca_value%in%c("Satisfied","Very satisfied")~"positive",
+    satis.aca_value%in%c("Dissatisfied","Very Dissatisfied")~"negative",
+    satis.aca_value=="Neither satisfied or dissatisfied"~"neutral"))%>%
+  
+  count(satis.aca,satis.aca_gp)%>%#mutate(prt=n/sum(n))
+  ungroup()%>%group_by(satis.aca)%>%mutate(prt=n/sum(n))%>%
+
+ggplot(aes(y=factor(satis.aca, levels = satis_aca.setyorder$yorder, ordered = TRUE),
+           x = prt, fill=satis.aca_gp)) +  
+  geom_bar(stat="identity",position = position_stack(),width = 0.9)+#,position = position_dodge(),width=0.9
+   scale_fill_manual(values = c("grey",color_yellowlight,color_blue),labels=c("Dissatisfied","Neutral","Satisfied"))+#number of colors and legend labels are based on how many groups
+
+  scale_y_discrete(labels=c(str_wrap("Tutor/other help",width = 10),
+                            str_wrap("Advising quality",width = 10),
+                            str_wrap("Faculty contact",width = 10),
+                            str_wrap("Instruction quality",width = 10)
+                            ))+#the first label is for the bottom bar, 2nd label for 2nd bottombar...
+  #  scale_x_continuous(labels = scales::percent)+
+  geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0,hjust=0.5,fontface="bold",position = position_stack(0.5))+#,position = position_dodge(0.9)
+  #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
+    labs(title="Satisfaction in Students' Academic Experiences",x="",y="",fill="")+ theme_lz()+theme(axis.text.y = element_text(),legend.position = "")
 ```
 
 ```{r plot.satis_sv}
 #9
 # "satis.sv_house"          "satis.sv_career"          "satis.sv_police"         "satis.sv_dine"            "satis.sv_health"          "satis.sv_mental"          "satis.sv_fin"            "satis.sv_account"         "satis.sv_parent" 
+
+#since we show more than one group in bar chart, we need to set y label's order 
+#the order of y lable is based on prt of the "positive" group
+satis_sv.setyorder<-
+parent.satis%>%#check:count(satis.sv_value)
+  filter(!is.na(satis.sv_value),satis.sv_value!="N/A")%>%
+  mutate(satis.sv_gp=case_when(
+    satis.sv_value%in%c("Satisfied","Very Satisfied")~"positive",
+    satis.sv_value%in%c("Dissatisfied","Very dissatisfied")~"negative",
+    satis.sv_value=="Neither dissatisfied or satisfied"~"neutral"))%>%#check:count(satis.sv_gp)
+  
+  count(satis.sv,satis.sv_gp)%>%#mutate(prt=n/sum(n))
+  ungroup()%>%group_by(satis.sv)%>%mutate(prt=n/sum(n))%>%
+  filter(satis.sv_gp=="positive")%>%arrange(prt)%>%mutate(yorder=factor(satis.sv))
+  
+
+#lapply(parent.satis,unique)# satis.sv
+plot.satis_sv<-
+parent.satis%>%#check:count(satis.sv_value)
+  filter(!is.na(satis.sv_value),satis.sv_value!="N/A")%>%
+  mutate(satis.sv_gp=case_when(
+    satis.sv_value%in%c("Satisfied","Very Satisfied")~"positive",
+    satis.sv_value%in%c("Dissatisfied","Very dissatisfied")~"negative",
+    satis.sv_value=="Neither dissatisfied or satisfied"~"neutral"))%>%#check:count(satis.sv_gp)
+  
+  count(satis.sv,satis.sv_gp)%>%#mutate(prt=n/sum(n))
+  ungroup()%>%group_by(satis.sv)%>%mutate(prt=n/sum(n))%>%
+
+ggplot(aes(y=factor(satis.sv, levels = satis_sv.setyorder$yorder, ordered = TRUE), 
+           x = prt, fill=satis.sv_gp)) +   
+  geom_bar(stat="identity",position = position_stack(),width=0.9)+
+   scale_fill_manual(values = c("grey",color_yellowlight,color_blue),labels=c("Dissatisfied","Neutral","Satisfied"))+#number of colors and legend labels are based on how many groups
+
+  scale_y_discrete(labels=c(str_wrap("Dining",width = 10),
+                            str_wrap("Career Counseling",width = 10),
+                            str_wrap("Mental Counseling",width = 10),
+                            str_wrap("Health Services",width = 10),
+                            str_wrap("Student Accounts",width = 10),
+                            str_wrap("Financial Aid",width = 10),
+                            str_wrap("Housing",width = 10),
+                            str_wrap("Parent Engagement",width = 10),
+                            str_wrap("Campus Police",width = 10)))+#the first label is for the bottom bar, 2nd label for 2nd bottombar...
+  #  scale_x_continuous(labels = scales::percent)+
+  geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0.5,hjust=0.5,fontface="bold",position = position_stack(0.5))+
+  #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
+    labs(title="Satisfaction in Services and Facilities",x="",y="",fill="")+ theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom")
 ```
 
 ```{r plot.satis_life}
 #4
 #"satis.life_social"        "satis.life_belong"       "satis.life_safe"          "satis.life_race" 
+
+#lapply(parent.satis,unique)# satis.life and satis.life_value
+
+#since we show more than one group in bar chart, we need to set y label's order 
+#the order of y lable is based on prt of the "positive" group
+satis_life.setyorder<-
+parent.satis%>%#check:count(satis.life_value)
+  filter(!is.na(satis.life_value),satis.life_value!="N/A")%>%
+  mutate(satis.life_gp=case_when(
+    satis.life_value%in%c("Satisfied","Very Satisfied")~"positive",
+    satis.life_value%in%c("Dissatisfied","Very dissatisfied")~"negative",
+    satis.life_value=="Neither dissatisfied or satisfied"~"neutral"))%>%#check:count(satis.life_gp)
+  
+  count(satis.life,satis.life_gp)%>%#mutate(prt=n/sum(n))
+  ungroup()%>%group_by(satis.life)%>%mutate(prt=n/sum(n))%>%
+  filter(satis.life_gp=="positive")%>%arrange(prt)%>%mutate(yorder=factor(satis.life))
+  
+
+#plot
+plot.satis_life<-
+parent.satis%>%#check:count(satis.life_value)
+  filter(!is.na(satis.life_value),satis.life_value!="N/A")%>%
+  mutate(satis.life_gp=case_when(
+    satis.life_value%in%c("Satisfied","Very Satisfied")~"positive",
+    satis.life_value%in%c("Dissatisfied","Very dissatisfied")~"negative",
+    satis.life_value=="Neither dissatisfied or satisfied"~"neutral"))%>%#check:count(satis.life_gp)
+  
+  count(satis.life,satis.life_gp)%>%#mutate(prt=n/sum(n))
+  ungroup()%>%group_by(satis.life)%>%mutate(prt=n/sum(n))%>%
+
+ggplot(aes(y=factor(satis.life, levels = satis_life.setyorder$yorder, ordered = TRUE), 
+           x = prt, fill=satis.life_gp)) +   
+  geom_bar(stat="identity",position = position_stack(),width=0.9)+
+   scale_fill_manual(values = c("grey",color_yellowlight,color_blue),labels=c("Dissatisfied","Neutral","Satisfied"))+#number of colors and legend labels are based on how many groups
+
+  scale_y_discrete(labels=c(str_wrap("Social life",width = 10),
+                            str_wrap("Sense of Community",width = 10),
+                            str_wrap("Racial diversity",width = 10),
+                            str_wrap("Campus safety",width = 10)))+#the first label is for the bottom bar, 2nd label for 2nd bottombar...
+  #  scale_x_continuous(labels = scales::percent)+
+  geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0.5,hjust=0.5,fontface="bold",position = position_stack(0.5))+
+  #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
+    labs(title="Satisfaction in Campus Life",x="",y="",fill="")+ theme_lz()+theme(axis.text.y = element_text(),legend.position = "")
+
 ```
 
-```{r report_satis, include=TRUE}
-gridExtra::grid.arrange(plot1, plot2, plot3, nrow=1, widths=c(1,1,1))
+```{r plot.satis_left}
+plot.satis_left<-gridExtra::grid.arrange(plot.satis_aca, plot.satis_life, ncol=1, heights=c(1,1))
+```
+
+```{r report_satis, fig.height=5, include=TRUE}
+gridExtra::grid.arrange(plot.satis_left, plot.satis_sv, nrow=1, widths=c(1,1))
 ```
 
 ## Information
@@ -329,12 +498,11 @@ gridExtra::grid.arrange(plot1, plot2, plot3, nrow=1, widths=c(1,1,1))
 
 ```{r plot.info_conv}
 #6
-#"infoconv_aca"             "infoconv_gradplan"       "infoconv_career"          "infoconv_fin"            
-"infoconv_campus"          "infoconv_health" 
+#"infoconv_aca"             "infoconv_gradplan"       "infoconv_career"          "infoconv_fin"           "infoconv_campus"          "infoconv_health" 
 ```
 
 ```{r report_info, include=TRUE}
-gridExtra::grid.arrange(plot1, plot2, plot3, nrow=1, widths=c(1,1,1))
+#gridExtra::grid.arrange(plot1, plot2, plot3, nrow=1, widths=c(1,1,1))
 ```
 
 ## Events
@@ -348,8 +516,8 @@ gridExtra::grid.arrange(plot1, plot2, plot3, nrow=1, widths=c(1,1,1))
 #"evtwill_recept"          "evtwill_know"             "evtwill_staff"            "evtwill_senior"           "evtwill_social"
 ```
 
-```{r report_info, include=TRUE}
-gridExtra::grid.arrange(plot1, plot2, plot3, nrow=1, widths=c(1,1,1))
+```{r report_event, include=TRUE}
+#gridExtra::grid.arrange(plot1, plot2, plot3, nrow=1, widths=c(1,1,1))
 ```
 
 

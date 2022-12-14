@@ -172,33 +172,33 @@ infoconv_health=your_students_physical_or_emotional_health_how_often_do_you_disc
 
 ## 3. events
 # 3.1 attended events
-evt_townhall=did_you_attend_the_virtual_parents_town_hall_in_october,
-evt_townhall_qual=please_share_your_thoughts_recommendation_for_the_virtual_parent_town_hall_you_attended_in_october,
+evted_townhall=did_you_attend_the_virtual_parents_town_hall_in_october,
+evted_townhall_qual=please_share_your_thoughts_recommendation_for_the_virtual_parent_town_hall_you_attended_in_october,
 
-evt_wkend=did_you_attend_family_friends_and_alumni_weekend,
+evted_wkend=did_you_attend_family_friends_and_alumni_weekend,
 evt_wkend_qual=please_share_your_thoughts_recommendation_for_the_family_friends_and_alumni_weekend_you_attended,
 
-evt_recept=did_you_attend_the_2022_parents_reception,
-evt_recept_qual=please_share_your_thoughts_recommendation_for_the_2022_parents_reception_you_attended,
+evted_recept=did_you_attend_the_2022_parents_reception,
+evted_recept_qual=please_share_your_thoughts_recommendation_for_the_2022_parents_reception_you_attended,
 
 # 3.2 will attend events
-evt_willrecept=will_you_be_attending_the_2023_parents_reception_a_parent_only_event_to_meet_other_parents_president_and_other_lasell_staff_members_this_is_a_free_event_which_will_likely_happen_on_a_weekend_in_april_and_will_be_held_on_campus_in_dunne_house,
+evtwill_recept=will_you_be_attending_the_2023_parents_reception_a_parent_only_event_to_meet_other_parents_president_and_other_lasell_staff_members_this_is_a_free_event_which_will_likely_happen_on_a_weekend_in_april_and_will_be_held_on_campus_in_dunne_house,
 
-evt_willknow=a_get_to_know_you_activity_with_other_parents_guardians_what_types_of_webinars_do_you_wish_the_office_of_parent_engagement_to_offer_in_the_spring,
+evtwill_know=a_get_to_know_you_activity_with_other_parents_guardians_what_types_of_webinars_do_you_wish_the_office_of_parent_engagement_to_offer_in_the_spring,
 
-evt_willstaff=opportunity_to_meet_the_deans_and_other_faculty_members_what_types_of_webinars_do_you_wish_the_office_of_parent_engagement_to_offer_in_the_spring,
+evtwill_staff=opportunity_to_meet_the_deans_and_other_faculty_members_what_types_of_webinars_do_you_wish_the_office_of_parent_engagement_to_offer_in_the_spring,
 
-evt_willsenior=parents_guardians_of_seniors_to_discuss_what_comes_next_after_lasell_and_what_seniors_should_be_doing_to_prepare_for_graduation_what_types_of_webinars_do_you_wish_the_office_of_parent_engagement_to_offer_in_the_spring,
+evtwill_senior=parents_guardians_of_seniors_to_discuss_what_comes_next_after_lasell_and_what_seniors_should_be_doing_to_prepare_for_graduation_what_types_of_webinars_do_you_wish_the_office_of_parent_engagement_to_offer_in_the_spring,
 
-evt_willsocial=open_discussion_with_staff_members_for_parents_guardians_with_students_struggling_to_get_involved_or_make_friends_what_types_of_webinars_do_you_wish_the_office_of_parent_engagement_to_offer_in_the_spring,
+evtwill_social=open_discussion_with_staff_members_for_parents_guardians_with_students_struggling_to_get_involved_or_make_friends_what_types_of_webinars_do_you_wish_the_office_of_parent_engagement_to_offer_in_the_spring,
 
-evt_willotheropt=other_write_in_required_what_types_of_webinars_do_you_wish_the_office_of_parent_engagement_to_offer_in_the_spring_168,
+evtwill_otheropt=other_write_in_required_what_types_of_webinars_do_you_wish_the_office_of_parent_engagement_to_offer_in_the_spring_168,
 
-evt_willotherqual=other_write_in_required_what_types_of_webinars_do_you_wish_the_office_of_parent_engagement_to_offer_in_the_spring_169,
+evtwill_otherqual=other_write_in_required_what_types_of_webinars_do_you_wish_the_office_of_parent_engagement_to_offer_in_the_spring_169,
 
 ## overall
 
-evt_qual=please_share_any_additional_questions_or_comments_about_your_experiences_as_a_parent_or_guardian_of_a_lasell_students
+satis.overall_qual=please_share_any_additional_questions_or_comments_about_your_experiences_as_a_parent_or_guardian_of_a_lasell_students
 )
 ```
 
@@ -214,13 +214,23 @@ parent.qual<-parent%>%select(ends_with("qual"))#check: %>%names()#6
 
 
 ```{r parent.long_group.cols}
-#check: lapply(parent.quan[,2:ncol(parent.quan)], unique)
-parent.long<-parent.quan%>%
+#check: lapply(parent.quan, unique)
+#names(parent.quan)
+parent.satis<-parent.quan%>%select(starts_with("satis"))%>%
   #group similar items together as one variable
-  pivot_longer(cols=starts_with("act21"),names_to="act21",values_to="act21_value")%>%
-  pivot_longer(cols=starts_with("act22"),names_to="act22",values_to="act22_value")%>%
-  pivot_longer(cols=impv_yes:impv_change,names_to="impved",values_to="impved_value")%>%
-  pivot_longer(cols=impv_minority:impv_collab,names_to="willimpv",values_to="willimpv_value")
+  pivot_longer(cols=starts_with("satis.aca"),names_to="satis.aca",values_to="satis.aca_value")%>%
+  pivot_longer(cols=starts_with("satis.sv"),names_to="satis.sv",values_to="satis.sv_value")%>%
+  pivot_longer(cols=starts_with("satis.life"),names_to="satis.life",values_to="satis.life_value")
+
+parent.info<-parent.quan%>%select(starts_with("info"))%>%
+  pivot_longer(cols=starts_with("infofood"),names_to="infofood",values_to="infofood_value")%>%
+  pivot_longer(cols=starts_with("inforecv"),names_to="inforecv",values_to="inforecv_value")%>%
+  pivot_longer(cols=starts_with("inforely"),names_to="inforely",values_to="inforely_value")%>%
+  pivot_longer(cols=starts_with("infoconv"),names_to="infoconv",values_to="infoconv_value")
+
+parent.evt<-parent.quan%>%select(starts_with("evt"))%>%
+  pivot_longer(cols=starts_with("evted"),names_to="evted",values_to="evted_value")%>%
+  pivot_longer(cols=starts_with("evtwill"),names_to="evtwill",values_to="evtwill_value")
 ```
 
 ```{r save_parent_commentout}
@@ -229,10 +239,51 @@ parent.long<-parent.quan%>%
 #addWorksheet(wb,"parent")
 #writeData(wb,sheet = "parent",x=parent)
 
-#addWorksheet(wb,"parent.long")
-#writeData(wb,"parent.long",x=parent.long)
+#addWorksheet(wb,"parent.quan")
+#writeData(wb,sheet = "parent.quan",x=parent.quan)
 
-#saveWorkbook(wb,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/parent Impact Survey/parent_working.xlsx",overwrite = TRUE)
+#addWorksheet(wb,"parent.qual")
+#writeData(wb,sheet = "parent.qual",x=parent.qual)
+
+#addWorksheet(wb,"parent.satis")
+#writeData(wb,"parent.satis",x=parent.satis)
+#addWorksheet(wb,"parent.info")
+#writeData(wb,"parent.info",x=parent.info)
+#addWorksheet(wb,"parent.evt")
+#writeData(wb,"parent.evt",x=parent.evt)
+
+#saveWorkbook(wb,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Parent Survey/fall 2022/parentsurveyworking.xlsx",overwrite = TRUE)
+```
+
+## Survey Responses
+```{r responserate,include=TRUE}
+contactlist<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Parent Survey/fall 2022/FY23 ALL Parents Email List.xls")
+#population N: nrow(contactlist)
+#sample N: nrow(parent)
+
+#sample by status
+sample.status<-parent%>%count(status)
+
+#construct a tibble
+tibble(items=c("complete","partial","not respond"),
+       values=c(sample.status[sample.status$status=="Complete",]$n,
+                sample.status[sample.status$status=="Partial",]$n,
+                nrow(contactlist)-nrow(parent)))%>%
+  mutate(prt=values/sum(values))%>%
+#create a donut chart
+ggplot(aes(x=2, y = values, fill=items)) + geom_bar(stat="identity") +
+   xlim(0.5, 2.5)+ coord_polar(theta="y",start=0)+ #circled coord, pie centered on 2; show .5-2.5 of pie (0-.5 is the hole)
+  scale_fill_manual(values = c(color_blue_lasell,"grey","#69b3e7"))+#,labels=c("..","..",..);number of colors and legend labels are based on how many groups
+
+  annotate("text",x = 0.5, y = 0.5, fontface="bold", label = str_wrap( "19% Response Rate", width=10))+#0.5 is centered location
+  annotate("text",x = 0.5, y = 0.75, hjust=2.8,fontface="bold", label = str_wrap( "81%", width=10))+#left data label
+  annotate("text",x = 2, y = 0.75, hjust=1.5,fontface="bold", label = str_wrap( "15%", width=10))+#right data label
+  annotate("text",x = 2, y = 0.75,hjust=0, fontface="bold", label = str_wrap( "4%", width=10))+#upperright data label
+    theme_lz()+labs(title="",x="",y="",fill="",subtitle = "")
+```
+
+```{r}
 
 ```
+
 

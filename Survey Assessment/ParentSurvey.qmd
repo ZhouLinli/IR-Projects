@@ -1,5 +1,5 @@
 ---
-title: "Parent Survey Results  \n1722 Fall"
+title: "Parent Survey Results  \n2022 Fall"
 author: 'Lasell University Institutional Research'
 date: "`r Sys.Date()`"
 format: 
@@ -9,7 +9,7 @@ format:
     fig-width: 8
     geometry:
       - top=25mm
-      - bottom=25mm
+      - bottom=20mm
       - left=15mm
       - right=15mm
       - textwidth=4.5in
@@ -38,7 +38,7 @@ source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
 ```
 
 ```{r load_rawdf.surveyexport}
-raw<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Parent Survey/fall 1722/17221213114001-SurveyExport.csv")
+raw<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Parent Survey/fall 2022/20221213114001-SurveyExport.csv")
 lapply(raw[1:60], unique)
 ```
 
@@ -191,11 +191,11 @@ evted_townhall_qual=please_share_your_thoughts_recommendation_for_the_virtual_pa
 evted_wkend=did_you_attend_family_friends_and_alumni_weekend,
 evt_wkend_qual=please_share_your_thoughts_recommendation_for_the_family_friends_and_alumni_weekend_you_attended,
 
-evted_recept=did_you_attend_the_1722_parents_reception,
-evted_recept_qual=please_share_your_thoughts_recommendation_for_the_1722_parents_reception_you_attended,
+evted_recept=did_you_attend_the_2022_parents_reception,
+evted_recept_qual=please_share_your_thoughts_recommendation_for_the_2022_parents_reception_you_attended,
 
 # 3.2 will attend events
-evted_recept23=will_you_be_attending_the_1723_parents_reception_a_parent_only_event_to_meet_other_parents_president_and_other_lasell_staff_members_this_is_a_free_event_which_will_likely_happen_on_a_weekend_in_april_and_will_be_held_on_campus_in_dunne_house,
+evted_recept23=will_you_be_attending_the_2023_parents_reception_a_parent_only_event_to_meet_other_parents_president_and_other_lasell_staff_members_this_is_a_free_event_which_will_likely_happen_on_a_weekend_in_april_and_will_be_held_on_campus_in_dunne_house,
 
 evtwill_know=a_get_to_know_you_activity_with_other_parents_guardians_what_types_of_webinars_do_you_wish_the_office_of_parent_engagement_to_offer_in_the_spring,
 
@@ -270,7 +270,8 @@ parent.evt<-parent.quan%>%select(starts_with("evt"))%>%
 
 ## Survey Responses and Overall Satisfaction
 ```{r prep.response}
-contactlist<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Parent Survey/fall 1722/FY23 ALL Parents Email List.xls")
+#contactlist<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Parent Survey/fall 2022/FY23 ALL Parents Email List.xls")/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Parent Survey/fall 2022/FY23 ALL Parents Email List.xls
+#harcode: 1492
 #population N: nrow(contactlist)
 #sample N: nrow(parent)
 
@@ -283,7 +284,7 @@ sample.status<-parent%>%count(status)
 plot.response<-tibble(items=c("Complete","Partial","Not respond"),
        values=c(sample.status[sample.status$status=="Complete",]$n,
                 sample.status[sample.status$status=="Partial",]$n,
-                nrow(contactlist)-nrow(parent)))%>%
+                1492-nrow(parent)))%>%
   mutate(prt=values/sum(values))%>%
 #create a donut chart
 ggplot(aes(x=2, y = values, fill=items)) + geom_bar(stat="identity") +
@@ -476,7 +477,7 @@ ggplot(aes(y=factor(satis.life, levels = satis_life.setyorder$yorder, ordered = 
 plot.satis_left<-gridExtra::grid.arrange(plot.satis_aca, plot.satis_life, ncol=1, heights=c(1,1))
 ```
 
-```{r report_satis, fig.height=5, include=TRUE}
+```{r report_satis, fig.height=4, include=TRUE}
 gridExtra::grid.arrange(plot.satis_left, plot.satis_sv, nrow=1, widths=c(1,1))
 ```
 
@@ -489,7 +490,7 @@ gridExtra::grid.arrange(plot.satis_left, plot.satis_sv, nrow=1, widths=c(1,1))
 
 plot.fdcomt.aware<-parent.quan%>%#check: count(infofood_knowcommittee)
   filter(!is.na(infofood_knowcommittee))%>%
-   count(infofood_knowcommittee)%>%mutate(prt=round(n/sum(n)*100,digits = 0))%>%
+   count(infofood_knowcommittee)%>%mutate(prt=round(n/sum(n)*100,digits = 1))%>%
 
 ggplot(aes(x=2, y = prt, fill=infofood_knowcommittee)) + geom_bar(stat="identity") +
    xlim(0.5, 2.5)+ coord_polar(theta="y",start=0)+ #circled coord, pie centered on 2; show .5-2.5 of pie (0-.5 is the hole)
@@ -498,7 +499,7 @@ ggplot(aes(x=2, y = prt, fill=infofood_knowcommittee)) + geom_bar(stat="identity
   annotate("text",x = 0.5, y = 0.5, fontface="bold", label = str_wrap( "Aware Food Committee", width=10))+#0.5 is centered location
  annotate("text",x = 0.5, y = 0.75, hjust=3,fontface="bold", label = str_wrap( "79%", width=10))+#left data label  or 3
     annotate("text",x = 2, y = 0.9,vjust=0.5,hjust=-0.7, fontface="bold", label = str_wrap( "14%", width=10))+#upperright data label  (or 0.4 or 1.5 for slight right and left)
-  annotate("text",x = 1, y = 0.6, vjust=-0.2,hjust=-3.4,fontface="bold", label = str_wrap( "8%", width=10))+#right data label  or -2.5
+  annotate("text",x = 1, y = 0.6, vjust=-0.2,hjust=-3.4,fontface="bold", label = str_wrap( "7%", width=10))+#right data label  or -2.5
     theme_lz()+labs(title="",x="",y="",fill="",subtitle = "")
 ```
 
@@ -544,7 +545,7 @@ annotate("text",x = 0.5, y = 0.5, vjust=-7,hjust=-1,fontface="bold", label = str
 gridExtra::grid.arrange(plot.fdcomt.aware, plot.fdattend, plot.fdtry, nrow=1, widths=c(1,1,1))
 ```
 
-## Information
+## Information Received
 ```{r plot.info_recv}
 #16
 #"inforecv_prtevent"       "inforecv_resource"        "inforecv_acapolicy"       "inforecv_house"           "inforecv_religion"       "inforecv_event"           "inforecv_safe"           "inforecv_stuorg"          "inforecv_athletic"       "inforecv_activity"        "inforecv_finaid"         "inforecv_finoption"       "inforecv_acasupport"      "inforecv_career"          "inforecv_health"         "inforecv_counsel"
@@ -690,13 +691,21 @@ ggplot(aes(y=factor(infoconv, levels = info_conv.setyorder$yorder, ordered = TRU
     labs(title="Discuss with students about:",x="",y="",fill="")+ theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom")
 ```
 
-```{r plot.info_left}
-plot.info_left<-gridExtra::grid.arrange(plot.info_rely, plot.info_conv, ncol=1, heights=c(1,1))
+```{r report_plan1}
+#plot.info_left<-gridExtra::grid.arrange(plot.info_rely, plot.info_conv, ncol=1, heights=c(1,1))
+#gridExtra::grid.arrange(plot.info_recv, plot.info_left, nrow=1, widths=c(1,1))
 ```
 
-```{r report_info,  fig.height=6, include=TRUE}
-gridExtra::grid.arrange(plot.info_recv, plot.info_left, nrow=1, widths=c(1,1))
+```{r report_info.recv,  fig.height=6, include=TRUE}
+plot.info_recv
 ```
+
+## Information Source
+```{r report_inforely.conv,  include=TRUE}
+gridExtra::grid.arrange(plot.info_rely, plot.info_conv, nrow=1, widths=c(1,1))
+```
+
+
 
 ## Events
 ```{r plot.evted}
@@ -765,7 +774,7 @@ ggplot(aes(y=reorder(evtwill, prt), x = prt)) +
     labs(title="Future events interests",x="",y="",fill="")+ theme_lz()+theme(axis.text.y = element_text(),legend.position = "")
 ```
 
-```{r report_event, include=TRUE}
+```{r report_event,fig.height=3, include=TRUE}
 gridExtra::grid.arrange(plot.evted, plot.evtwill, nrow=1, widths=c(2,1))
 ```
 

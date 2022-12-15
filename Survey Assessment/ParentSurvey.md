@@ -9,7 +9,7 @@ format:
     fig-width: 8
     geometry:
       - top=25mm
-      - bottom=25mm
+      - bottom=20mm
       - left=15mm
       - right=15mm
       - textwidth=4.5in
@@ -96,7 +96,7 @@ editor: visual
 :::
 
 
-## Information
+## Information Received
 
 
 
@@ -108,9 +108,20 @@ editor: visual
 
 ::: {.cell}
 ::: {.cell-output-display}
-![](ParentSurvey_files/figure-pdf/report_info-1.pdf)
+![](ParentSurvey_files/figure-pdf/report_info.recv-1.pdf)
 :::
 :::
+
+
+## Information Source
+
+::: {.cell}
+::: {.cell-output-display}
+![](ParentSurvey_files/figure-pdf/report_inforely.conv-1.pdf)
+:::
+:::
+
+
 
 
 ## Events

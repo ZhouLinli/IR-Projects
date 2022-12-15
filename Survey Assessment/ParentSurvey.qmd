@@ -480,12 +480,71 @@ plot.satis_left<-gridExtra::grid.arrange(plot.satis_aca, plot.satis_life, ncol=1
 gridExtra::grid.arrange(plot.satis_left, plot.satis_sv, nrow=1, widths=c(1,1))
 ```
 
-## Information
-```{r plot.info_food}
+## Information on Food Committee
+```{r plot.fdcomt.aware}
 #3
 #"infofood_knowcommittee"   "infofood_attendcommittee" "infofood_try"
+
+#lapply(parent.info,unique)# infofood and infofood_value
+
+plot.fdcomt.aware<-parent.quan%>%#check: count(infofood_knowcommittee)
+  filter(!is.na(infofood_knowcommittee))%>%
+   count(infofood_knowcommittee)%>%mutate(prt=round(n/sum(n)*100,digits = 0))%>%
+
+ggplot(aes(x=2, y = prt, fill=infofood_knowcommittee)) + geom_bar(stat="identity") +
+   xlim(0.5, 2.5)+ coord_polar(theta="y",start=0)+ #circled coord, pie centered on 2; show .5-2.5 of pie (0-.5 is the hole)
+  scale_fill_manual(values = c("grey",color_yellowlight,color_blue_lasell))+#number of colors and legend labels are based on how many groups; colors order alphebatically
+
+  annotate("text",x = 0.5, y = 0.5, fontface="bold", label = str_wrap( "Aware Food Committee", width=10))+#0.5 is centered location
+ annotate("text",x = 0.5, y = 0.75, hjust=3,fontface="bold", label = str_wrap( "79%", width=10))+#left data label  or 3
+    annotate("text",x = 2, y = 0.9,vjust=0.5,hjust=-0.7, fontface="bold", label = str_wrap( "14%", width=10))+#upperright data label  (or 0.4 or 1.5 for slight right and left)
+  annotate("text",x = 1, y = 0.6, vjust=-0.2,hjust=-3.4,fontface="bold", label = str_wrap( "8%", width=10))+#right data label  or -2.5
+    theme_lz()+labs(title="",x="",y="",fill="",subtitle = "")
 ```
 
+```{r plot.fdtry}
+plot.fdtry<-parent.quan%>%#check: count(infofood_try)
+  filter(!is.na(infofood_try))%>%
+   count(infofood_try)%>%mutate(prt=round(n/sum(n)*100,digits = 0))%>%
+
+ggplot(aes(x=2, y = prt, fill=infofood_try)) + geom_bar(stat="identity") +
+   xlim(0.5, 2.5)+ coord_polar(theta="y",start=0)+ #circled coord, pie centered on 2; show .5-2.5 of pie (0-.5 is the hole)
+  scale_fill_manual(values = c("grey",color_yellowlight,color_blue_lasell))+#number of colors and legend labels are based on how many groups; colors order alphebatically
+
+annotate("text",x = 0.5, y = 0.5, fontface="bold", label = str_wrap( "Try Lasell Food", width=10))+#0.5 is centered location
+annotate("text",x = 0.5, y = 0.75, hjust=3,fontface="bold", label = str_wrap( "47%", width=10))+#left data label  or 3
+  
+    annotate("text",x = 1.5, y = 0.15,hjust=-1.5, fontface="bold", label = str_wrap( "24%", width=10))+#upperright data label  (or 0.4 or 1.5 for slight right and left)
+  annotate("text",x = 0.5, y = 0.4, vjust=2,hjust=-2.3,fontface="bold", label = str_wrap( "29%", width=10))+#right data label  or -2.5
+    theme_lz()+labs(title="",x="",y="",fill="",subtitle = "")
+```
+
+
+```{r plot.fdattend}
+plot.fdattend<- parent.quan%>%#check: count(infofood_attendcommittee)
+  filter(!is.na(infofood_attendcommittee),infofood_attendcommittee!="Other - Write In",
+         infofood_attendcommittee!="I don't know")%>%#check: count(infofood_attendcommittee)
+   count(infofood_attendcommittee)%>%mutate(prt=round(n/sum(n)*100,digits = 0))%>%
+
+ggplot(aes(x=2, y = prt, fill=infofood_attendcommittee)) + geom_bar(stat="identity") +
+   xlim(0.5, 2.5)+ coord_polar(theta="y",start=0)+ #circled coord, pie centered on 2; show .5-2.5 of pie (0-.5 is the hole)
+  scale_fill_manual(values = c(color_yellowlight,color_blue,color_blue_lasell,color_redlight),labels=c("No, don't know","No, enjoy food", "Yes, helpful", "Yes, unhelpful"))+#number of colors and legend labels are based on how many groups; colors order alphebatically
+
+annotate("text",x = 0.5, y = 0.5, fontface="bold", label = str_wrap( "Attend Food Committee", width=10))+
+ 
+annotate("text",x = 0.5, y = 0.5, vjust=0,hjust=3,fontface="bold", label = str_wrap( "51%", width=10))+ #mid-right
+annotate("text",x = 0.5, y = 0.5, vjust=0,hjust=-2,fontface="bold", label = str_wrap( "42%", width=10))+#mid-left
+  
+annotate("text",x = 0.5, y = 0.5, vjust=-9,hjust=0, fontface="bold", label = str_wrap( "2%", width=10))+#top
+annotate("text",x = 0.5, y = 0.5, vjust=-7,hjust=-1,fontface="bold", label = str_wrap( "5%", width=10))+
+    theme_lz()+labs(title="",x="",y="",fill="",subtitle = "")+theme(legend.position = "bottom")
+```
+
+```{r report_fd,include=TRUE}
+gridExtra::grid.arrange(plot.fdcomt.aware, plot.fdattend, plot.fdtry, nrow=1, widths=c(1,1,1))
+```
+
+## Information
 ```{r plot.info_recv}
 #16
 #"inforecv_prtevent"       "inforecv_resource"        "inforecv_acapolicy"       "inforecv_house"           "inforecv_religion"       "inforecv_event"           "inforecv_safe"           "inforecv_stuorg"          "inforecv_athletic"       "inforecv_activity"        "inforecv_finaid"         "inforecv_finoption"       "inforecv_acasupport"      "inforecv_career"          "inforecv_health"         "inforecv_counsel"

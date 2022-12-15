@@ -81,9 +81,22 @@ editor: visual
 :::
 
 
+## Information on Food Committee
+
+
+
+
+
+
+
+::: {.cell}
+::: {.cell-output-display}
+![](ParentSurvey_files/figure-pdf/report_fd-1.pdf)
+:::
+:::
+
+
 ## Information
-
-
 
 
 

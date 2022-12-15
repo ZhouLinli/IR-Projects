@@ -1,7 +1,7 @@
 ---
 title: "Parent Survey Results  \n2022 Fall"
 author: 'Lasell University Institutional Research'
-date: "2022-12-14"
+date: "2022-12-15"
 format: 
   pdf:
     documentclass: article
@@ -81,7 +81,7 @@ editor: visual
 :::
 
 
-## Information on Food Committee
+## Food Committee
 
 
 
@@ -104,8 +104,12 @@ editor: visual
 
 
 
-::: {.cell}
 
+
+::: {.cell}
+::: {.cell-output-display}
+![](ParentSurvey_files/figure-pdf/report_info-1.pdf)
+:::
 :::
 
 

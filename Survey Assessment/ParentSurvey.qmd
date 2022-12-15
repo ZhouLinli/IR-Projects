@@ -367,7 +367,7 @@ ggplot(aes(y=factor(satis.aca, levels = satis_aca.setyorder$yorder, ordered = TR
                             str_wrap("Instruction quality",width = 10)
                             ))+#the first label is for the bottom bar, 2nd label for 2nd bottombar...
   #  scale_x_continuous(labels = scales::percent)+
-  geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0,hjust=0.5,fontface="bold",position = position_stack(0.5))+#,position = position_dodge(0.9)
+  geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0,hjust=0,fontface="bold",position = position_stack(0))+#,position = position_dodge(0.9)
   #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
     labs(title="Satisfaction in Students' Academic Experiences",x="",y="",fill="")+ theme_lz()+theme(axis.text.y = element_text(),legend.position = "")
 ```
@@ -418,7 +418,7 @@ ggplot(aes(y=factor(satis.sv, levels = satis_sv.setyorder$yorder, ordered = TRUE
                             str_wrap("Parent Engagement",width = 10),
                             str_wrap("Campus Police",width = 10)))+#the first label is for the bottom bar, 2nd label for 2nd bottombar...
   #  scale_x_continuous(labels = scales::percent)+
-  geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0.5,hjust=0.5,fontface="bold",position = position_stack(0.5))+
+  geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0.5,hjust=0,fontface="bold",position = position_stack(0))+
   #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
     labs(title="Satisfaction in Services and Facilities",x="",y="",fill="")+ theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom")
 ```
@@ -466,7 +466,7 @@ ggplot(aes(y=factor(satis.life, levels = satis_life.setyorder$yorder, ordered = 
                             str_wrap("Racial diversity",width = 10),
                             str_wrap("Campus safety",width = 10)))+#the first label is for the bottom bar, 2nd label for 2nd bottombar...
   #  scale_x_continuous(labels = scales::percent)+
-  geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0.5,hjust=0.5,fontface="bold",position = position_stack(0.5))+
+  geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0.5,hjust=0,fontface="bold",position = position_stack(0))+
   #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
     labs(title="Satisfaction in Campus Life",x="",y="",fill="")+ theme_lz()+theme(axis.text.y = element_text(),legend.position = "")
 
@@ -480,7 +480,7 @@ plot.satis_left<-gridExtra::grid.arrange(plot.satis_aca, plot.satis_life, ncol=1
 gridExtra::grid.arrange(plot.satis_left, plot.satis_sv, nrow=1, widths=c(1,1))
 ```
 
-## Information on Food Committee
+## Food Committee
 ```{r plot.fdcomt.aware}
 #3
 #"infofood_knowcommittee"   "infofood_attendcommittee" "infofood_try"
@@ -548,20 +548,154 @@ gridExtra::grid.arrange(plot.fdcomt.aware, plot.fdattend, plot.fdtry, nrow=1, wi
 ```{r plot.info_recv}
 #16
 #"inforecv_prtevent"       "inforecv_resource"        "inforecv_acapolicy"       "inforecv_house"           "inforecv_religion"       "inforecv_event"           "inforecv_safe"           "inforecv_stuorg"          "inforecv_athletic"       "inforecv_activity"        "inforecv_finaid"         "inforecv_finoption"       "inforecv_acasupport"      "inforecv_career"          "inforecv_health"         "inforecv_counsel"
+
+#lapply(parent.info,unique)# inforecv and inforecv_value
+
+#factorize legend
+parent.info<-parent.info%>%mutate(inforecv_value=factor(inforecv_value,
+                                                        levels =c("I receive TOO MUCH information",
+                                                                  "I am SATISFIED with the information I have",
+                                                                  "I do NOT need information",
+                                                                  "I want MORE information") ))
+
+#since we show more than one group in bar chart, we need to set y label's order 
+#the order of y lable is based on prt of the "positive" group
+info_recv.setyorder<-
+parent.info%>%#check:count(inforecv_value)
+  filter(!is.na(inforecv_value))%>%
+  count(inforecv,inforecv_value)%>%#mutate(prt=n/sum(n))
+  ungroup()%>%group_by(inforecv)%>%mutate(prt=n/sum(n))%>%
+  filter(inforecv_value=="I am SATISFIED with the information I have")%>%arrange(prt)%>%mutate(yorder=factor(inforecv))
+  
+#plot
+plot.info_recv<-
+parent.info%>%#check:count(inforecv_value)
+  filter(!is.na(inforecv_value))%>%
+  count(inforecv,inforecv_value)%>%#mutate(prt=n/sum(n))
+  ungroup()%>%group_by(inforecv)%>%mutate(prt=n/sum(n))%>%
+
+ggplot(aes(y=factor(inforecv, levels = info_recv.setyorder$yorder, ordered = TRUE), 
+           x = prt, fill=inforecv_value)) +   
+  geom_bar(stat="identity",position = position_stack(),width=0.9)+
+   scale_fill_manual(values = c(color_redlight,color_blue_lasell,color_yellowlight,color_blue),
+                     labels=c("Too much","Satisfied","No demand","Want more"))+#number of colors and legend labels are based on how many groups
+
+  scale_y_discrete(labels=c(str_wrap("Off-campus programs",width = 30),
+                            str_wrap("Career counseling",width = 30),
+                            str_wrap("Religious life",width = 30),
+                            str_wrap("Athletics",width = 30),
+                            str_wrap("Academic support services",width = 30),
+                            str_wrap("Student organizations",width = 30),
+                            str_wrap("Counseling services",width = 30),
+                            str_wrap("Campus events",width = 30),
+                            str_wrap("Financial aid",width = 30),
+                            str_wrap("Health services",width = 30),
+                            str_wrap("Residential life and policies",width = 30),
+                            str_wrap("Academic life and policies",width = 30),
+                            str_wrap("Financial options",width = 30),
+                            str_wrap("Campus safety",width = 30),
+                            str_wrap("Resources for parents",width = 30),
+                            str_wrap("Events for parents",width = 30)))+#the first label is for the bottom bar, 2nd label for 2nd bottombar...
+  #  scale_x_continuous(labels = scales::percent)+
+  geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0.5,hjust=0,fontface="bold",position = position_stack(0))+
+  #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
+    labs(title="Receive information from:",x="",y="",fill="")+ theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom")
 ```
 
 ```{r plot.info_rely}
 #7
-#"inforely_stu"            "inforely_mainweb"         "inforely_prtweb"          "inforely_facebook"        "inforely_call"           "inforely_email"           "inforely_parent"  
+#"inforely_stu"            "inforely_mainweb"         "inforely_prtweb"          "inforely_facebook"        "inforely_call"           "inforely_email"           "inforely_parent"
+
+#lapply(parent.info,unique)# inforecv==>inforely and inforely_value
+
+#factorize legend (inforely_value)
+parent.info<-parent.info%>%mutate(inforely_value=factor(inforely_value,levels = c("Not at all","Very little","Somewhat","To a great extent")))
+
+#since we show more than one group in bar chart, we need to set y label's order 
+#the order of y lable is based on prt of the "positive" group
+info_rely.setyorder<-
+parent.info%>%#check:count(inforely_value)
+  filter(!is.na(inforely_value))%>%
+  count(inforely,inforely_value)%>%#mutate(prt=n/sum(n))
+  ungroup()%>%group_by(inforely)%>%mutate(prt=n/sum(n))%>%
+  filter(inforely_value=="To a great extent")%>%arrange(prt)%>%mutate(yorder=factor(inforely))
+  
+#plot
+plot.info_rely<-
+parent.info%>%#check:count(inforely_value)
+  filter(!is.na(inforely_value))%>%
+  count(inforely,inforely_value)%>%#mutate(prt=n/sum(n))
+  ungroup()%>%group_by(inforely)%>%mutate(prt=n/sum(n))%>%
+
+ggplot(aes(y=factor(inforely, levels = info_rely.setyorder$yorder, ordered = TRUE), 
+           x = prt, fill=inforely_value)) +   
+  geom_bar(stat="identity",position = position_stack(),width=0.9)+
+   scale_fill_manual(values = c(color_redlight,color_yellowlight,color_blue,color_blue_lasell))+#number of colors and legend labels are based on how many groups
+
+  scale_y_discrete(labels=c(str_wrap("Other parents",width = 30),
+                            str_wrap("Call staff",width = 30),
+                            str_wrap("Parent website",width = 30),
+                            str_wrap("Main website",width = 30),
+                            str_wrap("Parent Facebook",width = 30),
+                            str_wrap("Emails from Lasell",width = 30),
+                            str_wrap("My students",width = 30)
+                            ))+#the first label is for the bottom bar, 2nd label for 2nd bottombar...
+  #  scale_x_continuous(labels = scales::percent)+
+  geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0.5,hjust=0,fontface="bold",position = position_stack(0))+
+  #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
+    labs(title="Sources of information",x="",y="",fill="")+ theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom")  #"Discuss with students about the following aspects"
 ```
 
 ```{r plot.info_conv}
 #6
 #"infoconv_aca"             "infoconv_gradplan"       "infoconv_career"          "infoconv_fin"           "infoconv_campus"          "infoconv_health" 
+#lapply(parent.info,unique)# inforely==>infoconv and infoconv_value
+
+#factorize legend (infoconv_value)
+##check: parent.info%>%count(infoconv_value)
+parent.info<-parent.info%>%mutate(infoconv_value=
+        factor(infoconv_value,levels = c("Never","Rarely","Sometimes","Often","Always")))
+
+#since we show more than one group in bar chart, we need to set y label's order 
+#the order of y lable is based on prt of the "positive" group
+info_conv.setyorder<-
+parent.info%>%#check:count(infoconv_value)
+  filter(!is.na(infoconv_value))%>%
+  count(infoconv,infoconv_value)%>%#mutate(prt=n/sum(n))
+  ungroup()%>%group_by(infoconv)%>%mutate(prt=n/sum(n))%>%
+  filter(infoconv_value=="Always")%>%arrange(prt)%>%mutate(yorder=factor(infoconv))
+  
+#plot
+plot.info_conv<-
+parent.info%>%#check:count(infoconv_value)
+  filter(!is.na(infoconv_value))%>%
+  count(infoconv,infoconv_value)%>%#mutate(prt=n/sum(n))
+  ungroup()%>%group_by(infoconv)%>%mutate(prt=n/sum(n))%>%
+
+ggplot(aes(y=factor(infoconv, levels = info_conv.setyorder$yorder, ordered = TRUE), 
+           x = prt, fill=infoconv_value)) +   
+  geom_bar(stat="identity",position = position_stack(),width=0.9)+
+   scale_fill_manual(values = c(color_redlight,color_yellowlight,color_bluelight,color_blue,color_blue_lasell))+#number of colors and legend labels are based on how many groups
+
+  scale_y_discrete(labels=c(str_wrap("Graduate school plans",width = 30),
+                            str_wrap("Finances",width = 30),
+                            str_wrap("Career plans",width = 30),
+                            str_wrap("Campus life",width = 30),
+                            str_wrap("Academic matters",width = 30),
+                            str_wrap("Health (mental/physical)",width = 30)
+                            ))+#the first label is for the bottom bar, 2nd label for 2nd bottombar...
+  #  scale_x_continuous(labels = scales::percent)+
+  geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0.5,hjust=0,fontface="bold",position = position_stack(0))+
+  #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
+    labs(title="Discuss with students about:",x="",y="",fill="")+ theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom")
 ```
 
-```{r report_info, include=TRUE}
-#gridExtra::grid.arrange(plot1, plot2, plot3, nrow=1, widths=c(1,1,1))
+```{r plot.info_left}
+plot.info_left<-gridExtra::grid.arrange(plot.info_rely, plot.info_conv, ncol=1, heights=c(1,1))
+```
+
+```{r report_info,  fig.height=5, include=TRUE}
+gridExtra::grid.arrange(plot.info_recv, plot.info_left, nrow=1, widths=c(1,1))
 ```
 
 ## Events

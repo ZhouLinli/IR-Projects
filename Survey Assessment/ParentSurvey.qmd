@@ -1,5 +1,5 @@
 ---
-title: "Parent Survey Results  \n2022 Fall"
+title: "Parent Survey Results  \n1722 Fall"
 author: 'Lasell University Institutional Research'
 date: "`r Sys.Date()`"
 format: 
@@ -10,8 +10,8 @@ format:
     geometry:
       - top=25mm
       - bottom=25mm
-      - left=20mm
-      - right=20mm
+      - left=15mm
+      - right=15mm
       - textwidth=4.5in
     keep-md: true
     include-in-header:
@@ -38,7 +38,7 @@ source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
 ```
 
 ```{r load_rawdf.surveyexport}
-raw<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Parent Survey/fall 2022/20221213114001-SurveyExport.csv")
+raw<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Parent Survey/fall 1722/17221213114001-SurveyExport.csv")
 lapply(raw[1:60], unique)
 ```
 
@@ -191,11 +191,11 @@ evted_townhall_qual=please_share_your_thoughts_recommendation_for_the_virtual_pa
 evted_wkend=did_you_attend_family_friends_and_alumni_weekend,
 evt_wkend_qual=please_share_your_thoughts_recommendation_for_the_family_friends_and_alumni_weekend_you_attended,
 
-evted_recept=did_you_attend_the_2022_parents_reception,
-evted_recept_qual=please_share_your_thoughts_recommendation_for_the_2022_parents_reception_you_attended,
+evted_recept=did_you_attend_the_1722_parents_reception,
+evted_recept_qual=please_share_your_thoughts_recommendation_for_the_1722_parents_reception_you_attended,
 
 # 3.2 will attend events
-evtwill_recept=will_you_be_attending_the_2023_parents_reception_a_parent_only_event_to_meet_other_parents_president_and_other_lasell_staff_members_this_is_a_free_event_which_will_likely_happen_on_a_weekend_in_april_and_will_be_held_on_campus_in_dunne_house,
+evted_recept23=will_you_be_attending_the_1723_parents_reception_a_parent_only_event_to_meet_other_parents_president_and_other_lasell_staff_members_this_is_a_free_event_which_will_likely_happen_on_a_weekend_in_april_and_will_be_held_on_campus_in_dunne_house,
 
 evtwill_know=a_get_to_know_you_activity_with_other_parents_guardians_what_types_of_webinars_do_you_wish_the_office_of_parent_engagement_to_offer_in_the_spring,
 
@@ -265,12 +265,12 @@ parent.evt<-parent.quan%>%select(starts_with("evt"))%>%
 #addWorksheet(wb,"parent.evt")
 #writeData(wb,"parent.evt",x=parent.evt)
 
-#saveWorkbook(wb,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Parent Survey/fall 2022/parentsurveyworking.xlsx",overwrite = TRUE)
+#saveWorkbook(wb,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Parent Survey/fall 1722/parentsurveyworking.xlsx",overwrite = TRUE)
 ```
 
 ## Survey Responses and Overall Satisfaction
 ```{r prep.response}
-contactlist<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Parent Survey/fall 2022/FY23 ALL Parents Email List.xls")
+contactlist<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Parent Survey/fall 1722/FY23 ALL Parents Email List.xls")
 #population N: nrow(contactlist)
 #sample N: nrow(parent)
 
@@ -694,23 +694,79 @@ ggplot(aes(y=factor(infoconv, levels = info_conv.setyorder$yorder, ordered = TRU
 plot.info_left<-gridExtra::grid.arrange(plot.info_rely, plot.info_conv, ncol=1, heights=c(1,1))
 ```
 
-```{r report_info,  fig.height=5, include=TRUE}
+```{r report_info,  fig.height=6, include=TRUE}
 gridExtra::grid.arrange(plot.info_recv, plot.info_left, nrow=1, widths=c(1,1))
 ```
 
 ## Events
 ```{r plot.evted}
-#3
-#"evted_townhall"           "evted_wkend"             "evted_recept"             
+#4
+#"evted_townhall"           "evted_wkend"             "evted_recept"     "evted_recept23" 
+#check: lapply(parent.evt, unique)#evted and evted_value
+
+#since we show more than one group in bar chart, we need to set y label's order 
+#the order of y lable is based on prt of the "positive" group
+evted.setyorder<-
+parent.evt%>%filter(!is.na(evted_value))%>%
+  mutate(evted_value.gp=if_else(evted_value%in%c("No, I had a scheduling conflict","No, I have a scheduling conflict"),"Schedule conflict",
+                            if_else(evted_value%in%c("No, I was not interested.","No, I am not interested"),"Not interested",
+                            if_else(evted_value=="Yes","Yes","Don't know"))))%>%#check: count(evted_value.gp,evted_value)
+  count(evted,evted_value.gp)%>%ungroup()%>%group_by(evted)%>%mutate(prt=n/sum(n))%>%
+  filter(evted_value.gp=="Yes")%>%arrange(prt)%>%mutate(yorder=factor(evted))
+  
+#plot
+plot.evted<-
+parent.evt%>%filter(!is.na(evted_value))%>%
+  mutate(evted_value.gp=if_else(evted_value%in%c("No, I had a scheduling conflict","No, I have a scheduling conflict"),"Schedule conflict",
+                            if_else(evted_value%in%c("No, I was not interested.","No, I am not interested"),"Not interested",
+                            if_else(evted_value=="Yes","Yes","Don't know"))))%>%#check: count(evted_value.gp,evted_value)
+  count(evted,evted_value.gp)%>%ungroup()%>%group_by(evted)%>%mutate(prt=n/sum(n))%>%
+
+ggplot(aes(y=factor(evted, levels = evted.setyorder$yorder, ordered = TRUE), 
+           x = prt, fill=evted_value.gp)) +   
+  geom_bar(stat="identity",position = position_stack(),width=0.9)+
+   scale_fill_manual(values = c(color_yellowlight,color_greylight,color_blue,color_blue_lasell))+#number of colors and legend labels are based on how many groups
+
+  scale_y_discrete(labels=c(str_wrap("1723 Parents Reception",width = 17),
+                            str_wrap("Virtual Parents Town Hall ",width = 17),
+                            str_wrap("1722 Parents Reception",width = 17),
+                            str_wrap("Family, Friends, and Alumni Weekend",width = 17)
+                            ))+#the first label is for the bottom bar, 2nd label for 2nd bottombar...
+  #  scale_x_continuous(labels = scales::percent)+
+  geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0.5,hjust=0,fontface="bold",position = position_stack(0))+
+  #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
+    labs(title="Attend events",x="",y="",fill="")+ theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom")
 ```
 
 ```{r plot.evtwill}
-#5
-#"evtwill_recept"          "evtwill_know"             "evtwill_staff"            "evtwill_senior"           "evtwill_social"
+#4
+#"evtwill_know"             "evtwill_staff"            "evtwill_senior"           "evtwill_social"
+#check: lapply(parent.evt, unique)#evtwill and evtwill_value
+
+ 
+#plot
+plot.evtwill<-
+parent.evt%>%#filter(!is.na(evtwill_value))%>%
+  filter(evtwill!="evtwill_otheropt")%>%
+  count(evtwill,evtwill_value)%>%ungroup()%>%group_by(evtwill)%>%mutate(prt=n/sum(n))%>%
+  filter(!is.na(evtwill_value))%>%
+
+ggplot(aes(y=reorder(evtwill, prt), x = prt)) +   
+  geom_bar(stat="identity",position = position_dodge(),width=0.9,fill=color_blue)+
+  
+  scale_y_discrete(labels=c(str_wrap("Know other parents",width = 17),
+                            str_wrap("Students' social life",width = 17),
+                            str_wrap("Meet dean/ faculty",width = 17),
+                            str_wrap("Senior graduation & plan",width = 17)
+                            ))+#the first label is for the bottom bar, 2nd label for 2nd bottombar...
+  #  scale_x_continuous(labels = scales::percent)+
+  geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0.5,hjust=1,fontface="bold",position = position_dodge(0))+
+  #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
+    labs(title="Future events interests",x="",y="",fill="")+ theme_lz()+theme(axis.text.y = element_text(),legend.position = "")
 ```
 
 ```{r report_event, include=TRUE}
-#gridExtra::grid.arrange(plot1, plot2, plot3, nrow=1, widths=c(1,1,1))
+gridExtra::grid.arrange(plot.evted, plot.evtwill, nrow=1, widths=c(2,1))
 ```
 
 

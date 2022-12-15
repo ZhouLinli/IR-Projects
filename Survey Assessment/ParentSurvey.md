@@ -10,8 +10,8 @@ format:
     geometry:
       - top=25mm
       - bottom=25mm
-      - left=20mm
-      - right=20mm
+      - left=15mm
+      - right=15mm
       - textwidth=4.5in
     keep-md: true
     include-in-header:
@@ -120,5 +120,7 @@ editor: visual
 
 
 ::: {.cell}
-
+::: {.cell-output-display}
+![](ParentSurvey_files/figure-pdf/report_event-1.pdf)
+:::
 :::

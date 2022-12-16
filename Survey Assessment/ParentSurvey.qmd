@@ -294,9 +294,9 @@ ggplot(aes(x=2, y = values, fill=items)) + geom_bar(stat="identity") +
   scale_fill_manual(values = c(color_blue_lasell,"grey","#69b3e7"))+#,labels=c("..","..",..);number of colors and legend labels are based on how many groups
 
   annotate("text",x = 0.5, y = 0.5, fontface="bold", label = str_wrap( "19% Response Rate", width=10))+#0.5 is centered location
-  annotate("text",x = 0.5, y = 0.75, hjust=2.5,fontface="bold", label = str_wrap( "81%", width=10))+#left data label
+  annotate("text",x = 0.5, y = 0.75, hjust=-1.7,fontface="bold", label = str_wrap( "81%", width=10))+#left data label
   annotate("text",x = 2, y = 0.75, hjust=1.5,fontface="bold", label = str_wrap( "15%", width=10))+#right data label
-  annotate("text",x = 2, y = 0.75,hjust=0, fontface="bold", label = str_wrap( "4%", width=10))+#upperright data label
+  annotate("text",x = 0.5, y = 0.5,vjust=-2.5,hjust=3.5, fontface="bold", label = str_wrap( "4%", width=10))+#upperright data label
     theme_lz()+labs(title="",x="",y="",fill="",subtitle = "N=284")+theme(legend.position = "right",legend.direction = "vertical")
 ```
 
@@ -520,10 +520,10 @@ ggplot(aes(x=2, y = prt, fill=infofood_try)) + geom_bar(stat="identity") +
   scale_fill_manual(values = c("grey",color_yellowlight,color_blue_lasell))+#number of colors and legend labels are based on how many groups; colors order alphebatically
 
 annotate("text",x = 0.5, y = 0.5, fontface="bold", label = str_wrap( "Try Lasell Food", width=10))+#0.5 is centered location
-annotate("text",x = 0.5, y = 0.5, vjust=0,hjust=5,fontface="bold", label = str_wrap( "47%", width=10))+#left data label  or 3
+annotate("text",x = 0.5, y = 0.5, vjust=0,hjust=3,fontface="bold", label = str_wrap( "47%", width=10))+#left data label  or 3
   
     annotate("text",x = 1.5, y = 0.15,hjust=-1.5, fontface="bold", label = str_wrap( "24%", width=10))+#upperright data label  (or 0.4 or 1.5 for slight right and left)
-  annotate("text",x = 0.5, y = 0.5, vjust=4,hjust=-5,fontface="bold", label = str_wrap( "29%", width=10))+#right data label  or -2.5
+  annotate("text",x = 0.5, y = 0.5, vjust=5,hjust=-1,fontface="bold", label = str_wrap( "29%", width=10))+#right data label  or -2.5
     theme_lz()+labs(title="",x="",y="",fill="",subtitle = "")
 ```
 

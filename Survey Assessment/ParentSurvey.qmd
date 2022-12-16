@@ -280,11 +280,13 @@ sample.status<-parent%>%count(status)
 ```
 
 ```{r plot.response}
+
 #construct a tibble
 plot.response<-tibble(items=c("Complete","Partial","Not respond"),
        values=c(sample.status[sample.status$status=="Complete",]$n,
                 sample.status[sample.status$status=="Partial",]$n,
                 1492-nrow(parent)))%>%
+  mutate(items=factor(items,levels =c("Complete","Partial","Not respond") ))%>%
   mutate(prt=values/sum(values))%>%
 #create a donut chart
 ggplot(aes(x=2, y = values, fill=items)) + geom_bar(stat="identity") +
@@ -295,7 +297,7 @@ ggplot(aes(x=2, y = values, fill=items)) + geom_bar(stat="identity") +
   annotate("text",x = 0.5, y = 0.75, hjust=2.5,fontface="bold", label = str_wrap( "81%", width=10))+#left data label
   annotate("text",x = 2, y = 0.75, hjust=1.5,fontface="bold", label = str_wrap( "15%", width=10))+#right data label
   annotate("text",x = 2, y = 0.75,hjust=0, fontface="bold", label = str_wrap( "4%", width=10))+#upperright data label
-    theme_lz()+labs(title="",x="",y="",fill="",subtitle = "")+theme(legend.position = "right",legend.direction = "vertical")
+    theme_lz()+labs(title="",x="",y="",fill="",subtitle = "N=284")+theme(legend.position = "right",legend.direction = "vertical")
 ```
 
 ```{r plot.satisoverall}
@@ -312,7 +314,8 @@ parent%>%#check:count(satis.overall)
   
 ggplot(aes(x=2, y = prt, fill=satis.overall.gp)) + geom_bar(stat="identity") +
    xlim(0.5, 2.5)+ coord_polar(theta="y",start=0)+ #circled coord, pie centered on 2; show .5-2.5 of pie (0-.5 is the hole)
-  scale_fill_manual(values = c("grey",color_yellowlight,color_blue),labels=c("Dissatisfied","Neutral","Satisfied"))+#number of colors and legend labels are based on how many groups
+  scale_fill_manual(values = c("grey",color_yellowlight,color_blue),labels=c("Dissatisfied","Neutral","Satisfied"),
+                    guide = guide_legend(reverse = TRUE))+#number of colors and legend labels are based on how many groups
 
   annotate("text",x = 0.5, y = 0.5, fontface="bold", label = str_wrap( "Overall Satisfaction", width=10))+#0.5 is centered location
   annotate("text",x = 0.5, y = 0.75, hjust=-1.7,fontface="bold", label = str_wrap( "84%", width=10))+#right data label
@@ -325,6 +328,7 @@ ggplot(aes(x=2, y = prt, fill=satis.overall.gp)) + geom_bar(stat="identity") +
 
 ```{r report_responserate.overall, fig.height=2.8,include=TRUE}
 gridExtra::grid.arrange(plot.response, plot.satisoverall, nrow=1, widths=c(1,1))
+#add subtitle: n=284
 ```
 
 ## Satisfaction
@@ -407,7 +411,8 @@ parent.satis%>%#check:count(satis.sv_value)
 ggplot(aes(y=factor(satis.sv, levels = satis_sv.setyorder$yorder, ordered = TRUE), 
            x = prt, fill=satis.sv_gp)) +   
   geom_bar(stat="identity",position = position_stack(),width=0.9)+
-   scale_fill_manual(values = c("grey",color_yellowlight,color_blue),labels=c("Dissatisfied","Neutral","Satisfied"))+#number of colors and legend labels are based on how many groups
+   scale_fill_manual(values = c("grey",color_yellowlight,color_blue),labels=c("Dissatisfied","Neutral","Satisfied"),
+                     guide = guide_legend(reverse = TRUE))+#number of colors and legend labels are based on how many groups
 
   scale_y_discrete(labels=c(str_wrap("Dining",width = 10),
                             str_wrap("Career Counseling",width = 10),
@@ -481,7 +486,8 @@ plot.satis_left<-gridExtra::grid.arrange(plot.satis_aca, plot.satis_life, ncol=1
 gridExtra::grid.arrange(plot.satis_left, plot.satis_sv, nrow=1, widths=c(1,1))
 ```
 
-## Food Committee
+## Food Committee (FC)
+
 ```{r plot.fdcomt.aware}
 #3
 #"infofood_knowcommittee"   "infofood_attendcommittee" "infofood_try"
@@ -496,7 +502,7 @@ ggplot(aes(x=2, y = prt, fill=infofood_knowcommittee)) + geom_bar(stat="identity
    xlim(0.5, 2.5)+ coord_polar(theta="y",start=0)+ #circled coord, pie centered on 2; show .5-2.5 of pie (0-.5 is the hole)
   scale_fill_manual(values = c("grey",color_yellowlight,color_blue_lasell))+#number of colors and legend labels are based on how many groups; colors order alphebatically
 
-  annotate("text",x = 0.5, y = 0.5, fontface="bold", label = str_wrap( "Aware Food Committee", width=10))+#0.5 is centered location
+  annotate("text",x = 0.5, y = 0.5, fontface="bold", label = str_wrap( "FC Awareness", width=10))+#0.5 is centered location
  annotate("text",x = 0.5, y = 0.75, hjust=3,fontface="bold", label = str_wrap( "79%", width=10))+#left data label  or 3
     annotate("text",x = 2, y = 0.9,vjust=0.5,hjust=-0.7, fontface="bold", label = str_wrap( "14%", width=10))+#upperright data label  (or 0.4 or 1.5 for slight right and left)
   annotate("text",x = 1, y = 0.6, vjust=-0.2,hjust=-3.4,fontface="bold", label = str_wrap( "7%", width=10))+#right data label  or -2.5
@@ -506,6 +512,7 @@ ggplot(aes(x=2, y = prt, fill=infofood_knowcommittee)) + geom_bar(stat="identity
 ```{r plot.fdtry}
 plot.fdtry<-parent.quan%>%#check: count(infofood_try)
   filter(!is.na(infofood_try))%>%
+  mutate(infofood_try=factor(infofood_try,levels = c("No","Maybe","Yes")))%>%
    count(infofood_try)%>%mutate(prt=round(n/sum(n)*100,digits = 0))%>%
 
 ggplot(aes(x=2, y = prt, fill=infofood_try)) + geom_bar(stat="identity") +
@@ -513,10 +520,10 @@ ggplot(aes(x=2, y = prt, fill=infofood_try)) + geom_bar(stat="identity") +
   scale_fill_manual(values = c("grey",color_yellowlight,color_blue_lasell))+#number of colors and legend labels are based on how many groups; colors order alphebatically
 
 annotate("text",x = 0.5, y = 0.5, fontface="bold", label = str_wrap( "Try Lasell Food", width=10))+#0.5 is centered location
-annotate("text",x = 0.5, y = 0.75, hjust=3,fontface="bold", label = str_wrap( "47%", width=10))+#left data label  or 3
+annotate("text",x = 0.5, y = 0.5, vjust=0,hjust=5,fontface="bold", label = str_wrap( "47%", width=10))+#left data label  or 3
   
     annotate("text",x = 1.5, y = 0.15,hjust=-1.5, fontface="bold", label = str_wrap( "24%", width=10))+#upperright data label  (or 0.4 or 1.5 for slight right and left)
-  annotate("text",x = 0.5, y = 0.4, vjust=2,hjust=-2.3,fontface="bold", label = str_wrap( "29%", width=10))+#right data label  or -2.5
+  annotate("text",x = 0.5, y = 0.5, vjust=4,hjust=-5,fontface="bold", label = str_wrap( "29%", width=10))+#right data label  or -2.5
     theme_lz()+labs(title="",x="",y="",fill="",subtitle = "")
 ```
 
@@ -531,7 +538,7 @@ ggplot(aes(x=2, y = prt, fill=infofood_attendcommittee)) + geom_bar(stat="identi
    xlim(0.5, 2.5)+ coord_polar(theta="y",start=0)+ #circled coord, pie centered on 2; show .5-2.5 of pie (0-.5 is the hole)
   scale_fill_manual(values = c(color_yellowlight,color_blue,color_blue_lasell,color_redlight),labels=c("No, don't know","No, enjoy food", "Yes, helpful", "Yes, unhelpful"))+#number of colors and legend labels are based on how many groups; colors order alphebatically
 
-annotate("text",x = 0.5, y = 0.5, fontface="bold", label = str_wrap( "Attend Food Committee", width=10))+
+annotate("text",x = 0.5, y = 0.5, fontface="bold", label = str_wrap( "Student Attend FC", width=10))+
  
 annotate("text",x = 0.5, y = 0.5, vjust=0,hjust=3,fontface="bold", label = str_wrap( "51%", width=10))+ #mid-right
 annotate("text",x = 0.5, y = 0.5, vjust=0,hjust=-2,fontface="bold", label = str_wrap( "42%", width=10))+#mid-left
@@ -566,7 +573,7 @@ parent.info%>%#check:count(inforecv_value)
   filter(!is.na(inforecv_value))%>%
   count(inforecv,inforecv_value)%>%#mutate(prt=n/sum(n))
   ungroup()%>%group_by(inforecv)%>%mutate(prt=n/sum(n))%>%
-  filter(inforecv_value=="I am SATISFIED with the information I have")%>%arrange(prt)%>%mutate(yorder=factor(inforecv))
+  filter(inforecv_value=="I want MORE information")%>%arrange(prt)%>%mutate(yorder=factor(inforecv))
   
 #plot
 plot.info_recv<-
@@ -579,28 +586,31 @@ ggplot(aes(y=factor(inforecv, levels = info_recv.setyorder$yorder, ordered = TRU
            x = prt, fill=inforecv_value)) +   
   geom_bar(stat="identity",position = position_stack(),width=0.9)+
    scale_fill_manual(values = c(color_redlight,color_blue_lasell,color_yellowlight,color_blue),
-                     labels=c("Too much","Satisfied","No demand","Want more"))+#number of colors and legend labels are based on how many groups
+                     labels=c("Too much","Satisfied","No demand","Want more"),
+                     guide=guide_legend(reverse = TRUE))+#number of colors and legend labels are based on how many groups
 
-  scale_y_discrete(labels=c(str_wrap("Off-campus programs",width = 30),
-                            str_wrap("Career counseling",width = 30),
-                            str_wrap("Religious life",width = 30),
+  scale_y_discrete(labels=c(str_wrap("Religious life",width = 30),
                             str_wrap("Athletics",width = 30),
-                            str_wrap("Academic support services",width = 30),
-                            str_wrap("Student organizations",width = 30),
-                            str_wrap("Counseling services",width = 30),
-                            str_wrap("Campus events",width = 30),
-                            str_wrap("Financial aid",width = 30),
-                            str_wrap("Health services",width = 30),
-                            str_wrap("Residential life and policies",width = 30),
-                            str_wrap("Academic life and policies",width = 30),
-                            str_wrap("Financial options",width = 30),
+                            str_wrap("Events for parents",width = 30),
                             str_wrap("Campus safety",width = 30),
                             str_wrap("Resources for parents",width = 30),
-                            str_wrap("Events for parents",width = 30)))+#the first label is for the bottom bar, 2nd label for 2nd bottombar...
+                            str_wrap("Financial options",width = 30),
+                            str_wrap("Academic life and policies",width = 30),
+                            str_wrap("Health services",width = 30),
+                            str_wrap("Residential life and policies",width = 30),
+                            str_wrap("Financial aid",width = 30),
+                            str_wrap("Student organizations",width = 30),
+                            str_wrap("Counseling services",width = 30),
+                            str_wrap("Academic support services",width = 30),
+                            str_wrap("Campus events",width = 30),
+                            str_wrap("Off-campus programs",width = 30),
+                            str_wrap("Career counseling",width = 30)
+                            ))+#the first label is for the bottom bar, 2nd label for 2nd bottombar...
   #  scale_x_continuous(labels = scales::percent)+
-  geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0.5,hjust=0,fontface="bold",position = position_stack(0))+
+  geom_text(aes(label=if_else(prt>.03,paste0(round(prt,digits = 2)*100,"%"),"")),
+            size=3,vjust=0.5,hjust=0,fontface="bold",position = position_stack(0))+
   #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
-    labs(title="Receive information from:",x="",y="",fill="")+ theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom")
+    labs(title="Please rate the information you have received:",x="",y="",fill="")+ theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom")
 ```
 
 ```{r plot.info_rely}
@@ -608,9 +618,6 @@ ggplot(aes(y=factor(inforecv, levels = info_recv.setyorder$yorder, ordered = TRU
 #"inforely_stu"            "inforely_mainweb"         "inforely_prtweb"          "inforely_facebook"        "inforely_call"           "inforely_email"           "inforely_parent"
 
 #lapply(parent.info,unique)# inforecv==>inforely and inforely_value
-
-#factorize legend (inforely_value)
-parent.info<-parent.info%>%mutate(inforely_value=factor(inforely_value,levels = c("Not at all","Very little","Somewhat","To a great extent")))
 
 #since we show more than one group in bar chart, we need to set y label's order 
 #the order of y lable is based on prt of the "positive" group
@@ -625,13 +632,15 @@ parent.info%>%#check:count(inforely_value)
 plot.info_rely<-
 parent.info%>%#check:count(inforely_value)
   filter(!is.na(inforely_value))%>%
+  mutate(inforely_value=factor(inforely_value,levels = c("Not at all","Very little","Somewhat","To a great extent")))%>%#factorize legend (inforely_value)
   count(inforely,inforely_value)%>%#mutate(prt=n/sum(n))
   ungroup()%>%group_by(inforely)%>%mutate(prt=n/sum(n))%>%
 
 ggplot(aes(y=factor(inforely, levels = info_rely.setyorder$yorder, ordered = TRUE), 
            x = prt, fill=inforely_value)) +   
   geom_bar(stat="identity",position = position_stack(),width=0.9)+
-   scale_fill_manual(values = c(color_redlight,color_yellowlight,color_blue,color_blue_lasell))+#number of colors and legend labels are based on how many groups
+   scale_fill_manual(values = c(color_redlight,color_yellowlight,color_blue,color_blue_lasell),
+                     guide=guide_legend(reverse = TRUE))+#number of colors and legend labels are based on how many groups
 
   scale_y_discrete(labels=c(str_wrap("Other parents",width = 30),
                             str_wrap("Call staff",width = 30),
@@ -642,9 +651,10 @@ ggplot(aes(y=factor(inforely, levels = info_rely.setyorder$yorder, ordered = TRU
                             str_wrap("My students",width = 30)
                             ))+#the first label is for the bottom bar, 2nd label for 2nd bottombar...
   #  scale_x_continuous(labels = scales::percent)+
-  geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0.5,hjust=0,fontface="bold",position = position_stack(0))+
+  geom_text(aes(label=if_else(prt>0.03,as.character(percent(prt,digits = 0)),"")),
+            size=3,vjust=0.5,hjust=0,fontface="bold",position = position_stack(0))+
   #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
-    labs(title="Sources of information",x="",y="",fill="")+ theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom")  #"Discuss with students about the following aspects"
+    labs(title="To what extent do you rely on sources of information below",x="",y="",fill="")+ theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom")  #"Discuss with students about the following aspects"
 ```
 
 ```{r plot.info_conv}
@@ -652,10 +662,6 @@ ggplot(aes(y=factor(inforely, levels = info_rely.setyorder$yorder, ordered = TRU
 #"infoconv_aca"             "infoconv_gradplan"       "infoconv_career"          "infoconv_fin"           "infoconv_campus"          "infoconv_health" 
 #lapply(parent.info,unique)# inforely==>infoconv and infoconv_value
 
-#factorize legend (infoconv_value)
-##check: parent.info%>%count(infoconv_value)
-parent.info<-parent.info%>%mutate(infoconv_value=
-        factor(infoconv_value,levels = c("Never","Rarely","Sometimes","Often","Always")))
 
 #since we show more than one group in bar chart, we need to set y label's order 
 #the order of y lable is based on prt of the "positive" group
@@ -670,13 +676,15 @@ parent.info%>%#check:count(infoconv_value)
 plot.info_conv<-
 parent.info%>%#check:count(infoconv_value)
   filter(!is.na(infoconv_value))%>%
+  mutate(infoconv_value=factor(infoconv_value,levels = c("Never","Rarely","Sometimes","Often","Always")))%>%#factorize legend (infoconv_value)
   count(infoconv,infoconv_value)%>%#mutate(prt=n/sum(n))
   ungroup()%>%group_by(infoconv)%>%mutate(prt=n/sum(n))%>%
 
 ggplot(aes(y=factor(infoconv, levels = info_conv.setyorder$yorder, ordered = TRUE), 
            x = prt, fill=infoconv_value)) +   
   geom_bar(stat="identity",position = position_stack(),width=0.9)+
-   scale_fill_manual(values = c(color_redlight,color_yellowlight,color_bluelight,color_blue,color_blue_lasell))+#number of colors and legend labels are based on how many groups
+   scale_fill_manual(values = c(color_redlight,color_yellowlight,color_bluelight,color_blue,color_blue_lasell),
+                     guide=guide_legend(reverse = TRUE))+#number of colors and legend labels are based on how many groups
 
   scale_y_discrete(labels=c(str_wrap("Graduate school plans",width = 30),
                             str_wrap("Finances",width = 30),
@@ -686,9 +694,10 @@ ggplot(aes(y=factor(infoconv, levels = info_conv.setyorder$yorder, ordered = TRU
                             str_wrap("Health (mental/physical)",width = 30)
                             ))+#the first label is for the bottom bar, 2nd label for 2nd bottombar...
   #  scale_x_continuous(labels = scales::percent)+
-  geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0.5,hjust=0,fontface="bold",position = position_stack(0))+
+  geom_text(aes(label=if_else(prt>0.03,as.character(percent(prt,digits = 0)),"")),
+            size=3,vjust=0.5,hjust=0,fontface="bold",position = position_stack(0))+
   #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
-    labs(title="Discuss with students about:",x="",y="",fill="")+ theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom")
+    labs(title="Frequency of discussing the following with your student:",x="",y="",fill="")+ theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom")
 ```
 
 ```{r report_plan1}
@@ -701,6 +710,7 @@ plot.info_recv
 ```
 
 ## Information Source
+
 ```{r report_inforely.conv,  include=TRUE}
 gridExtra::grid.arrange(plot.info_rely, plot.info_conv, nrow=1, widths=c(1,1))
 ```
@@ -708,6 +718,7 @@ gridExtra::grid.arrange(plot.info_rely, plot.info_conv, nrow=1, widths=c(1,1))
 
 
 ## Events
+
 ```{r plot.evted}
 #4
 #"evted_townhall"           "evted_wkend"             "evted_recept"     "evted_recept23" 
@@ -734,17 +745,18 @@ parent.evt%>%filter(!is.na(evted_value))%>%
 ggplot(aes(y=factor(evted, levels = evted.setyorder$yorder, ordered = TRUE), 
            x = prt, fill=evted_value.gp)) +   
   geom_bar(stat="identity",position = position_stack(),width=0.9)+
-   scale_fill_manual(values = c(color_yellowlight,color_greylight,color_blue,color_blue_lasell))+#number of colors and legend labels are based on how many groups
+   scale_fill_manual(values = c(color_yellowlight,color_greylight,color_blue,color_blue_lasell),
+                     guide = guide_legend(reverse = TRUE))+#number of colors and legend labels are based on how many groups
 
-  scale_y_discrete(labels=c(str_wrap("1723 Parents Reception",width = 17),
+  scale_y_discrete(labels=c(str_wrap("2023 Parents Reception",width = 17),
                             str_wrap("Virtual Parents Town Hall ",width = 17),
-                            str_wrap("1722 Parents Reception",width = 17),
+                            str_wrap("2022 Parents Reception",width = 17),
                             str_wrap("Family, Friends, and Alumni Weekend",width = 17)
                             ))+#the first label is for the bottom bar, 2nd label for 2nd bottombar...
   #  scale_x_continuous(labels = scales::percent)+
-  geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0.5,hjust=0,fontface="bold",position = position_stack(0))+
+  geom_text(aes(label=if_else(prt>0.03,as.character(percent(prt,digits = 0)),"")),size=3,vjust=0.5,hjust=0,fontface="bold",position = position_stack(0))+
   #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
-    labs(title="Attend events",x="",y="",fill="")+ theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom")
+    labs(title="Did you/ will you attend:",x="",y="",fill="")+ theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom")
 ```
 
 ```{r plot.evtwill}
@@ -771,11 +783,11 @@ ggplot(aes(y=reorder(evtwill, prt), x = prt)) +
   #  scale_x_continuous(labels = scales::percent)+
   geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0.5,hjust=1,fontface="bold",position = position_dodge(0))+
   #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
-    labs(title="Future events interests",x="",y="",fill="")+ theme_lz()+theme(axis.text.y = element_text(),legend.position = "")
+    labs(title="Interests in webinars:",x="",y="",fill="")+ theme_lz()+theme(axis.text.y = element_text(),legend.position = "")
 ```
 
 ```{r report_event,fig.height=3, include=TRUE}
 gridExtra::grid.arrange(plot.evted, plot.evtwill, nrow=1, widths=c(2,1))
 ```
 
-
+#qual analysis: write up/summary of qual comments

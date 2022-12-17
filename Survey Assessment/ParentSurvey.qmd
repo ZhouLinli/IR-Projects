@@ -1,7 +1,6 @@
 ---
-title: "Parent Survey Results  \n2022 Fall"
-author: 'Lasell University Institutional Research'
-date: "`r Sys.Date()`"
+title: "2022 Fall Parent Survey Results \\vspace{-1.5cm}"
+
 format: 
   pdf:
     documentclass: article
@@ -15,6 +14,12 @@ format:
       - textwidth=4.5in
     keep-md: true
     include-in-header:
+      - text: |
+          \usepackage{titling}
+          \setlength{\droptitle}{-1.5in}
+          \pretitle{\begin{center}
+          \includegraphics[height=1in]{/Users/linlizhou/Documents/Rprojects/IR.png}\LARGE\\}
+
       - text: |
           \usepackage{fancyhdr}
           \addtolength{\headheight}{0.7cm}
@@ -30,9 +35,6 @@ format:
           \renewcommand{\headrulewidth}{0pt}
 editor: visual
 ---
-
-
-
 ```{r libraries, include = FALSE}
 source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
 ```
@@ -268,7 +270,9 @@ parent.evt<-parent.quan%>%select(starts_with("evt"))%>%
 #saveWorkbook(wb,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Parent Survey/fall 1722/parentsurveyworking.xlsx",overwrite = TRUE)
 ```
 
-## Survey Responses and Overall Satisfaction
+
+
+# Survey Responses and Overall Satisfaction
 ```{r prep.response}
 #contactlist<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Parent Survey/fall 2022/FY23 ALL Parents Email List.xls")/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Parent Survey/fall 2022/FY23 ALL Parents Email List.xls
 #harcode: 1492
@@ -331,7 +335,9 @@ gridExtra::grid.arrange(plot.response, plot.satisoverall, nrow=1, widths=c(1,1))
 #add subtitle: n=284
 ```
 
-## Satisfaction
+The 2022 Fall Parent Survey received 284 responses, representing a 19% response rate. Among those respondents, 84% of parents are satisfied with their students' experiences at Lasell.
+
+# Satisfaction
 ```{r plot.satis_aca}
 #5
 #"satis.overall"            "satis.aca_instruct"      "satis.aca_advise"         "satis.aca_tutor"         "satis.aca_faculty"
@@ -486,7 +492,9 @@ plot.satis_left<-gridExtra::grid.arrange(plot.satis_aca, plot.satis_life, ncol=1
 gridExtra::grid.arrange(plot.satis_left, plot.satis_sv, nrow=1, widths=c(1,1))
 ```
 
-## Food Committee (FC)
+Most of parents are satisfied with students' academic experiences, campus life, and most of Lasell services and facilities. However, only 39% of parents are satisfied with **dining services** at Lasell. Some other areas to improve may include __career counseling__ and __mental counseling__ services, which respectively received 54% and 60% satisfaction rate from parents. **Social life on campus** can be another aspect to improve based on its 63% parents' satisfaction rate.
+
+# Food Committee (FC)
 
 ```{r plot.fdcomt.aware}
 #3
@@ -552,7 +560,7 @@ annotate("text",x = 0.5, y = 0.5, vjust=-7,hjust=-1,fontface="bold", label = str
 gridExtra::grid.arrange(plot.fdcomt.aware, plot.fdattend, plot.fdtry, nrow=1, widths=c(1,1,1))
 ```
 
-## Information Received
+# Information Received
 ```{r plot.info_recv}
 #16
 #"inforecv_prtevent"       "inforecv_resource"        "inforecv_acapolicy"       "inforecv_house"           "inforecv_religion"       "inforecv_event"           "inforecv_safe"           "inforecv_stuorg"          "inforecv_athletic"       "inforecv_activity"        "inforecv_finaid"         "inforecv_finoption"       "inforecv_acasupport"      "inforecv_career"          "inforecv_health"         "inforecv_counsel"
@@ -709,7 +717,7 @@ ggplot(aes(y=factor(infoconv, levels = info_conv.setyorder$yorder, ordered = TRU
 plot.info_recv
 ```
 
-## Information Source
+# Information Source
 
 ```{r report_inforely.conv,  include=TRUE}
 gridExtra::grid.arrange(plot.info_rely, plot.info_conv, nrow=1, widths=c(1,1))
@@ -717,7 +725,7 @@ gridExtra::grid.arrange(plot.info_rely, plot.info_conv, nrow=1, widths=c(1,1))
 
 
 
-## Events
+# Events
 
 ```{r plot.evted}
 #4

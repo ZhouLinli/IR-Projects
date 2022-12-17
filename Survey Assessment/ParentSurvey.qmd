@@ -243,7 +243,7 @@ parent.info<-parent.quan%>%select(starts_with("info"))%>%
   pivot_longer(cols=starts_with("inforely"),names_to="inforely",values_to="inforely_value")%>%
   pivot_longer(cols=starts_with("infoconv"),names_to="infoconv",values_to="infoconv_value")
 
-parent.evt<-parent.quan%>%select(starts_with("evt"))%>%
+parent.evt<-parent.quan%>%select(starts_with("evt"),status)%>%
   pivot_longer(cols=starts_with("evted"),names_to="evted",values_to="evted_value")%>%
   pivot_longer(cols=starts_with("evtwill"),names_to="evtwill",values_to="evtwill_value")
 ```
@@ -492,7 +492,23 @@ plot.satis_left<-gridExtra::grid.arrange(plot.satis_aca, plot.satis_life, ncol=1
 gridExtra::grid.arrange(plot.satis_left, plot.satis_sv, nrow=1, widths=c(1,1))
 ```
 
-Most of parents are satisfied with students' academic experiences, campus life, and most of Lasell services and facilities. However, only 39% of parents are satisfied with **dining services** at Lasell. Some other areas to improve may include __career counseling__ and __mental counseling__ services, which respectively received 54% and 60% satisfaction rate from parents. **Social life on campus** can be another aspect to improve based on its 63% parents' satisfaction rate.
+Most of parents are satisfied with students' academic experiences, campus life, and most of Lasell services and facilities. The highest satisfaction is in **campus safety**, with 92% of parents satisfied in it. Other aspects that have more than 80% satisfaction rate include: __instruction quality, faculty contact with students, campus police, parent engagement, and housing__.
+
+However, there are a few services and facilities on campus that receive lower than 65% satisfaction rate, including __dining__, __career counseling__, and __mental counseling__, and __social life on campus__.
+
+```{r TOBEsatis_qualcmt}
+###CAREER
+#open discussion for identify good fit jobs and how to find jobs (3)
+#specific, major-specific, 1:1 advisor help (3)
+
+#professor's teaching method, lack academic community, tuition reset help financially, friendly community
+
+###ACTIVITY
+#campus activities more promotion through RAs (2)
+#more events in the boston city, promote more
+```
+
+
 
 # Food Committee (FC)
 
@@ -559,6 +575,23 @@ annotate("text",x = 0.5, y = 0.5, vjust=-7,hjust=-1,fontface="bold", label = str
 ```{r report_fd,include=TRUE}
 gridExtra::grid.arrange(plot.fdcomt.aware, plot.fdattend, plot.fdtry, nrow=1, widths=c(1,1,1))
 ```
+
+For the student-run food committee (FC), 79% of parents are not aware of it. 42% of parents think their students did not attend the FC because they enjoy the food. 51% of parents may be interested in trying Lasell food. 
+
+```{r food_qualcmt}
+###FOOD
+#meeting about food (3)
+#late food option and more vendors more availablity on campus, sufficient supply, healthy options, high-quality food, a better/care-student food service provider (4)
+#discounted meal plan for students who eat 2 meals a day
+###FC
+#web forms feedback more effeicient due to schedlue conflict (4)
+#nothing will change not matter meeting (3)
+```
+
+Many students have schedule conflict for attending the food committee. Parents recommend __web form__ as an more accessible and efficient way to give feedback about food. Another reason for students not attending the food committee is the belief that _nothing will change_ no matter what students says in the committee. Parents are upset about the long-exiting complaints about the food. More promotions about any _actions resulted_ from the food committee may be helpful. 
+
+Several parents would like to meet with the food provider or staff member to talk about food. Most frequently mentioned suggestions are around __food availability and quality__. Parents would like the dining hall to have sufficient supply of food. Also, parents hope Lasell can have more food vendors in late hours. Parents complained about food quality and the fact of lacking healthy food options. One parent also hope to have discounted meal plan for students who only east twice a day. Some parents suggest Lasell to change to a more student-caring food service provider. 
+
 
 # Information Received
 ```{r plot.info_recv}
@@ -717,13 +750,28 @@ ggplot(aes(y=factor(infoconv, levels = info_conv.setyorder$yorder, ordered = TRU
 plot.info_recv
 ```
 
+Above 70% of parents are satisfied with information received around events for parents, campus safety, and resources for parents. However, **career counseling** and **off-campus programs** have only 40% satisfaction rate from parents. Also, **career counseling** has the most unfulfilled demand. 46% of parents want more information around career counseling from Lasell.
+
+```{r TOBEinfo_qualcmt}
+###INFORMATION
+#talk to RAs about dorm/student life, and their responsibilities and seek help (2). 
+#talk to kids in sports and their trainers.
+#how parents can help
+#prep for grad school, what options and guidance in program options and costs and fundings
+#Parents would like more guidance on master program options and financial costs and funding. 
+```
+
+
+
 # Information Source
 
 ```{r report_inforely.conv,  include=TRUE}
 gridExtra::grid.arrange(plot.info_rely, plot.info_conv, nrow=1, widths=c(1,1))
 ```
 
+**Students** are the primary source of information for 76% of parents. 58% of parents also rely on **emails from Lasell** as an information source. 
 
+The most frequently discussed topics between parents and students are **mental/physical health, academic matters, campus life, and career plans**. Discussions around finances and graduate school plans happen not as often. 
 
 # Events
 
@@ -748,18 +796,19 @@ parent.evt%>%filter(!is.na(evted_value))%>%
   mutate(evted_value.gp=if_else(evted_value%in%c("No, I had a scheduling conflict","No, I have a scheduling conflict"),"Schedule conflict",
                             if_else(evted_value%in%c("No, I was not interested.","No, I am not interested"),"Not interested",
                             if_else(evted_value=="Yes","Yes","Don't know"))))%>%#check: count(evted_value.gp,evted_value)
+  mutate(evted_value.gp=factor(evted_value.gp,levels = c("Not interested","Schedule conflict","Don't know","Yes")))%>%
   count(evted,evted_value.gp)%>%ungroup()%>%group_by(evted)%>%mutate(prt=n/sum(n))%>%
 
 ggplot(aes(y=factor(evted, levels = evted.setyorder$yorder, ordered = TRUE), 
            x = prt, fill=evted_value.gp)) +   
   geom_bar(stat="identity",position = position_stack(),width=0.9)+
-   scale_fill_manual(values = c(color_yellowlight,color_greylight,color_blue,color_blue_lasell),
+   scale_fill_manual(values = c(color_redlight,color_greylight,color_yellowlight,color_blue_lasell),
                      guide = guide_legend(reverse = TRUE))+#number of colors and legend labels are based on how many groups
 
   scale_y_discrete(labels=c(str_wrap("2023 Parents Reception",width = 17),
-                            str_wrap("Virtual Parents Town Hall ",width = 17),
+                            str_wrap("2022 Virtual Parents Town Hall ",width = 17),
                             str_wrap("2022 Parents Reception",width = 17),
-                            str_wrap("Family, Friends, and Alumni Weekend",width = 17)
+                            str_wrap("2022 Family, Friends, and Alumni Weekend",width = 17)
                             ))+#the first label is for the bottom bar, 2nd label for 2nd bottombar...
   #  scale_x_continuous(labels = scales::percent)+
   geom_text(aes(label=if_else(prt>0.03,as.character(percent(prt,digits = 0)),"")),size=3,vjust=0.5,hjust=0,fontface="bold",position = position_stack(0))+
@@ -776,7 +825,8 @@ ggplot(aes(y=factor(evted, levels = evted.setyorder$yorder, ordered = TRUE),
 #plot
 plot.evtwill<-
 parent.evt%>%#filter(!is.na(evtwill_value))%>%
-  filter(evtwill!="evtwill_otheropt")%>%
+  filter(evtwill!="evtwill_otheropt",
+         status=="Complete")%>%#since this is the last question, we can filter out those who complete the survey
   count(evtwill,evtwill_value)%>%ungroup()%>%group_by(evtwill)%>%mutate(prt=n/sum(n))%>%
   filter(!is.na(evtwill_value))%>%
 
@@ -798,4 +848,20 @@ ggplot(aes(y=reorder(evtwill, prt), x = prt)) +
 gridExtra::grid.arrange(plot.evted, plot.evtwill, nrow=1, widths=c(2,1))
 ```
 
-#qual analysis: write up/summary of qual comments
+```{r event_qualcmt.eventspecific}
+###PARENT.EVENT-IMPV
+#directory of events
+#more events on sunday
+#more food
+###PARENT.EVENT-ENJOY
+#diverse options (3), well organized,  community connectted (4)
+#good to see campus (2)
+```
+
+44% of parents participated in the 2022 FFA Weekend. Around 15% of parents attended 2022 parent receptions and town hall. Many parents have a schedule conflict as the reason for missing those events. For futuer events, 42% of parents are interested in webinars in senior graduation and plan. 34% of parents are interested in meeting with dean and faculty.
+
+Parents who attended those events enjoyed the diverse options and well-organized events. Parents find the FFA weekend, receptions, and town hall a good way to build community with other parents and connect with Lasell. Some parents appreciate the in-person events to visit the campus. 
+
+Parents also provide some suggestions for improving those events, including providing an event directory, have more events on Sunday, and supply more food. 
+
+# Summary

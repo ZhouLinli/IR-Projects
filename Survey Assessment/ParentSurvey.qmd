@@ -2,7 +2,9 @@
 title: "2022 Fall Parent Survey Results \\vspace{-1.5cm}"
 
 format: 
-  pdf:
+  docx:
+    reference-doc: /Users/linlizhou/Documents/Rprojects/IR-Projects/lasell.report.template.docx
+    prefer-html: true
     documentclass: article
     classoption: []
     fig-width: 8
@@ -37,6 +39,7 @@ editor: visual
 ---
 ```{r libraries, include = FALSE}
 source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
+
 ```
 
 ```{r load_rawdf.surveyexport}

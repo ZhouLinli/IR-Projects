@@ -2,7 +2,9 @@
 title: "2022 Fall Parent Survey Results \\vspace{-1.5cm}"
 
 format: 
-  pdf:
+  docx:
+    reference-doc: /Users/linlizhou/Documents/Rprojects/IR-Projects/lasell.report.template.docx
+    prefer-html: true
     documentclass: article
     classoption: []
     fig-width: 8
@@ -66,7 +68,7 @@ editor: visual
 
 ::: {.cell}
 ::: {.cell-output-display}
-![](ParentSurvey_files/figure-pdf/report_responserate.overall-1.pdf)
+![](ParentSurvey_files/figure-docx/report_responserate.overall-1.png)
 :::
 :::
 
@@ -85,7 +87,7 @@ The 2022 Fall Parent Survey received 284 responses, representing a 19% response 
 
 ::: {.cell}
 ::: {.cell-output-display}
-![](ParentSurvey_files/figure-pdf/report_satis-1.pdf)
+![](ParentSurvey_files/figure-docx/report_satis-1.png)
 :::
 :::
 
@@ -112,7 +114,7 @@ For dining, many parents complain __food availability and quality__. Parents fee
 
 ::: {.cell}
 ::: {.cell-output-display}
-![](ParentSurvey_files/figure-pdf/report_fd-1.pdf)
+![](ParentSurvey_files/figure-docx/report_fd-1.png)
 :::
 :::
 
@@ -141,7 +143,7 @@ Another reason for students not attending the FC is the belief that nothing will
 
 ::: {.cell}
 ::: {.cell-output-display}
-![](ParentSurvey_files/figure-pdf/report_info.recv-1.pdf)
+![](ParentSurvey_files/figure-docx/report_info.recv-1.png)
 :::
 :::
 
@@ -162,7 +164,7 @@ In terms of off-campus programs, a few parents suggest to have __RAs__ involved 
 
 ::: {.cell}
 ::: {.cell-output-display}
-![](ParentSurvey_files/figure-pdf/report_inforely.conv-1.pdf)
+![](ParentSurvey_files/figure-docx/report_inforely.conv-1.png)
 :::
 :::
 
@@ -178,7 +180,7 @@ In terms of off-campus programs, a few parents suggest to have __RAs__ involved 
 
 ::: {.cell}
 ::: {.cell-output-display}
-![](ParentSurvey_files/figure-pdf/report_event-1.pdf)
+![](ParentSurvey_files/figure-docx/report_event-1.png)
 :::
 :::
 

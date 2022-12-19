@@ -301,7 +301,7 @@ ggplot(aes(x=2, y = values, fill=items)) + geom_bar(stat="identity") +
   annotate("text",x = 0.5, y = 0.75, hjust=-1.7,fontface="bold", label = str_wrap( "81%", width=10))+#left data label
   annotate("text",x = 2, y = 0.75, hjust=1.5,fontface="bold", label = str_wrap( "15%", width=10))+#right data label
   annotate("text",x = 0.5, y = 0.5,vjust=-2.5,hjust=3.5, fontface="bold", label = str_wrap( "4%", width=10))+#upperright data label
-    theme_lz()+labs(title="",x="",y="",fill="",subtitle = "N=284")+theme(legend.position = "right",legend.direction = "vertical")
+    theme_lz()+labs(x="",y="",fill="",title = "N=284")+theme(legend.position = "right",legend.direction = "vertical")
 ```
 
 ```{r plot.satisoverall}
@@ -335,7 +335,7 @@ gridExtra::grid.arrange(plot.response, plot.satisoverall, nrow=1, widths=c(1,1))
 #add subtitle: n=284
 ```
 
-The 2022 Fall Parent Survey received 284 responses, representing a 19% response rate. Among those respondents, 84% of parents are satisfied with their students' experiences at Lasell.
+The 2022 Fall Parent Survey received 284 responses, representing a 19% response rate. Among those respondents, 84% of parents are __satisfied__ with their students' experiences at Lasell.
 
 # Satisfaction
 ```{r plot.satis_aca}
@@ -492,11 +492,11 @@ plot.satis_left<-gridExtra::grid.arrange(plot.satis_aca, plot.satis_life, ncol=1
 gridExtra::grid.arrange(plot.satis_left, plot.satis_sv, nrow=1, widths=c(1,1))
 ```
 
-Most of parents are satisfied with students' academic experiences, campus life, and most of Lasell services and facilities. The highest satisfaction is in **campus safety**, with 92% of parents satisfied in it. Other aspects that have more than 80% satisfaction rate include: __instruction quality, faculty contact with students, campus police, parent engagement, and housing__.
+Most of parents are satisfied with students' academic experiences, campus life, and most of Lasell services and facilities. The highest satisfaction is in **campus safety**, with 92% of parents satisfied in it. Other aspects that have more than 80% satisfaction rate include: instruction quality, faculty contact with students, campus police, parent engagement, and housing.
 
-However, there are a few services and facilities on campus that receive lower than 65% satisfaction rate, including __dining__, __career counseling__, and __mental counseling__, and __social life on campus__.
+However, there are a few services and facilities on campus that receive lower than 65% satisfaction rate, including __dining__, __career counseling__, __mental counseling__, and __social life on campus__.
 
-```{r TOBEsatis_qualcmt}
+```{r satis_qualcmt}
 ###CAREER
 #open discussion for identify good fit jobs and how to find jobs (3)
 #specific, major-specific, 1:1 advisor help (3)
@@ -508,6 +508,7 @@ However, there are a few services and facilities on campus that receive lower th
 #more events in the boston city, promote more
 ```
 
+For dining, many parents complain __food availability and quality__. Parents feel the dining hall lack sufficient supply of food when their students cannot eat in __after-hours__. Parents hope that Lasell can have __more food vendors__ that are available in late hours. Also, parents complain about food quality and the lack of __healthy food__ options. Several parents would like to meet with the food provider or staff members to talk about food options. Some parents suggest Lasell to change to a more student-caring food service provider. Besides, a parent suggest to have __discounted__ meal plans for students who only east twice a day.
 
 
 # Food Committee (FC)
@@ -576,7 +577,12 @@ annotate("text",x = 0.5, y = 0.5, vjust=-7,hjust=-1,fontface="bold", label = str
 gridExtra::grid.arrange(plot.fdcomt.aware, plot.fdattend, plot.fdtry, nrow=1, widths=c(1,1,1))
 ```
 
-For the student-run food committee (FC), 79% of parents are not aware of it. 42% of parents think their students did not attend the FC because they enjoy the food. 51% of parents may be interested in trying Lasell food. 
+For the student-run food committee (FC), 79% of parents are __not aware__ of it, and only 7% of parents think their students attended the FC. 42% of parents think their students did not attend the FC because they enjoy the food. 
+Other parents comment that their students have __schedule conflict__ for attending the FC. Parents recommend __web form__ as an more accessible and efficient way to give feedback about food.
+
+Another reason for students not attending the FC is the belief that nothing will change no matter what students says in the committee. Parents are upset about the long-exiting complaints about the food, and hope to see if any __actions__ are resulted from the FC. 
+
+51% of parents may be interested in trying Lasell food. Apart from trying the food, some parents request a __meeting__ with the food provider or staff members to talk and offer suggestions about food service at Lasell.
 
 ```{r food_qualcmt}
 ###FOOD
@@ -587,10 +593,6 @@ For the student-run food committee (FC), 79% of parents are not aware of it. 42%
 #web forms feedback more effeicient due to schedlue conflict (4)
 #nothing will change not matter meeting (3)
 ```
-
-Many students have schedule conflict for attending the food committee. Parents recommend __web form__ as an more accessible and efficient way to give feedback about food. Another reason for students not attending the food committee is the belief that _nothing will change_ no matter what students says in the committee. Parents are upset about the long-exiting complaints about the food. More promotions about any _actions resulted_ from the food committee may be helpful. 
-
-Several parents would like to meet with the food provider or staff member to talk about food. Most frequently mentioned suggestions are around __food availability and quality__. Parents would like the dining hall to have sufficient supply of food. Also, parents hope Lasell can have more food vendors in late hours. Parents complained about food quality and the fact of lacking healthy food options. One parent also hope to have discounted meal plan for students who only east twice a day. Some parents suggest Lasell to change to a more student-caring food service provider. 
 
 
 # Information Received
@@ -750,9 +752,11 @@ ggplot(aes(y=factor(infoconv, levels = info_conv.setyorder$yorder, ordered = TRU
 plot.info_recv
 ```
 
-Above 70% of parents are satisfied with information received around events for parents, campus safety, and resources for parents. However, **career counseling** and **off-campus programs** have only 40% satisfaction rate from parents. Also, **career counseling** has the most unfulfilled demand. 46% of parents want more information around career counseling from Lasell.
+Above 70% of parents are satisfied with information received around events for parents, campus safety, and resources for parents. However, **career counseling** and **off-campus programs** have only 40% satisfaction rate from parents. The **career counseling** also has the most unfulfilled demand, with 46% of parents want more information around career from Lasell.
 
-```{r TOBEinfo_qualcmt}
+From parents' comments, we find parents' complaints of the current career services being too general. Parents hope students have __major-specific__ guidance and learn the __process__ of finding a job. Many parents request the career center adviser to offer open discussions with students about __how to identify__ good-fit jobs.
+
+```{r info_qualcmt}
 ###INFORMATION
 #talk to RAs about dorm/student life, and their responsibilities and seek help (2). 
 #talk to kids in sports and their trainers.
@@ -761,6 +765,7 @@ Above 70% of parents are satisfied with information received around events for p
 #Parents would like more guidance on master program options and financial costs and funding. 
 ```
 
+In terms of off-campus programs, a few parents suggest to have __RAs__ involved in promoting campus activities. Also, a parent recommend to have more or promote any existing events that happen in __Boston city__, which could be a good resource to learn. 
 
 
 # Information Source
@@ -769,9 +774,7 @@ Above 70% of parents are satisfied with information received around events for p
 gridExtra::grid.arrange(plot.info_rely, plot.info_conv, nrow=1, widths=c(1,1))
 ```
 
-**Students** are the primary source of information for 76% of parents. 58% of parents also rely on **emails from Lasell** as an information source. 
-
-The most frequently discussed topics between parents and students are **mental/physical health, academic matters, campus life, and career plans**. Discussions around finances and graduate school plans happen not as often. 
+**Students** are the primary source of information for 76% of parents. Meanwhile, 58% of parents rely on **emails from Lasell** as an information source. Parents discuss most frequently with students about **mental/physical health, academic matters, campus life, and career plans**. Other topics like finances and graduate school plans do not happen as often between parents and students. A parent mention that they hope Lasell can provide information about __graduate school__ options and the costs and funding for graduate school.
 
 # Events
 
@@ -858,10 +861,43 @@ gridExtra::grid.arrange(plot.evted, plot.evtwill, nrow=1, widths=c(2,1))
 #good to see campus (2)
 ```
 
-44% of parents participated in the 2022 FFA Weekend. Around 15% of parents attended 2022 parent receptions and town hall. Many parents have a schedule conflict as the reason for missing those events. For futuer events, 42% of parents are interested in webinars in senior graduation and plan. 34% of parents are interested in meeting with dean and faculty.
+The FFA Weekend is the most popular events among parents, as 44% of parents participated in it. Around 10% to 15% of parents attend or will attend the parent receptions and town hall events. For parents who did not participate, __schedule conflict__ is the main reason for missing those events. 
 
-Parents who attended those events enjoyed the diverse options and well-organized events. Parents find the FFA weekend, receptions, and town hall a good way to build community with other parents and connect with Lasell. Some parents appreciate the in-person events to visit the campus. 
+Parents who attended the above events enjoyed the events having __diverse options__ and being __well-organized__. Parents find the these events a good way to __build community__ with other parents and connect to Lasell. A few parents also appreciate the opportunity to __visit the campus__ during in-person events. In terms of suggestions, parents hope future events could provide an __event directory__, have some more events on __Sunday__ (specific to the FFA weekend), and supply more __food__.
 
-Parents also provide some suggestions for improving those events, including providing an event directory, have more events on Sunday, and supply more food. 
+In the spring semester, 42% of parents are interested in a webinar on __senior graduation and plan__. 34% of parents are interested in __meeting with dean and faculty__. Besides, a few parents would like to talk to __RAs__ about student life, and learn RA responsibilities and how to seek help from them. A parent with athletic student hope to talk to sport trainers. Some parents also 
+ 
 
 # Summary
+
++ 84% of parents are satisfied with Lasell overall. __Campus safety__ has the highest satisfaction rate, with 92% of parents satisfied in it.
+
+
++ Dining Services and Food
+
+  + Dining services has the lowest (39%) satisfaction rate. Parents are mainly dissatisfied about the __food availability (late-hour) and quality (healthy food)__.  
+
+  + Only 7% parents think their students attended the food committee (FC), and 79% of parents are not aware of the existence of FC. As reflected in parents' comments, many students have schedule conflict to attend the FC. Some other __accessible__ ways of participation (e.g. web forms) may help increase participation. Other students do not believe anything would change from FC. Promotions of any __action__ resulted from the FC would help change that belief and increase students' participation.
+
+  + 51% of parents may be interested in trying Lasell's food.
+  
+
++ Career Services
+  
+  + Career counseling has the most unfulfilled demand, with 46% of parents want more information around career from Lasell. Parents hope students have __major-specific__ guidance and learn the __process__ of identifying a good-fit job.
+
+
++ Information
+
+  + __Students__ are the primary source of information for 76% parents. 58% of parents also rely on __emails from Lasell__ for information. 
+  
+  + Parents discuss __health__ issues most frequently with students. Beyond the different information parents received, some parents request to receive more information around __graduate school__ options and costs.
+  
+  + Only 40% are satisfied with information received around __off-campus activities__. Parents would like more promotion, probably with the help of __RAs__, for off-campus activities (e.g. activities in Boston city). 
+  
+  
++ Events
+
+  + Although over 40% of parents missed events due to __schedule conflicts__, parents who attended the FFA, Town Hall, and Parent Reception enjoyed the past events and consider them as well-organized, and a good opportunity to build __community__. 
+  
+  + In the spring semester, 42% of parents are interested in a webinar on __senior graduation and plan__. 34% of parents are interested in __meeting with dean and faculty__. Besides those offerings, parents would also like to talk to __RA, athletic trainers, and food services__ to learn their responsibilities and provide suggestions. 

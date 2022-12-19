@@ -35,6 +35,12 @@ editor: visual
 source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
 ```
 
+revise:
+
+flip legend
+
+participation: hours over acadmic year
+
 ```{r load_raw.surveyexport}
 raw<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/BAM Impact Survey/rawSurveyExport20221212.csv")
 glimpse(raw)

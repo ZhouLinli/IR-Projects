@@ -1,7 +1,7 @@
 ---
 title: "The Baseline Action and Momentum (BAM) Program  \nSurvey Results"
 author: 'Lasell University Institutional Research'
-date: "2022-12-13"
+date: "2022-12-19"
 format: 
   pdf:
     documentclass: article
@@ -71,6 +71,7 @@ editor: visual
 
 
 
+
 ::: {.cell}
 ::: {.cell-output-display}
 ![](BAMsurvey_files/figure-pdf/report_act-1.pdf)
@@ -92,8 +93,8 @@ editor: visual
 :::
 
 
-
 ## Benefits
+
 
 
 

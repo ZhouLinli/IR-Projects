@@ -1,20 +1,23 @@
 ---
-title: "The Baseline Action and Momentum (BAM) Program  \nSurvey Results"
-author: 'Lasell University Institutional Research'
-date: "2022-12-19"
+title: "The Baseline Action and Momentum (BAM) Program  \nSurvey Results \\vspace{-3cm}"
 format: 
   pdf:
     documentclass: article
     classoption: []
-    fig-width: 7
+    fig-width: 8
     geometry:
       - top=25mm
-      - bottom=25mm
-      - left=20mm
-      - right=20mm
+      - bottom=20mm
+      - left=15mm
+      - right=15mm
       - textwidth=4.5in
     keep-md: true
     include-in-header:
+      - text: |
+          \usepackage{titling}
+          \setlength{\droptitle}{-1.5in}
+          \pretitle{\begin{center}
+          \includegraphics[height=1in]{/Users/linlizhou/Documents/Rprojects/IR.png}\LARGE\\}
       - text: |
           \usepackage{fancyhdr}
           \addtolength{\headheight}{0.7cm}
@@ -32,14 +35,6 @@ editor: visual
 ---
 
 
-
-
-
-revise:
-
-flip legend
-
-participation: hours over acadmic year
 
 
 

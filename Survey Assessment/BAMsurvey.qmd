@@ -301,24 +301,26 @@ plot.acttime<-bam%>%#check: count(act_time)
 ggplot(aes(y = act_time, x=factor(0))) + geom_boxplot(fill="#69b3e7") +
   #scale_y_continuous(limits = c(0,40), breaks=(seq(0, 40, 5)) )+
   geom_text(aes(label=ifelse(act_time%in%c(0,5,10,12,20,36),act_time,"")),size=3)+
-  labs(title="",x="Participation Time (Hours)",y="")+
+  labs(title="",x="Participation Time  \n(Hours over academic year)",y="")+
   theme_lz()#+theme(axis.text.y = element_text())
 ```
 
 ```{r report_act_future}
 plot.actfuture<-bam%>%filter(!is.na(act_future))%>%
+  mutate(act_future=factor(act_future, levels=c("Very Unlikely","Likely","Very Likely")))%>%
   group_by(act_future)%>%summarise(cnt=n())%>%mutate(prt=round(cnt/sum(cnt)*100,digits = 0))%>%
 ggplot(aes(x=2, y = prt, fill=act_future)) + geom_bar(stat="identity") +
   xlim(0.5, 2.5)+ coord_polar(theta="y",start=0)+ #circled coord, pie centered on 2; show .5-2.5 of pie (0-.5 hole)
 
   #geom_text(aes(label=paste0(prt,"%")), size=3,vjust=-2,hjust=3,fontface="bold",position = position_dodge(1))+
   annotate("text",x = 0.5, y = 0.5, fontface="bold", label = str_wrap( "90% Future Participation", width=10))+
-  annotate("text",x = 2, y = 0.75,vjust=0,hjust=-0.5, fontface="bold", label = str_wrap( "10%", width=10))+
-  annotate("text",x = 0.5, y = 0.75,vjust=0,hjust=3, fontface="bold", label = str_wrap( "37%", width=10))+
+  annotate("text",x = 0.5, y = 0.5,vjust=-8,hjust=1.5, fontface="bold", label = str_wrap( "10%", width=10))+
+  annotate("text",x = 0.5, y = 0.75,vjust=0.4,hjust=3.5, fontface="bold", label = str_wrap( "37%", width=10))+
   annotate("text",x = 0.5, y = 0.75,vjust=0,hjust=-2.5, fontface="bold", label = str_wrap( "53%", width=10))+
   #0.5 is centered location+
   #annotate("text",x = 0, y = 0.5, fontface="bold", label = ifelse(status=="Complete",as.character(cnt),""))+#0.5 is centered location+
-  scale_fill_manual(values = c("#69b3e7",color_blue_lasell,"grey"))+
+  scale_fill_manual(values = c("grey",color_blue_lasell,"#69b3e7"),
+                    guide=guide_legend(reverse = TRUE))+
   theme_lz()+theme(legend.position = "bottom")+
   labs(title="",x="",y="",fill="",subtitle = "")
 ```

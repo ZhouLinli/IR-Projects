@@ -36,6 +36,14 @@ editor: visual
 
 ```{r libraries, include = FALSE}
 source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
+#change 
+#format: 
+#  pdf:
+#to
+#format:
+#  docx:
+#    reference-doc: /Users/linlizhou/Documents/Rprojects/IR-Projects/lasell.report.template.docx
+#    prefer-html: true
 ```
 
 ```{r load_raw.surveyexport}
@@ -178,7 +186,7 @@ bam.long<-bam%>%
 
 ```
 
-## Survey Respondents
+# Survey Respondents
 
 ```{r plot.status}
 #check: lapply(bam, unique)
@@ -234,11 +242,16 @@ ggplot(aes(x=2, y = prt, fill=dem_race)) + geom_bar(stat="identity") +
   theme_lz()+labs(title="",x="",y="",fill="",subtitle = "")
 ```
 
-```{r report_responses, include = TRUE}
+```{r report_responses, fig.height=3, include = TRUE}
 gridExtra::grid.arrange(plot.status,plot.gender,plot.race, nrow=1, widths=c(1,1,1))
 ```
 
-## BAM Activities
+The BAM survey received **61 responses**. Sixty-one percent of
+respondents are female, 35% of respondents are male, and 3% are
+**non-binary**. The majority (94%) of respondents are white, and 3%
+**Asian** and 3% **Black**.
+
+# BAM Activities Engagement
 
 ```{r plot.act21}
 plot.act21<-bam.long%>%count(act21,act21_value)%>%
@@ -256,7 +269,7 @@ plot.act21<-bam.long%>%count(act21,act21_value)%>%
                             str_wrap("E-Documentary: The Student Experience",width = 17)))+  #scale_x_continuous(labels = scales::percent)+
   geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0.5,hjust=0.7,fontface="bold",position = position_dodge(0.9))+
   #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
-    labs(title="BAM 2021",x="",y="",fill="")+theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom/top")
+    labs(title="Engagement in BAM Activities in Fall 2021",x="",y="",fill="")+theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom/top")
 ```
 
 ```{r confirm_bam_act21}
@@ -281,52 +294,43 @@ plot.act22<-bam.long%>%#count(act22_value)
   scale_y_discrete(labels=c("Book: Racial Inequity","Inclusive Teaching","Transracial Adoption","LGBTQ Colleagues","First Gen Colleagues","DEI Ambassador","Student with Disabilities","Podcast: Antiracist"))+  #scale_x_continuous(labels = scales::percent)+
   geom_text(aes(label=percent(prt,digits = 0)),size=3,vjust=0.5,hjust=0.7,fontface="bold",position = position_dodge(0.9))+
   #geom_text(aes(label=if_else(prt>.8, as.character(round(prt,2)),"")),hjust=1.5,size=3,fontface="bold",position = position_dodge(0.9))+geom_text(aes(label=if_else(prt<.8, as.character(round(prt,2)),"")),hjust=1.5,
-    labs(title="BAM 2022",x="",y="")+theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom/top")
+    labs(title="Engagement in BAM Activities in Spring 2022",x="",y="")+theme_lz()+theme(axis.text.y = element_text(),legend.position = "bottom/top")
 ```
 
 ```{r report_act, include = TRUE}
 gridExtra::grid.arrange(plot.act21,plot.act22, nrow=1, widths=c(1,1))
 ```
 
-## Participation
+```{r qual_activity}
+#ACTIVITY
+#2session
+#suggest discussion of diversity of socioeconomic class within white group
+#teaching how to deal with people with different views
+#models of inclusive class design and examples of teaching DEI topics in class
 
-```{r plot.acttime}
-plot.acttime<-bam%>%#check: count(act_time)
-  filter(!is.na(act_time),act_time!="uncertain",act_time!="100")%>%
-  mutate(act_time=as.numeric(act_time))%>%#chekc:%>%count(act_time)
- # count(act_time)%>%mutate(prt=n/sum(n))%>%
-ggplot(aes(y = act_time, x=factor(0))) + geom_boxplot(fill="#69b3e7") +
-  #scale_y_continuous(limits = c(0,40), breaks=(seq(0, 40, 5)) )+
-  geom_text(aes(label=ifelse(act_time%in%c(0,5,10,12,20,36),act_time,"")),size=3)+
-  labs(title="",x="Participation Time  \n(Hours over academic year)",y="")+
-  theme_lz()#+theme(axis.text.y = element_text())
+#1oppo
+#variety of opportunities presented (books, podcast, speaker series, etc.)
 ```
 
-```{r report_act_future}
-plot.actfuture<-bam%>%filter(!is.na(act_future))%>%
-  mutate(act_future=factor(act_future, levels=c("Very Unlikely","Likely","Very Likely")))%>%
-  group_by(act_future)%>%summarise(cnt=n())%>%mutate(prt=round(cnt/sum(cnt)*100,digits = 0))%>%
-ggplot(aes(x=2, y = prt, fill=act_future)) + geom_bar(stat="identity") +
-  xlim(0.5, 2.5)+ coord_polar(theta="y",start=0)+ #circled coord, pie centered on 2; show .5-2.5 of pie (0-.5 hole)
+Most of BAM activities received around **15%** of respondents'
+participation. The E-documentary on student experiences and podcast on
+seeing white in Fall 2021 received the most participation, with 20% of
+respondents engaged in them. Engagement in BAM activities seem to
+decrease from Fall 2021 to Spring 2022. Several BAM sessions in Spring
+2022 (Book on racial inequity, Inclusive teaching, and Transracial
+adoption) received less than 10% of respondents' participation.
 
-  #geom_text(aes(label=paste0(prt,"%")), size=3,vjust=-2,hjust=3,fontface="bold",position = position_dodge(1))+
-  annotate("text",x = 0.5, y = 0.5, fontface="bold", label = str_wrap( "90% Future Participation", width=10))+
-  annotate("text",x = 0.5, y = 0.5,vjust=-8,hjust=1.5, fontface="bold", label = str_wrap( "10%", width=10))+
-  annotate("text",x = 0.5, y = 0.75,vjust=0.4,hjust=3.5, fontface="bold", label = str_wrap( "37%", width=10))+
-  annotate("text",x = 0.5, y = 0.75,vjust=0,hjust=-2.5, fontface="bold", label = str_wrap( "53%", width=10))+
-  #0.5 is centered location+
-  #annotate("text",x = 0, y = 0.5, fontface="bold", label = ifelse(status=="Complete",as.character(cnt),""))+#0.5 is centered location+
-  scale_fill_manual(values = c("grey",color_blue_lasell,"#69b3e7"),
-                    guide=guide_legend(reverse = TRUE))+
-  theme_lz()+theme(legend.position = "bottom")+
-  labs(title="",x="",y="",fill="",subtitle = "")
-```
+From respondents' comments, we found that participants liked the variety
+of **topics and formats** of presentations. Meanwhile, respondents hoped
+to see more topics covered in the BAM events. A respondent suggested to
+expand the race-centered diversity discussion to also include
+**socioeconomic classes**, such as how diversity also exist within the
+White ethnic group. Another respondent proposed BAM events around how to
+properly deal with people with **different views**. A respondent also
+requested a BAM session focusing on **practical examples and models** of
+teaching DEI topics in class.
 
-```{r report_participate, include = TRUE}
-gridExtra::grid.arrange(plot.acttime,plot.actfuture, nrow=1, widths=c(1,1))
-```
-
-## Benefits
+# BAM Activities Benefits
 
 ```{r plot.impved}
 plot.impved<-bam.long%>%#check: count(impved)
@@ -384,3 +388,125 @@ plot.willimpv<-bam.long%>%#check:count(willimpv_value)
 ```{r report_impv, include = TRUE}
 gridExtra::grid.arrange(plot.impved,plot.willimpv, nrow=1, widths=c(1,1))
 ```
+
+Respondents overall believe attending BAM activities are **beneficial**.
+97% of respondents believe BAM program could improve experiences of
+minority students and everyone, generate shared responsibility and
+storytelling about DEI, facilitate collaborations and conversations
+across units. Over 90% respondents felt they are better able to
+recognize and talk about inequity, and engage with minority students and
+collagues. 84% of respondents felt they can impact change on campus. 86%
+of respondents believe BAM program could extend life-long learning.
+
+```{r qualbenefits}
+bam.qual<-bam%>%select(starts_with("qual_"))
+lapply(bam.qual, unique)
+#BENEFITS
+#Listen and don't make assumptions; Read to avoid offensive; conscientious of my word choice when communicating with students; understand possibilities of different reactions to words (7)
+#interact with students to learn from their experiences; understand how feeling can affect learning (3)
+
+#reinforced the importance and understanding of DEI
+#expanding ambassadors to support more marginalized students
+```
+
+In the qualitative comments, many participants further indicated their
+growth in becoming more conscience of assumptions and **word choices**.
+Respondents reflected that they are more capable of understanding
+reactions to words and how **feeling** can influence one's cognitive
+learning. A few participants also mentioned that they are more
+comfortable discussing **DEI in classroom** and are more willing to
+learn from student experiences. A participant also appreciated that the
+BAM program helped reinforce the importance and understanding of DEI in
+their department and in general.
+
+# Future Participation
+
+```{r plot.acttime}
+plot.acttime<-bam%>%#check: count(act_time)
+  filter(!is.na(act_time),act_time!="uncertain",act_time!="100")%>%
+  mutate(act_time=as.numeric(act_time))%>%#chekc:%>%count(act_time)
+ # count(act_time)%>%mutate(prt=n/sum(n))%>%
+ggplot(aes(y = act_time, x=factor(0))) + geom_boxplot(fill="#69b3e7") +
+  #scale_y_continuous(limits = c(0,40), breaks=(seq(0, 40, 5)) )+
+  geom_text(aes(label=ifelse(act_time%in%c(0,5,10,12,20,36),act_time,"")),size=3)+
+  labs(title="",x="Participation Time  \n(Hours over academic year)",y="")+
+  theme_lz()#+theme(axis.text.y = element_text())
+```
+
+```{r report_act_future}
+plot.actfuture<-bam%>%filter(!is.na(act_future))%>%
+  mutate(act_future=factor(act_future, levels=c("Very Unlikely","Likely","Very Likely")))%>%
+  group_by(act_future)%>%summarise(cnt=n())%>%mutate(prt=round(cnt/sum(cnt)*100,digits = 0))%>%
+ggplot(aes(x=2, y = prt, fill=act_future)) + geom_bar(stat="identity") +
+  xlim(0.5, 2.5)+ coord_polar(theta="y",start=0)+ #circled coord, pie centered on 2; show .5-2.5 of pie (0-.5 hole)
+
+  #geom_text(aes(label=paste0(prt,"%")), size=3,vjust=-2,hjust=3,fontface="bold",position = position_dodge(1))+
+  annotate("text",x = 0.5, y = 0.5, fontface="bold", label = str_wrap( "Future Participation", width=10))+
+  annotate("text",x = 0.5, y = 0.5,vjust=-8,hjust=1.5, fontface="bold", label = str_wrap( "10%", width=10))+
+  annotate("text",x = 0.5, y = 0.75,vjust=0.4,hjust=3.5, fontface="bold", label = str_wrap( "37%", width=10))+
+  annotate("text",x = 0.5, y = 0.75,vjust=0,hjust=-2.5, fontface="bold", label = str_wrap( "53%", width=10))+
+  #0.5 is centered location+
+  #annotate("text",x = 0, y = 0.5, fontface="bold", label = ifelse(status=="Complete",as.character(cnt),""))+#0.5 is centered location+
+  scale_fill_manual(values = c("grey",color_blue_lasell,"#69b3e7"),
+                    guide=guide_legend(reverse = TRUE))+
+  theme_lz()+theme(legend.position = "bottom")+
+  labs(title="",x="",y="",fill="",subtitle = "")
+```
+
+```{r report_participate, include = TRUE}
+gridExtra::grid.arrange(plot.acttime,plot.actfuture, nrow=1, widths=c(1,1))
+```
+
+Most respondents spent **10 hours** (over the academic year) on all the
+BAM events. The maximum time spent is 36 hours. There are **90%** of
+respondents indicated they are likely or very likely to participate in
+future BAM events.
+
+```{r qual_participate}
+#PARTICIPATION 
+#1timing of events
+#When events consistently happen at the same time, it's hard for those with recurring meetings to attend.
+#We need flexibility and session that are complete on your own time along with those that are done in real time. I would be more likely to complete something in my \"free\" time in my office rather than going to a session in person.
+
+#2communication
+#communication from our BAM ambassador regarding available programming (2)
+#having reminders about events and opportunities
+#see the whole calendar in January so that I can think about it overall
+#outreach and advertise in different gatherings (e.g. faculty meeting, welcome back gathering, etc.)
+```
+
+From comments, a respondent indicated inconvenience of scheduling each
+BAM events at the same time. The respondent suggested that different BAM
+events could happen at **different times** and days of the week, which
+may increase the possibilities of more people to be able to attend. The
+respondent also requested BAM events to have both in-person and **online
+recorded** versions, so that people can complete BAM program with more
+flexibility. Additionally, a respondent recommended that a BAM **event
+calendar** could be helpful for participants to plan overall.
+
+To increase BAM events participation, a respondent suggested that BAM
+events can be promoted more strategically, such as **advertising** BAM
+events at different gatherings and meetings like the faculty meetings
+and welcome back gathering. A few respondents also indicated that they
+hope to receive **more reminders** of the BAM events, and **more
+reach-out** from BAM ambassadors regarding DEI opportunities.
+
+# Summary
+
+-   Respondents appreciated the variety of **topics and formats** of BAM
+    events. A few more BAM event **topics t**hat respondents requested
+    include: multi-faceted diversity beyond race (i.e. socio-economic
+    classes), deal with different views, teaching DEI topics.
+
+-   Over 97% of respondents perceived BAM program as **beneficial.** The
+    benefits are concentrated on improved inclusive communication
+    skills, openness to learn from student experiences, and
+    understandings of how students' feeling can affect learning.
+
+-   Engagement of BAM activities in Fall 2021 and Spring 2022 range from
+    5% to 20% from survey respondents. To **increase participation**,
+    respondents suggested that BAM events could happen at varied time
+    with online recordings available. The BAM program may have a event
+    calendar, which can be promoted early in the semester at different
+    meetings. Respondents also requested more reminders of BAM events
+    and communications about other relevant opportunities.

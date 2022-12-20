@@ -92,7 +92,7 @@ respondents are female, 35% of respondents are male, and 3% are
 Most of BAM activities received around **15%** of respondents'
 participation. The E-documentary on student experiences and podcast on
 seeing white in Fall 2021 received the most participation, with 20% of
-respondents engaged in them. Engagement in BAM activities seem to
+respondents engaged in each. Engagement in BAM activities seemed to
 decrease from Fall 2021 to Spring 2022. Several BAM sessions in Spring
 2022 (Book on racial inequity, Inclusive teaching, and Transracial
 adoption) received less than 10% of respondents' participation.
@@ -122,13 +122,14 @@ teaching DEI topics in class.
 
 
 Respondents overall believe attending BAM activities are **beneficial**.
-97% of respondents believe BAM program could improve experiences of
+97% of respondents believe BAM programming could improve experiences of
 minority students and everyone, generate shared responsibility and
-storytelling about DEI, facilitate collaborations and conversations
-across units. Over 90% respondents felt they are better able to
-recognize and talk about inequity, and engage with minority students and
-collagues. 84% of respondents felt they can impact change on campus. 86%
-of respondents believe BAM program could extend life-long learning.
+storytelling about DEI, as well as facilitate collaborations and
+conversations across units. Over 90% of respondents felt they are better
+able to recognize and talk about inequity, and engage with minority
+students and collagues. 84% of respondents felt they can impact change
+on campus. Only 86% of respondents believe BAM programming could extend
+life-long learning.
 
 
 
@@ -139,7 +140,7 @@ growth in becoming more conscience of assumptions and **word choices**.
 Respondents reflected that they are more capable of understanding
 reactions to words and how **feeling** can influence one's cognitive
 learning. A few participants also mentioned that they are more
-comfortable discussing **DEI in classroom** and are more willing to
+comfortable discussing **DEI in the classroom** and are more willing to
 learn from student experiences. A participant also appreciated that the
 BAM program helped reinforce the importance and understanding of DEI in
 their department and in general.
@@ -158,10 +159,10 @@ their department and in general.
 :::
 
 
-Most respondents spent **10 hours** (over the academic year) on all the
-BAM events. The maximum time spent is 36 hours. There are **90%** of
-respondents indicated they are likely or very likely to participate in
-future BAM events.
+Most respondents spent **10 hours** or more (over the academic year) on
+all the BAM events. The maximum time spent is 36 hours. There are
+**90%** of respondents indicated they are likely or very likely to
+participate in future BAM events.
 
 
 
@@ -172,7 +173,7 @@ BAM events at the same time. The respondent suggested that different BAM
 events could happen at **different times** and days of the week, which
 may increase the possibilities of more people to be able to attend. The
 respondent also requested BAM events to have both in-person and **online
-recorded** versions, so that people can complete BAM program with more
+recorded** versions, so that people can complete BAM programs with more
 flexibility. Additionally, a respondent recommended that a BAM **event
 calendar** could be helpful for participants to plan overall.
 
@@ -188,12 +189,12 @@ reach-out** from BAM ambassadors regarding DEI opportunities.
 -   Respondents appreciated the variety of **topics and formats** of BAM
     events. A few more BAM event **topics t**hat respondents requested
     include: multi-faceted diversity beyond race (i.e. socio-economic
-    classes), deal with different views, teaching DEI topics.
+    classes), dealing with different views, and teaching DEI topics.
 
 -   Over 97% of respondents perceived BAM program as **beneficial.** The
     benefits are concentrated on improved inclusive communication
     skills, openness to learn from student experiences, and
-    understandings of how students' feeling can affect learning.
+    understanding of how students' feelings can affect learning.
 
 -   Engagement of BAM activities in Fall 2021 and Spring 2022 range from
     5% to 20% from survey respondents. To **increase participation**,

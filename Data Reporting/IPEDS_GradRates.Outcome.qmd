@@ -73,26 +73,31 @@ coh16%>%filter(`Grad Year`==5)%>%#check: count(`Grad Year`)
 ## still enroll
 
 ```{r loadenroll22spring}
-enroll22spring<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Spring/UG/Spring 2022 UG Backup Data.xlsx")
 enroll22fall<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Fall/Fall 2022 UG Backup Data Report.xlsx")
+enroll22spring<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Spring/UG/Spring 2022 UG Backup Data.xlsx")
+```
+
+```{r stillenrollcol}
+#if enrolled in 22fall
+coh16<-coh16%>%mutate(
+  stillenroll22fall=if_else(
+  coh16$PC_ID %in% enroll22fall$`People Code Id`,"Yes","No"),
+#if enrolled in 22spring
+  stillenroll22spring=if_else(
+  coh16$PC_ID %in% enroll22spring$`People Code Id`,"Yes","No"))
 ```
 
 ```{r col51 stillenrolled}
-#22fall
-coh16<-coh16%>%mutate(stillenroll22fall=if_else(
-  coh16$PC_ID %in% enroll22fall$`People Code Id`,"Yes","No"))
-#number of still enrolled
-coh16%>%count(stillenroll22fall)#zero still enroll in 2022 spring
+#still enrolled are those who are "not graduated" and enrolled in 2022 fall or spring
 
-#22spring
-coh16<-coh16%>%mutate(stillenroll22spring=if_else(
-  coh16$PC_ID %in% enroll22spring$`People Code Id`,"Yes","No"))
 #number of still enrolled
-coh16%>%count(stillenroll22spring)#two still enroll in 2022 spring
-
-#report gender and eth
-coh16%>%filter(stillenroll22spring=="Yes")%>%count(GENDER_CODE,ETHNICITY_REPORT_DESC)
+coh16%>%filter(is.na(Graduated))%>%#"not graduated"!!
+  filter(stillenroll22fall=="Yes" |  #enrolled in fall
+        stillenroll22spring=="Yes")%>% #enrolled in spring
+count(GENDER_CODE,ETHNICITY_REPORT_DESC)#report their gender and ethnicity
 ```
+
+## transfer out
 
 ## grant
 

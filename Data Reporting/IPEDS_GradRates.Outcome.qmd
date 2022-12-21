@@ -74,17 +74,14 @@ coh16%>%filter(`Grad Year`==5)%>%#check: count(`Grad Year`)
 
 ```{r loadenroll22spring}
 enroll22fall<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Fall/Fall 2022 UG Backup Data Report.xlsx")
-enroll22spring<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Spring/UG/Spring 2022 UG Backup Data.xlsx")
+#enroll22spring<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Spring/UG/Spring 2022 UG Backup Data.xlsx")
 ```
 
 ```{r stillenrollcol}
 #if enrolled in 22fall
 coh16<-coh16%>%mutate(
   stillenroll22fall=if_else(
-  coh16$PC_ID %in% enroll22fall$`People Code Id`,"Yes","No"),
-#if enrolled in 22spring
-  stillenroll22spring=if_else(
-  coh16$PC_ID %in% enroll22spring$`People Code Id`,"Yes","No"))
+  coh16$PC_ID %in% enroll22fall$`People Code Id`,"Yes","No"))
 ```
 
 ```{r col51 stillenrolled}
@@ -92,12 +89,15 @@ coh16<-coh16%>%mutate(
 
 #number of still enrolled
 coh16%>%filter(is.na(Graduated))%>%#"not graduated"!!
-  filter(stillenroll22fall=="Yes" |  #enrolled in fall
-        stillenroll22spring=="Yes")%>% #enrolled in spring
+  filter(stillenroll22fall=="Yes")%>% #enrolled in fall
 count(GENDER_CODE,ETHNICITY_REPORT_DESC)#report their gender and ethnicity
 ```
 
 ## transfer out
+
+```{r}
+#waiting for clearinghouse data for transfer out
+```
 
 ## grant
 
@@ -175,11 +175,6 @@ coh14%>%filter(`Grad Year`<=8,`Grad Year`>6)%>%nrow()
 ```
 
 ```{r stillenroll}
-#22spring
-coh14%>%mutate(stillenroll22spring=if_else(
-  coh14$PC_ID%in%enroll22spring$`People Code Id`,"Yes","No"
-))%>%count(stillenroll22spring)#zero still enroll in 2022 spring
-
 #22fall
 coh14%>%mutate(stillenroll22fall=if_else(
   coh14$PC_ID %in% enroll22fall$`People Code Id`,
@@ -189,9 +184,29 @@ coh14%>%mutate(stillenroll22fall=if_else(
 
 # Outcome Measure: new/fy student in 14fall &15spring
 
-```{r}
+```{r note outcomemeasure}
+#note: report a full year cohort
+##since it report 4,6,8 yr completion, the cohort we focus on would be 2014 cohort (to be able to report the latest 8yr completion)
+#if a student completed muti-degree, select the highest to report (bachelor>associate>certificate)
+
+
+```
+
+```{r report_items outcomemeasure}
+#pell vs non-pell receipients
 #First-time, full-time entering (FTFT):14 cohort + 15SPRING newFTnon-transfer students
-#First-time, part-time entering (FTPT): from 14Fall& 15SPRING backup without a cohort ID
-#Non-first-time, full-time entering (NFTFT) :from  14Fall& 15SPRING backup without a cohort ID
-#Non-first-time, part-time entering (NFTPT):from 14Fall& 15SPRING backup without a cohort ID
+#First-time, part-time entering (FTPT): from 14Fall& 15SPRING backup without a cohort ID but still degree seeking; nontransfer part time
+#Non-first-time, full-time entering (NFTFT) :from  14Fall& 15SPRING backup without a cohort ID but still degree seeking; transfer full time
+#Non-first-time, part-time entering (NFTPT):from 14Fall& 15SPRING backup without a cohort ID but still degree seeking; transfer part time
+```
+
+```{r}
+#full year degree seeking students inlcude:
+#filter 2014 (fall) cohort in retention file
+ret%>%filter(Cohort==2014)%>%
+  select(GENDER_CODE,ETHNICITY_REPORT_DESC,Cohort,SSN,PC_ID,`First Name`,`Last Name`)
+
+#filter degree seeking in 2015 spring backup data
+enroll15spring<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2015 Spring/UG/UGSpringFinal2015BackUpDataReport.xlsx",skip = 3)
+enroll15spring%>%count(Degree,Curriculum)%>%View()
 ```

@@ -12,20 +12,61 @@ source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
 ret<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Retention/2022-2023/Interactive UG Retention Analysis.xlsx",sheet = "Data")
 
 #cohort here means: first time/non-transfer, first year/new, full time fall enrolled students 
+
+#for convinience of reporting
+#check: ret%>%count(ETHNICITY_REPORT_DESC)
+ret<-ret%>%mutate(
+  ETHNICITY_REPORT_DESC=if_else(ETHNICITY_REPORT_DESC=="Two or More Races","Two or more Races",ETHNICITY_REPORT_DESC),
+  ETHNICITY_REPORT_DESC=factor(ETHNICITY_REPORT_DESC,levels=c("Non Resident Alien","Hispanic","American Indian or Alaska Native","Asian","Black or African American","Native Hawaiian or Other Pacific Islander","White","Two or more Races","Race and Ethnicity Unknown")),
+  GENDER_CODE=if_else(GENDER_CODE=="F","Women","Men"))#check: %>%count(ETHNICITY_REPORT_DESC)
 ```
 
 # Graduate Rate: 2016 cohort
 
-```{r}
-#eth and gender of cohort 2016
-#who are bachelor
+```{r fall16cohort}
+#graduate rate IPEDS report 150% of normal time (4 year *150%=6 year) as of the current year (Aug 2022). 
+#In other words, it focuses on students whose 6 year is the current 2022 year. 
+#Then it is the 2016 cohort. (2022-6=2016)
+coh16<-ret%>%filter(Cohort==2016)
+```
 
+```{r all2016ethgen}
+#eth(ETHNICITY_REPORT_DESC) and gender (GENDER_CODE) of cohort 2016
+
+```
+
+## degree seeking
+
+```{r bachelorequal}
+#who are bachelor or equivalent(DEGREE!="NA") ##check:coh16%>%count(Degree)%>%select(Degree)%>%as.vector(); coh16%>%count(MAJOR)%>%select(MAJOR)%>%as.vector()
+
+
+```
+
+```{r bachelorequal.completion_ethgen}
+#gender and eth for bachelor or equavalents'(DEGREE!="NA") completers within 150% (2016 cohort graduated in or before 2022) (Graduated=="Y")
+
+```
+
+```{r bachelor.completion_ethgen}
+#bachelor degree's completion in 4 or 5 years
+```
+
+```{r bachelorequal.completion_finaid}
+#pell vs other loan
+```
+
+```{r}
+# we do not have any bachelor equivalent or any other degree that is not bachelor degree
 ```
 
 # Graduate Rate 200: 2014 cohort
 
-```{r}
-
+```{r fall14cohort}
+#graduate rate 200 IPEDS report 151-200% of normal time (>6 year and <=8 year) as of the current year (Aug 2022). 
+#In other words, it focuses on students whose 8th year is the current 2022 year and report their 6-8 year completion. 
+#Then it is the 2014 cohort. (2022-8=2014)
+coh14<-ret%>%filter(Cohort==2014)
 ```
 
 # Outcome Measure: new/fy student in 14fall &15spring

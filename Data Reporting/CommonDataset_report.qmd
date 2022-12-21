@@ -36,7 +36,7 @@ secsize%>%filter(type%in%c("lab","recitation"))%>%
 # compared to raw(cleaned data): results are the same
 ```
 
-# CDS-F Fall Enrollment: UG state, res/com, age 
+# CDS-F Fall Enrollment: UG state, res/com, age
 
 ```{r load_fallenroll}
 #degsk<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Fall 2022 UG Backup Data Report_cleanCDS-F.xlsx")

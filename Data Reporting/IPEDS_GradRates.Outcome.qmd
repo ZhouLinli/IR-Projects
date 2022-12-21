@@ -30,34 +30,115 @@ ret<-ret%>%mutate(
 coh16<-ret%>%filter(Cohort==2016)
 ```
 
-```{r all2016ethgen}
-#eth(ETHNICITY_REPORT_DESC) and gender (GENDER_CODE) of cohort 2016
-
-```
-
-## degree seeking
-
-```{r bachelorequal}
-#who are bachelor or equivalent(DEGREE!="NA") ##check:coh16%>%count(Degree)%>%select(Degree)%>%as.vector(); coh16%>%count(MAJOR)%>%select(MAJOR)%>%as.vector()
+```{r col01 confirm all2016ethgen}
+#eth(ETHNICITY_REPORT_DESC) and gender (GENDER_CODE) of cohort 2016 #check: 
+coh16%>%count(GENDER_CODE,ETHNICITY_REPORT_DESC)%>%pivot_wider(names_from=GENDER_CODE,values_from=n)
 
 
 ```
 
-```{r bachelorequal.completion_ethgen}
-#gender and eth for bachelor or equavalents'(DEGREE!="NA") completers within 150% (2016 cohort graduated in or before 2022) (Graduated=="Y")
+```{r col02 bachelorequal}
+#all 2016 cohort students are seeking a bachelor degree, no associate degree/UGcertificate awarded
+#so bachelor or equivalent degree seeking subcohort are the default/equal to previous col01 
+```
+
+```{r genderunknown}
+coh16%>%count(GENDER_CODE)#none gender unknown
+```
+
+## completion
+
+```{r col18 sixyr}
+#col 11 and 12 are for students other than a bachelor degree -- none of students
+# so report all 0s in col11 and 12
+
+#col 18: bachelor degree students (all 2016 cohort students), who complete within 6 years (150% completers)
+coh16%>%filter(`Grad Year`<=6)%>%#check: count(`Grad Year`)
+  group_by(GENDER_CODE,ETHNICITY_REPORT_DESC,.drop=FALSE)%>%summarise(n=n())%>%
+  pivot_wider(names_from=GENDER_CODE,values_from=n)
+```
+
+```{r col19.20 four.fiveyr}
+#bachelor degree's completion in 4 years
+coh16%>%filter(`Grad Year`<=4)%>%#check: count(`Grad Year`)
+  group_by(GENDER_CODE,ETHNICITY_REPORT_DESC,.drop=FALSE)%>%summarise(n=n())%>%
+  pivot_wider(names_from=GENDER_CODE,values_from=n)
+
+#bachelor degree's completion in EXACTLY 5 years
+coh16%>%filter(`Grad Year`==5)%>%#check: count(`Grad Year`)
+  group_by(GENDER_CODE,ETHNICITY_REPORT_DESC,.drop=FALSE)%>%summarise(n=n())%>%
+  pivot_wider(names_from=GENDER_CODE,values_from=n)
+```
+
+```{r col51 stillenrolled}
+#check: coh16%>%count(Graduated)
+coh16%>%filter(is.na(Graduated))%>%# not graduated yet
+  group_by(GENDER_CODE,ETHNICITY_REPORT_DESC,.drop=FALSE)%>%summarise(n=n())%>%
+  pivot_wider(names_from=GENDER_CODE,values_from=n)
+
+#then col10=col29+col51
+```
+
+## grant
+
+```{r loadfin16}
+# finaid 2016 file contains: all students ENROLLED in 2016 fall, and thus include all students entered in 2016 fall (i.e. the 2016 cohort); ONLY students who received a finaid grant/load will be included in this file
+fin16<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/Fall 2016 freeze file.xlsx")
+#check: 
+#check no duplication: fin16%>%count(`Student Ssn`)%>%count(n)
+
+##find relevant vars
+fin16_aidcols<-fin16%>%select(`Student Ssn`,`Pell Award Calc`,`Sub awarded`)%>%
+  mutate(pell=if_else(`Pell Award Calc`>0,"receive","not receive"),
+         stafford=if_else(is.na(`Sub awarded`),"not receive",
+                    if_else(`Sub awarded`>0,"receive","not receive")))
+#check:fin16_aidcols%>%count(stafford,`Sub awarded`)
+
 
 ```
 
-```{r bachelor.completion_ethgen}
-#bachelor degree's completion in 4 or 5 years
+```{r coh16_fin}
+#add finvars to coh16
+coh16_fin<-left_join(coh16,fin16_aidcols,by=c("SSN"="Student Ssn"))# the same file is here /Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Common Data Set/2022-2023/datafiles/Fall 2016 freeze file.cleanCDS-B4.xlsx
+
+#check: coh16_fin%>%count(pell); coh16_fin%>%count(stafford)
+
+#if a student is not found in the fin16_aidcols, that means they do not receive any finaid
+#so need to convert any NA in pell and stafford to "not receive"
+coh16_fin<-coh16_fin%>%mutate(pell=if_else(is.na(pell),"not receive",pell),
+                              stafford=if_else(is.na(stafford),"not receive",stafford))
+
+
 ```
 
-```{r bachelorequal.completion_finaid}
-#pell vs other loan
+```{r stafford_exclusive}
+#a student may both receive pell and stafford -- while IPEDS need to report stafford that DID NOT receive a pell
+coh16_fin<-coh16_fin%>%mutate(stafford_exclusive=
+            if_else(pell=="not receive"&stafford=="receive",
+                    "yes (stafford exclusive)",
+                    "no"))# (at least one of the following: not receive stafford, receive pell"))
+
+#check: coh16_fin%>%count(pell); coh16_fin%>%count(stafford_exclusive)
 ```
 
-```{r}
-# we do not have any bachelor equivalent or any other degree that is not bachelor degree
+```{r savecoh16_fin}
+wb<-createWorkbook()
+
+addWorksheet(wb,"cohort16fin")
+writeData(wb,"cohort16fin", x = coh16_fin)
+
+saveWorkbook(wb,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Graduation Rates/cohort2016withfinaid.xlsx",overwrite = TRUE)
+```
+
+```{r report_grant_allcoh16}
+coh16_fin%>%count(pell,stafford_exclusive)#report pell receive and staffd_exclusive yes
+#easier than coh16_fin%>%count(pell,stafford)
+```
+
+```{r grant_6yrcompleter}
+#col18 and 29 are the same since we do not have completers who seek non-bachelor degree
+coh16_fin%>%filter(`Grad Year`<=6)%>%
+  count(pell,stafford_exclusive)
 ```
 
 # Graduate Rate 200: 2014 cohort
@@ -67,6 +148,15 @@ coh16<-ret%>%filter(Cohort==2016)
 #In other words, it focuses on students whose 8th year is the current 2022 year and report their 6-8 year completion. 
 #Then it is the 2014 cohort. (2022-8=2014)
 coh14<-ret%>%filter(Cohort==2014)
+```
+
+```{r numberofstu6-8yr}
+coh14%>%filter(`Grad Year`<=8,`Grad Year`>6)%>%nrow()
+```
+
+```{r stillenroll}
+#check: coh14%>%count(Graduated)
+coh14%>%filter(is.na(Graduated))%>%nrow()
 ```
 
 # Outcome Measure: new/fy student in 14fall &15spring

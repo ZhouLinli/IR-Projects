@@ -184,27 +184,41 @@ coh14%>%mutate(stillenroll22fall=if_else(
 
 # Outcome Measure: new/fy student in 14fall &15spring
 
-```{r note outcomemeasure}
+```{r note focus on 2014cohort}
 #note: report a full year cohort
 ##since it report 4,6,8 yr completion, the cohort we focus on would be 2014 cohort (to be able to report the latest 8yr completion)
 #if a student completed muti-degree, select the highest to report (bachelor>associate>certificate)
-
-
 ```
 
 ```{r report_items outcomemeasure}
 #pell vs non-pell receipients
-#First-time, full-time entering (FTFT):14 cohort + 15SPRING newFTnon-transfer students
-#First-time, part-time entering (FTPT): from 14Fall& 15SPRING backup without a cohort ID but still degree seeking; nontransfer part time
-#Non-first-time, full-time entering (NFTFT) :from  14Fall& 15SPRING backup without a cohort ID but still degree seeking; transfer full time
-#Non-first-time, part-time entering (NFTPT):from 14Fall& 15SPRING backup without a cohort ID but still degree seeking; transfer part time
+#1First-time, full-time entering (FTFT):14 cohort + 15SPRING newFTnon-transfer students
+#2First-time, part-time entering (FTPT): from 14Fall& 15SPRING backup without a cohort ID but still degree seeking; nontransfer part time
+#3Non-first-time, full-time entering (NFTFT) :from  14Fall& 15SPRING backup without a cohort ID but still degree seeking; transfer full time
+#4Non-first-time, part-time entering (NFTPT):from 14Fall& 15SPRING backup without a cohort ID but still degree seeking; transfer part time
+```
+
+```{r relevantvars_outcomemeasure}
+#so relavant vars include:
+
+#1.Degree and curriculum (exclude NON and LV students), college_attend (new/first-year-at-lasell/entering students only), transfer (determines first-time or not), FT/PT,  (2014 fall and 2015 spring backup data file )
+
+#2.pell and stafford (finaid data file for 2014 fall and 2015 spring enrolled students)
+
+#3.completion year for 2014 cohort (ReportManager- Final List of Graduates By Date Range)
+## completion <=4yr: graduated during 2014fall(December) to 2018spring(May)/summer(August) 
+## completion 4-6yr= graduated during 2018fall(December) to 2020spring(May)/summer(August)
+## completion 6-8yr= graduated during 2020fall(December) to 2022spring(May)/summer(August)) 
 ```
 
 ```{r}
 #full year degree seeking students inlcude:
-#filter 2014 (fall) cohort in retention file
+
+#degree-seeking, new students in 2014 fall and 2015 spring backup data
+
+#the 2014 fall degsknew students should match/identifical with 2014 (fall) cohort in retention file
 ret%>%filter(Cohort==2014)%>%
-  select(GENDER_CODE,ETHNICITY_REPORT_DESC,Cohort,SSN,PC_ID,`First Name`,`Last Name`)
+  select(GENDER_CODE,ETHNICITY_REPORT_DESC,Cohort,SSN,PC_ID,`First Name`,`Last Name`)#to be added: finaid
 
 #filter degree seeking in 2015 spring backup data
 enroll15spring<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2015 Spring/UG/UGSpringFinal2015BackUpDataReport.xlsx",skip = 3)

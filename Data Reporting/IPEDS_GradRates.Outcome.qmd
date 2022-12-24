@@ -230,7 +230,7 @@ enroll15spring<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Regist
 
 #keep relevant vars among degree seeking entering students
 enroll14fall.s<-enroll14fall%>%
-  filter(Degree %in% c("BA","BS"),#degree seeking students
+  filter(Degree %in% c("BA","BS"),#degree seeking students: #exclude AA (LasellVilliage students) and NON nonmatriculated students and all other number null values
          `College Attend`=="NEW")%>%#entering students
   select(`People Code Id`,Name,#basic info
          `Birth Date`,`Cohort Id`,Degree,Curriculum,`Res/Comm`,#tentative-useful var
@@ -244,7 +244,7 @@ enroll14fall.s<-enroll14fall%>%
 
 #keep relevant vars among degree seeking entering students
 enroll15spring.s<-enroll15spring%>%
-  filter(Degree %in% c("BA","BS"),#degree seeking students
+  filter(Degree %in% c("BA","BS"),#degree seeking students:#exclude AA (LasellVilliage students) and NON nonmatriculated students and all other number null values
          `College Attend`=="NEW")%>%#entering students
   select(`People Code Id`,Name,#basic info
          `Birth Date`,`Cohort Id`,Degree,Curriculum,`Res/Comm`,#tentative-useful var
@@ -252,15 +252,16 @@ enroll15spring.s<-enroll15spring%>%
 #check:enroll15spring.s%>%count(`People Code Id`)%>%count(n)  #unique rows
 ```
 
-```{r enroll14_15.degskentering}
-#check degree seeking entering students:names(enroll14fall.s);names(enroll15spring.s) # all the same
-enroll14_15<-full_join(enroll14fall.s,enroll15spring.s)#this should be anything that not in 14fall, add them!!!
+```{r enroll14_15(dgsknew.unique)}
+#if already in enroll14fall then keep it: enroll14fall.s
+#if not in enroll14fall.s, then add those from enroll15spring.s
+enroll15spring.s_new<-enroll15spring.s%>%
+  filter(! enroll15spring.s$`People Code Id` %in% enroll14fall.s$`People Code Id`)#52 new students in 15 spring that are not in 14fall
 
-#check: enroll14_15%>%count(Degree,Curriculum)%>%View()
-enroll14_15<-enroll14_15%>%filter(Degree %in% c("BA","BS")) #exclude AA (LasellVilliage students) and NON nonmatriculated students and all other number null values
-
-#check
-enroll14_15%>%count(`People Code Id`)%>%count(n)#most students are doubled: I should only keep the fall one
+#construct enroll14_15 from all in enroll14fall.s and the new students in enroll15spring.s (i.e.enroll15spring.s_new)
+#check:names(enroll14fall.s);names(enroll15spring.s_new) # all the same
+enroll14_15<-full_join(enroll14fall.s,enroll15spring.s_new)
+#check: enroll14_15%>%count(`People Code Id`)%>%count(n)#unqiue 622 students
 ```
 
 ```{r load.finaid14_15}

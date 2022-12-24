@@ -203,7 +203,7 @@ coh14%>%mutate(stillenroll22fall=if_else(
 
 #1.Degree and curriculum (exclude NON and LV students), college_attend (new/first-year-at-lasell/entering students only), transfer (determines first-time or not), FT/PT,  (2014 fall and 2015 spring backup data file )
 
-#2.pell and stafford (finaid data file for 2014 fall and 2015 spring enrolled students)
+#2.pell and stafford (finaid data file for 2014 fall and 2015 spring enrolled students: /Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/14-15 final.xlsx)
 
 #3.completion year for 2014 cohort (ReportManager- Final List of Graduates By Date Range)
 ## completion <=4yr: graduated during 2014fall(December) to 2018spring(May)/summer(August) 
@@ -211,16 +211,77 @@ coh14%>%mutate(stillenroll22fall=if_else(
 ## completion 6-8yr= graduated during 2020fall(December) to 2022spring(May)/summer(August)) 
 ```
 
-```{r}
-#full year degree seeking students inlcude:
+```{r load.enroll14fall15spring}
+#full year degree seeking students include: degree-seeking, entering/new students in 2014 fall and 2015 spring backup data
 
-#degree-seeking, new students in 2014 fall and 2015 spring backup data
+#1.Degree and curriculum (exclude NON and LV students), college_attend (new/first-year-at-lasell/entering students only), transfer (determines first-time or not), FT/PT,  (2014 fall and 2015 spring backup data file )
 
-#the 2014 fall degsknew students should match/identifical with 2014 (fall) cohort in retention file
-ret%>%filter(Cohort==2014)%>%
-  select(GENDER_CODE,ETHNICITY_REPORT_DESC,Cohort,SSN,PC_ID,`First Name`,`Last Name`)#to be added: finaid
+enroll14fall<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2014 Fall/Undergraduate/Copy of UGFall2014BackUpData REVISED 1.5.14.xls",skip = 3)
 
-#filter degree seeking in 2015 spring backup data
+#check: enroll14fall%>%count(Degree,Curriculum)%>%View()
+#enroll14fall%>%count(`College Attend`)
+#investigate NA college attend: enroll14fall%>%filter(is.na(`College Attend`))%>%select(`People Code Id`,Name,Degree,Curriculum,`Cohort Id`)#it's just the sum value rows
+
+#keep relevant vars
+enroll14fall.s<-enroll14fall%>%
+  filter(Degree %in% c("BA","BS"),#degree seeking students
+         `College Attend`=="NEW")%>%#entering students
+  select(`People Code Id`,Name,#basic info
+         `Birth Date`,`Cohort Id`,Degree,Curriculum,`Res/Comm`,#tentative-useful var
+         Gender,Ethnicity,`Transfer YN`,`FT/PT`)#ipeds report var
+#check:enroll14fall.s%>%count(`People Code Id`)%>%count(n)  #unique rows
+  
 enroll15spring<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2015 Spring/UG/UGSpringFinal2015BackUpDataReport.xlsx",skip = 3)
-enroll15spring%>%count(Degree,Curriculum)%>%View()
+
+#check: enroll15spring%>%count(Degree,Curriculum)%>%View()
+#enroll15spring%>%count(`College Attend`)
+#investigate NA college attend: enroll15spring%>%filter(is.na(`College Attend`))%>%select(`People Code Id`,Name,Degree,Curriculum,`Cohort Id`)#it's just the sum value rows
+
+#keep relevant vars
+enroll15spring.s<-enroll15spring%>%
+  filter(Degree %in% c("BA","BS"),#degree seeking students
+         `College Attend`=="NEW")%>%#entering students
+  select(`People Code Id`,Name,#basic info
+         `Birth Date`,`Cohort Id`,Degree,Curriculum,`Res/Comm`,#tentative-useful var
+         Gender,Ethnicity,`Transfer YN`,`FT/PT`)#ipeds report var
+#check:enroll15spring.s%>%count(`People Code Id`)%>%count(n)  #unique rows
+```
+
+```{r enroll14_15.degskentering}
+#check:names(enroll14fall.s);names(enroll15spring.s) # all the same
+enroll14_15<-full_join(enroll14fall.s,enroll15spring.s)#this should be anything that not in 14fall, add them!!!
+
+#check: enroll14_15%>%count(Degree,Curriculum)%>%View()
+enroll14_15<-enroll14_15%>%filter(Degree %in% c("BA","BS")) #exclude AA (LasellVilliage students) and NON nonmatriculated students and all other number null values
+
+#check
+enroll14_15%>%count(`People Code Id`)%>%count(n)#most students are doubled: I should only keep the fall one
+```
+
+```{r load.finaid14_15}
+finaid14_15<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/14-15 final.xlsx")
+finaid14_15.s<-finaid14_15%>%select(`Student Ssn`,`Stafford Paid`,`Pell Award Calc`,`Last Name`,`First Name`)
+```
+
+```{r enroll14_15.finaid}
+#find ssn for each enroll14_15 students
+#load dmt
+dmt14fall<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/Test Run of Data Mart/Fall 2014/Undergrad_Fall_2014_12312014.xlsx")
+dmt15spring<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/Test Run of Data Mart/Spring 2015/Spring 2015 02052014.xlsx")
+dmt14_15<-full_join(dmt14fall,dmt15spring)
+dmt14_15.s<-dmt14_15%>%select(SSN,PC_ID)
+#using PCID to match
+enroll14_15.dmt<-left_join(enroll14_15,dmt14_15.s,by=c("People Code Id"="PC_ID"))
+#check: enroll14_15.dmt%>%count(SSN)%>%count(n) #no NA, but most ssn appeared four times
+
+enroll14_15.fin<-left_join(enroll14_15,finaid14_15,by=c(=`Student Ssn`))
+```
+
+
+```{r}
+#transfer and FT/PT determines the four subgroups:
+#FTFT
+#FTPT
+#NFTFT
+#NFTPT
 ```

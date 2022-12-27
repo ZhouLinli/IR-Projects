@@ -7,7 +7,7 @@ format:
     smaller: true
     scrollable: true
     incremental: true
-    theme: sky
+    theme: blood
     chalkboard: 
       theme: whiteboard
       boardmarker-width: 5

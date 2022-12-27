@@ -7,14 +7,14 @@ format:
     smaller: true
     scrollable: true
     incremental: true
-    theme: blood
+    theme: default
     chalkboard: 
       theme: whiteboard
       boardmarker-width: 5
 editor: visual
 ---
 
-```{r}
+```{r yaml notes}
 #globally making all lines in all slides appear increamentally
 #format: 
 #  revealjs:
@@ -23,34 +23,47 @@ editor: visual
 #    scrollable: true #long bullet point can scroll down
 ```
 
-# One slide of Title
+# The Elements of Statistical Learning: Data Mining, Inference, and Prediction
 
-## A slide's title {auto-animate=true}
-
-::: {.r-fit-text}
-- Big Text
+::: {.column-margin}
+____
+Hastie, Trevor, et al. The elements of statistical learning: data mining, inference, and prediction. Vol. 2. New York: springer, 2009.
 :::
 
-## sth more {auto-animate=true}
+##  The Elements of Statistical Learning {auto-animate=true}
+- Supervised learning: predicts an outcome based on some input measures
+    - Linear Methods: Regularization & Smoothing, Additive Trees
+- Unsupervised learning: associates or clusters unlabeled input measures
+  - random forests, neural networks, ensemble learning, and graphical models
 
-- Big Text
-
+##  The Elements of Statistical Learning {auto-animate=true}
 ::: {.fragment .highlight-blue}
-- and sth more
+- Supervised Learning: classification and regression
+:::
+
+::: {.fragment .highlight-current-blue}
+- Unsupervised Learning: cluster (auto-classify) and association (similarity)
 :::
 
 
+# Regression Modeling Strategies
 
-
-::: {.notes}
-self notes here: 
+::: {.column-margin}
+____
+Frank, E. H. (2015). Regression modeling strategies with applications to linear models, logistic and ordinal regression, and survival analysis.
 :::
 
-::: aside
-See more at...
-:::
+##  With Applications to Linear Models, Logistic and Ordinal Regression, and Survival Analysis {auto-animate=true}
 
-## Slide Title {visibility="hidden"}
+
+
+
+
+
+
+
+
+# Hidden slides {visibility="hidden"}
 
 ```{r image}
 #![](image1.png){.r-stretch}
@@ -72,6 +85,18 @@ See more at...
 #:::
 
 #::::
+```
+
+```{r making-notes}
+#::: {.notes}
+#self notes here: 
+#:::
+
+#::: aside
+#See more at...
+#:::
+
+#some text ^[A footnote]
 ```
 
 

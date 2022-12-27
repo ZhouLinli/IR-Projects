@@ -269,8 +269,12 @@ finaid14_15<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid S
 finaid14_15.s<-finaid14_15%>%select(`Student Ssn`,`Stafford Paid`,`Pell Award Calc`,`Last Name`,`First Name`)
 ```
 
-```{r enroll14_15.finaid}
-#find ssn for each enroll14_15 students
+```{r enroll14_15.ssn}
+#finaid cols ready to be mutated into enroll14_15
+#however, we need to find the matching-var which is ssn
+
+#then, let's find/mutate ssn for each enroll14_15 students
+
 #load dmt
 dmt14fall<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/Test Run of Data Mart/Fall 2014/Undergrad_Fall_2014_12312014.xlsx")
 dmt15spring<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/Test Run of Data Mart/Spring 2015/Spring 2015 02052014.xlsx")
@@ -279,7 +283,10 @@ dmt14_15.s<-dmt14_15%>%select(SSN,PC_ID)
 #using PCID to match
 enroll14_15.dmt<-left_join(enroll14_15,dmt14_15.s,by=c("People Code Id"="PC_ID"))
 #check: enroll14_15.dmt%>%count(SSN)%>%count(n) #no NA, but most ssn appeared four times
+```
 
+
+```{r enroll14_15.finaid}
 enroll14_15.fin<-left_join(enroll14_15,finaid14_15,by=c(=`Student Ssn`))
 ```
 

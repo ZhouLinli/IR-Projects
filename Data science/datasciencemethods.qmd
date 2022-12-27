@@ -1,0 +1,77 @@
+---
+title: "Data Science Methods"
+subtitle: "Theory and Application"
+author: Linli
+format: 
+  revealjs:
+    smaller: true
+    scrollable: true
+    incremental: true
+    theme: sky
+    chalkboard: 
+      theme: whiteboard
+      boardmarker-width: 5
+editor: visual
+---
+
+```{r}
+#globally making all lines in all slides appear increamentally
+#format: 
+#  revealjs:
+#    incremental: true #bullet point appear one by one
+#    smaller: true #slide title is smaller
+#    scrollable: true #long bullet point can scroll down
+```
+
+# One slide of Title
+
+## A slide's title {auto-animate=true}
+
+::: {.r-fit-text}
+- Big Text
+:::
+
+## sth more {auto-animate=true}
+
+- Big Text
+
+::: {.fragment .highlight-blue}
+- and sth more
+:::
+
+
+
+
+::: {.notes}
+self notes here: 
+:::
+
+::: aside
+See more at...
+:::
+
+## Slide Title {visibility="hidden"}
+
+```{r image}
+#![](image1.png){.r-stretch}
+
+#![](image2.png){.absolute top=50 right=50 width="450" height="250"}
+
+#![](image3.png){.absolute bottom=0 right=50 width="300" height="300"}
+```
+
+```{r sidebysidecols}
+#:::: {.columns}
+
+#::: {.column width="50%"}
+#- First Left column
+#:::
+
+#::: {.column width="50%"}
+#- Big Text
+#:::
+
+#::::
+```
+
+

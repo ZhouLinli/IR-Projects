@@ -8,6 +8,10 @@ format:
     scrollable: true
     incremental: true
     theme: default
+    width: 1050
+    margin: 0.1
+    fig-width: 9
+    fig-height: 5
     chalkboard: 
       theme: whiteboard
       boardmarker-width: 5
@@ -31,19 +35,21 @@ Hastie, Trevor, et al. The elements of statistical learning: data mining, infere
 :::
 
 ##  The Elements of Statistical Learning {auto-animate=true}
-- Supervised learning: predicts an outcome based on some input measures
-    - Linear Methods: Regularization & Smoothing, Additive Trees
-- Unsupervised learning: associates or clusters unlabeled input measures
-  - random forests, neural networks, ensemble learning, and graphical models
+- Supervised learning: predicts (classify or regress) an outcome based on some input measures
+- Unsupervised learning: cluster (auto-classify) or association (similarity) unlabeled input measures
+- Linear methods, regularization & smoothing, additive trees, random forests, neural networks, ensemble learning, and graphical models
 
 ##  The Elements of Statistical Learning {auto-animate=true}
+::: {.nonincremental}
 ::: {.fragment .highlight-blue}
-- Supervised Learning: classification and regression
+- Supervised learning: predicts (classify or regress) an outcome based on some input measures
+:::
+- Unsupervised learning: cluster (auto-classify) or association (similarity) unlabeled input measures
+- Linear methods, regularization & smoothing, additive trees, random forests, neural networks, ensemble learning, and graphical models
 :::
 
-::: {.fragment .highlight-current-blue}
-- Unsupervised Learning: cluster (auto-classify) and association (similarity)
-:::
+
+
 
 
 # Regression Modeling Strategies
@@ -53,7 +59,30 @@ ____
 Frank, E. H. (2015). Regression modeling strategies with applications to linear models, logistic and ordinal regression, and survival analysis.
 :::
 
-##  With Applications to Linear Models, Logistic and Ordinal Regression, and Survival Analysis {auto-animate=true}
+## Why regression?
+
+::: {.nonincremental}
++ Regression (i.e. "predictive modeling") is better than hypothesis testing 
+::: 
+- more than test significance of a statistics, but also estimate magnitudes of effects
+- models may be used to incorporate complex sampling/ measurements and conduct many different statistical tests ("Prediction -- a superset of hypothesis testing and estimation")
+
+::: {.fragment .highlight-blue}
++ Multivariable regression/modeling is even better: it contains important variables and controls them constant so we can estimate absolute effects of the variable of interest.
+:::
+::: {.column-margin}
+____
+Note: There are two types of hypothesis testing: 1) Parametric/rank test that assume sample comes from a certain probability distribution and calculate p-value as the probability of the occurrence of a given test statistic; and 2) Permutation test that randomly sample (without replacement) possible permutations and calculate p-value as the proportion of samples that have a test statistic more extreme than our initial/observed test statistic
+:::
+
+
+## Prediction vs Classification
+
+## Linear models
+
+## Logistic models
+## Ordinal regression
+## Survival analysis
 
 
 

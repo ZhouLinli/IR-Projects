@@ -356,26 +356,22 @@ Linli
 <section id="the-elements-of-statistical-learning" class="slide level2" data-auto-animate="true">
 <h2 data-id="quarto-animate-title">The Elements of Statistical Learning</h2>
 <ul>
-<li class="fragment">Supervised learning: predicts an outcome based on some input measures
-<ul>
-<li class="fragment">Linear Methods: Regularization &amp; Smoothing, Additive Trees</li>
-</ul></li>
-<li class="fragment">Unsupervised learning: associates or clusters unlabeled <sup>1</sup> input measures
-<ul>
-<li class="fragment">random forests, neural networks, ensemble learning, and graphical models</li>
-</ul></li>
+<li class="fragment">Supervised learning: predicts (classify or regress) an outcome based on some input measures</li>
+<li class="fragment">Unsupervised learning: cluster (auto-classify) or association (similarity) unlabeled input measures</li>
+<li class="fragment">Linear methods, regularization &amp; smoothing, additive trees, random forests, neural networks, ensemble learning, and graphical models</li>
 </ul>
-<aside><ol class="aside-footnotes"><li id="fn1"><p>A footnote</p></li></ol></aside></section>
+</section>
 <section id="the-elements-of-statistical-learning-1" class="slide level2" data-auto-animate="true">
 <h2 data-id="quarto-animate-title">The Elements of Statistical Learning</h2>
+<div>
 <div class="fragment highlight-blue">
 <ul>
-<li class="fragment">Supervised Learning: classification and regression</li>
+<li>Supervised learning: predicts (classify or regress) an outcome based on some input measures</li>
 </ul>
 </div>
-<div class="fragment highlight-current-blue">
 <ul>
-<li class="fragment">Unsupervised Learning: cluster (auto-classify) and association (similarity)</li>
+<li>Unsupervised learning: cluster (auto-classify) or association (similarity) unlabeled input measures</li>
+<li>Linear methods, regularization &amp; smoothing, additive trees, random forests, neural networks, ensemble learning, and graphical models</li>
 </ul>
 </div>
 </section></section>
@@ -384,29 +380,42 @@ Linli
 <h1>Regression Modeling Strategies</h1>
 <div class="column-margin">
 <hr>
-<p>Hastie, Trevor, et al.&nbsp;The elements of statistical learning: data mining, inference, and prediction. Vol. 2. New York: springer, 2009.</p>
+<p>Frank, E. H. (2015). Regression modeling strategies with applications to linear models, logistic and ordinal regression, and survival analysis.</p>
 </div>
 </section>
-<section id="with-applications-to-linear-models-logistic-and-ordinal-regression-and-survival-analysis" class="slide level2" data-auto-animate="true">
-<h2 data-id="quarto-animate-title">With Applications to Linear Models, Logistic and Ordinal Regression, and Survival Analysis</h2>
-<aside class="notes">
-<p>self notes here:</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-
-<aside><div>
-<p>See more at…</p>
-</div></aside></section>
+<section id="why-regression" class="slide level2">
+<h2>Why regression?</h2>
+<div>
+<ul>
+<li>Regression (i.e.&nbsp;“predictive modeling”) is better than hypothesis testing</li>
+</ul>
+</div>
+<ul>
+<li class="fragment">more than test significance of a statistics, but also estimate magnitudes of effects</li>
+<li class="fragment">models may be used to incorporate complex sampling/ measurements and conduct many different statistical tests (“Prediction – a superset of hypothesis testing and estimation”)</li>
+</ul>
+<div class="fragment highlight-blue">
+<ul>
+<li class="fragment">Multivariable models are even better: it contains important variables and controls them constant so we can estimate absolute effects of the variable of interest.</li>
+</ul>
+</div>
+<div class="column-margin">
+<hr>
+<p>Note: There are two types of hypothesis testing: 1) Parametric/rank test that assume sample comes from a certain probability distribution and calculate p-value as the probability of the occurrence of a given test statistic; and 2) Permutation test that randomly sample (without replacement) possible permutations and calculate p-value as the proportion of samples that have a test statistic more extreme than our initial/observed test statistic</p>
+</div>
 </section>
+<section id="linear-models" class="slide level2">
+<h2>Linear models</h2>
+</section>
+<section id="logistic-models" class="slide level2">
+<h2>Logistic models</h2>
+</section>
+<section id="ordinal-regression" class="slide level2">
+<h2>Ordinal regression</h2>
+</section>
+<section id="survival-analysis" class="slide level2">
+<h2>Survival analysis</h2>
+</section></section>
 
     </div>
   </div>

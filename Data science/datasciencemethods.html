@@ -355,11 +355,15 @@ Linli
 </section>
 <section id="the-elements-of-statistical-learning" class="slide level2" data-auto-animate="true">
 <h2 data-id="quarto-animate-title">The Elements of Statistical Learning</h2>
+<div>
 <ul>
-<li class="fragment">Supervised learning: predicts (classify or regress) an outcome based on some input measures</li>
-<li class="fragment">Unsupervised learning: cluster (auto-classify) or association (similarity) unlabeled input measures</li>
-<li class="fragment">Linear methods, regularization &amp; smoothing, additive trees, random forests, neural networks, ensemble learning, and graphical models</li>
+<li>Supervised learning: predicts (classify or regress) an outcome based on some input measures</li>
+<li>Unsupervised learning: cluster (auto-classify) or association (similarity) unlabeled input measures</li>
 </ul>
+</div>
+<div class="column-margin">
+<p>The book covered: Linear methods, regularization &amp; smoothing, additive trees, random forests, neural networks, ensemble learning, and graphical models</p>
+</div>
 </section>
 <section id="the-elements-of-statistical-learning-1" class="slide level2" data-auto-animate="true">
 <h2 data-id="quarto-animate-title">The Elements of Statistical Learning</h2>
@@ -371,7 +375,6 @@ Linli
 </div>
 <ul>
 <li>Unsupervised learning: cluster (auto-classify) or association (similarity) unlabeled input measures</li>
-<li>Linear methods, regularization &amp; smoothing, additive trees, random forests, neural networks, ensemble learning, and graphical models</li>
 </ul>
 </div>
 </section></section>
@@ -387,21 +390,84 @@ Linli
 <h2>Why regression?</h2>
 <div>
 <ul>
-<li>Regression (i.e.&nbsp;“predictive modeling”) is better than hypothesis testing</li>
+<li>Regression (i.e.&nbsp;“predictive modeling”) is better than hypothesis testing
+<ul>
+<li>more than test significance of a statistics, but also estimate magnitudes of effects</li>
+<li>models may be used to incorporate complex sampling/ measurements and conduct many different statistical tests (“Prediction – a superset of hypothesis testing and estimation”)</li>
+</ul></li>
 </ul>
 </div>
-<ul>
-<li class="fragment">more than test significance of a statistics, but also estimate magnitudes of effects</li>
-<li class="fragment">models may be used to incorporate complex sampling/ measurements and conduct many different statistical tests (“Prediction – a superset of hypothesis testing and estimation”)</li>
-</ul>
 <div class="fragment highlight-blue">
 <ul>
-<li class="fragment">Multivariable models are even better: it contains important variables and controls them constant so we can estimate absolute effects of the variable of interest.</li>
+<li class="fragment">Multivariable regression/modeling is even better: it contains important variables and controls them constant so we can estimate absolute effects of the variable of interest.</li>
 </ul>
 </div>
 <div class="column-margin">
 <hr>
 <p>Note: There are two types of hypothesis testing: 1) Parametric/rank test that assume sample comes from a certain probability distribution and calculate p-value as the probability of the occurrence of a given test statistic; and 2) Permutation test that randomly sample (without replacement) possible permutations and calculate p-value as the proportion of samples that have a test statistic more extreme than our initial/observed test statistic</p>
+</div>
+</section>
+<section id="prediction-vs-classification" class="slide level2">
+<h2>Prediction vs Classification</h2>
+<ul>
+<li class="fragment">Prediction model regards outcomes on a <strong>continuum</strong>, while classification model forces <strong>dichotomous</strong> outcomes which cause information loss <sup>1</sup></li>
+<li class="fragment">Prediction model may be a necessary first step for building classification rules (for a classification model)</li>
+</ul>
+<aside><ol class="aside-footnotes"><li id="fn1"><p>This also applies to data collection state. We may always use continuous variables over categorical ones (which reduces measurement errors)</p></li></ol></aside></section>
+<section id="data-modeling-and-data-collection" class="slide level2">
+<h2>Data Modeling and Data Collection</h2>
+<ul>
+<li class="fragment">Design data collection with prediction model in mind
+<ul>
+<li class="fragment">cover all important predictors - preferably with their baseline measurements</li>
+<li class="fragment">define variables - with reliable and valid measurements verified</li>
+<li class="fragment">specify in-dependency/interaction as well as distribution assumption</li>
+<li class="fragment">plans for reducing missing data</li>
+</ul></li>
+</ul>
+</section>
+<section id="choosing-data-models" class="slide level2">
+<h2>Choosing Data Models</h2>
+<ul>
+<li class="fragment">Develop a model empirically: validate different model accuracy (predictions - observations)</li>
+<li class="fragment">Types of outcomes: ordinal (NOT polytomous/multi-nomial model), continous (NOT logistic model)</li>
+</ul>
+</section>
+<section id="popular-regression-models" class="slide level2">
+<h2>Popular regression models</h2>
+<ul>
+<li class="fragment">Scholastic (randomized sample with a known x to y function) data models
+<ul>
+<li class="fragment">linear, logistic, and Cox survival analysis <sup>1</sup></li>
+<li class="fragment">can construct simple, understandable x-y relationship, with each predictors’ importance revealed (by coefficients)</li>
+<li class="fragment">problem: multiple models could equally well fit the data <sup>2</sup>, but they yield different (inaccurate) conclusions.</li>
+</ul></li>
+<li class="fragment">Algorithmic (unknown f(x)) data models (i.e.&nbsp;machine learning)
+<ul>
+<li class="fragment">decision tree, neural network</li>
+<li class="fragment">can produce more accurate (with more dimensions/multiplicity) prediction of y but a black box (i.e.&nbsp;x-y relationship)</li>
+</ul></li>
+</ul>
+<div class="column-margin">
+<p>Breiman, L. (2001). Statistical modeling: The two cultures. Statistical science, 16(3), 199-231.</p>
+</div>
+<aside><ol class="aside-footnotes"><li id="fn2"><p>Poisson regression has count/rate outcome; Cox regression has time (between origin and event) outcome based on hazard/fail-risk factors</p></li><li id="fn3"><p>based on goodness-of-fit test and residual plots that give arbitrary yes vs no model fit answers. A better way to gauge fit is to compare the agreement between predicted with observed y (as long as not over-fitting with too many predictors). Cross-validation can gauge fit AND avoid the over-fitting problem. Calculate validation loss next to training loss. When your validation loss is decreasing, the model is still underfit. When your validation loss is increasing, the model is overfit.</p></li></ol></aside></section>
+<section id="another-way-to-look-at-types-of-models" class="slide level2">
+<h2>Another way to look at types of models</h2>
+<ul>
+<li class="fragment">parametric (assume probability distribution) and non-parametric regression models</li>
+</ul>
+</section>
+<section id="big-names-in-the-field" class="slide level2">
+<h2>Big Names in the field</h2>
+<ul>
+<li class="fragment">Fisher regression model/specification</li>
+<li class="fragment">Classic (Pearson/Neyman) vs Baysian methods</li>
+<li class="fragment">Student’s</li>
+</ul>
+<div class="column-margin">
+<hr>
+<p>Posterior probability: updating prior probability with a likelihood function (calculated from applying the Bayes’ conditional probability inference rule)</p>
 </div>
 </section>
 <section id="linear-models" class="slide level2">
@@ -416,6 +482,8 @@ Linli
 <section id="survival-analysis" class="slide level2">
 <h2>Survival analysis</h2>
 </section></section>
+
+
 
     </div>
   </div>

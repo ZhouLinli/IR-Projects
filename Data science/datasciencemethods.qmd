@@ -35,9 +35,14 @@ Hastie, Trevor, et al. The elements of statistical learning: data mining, infere
 :::
 
 ##  The Elements of Statistical Learning {auto-animate=true}
+::: {.nonincremental}
 - Supervised learning: predicts (classify or regress) an outcome based on some input measures
 - Unsupervised learning: cluster (auto-classify) or association (similarity) unlabeled input measures
-- Linear methods, regularization & smoothing, additive trees, random forests, neural networks, ensemble learning, and graphical models
+:::
+
+::: {.column-margin}
+The book covered: Linear methods, regularization & smoothing, additive trees, random forests, neural networks, ensemble learning, and graphical models
+:::
 
 ##  The Elements of Statistical Learning {auto-animate=true}
 ::: {.nonincremental}
@@ -45,7 +50,6 @@ Hastie, Trevor, et al. The elements of statistical learning: data mining, infere
 - Supervised learning: predicts (classify or regress) an outcome based on some input measures
 :::
 - Unsupervised learning: cluster (auto-classify) or association (similarity) unlabeled input measures
-- Linear methods, regularization & smoothing, additive trees, random forests, neural networks, ensemble learning, and graphical models
 :::
 
 
@@ -62,14 +66,15 @@ Frank, E. H. (2015). Regression modeling strategies with applications to linear 
 ## Why regression?
 
 ::: {.nonincremental}
-+ Regression (i.e. "predictive modeling") is better than hypothesis testing 
+- Regression (i.e. "predictive modeling") is better than hypothesis testing 
+  - more than test significance of a statistics, but also estimate magnitudes of effects
+  - models may be used to incorporate complex sampling/ measurements and conduct many different statistical tests ("Prediction -- a superset of hypothesis testing and estimation")
 ::: 
-- more than test significance of a statistics, but also estimate magnitudes of effects
-- models may be used to incorporate complex sampling/ measurements and conduct many different statistical tests ("Prediction -- a superset of hypothesis testing and estimation")
 
 ::: {.fragment .highlight-blue}
-+ Multivariable regression/modeling is even better: it contains important variables and controls them constant so we can estimate absolute effects of the variable of interest.
+- Multivariable regression/modeling is even better: it contains important variables and controls them constant so we can estimate absolute effects of the variable of interest.
 :::
+
 ::: {.column-margin}
 ____
 Note: There are two types of hypothesis testing: 1) Parametric/rank test that assume sample comes from a certain probability distribution and calculate p-value as the probability of the occurrence of a given test statistic; and 2) Permutation test that randomly sample (without replacement) possible permutations and calculate p-value as the proportion of samples that have a test statistic more extreme than our initial/observed test statistic
@@ -77,6 +82,47 @@ Note: There are two types of hypothesis testing: 1) Parametric/rank test that as
 
 
 ## Prediction vs Classification
+- Prediction model regards outcomes on a __continuum__, while classification model forces __dichotomous__ outcomes which cause information loss ^[This also applies to data collection state. We may always use continuous variables over categorical ones (which reduces measurement errors)]
+- Prediction model may be a necessary first step for building classification rules (for a classification model)
+
+
+## Data Modeling and Data Collection
+- Design data collection with prediction model in mind
+  - cover all important predictors - preferably with their baseline measurements
+  - define variables - with reliable and valid measurements verified
+  - specify in-dependency/interaction as well as distribution assumption
+  - plans for reducing missing data
+  
+## Choosing Data Models
+- Develop a model empirically: validate different model accuracy (predictions - observations)
+- Types of outcomes: ordinal (NOT polytomous/multi-nomial model), continous (NOT logistic model)
+
+## Popular regression models
+- Scholastic (randomized sample with a known x to y function) data models
+  - linear, logistic, and Cox survival analysis ^[Poisson regression has count/rate outcome; Cox regression has time (between origin and event) outcome based on hazard/fail-risk factors]
+  - can construct simple, understandable x-y relationship, with each predictors' importance revealed (by coefficients)
+  - problem: multiple models could equally well fit the data ^[based on  goodness-of-fit test and residual plots that give arbitrary yes vs no model fit answers. A better way to gauge fit is to compare the agreement between predicted with observed y (as long as not over-fitting with too many predictors). Cross-validation can gauge fit AND avoid the over-fitting problem: 1) Calculate validation loss next to training loss. When your validation loss is decreasing, the model is still underfit. 2) When your validation loss is increasing, the model is overfit.], but they yield different (inaccurate) conclusions.
+
+- Algorithmic (unknown f(x)) data models (i.e. machine learning)
+  - decision tree, neural network
+  - can produce more accurate (with more dimensions/multiplicity) prediction of y but a black box (i.e. x-y relationship)
+
+:::{.column-margin}
+Breiman, L. (2001). Statistical modeling: The two cultures. Statistical science, 16(3), 199-231.
+:::
+
+## Another way to look at types of models
+- parametric (assume probability distribution) and non-parametric regression models
+
+## Big Names in the field
+- Fisher regression model/specification
+- Classic (Pearson/Neyman) vs Baysian methods
+- Student's 
+
+:::{.column-margin}
+____
+Posterior probability: updating prior probability with a likelihood function (calculated from applying the Bayes' conditional probability inference rule)
+:::
 
 ## Linear models
 

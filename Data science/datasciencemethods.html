@@ -339,7 +339,7 @@ Linli
 </div>
 
 </section>
-<section class="slide level2">
+<section class="slide level3">
 
 <div class="cell">
 
@@ -353,7 +353,7 @@ Linli
 <p>Hastie, Trevor, et al.&nbsp;The elements of statistical learning: data mining, inference, and prediction. Vol. 2. New York: springer, 2009.</p>
 </div>
 </section>
-<section id="the-elements-of-statistical-learning" class="slide level2" data-auto-animate="true">
+<section id="the-elements-of-statistical-learning" class="title-slide slide level2 center" data-auto-animate="true">
 <h2 data-id="quarto-animate-title">The Elements of Statistical Learning</h2>
 <div>
 <ul>
@@ -365,7 +365,8 @@ Linli
 <p>The book covered: Linear methods, regularization &amp; smoothing, additive trees, random forests, neural networks, ensemble learning, and graphical models</p>
 </div>
 </section>
-<section id="the-elements-of-statistical-learning-1" class="slide level2" data-auto-animate="true">
+
+<section id="the-elements-of-statistical-learning-1" class="title-slide slide level2 center" data-auto-animate="true">
 <h2 data-id="quarto-animate-title">The Elements of Statistical Learning</h2>
 <div>
 <div class="fragment highlight-blue">
@@ -377,7 +378,8 @@ Linli
 <li>Unsupervised learning: cluster (auto-classify) or association (similarity) unlabeled input measures</li>
 </ul>
 </div>
-</section></section>
+</section>
+</section>
 <section>
 <section id="regression-modeling-strategies" class="title-slide slide level1 center">
 <h1>Regression Modeling Strategies</h1>
@@ -386,11 +388,15 @@ Linli
 <p>Frank, E. H. (2015). Regression modeling strategies with applications to linear models, logistic and ordinal regression, and survival analysis.</p>
 </div>
 </section>
-<section id="why-regression" class="slide level2">
-<h2>Why regression?</h2>
+<section id="basic-principles-for-data-modeling" class="title-slide slide level2 center">
+<h2>Basic Principles for data modeling</h2>
+
+</section>
+<section id="regression-hypothesis-testing" class="slide level3">
+<h3>1. Regression &gt; Hypothesis testing</h3>
 <div>
 <ul>
-<li>Regression (i.e.&nbsp;“predictive modeling”) is better than hypothesis testing
+<li>Regression (i.e.&nbsp;“predictive modeling”) is better than hypothesis testing <sup>1</sup>
 <ul>
 <li>more than test significance of a statistics, but also estimate magnitudes of effects</li>
 <li>models may be used to incorporate complex sampling/ measurements and conduct many different statistical tests (“Prediction – a superset of hypothesis testing and estimation”)</li>
@@ -402,20 +408,16 @@ Linli
 <li class="fragment">Multivariable regression/modeling is even better: it contains important variables and controls them constant so we can estimate absolute effects of the variable of interest.</li>
 </ul>
 </div>
-<div class="column-margin">
-<hr>
-<p>Note: There are two types of hypothesis testing: 1) Parametric/rank test that assume sample comes from a certain probability distribution and calculate p-value as the probability of the occurrence of a given test statistic; and 2) Permutation test that randomly sample (without replacement) possible permutations and calculate p-value as the proportion of samples that have a test statistic more extreme than our initial/observed test statistic</p>
-</div>
-</section>
-<section id="prediction-vs-classification" class="slide level2">
-<h2>Prediction vs Classification</h2>
+<aside><ol class="aside-footnotes"><li id="fn1"><p>There are two types of hypothesis testing: 1) Parametric/rank test that assume sample comes from a certain probability distribution and calculate p-value as the probability of the occurrence of a given test statistic; and 2) Permutation test that randomly sample (without replacement) possible permutations and calculate p-value as the proportion of samples that have a test statistic more extreme than our initial/observed test statistic</p></li></ol></aside></section>
+<section id="prediction-classification" class="slide level3">
+<h3>2. Prediction &gt; Classification</h3>
 <ul>
 <li class="fragment">Prediction model regards outcomes on a <strong>continuum</strong>, while classification model forces <strong>dichotomous</strong> outcomes which cause information loss <sup>1</sup></li>
 <li class="fragment">Prediction model may be a necessary first step for building classification rules (for a classification model)</li>
 </ul>
-<aside><ol class="aside-footnotes"><li id="fn1"><p>This also applies to data collection state. We may always use continuous variables over categorical ones (which reduces measurement errors)</p></li></ol></aside></section>
-<section id="data-modeling-and-data-collection" class="slide level2">
-<h2>Data Modeling and Data Collection</h2>
+<aside><ol class="aside-footnotes"><li id="fn2"><p>This also applies to data collection state. We may always use continuous variables over categorical ones (which reduces measurement errors)</p></li></ol></aside></section>
+<section id="model-guided-data-collection" class="slide level3">
+<h3>3. Model-guided Data Collection</h3>
 <ul>
 <li class="fragment">Design data collection with prediction model in mind
 <ul>
@@ -426,15 +428,23 @@ Linli
 </ul></li>
 </ul>
 </section>
-<section id="choosing-data-models" class="slide level2">
+
+<section id="choosing-data-models" class="title-slide slide level2 center">
 <h2>Choosing Data Models</h2>
 <ul>
 <li class="fragment">Develop a model empirically: validate different model accuracy (predictions - observations)</li>
 <li class="fragment">Types of outcomes: ordinal (NOT polytomous/multi-nomial model), continous (NOT logistic model)</li>
 </ul>
 </section>
-<section id="popular-regression-models" class="slide level2">
-<h2>Popular regression models</h2>
+<section id="types-of-models" class="slide level3">
+<h3>Types of models</h3>
+<ul>
+<li class="fragment">Parametric (assume probability distribution) vs Non-parametric regression models <sup>1</sup></li>
+<li class="fragment">Scholastic vs Algorithmic <sup>2</sup></li>
+</ul>
+<aside><ol class="aside-footnotes"><li id="fn3"><p>a kernel is a weighting function used in non-parametric estimation techniques.</p></li><li id="fn4"><p>Breiman, L. (2001). Statistical modeling: The two cultures. Statistical science, 16(3), 199-231.</p></li></ol></aside></section>
+<section id="classictraditional-regression-model-scholastic" class="slide level3">
+<h3>Classic/traditional Regression Model: Scholastic</h3>
 <ul>
 <li class="fragment">Scholastic (randomized sample with a known x to y function) data models
 <ul>
@@ -442,23 +452,36 @@ Linli
 <li class="fragment">can construct simple, understandable x-y relationship, with each predictors’ importance revealed (by coefficients)</li>
 <li class="fragment">problem: multiple models could equally well fit the data <sup>2</sup>, but they yield different (inaccurate) conclusions.</li>
 </ul></li>
+</ul>
+<aside><ol class="aside-footnotes"><li id="fn5"><p>Poisson regression has count/rate outcome; Cox regression has time (between origin and event) outcome based on hazard/fail-risk factors</p></li><li id="fn6"><p>based on goodness-of-fit test and residual plots that give arbitrary yes vs no model fit answers. A better way to gauge fit is to compare the agreement between predicted with observed y (as long as not over-fitting with too many predictors). Cross-validation can gauge fit AND avoid the over-fitting problem: 1) Calculate validation loss next to training loss. When your validation loss is decreasing, the model is still underfit. 2) When your validation loss is increasing, the model is overfit.</p></li></ol></aside></section>
+<section id="newer-regression-model-algorithmic" class="slide level3">
+<h3>Newer Regression Model: Algorithmic</h3>
+<ul>
 <li class="fragment">Algorithmic (unknown f(x)) data models (i.e.&nbsp;machine learning)
 <ul>
 <li class="fragment">decision tree, neural network</li>
-<li class="fragment">can produce more accurate (with more dimensions/multiplicity) prediction of y but a black box (i.e.&nbsp;x-y relationship)</li>
+<li class="fragment">can produce more accurate (with more dimensions/multiplicity) prediction of y <sup>1</sup>: by aggregating multiple models together which can reduce unstable/different conclusions (i.e. non-accurate preduction). <sup>2</sup></li>
+<li class="fragment">but a black box (i.e.&nbsp;x-y relationship)</li>
+<li class="fragment">application: nonlinear/complex recognition/prediction where traditional equation/model can’t fit to the data</li>
 </ul></li>
 </ul>
-<div class="column-margin">
-<p>Breiman, L. (2001). Statistical modeling: The two cultures. Statistical science, 16(3), 199-231.</p>
-</div>
-<aside><ol class="aside-footnotes"><li id="fn2"><p>Poisson regression has count/rate outcome; Cox regression has time (between origin and event) outcome based on hazard/fail-risk factors</p></li><li id="fn3"><p>based on goodness-of-fit test and residual plots that give arbitrary yes vs no model fit answers. A better way to gauge fit is to compare the agreement between predicted with observed y (as long as not over-fitting with too many predictors). Cross-validation can gauge fit AND avoid the over-fitting problem. Calculate validation loss next to training loss. When your validation loss is decreasing, the model is still underfit. When your validation loss is increasing, the model is overfit.</p></li></ol></aside></section>
-<section id="another-way-to-look-at-types-of-models" class="slide level2">
-<h2>Another way to look at types of models</h2>
+<aside><ol class="aside-footnotes"><li id="fn7"><p>“Aggregating overa large set of competing models can reduce the non-uniqueness while improving accuracy</p></li><li id="fn8"><p>if only measure model fit with test error or residual-sum-of-squares, we can easily get different models (and after different sets of co-variates get removed, get different conclusions)</p></li></ol></aside></section>
+<section id="big-data-algorithmic-model-problem" class="slide level3">
+<h3>Big Data (Algorithmic model) Problem</h3>
 <ul>
-<li class="fragment">parametric (assume probability distribution) and non-parametric regression models</li>
+<li class="fragment"><p>Convenient data collection: web survey or extract data from web posts</p></li>
+<li class="fragment"><p>Problem: big data representation</p>
+<ul>
+<li class="fragment">Solution: multilevel regression and “borrow predictive strength from demographically similar cells that have richer data” <sup>1</sup></li>
+</ul></li>
+<li class="fragment"><p>Problem: black box cannot understand the clusters and associations</p>
+<ul>
+<li class="fragment">Solution: cross-validation: build (algorithmic) model with big data and verify with a small sample; select a small sample to read (human-based) to help understand algorithmic models (and maybe also build rules to help iterate algorithmic models)</li>
+</ul></li>
 </ul>
-</section>
-<section id="big-names-in-the-field" class="slide level2">
+<aside><ol class="aside-footnotes"><li id="fn9"><p>Yu-Sung Su, Reboot the Debate on Social Science Research Paradigm, 2022 Peking Education Economics Research Institute</p></li></ol></aside></section>
+
+<section id="big-names-in-the-field" class="title-slide slide level2 center">
 <h2>Big Names in the field</h2>
 <ul>
 <li class="fragment">Fisher regression model/specification</li>
@@ -470,18 +493,27 @@ Linli
 <p>Posterior probability: updating prior probability with a likelihood function (calculated from applying the Bayes’ conditional probability inference rule)</p>
 </div>
 </section>
-<section id="linear-models" class="slide level2">
+
+<section id="linear-models" class="title-slide slide level2 center">
 <h2>Linear models</h2>
+
 </section>
-<section id="logistic-models" class="slide level2">
+
+<section id="logistic-models" class="title-slide slide level2 center">
 <h2>Logistic models</h2>
+
 </section>
-<section id="ordinal-regression" class="slide level2">
+
+<section id="ordinal-regression" class="title-slide slide level2 center">
 <h2>Ordinal regression</h2>
+
 </section>
-<section id="survival-analysis" class="slide level2">
+
+<section id="survival-analysis" class="title-slide slide level2 center">
 <h2>Survival analysis</h2>
-</section></section>
+
+</section>
+</section>
 
 
 

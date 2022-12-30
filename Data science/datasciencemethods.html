@@ -388,15 +388,17 @@ Linli
 <p>Frank, E. H. (2015). Regression modeling strategies with applications to linear models, logistic and ordinal regression, and survival analysis.</p>
 </div>
 </section>
-<section id="basic-principles-for-data-modeling" class="title-slide slide level2 center">
-<h2>Basic Principles for data modeling</h2>
-
+<section id="why-data-models" class="title-slide slide level2 center">
+<h2>Why data models?</h2>
+<ul>
+<li class="fragment">make predictive regression models and let it guide your data collection</li>
+</ul>
 </section>
 <section id="regression-hypothesis-testing" class="slide level3">
 <h3>1. Regression &gt; Hypothesis testing</h3>
 <div>
 <ul>
-<li>Regression (i.e.&nbsp;“predictive modeling”) is better than hypothesis testing <sup>1</sup>
+<li>Regression (i.e.&nbsp;“predictive modeling”) is better than hypothesis testing
 <ul>
 <li>more than test significance of a statistics, but also estimate magnitudes of effects</li>
 <li>models may be used to incorporate complex sampling/ measurements and conduct many different statistical tests (“Prediction – a superset of hypothesis testing and estimation”)</li>
@@ -408,14 +410,14 @@ Linli
 <li class="fragment">Multivariable regression/modeling is even better: it contains important variables and controls them constant so we can estimate absolute effects of the variable of interest.</li>
 </ul>
 </div>
-<aside><ol class="aside-footnotes"><li id="fn1"><p>There are two types of hypothesis testing: 1) Parametric/rank test that assume sample comes from a certain probability distribution and calculate p-value as the probability of the occurrence of a given test statistic; and 2) Permutation test that randomly sample (without replacement) possible permutations and calculate p-value as the proportion of samples that have a test statistic more extreme than our initial/observed test statistic</p></li></ol></aside></section>
+</section>
 <section id="prediction-classification" class="slide level3">
 <h3>2. Prediction &gt; Classification</h3>
 <ul>
 <li class="fragment">Prediction model regards outcomes on a <strong>continuum</strong>, while classification model forces <strong>dichotomous</strong> outcomes which cause information loss <sup>1</sup></li>
 <li class="fragment">Prediction model may be a necessary first step for building classification rules (for a classification model)</li>
 </ul>
-<aside><ol class="aside-footnotes"><li id="fn2"><p>This also applies to data collection state. We may always use continuous variables over categorical ones (which reduces measurement errors)</p></li></ol></aside></section>
+<aside><ol class="aside-footnotes"><li id="fn1"><p>This also applies to data collection state. We may always use continuous variables over categorical ones (which reduces measurement errors)</p></li></ol></aside></section>
 <section id="model-guided-data-collection" class="slide level3">
 <h3>3. Model-guided Data Collection</h3>
 <ul>
@@ -431,41 +433,62 @@ Linli
 
 <section id="choosing-data-models" class="title-slide slide level2 center">
 <h2>Choosing Data Models</h2>
-<ul>
-<li class="fragment">Develop a model empirically: validate different model accuracy (predictions - observations)</li>
-<li class="fragment">Types of outcomes: ordinal (NOT polytomous/multi-nomial model), continous (NOT logistic model)</li>
-</ul>
+
 </section>
+<section id="basic-principle-for-choosing-data-models" class="slide level3">
+<h3>Basic principle for choosing data models</h3>
+<ul>
+<li class="fragment"><p>Choose model based on the <strong>types of outcomes</strong> (ordinal do NOT polytomous/multi-nomial model; continuous do NOT logistic model)</p></li>
+<li class="fragment"><p>Develop a model <strong>empirically</strong> (validate different model accuracy <sup>1</sup>) based on the differences between the predicted value (in the training set, often bagged <sup>2</sup> or boosted <sup>3</sup>) and the observed value (in the test set)</p></li>
+<li class="fragment"><p>Understand pros and cons of different types of data models (Scholastic vs Algorithmic)</p></li>
+</ul>
+<aside><ol class="aside-footnotes"><li id="fn2"><p>i.e.&nbsp;measure generalization error or infinite test set error which indicate prediction accuracy</p></li><li id="fn3"><p>bag (bootstrap aggregate) is to “random sample” the training set for k times, each time get a f(x) function. For a regression model, the bagged predictors are the average over the 1th to kth f(x). For a classification model, the bagged predictor is the class that has the plurity/most vote from the 1th to kth f(x).</p></li><li id="fn4"><p>instead of random sampling the training set, altering weights on he training set to ensemble predictors in a classification model</p></li></ol></aside></section>
 <section id="types-of-models" class="slide level3">
 <h3>Types of models</h3>
 <ul>
-<li class="fragment">Parametric (assume probability distribution) vs Non-parametric regression models <sup>1</sup></li>
-<li class="fragment">Scholastic vs Algorithmic <sup>2</sup></li>
+<li class="fragment"><strong>Parametric/frequentist</strong> (assume probability distribution) vs <strong>Non-parametric/ Bayesian</strong> regression models <sup>1</sup>
+<ul>
+<li class="fragment">Frequentist approach assumes a random/stochastic sample and aims to estimate null hypothesis (fixed unknown population parameter) based on maximizing the likelihood (p-value, probability to reject the bull hypothesis) built on a known population distribution.</li>
+<li class="fragment">Bayesian approach is based on the Bayes’ theorem: the posterior probability (the probability of this hypothesis about a population parameter is true after seeing the data) = prior probability (a first belief about how likely this hypothesis is true) * the probability of getting the data under the condition that the hypothesis is true / probability of getting the data regardless of hypothesis is true or false <sup>2</sup></li>
+</ul></li>
+<li class="fragment">Accordingly, there are two types of hypothesis testing:
+<ul>
+<li class="fragment">Parametric/rank test assumes sample comes from a certain probability distribution and calculates p-value as the probability of the occurrence of a given test statistic</li>
+<li class="fragment">Permutation test: randomly samples (without replacement) possible permutations and calculates p-value as the proportion of samples that have a test statistic more extreme than our initial/observed test statistic.</li>
+</ul></li>
+<li class="fragment">Scholastic vs Algorithmic - see the following slides <sup>3</sup></li>
 </ul>
-<aside><ol class="aside-footnotes"><li id="fn3"><p>a kernel is a weighting function used in non-parametric estimation techniques.</p></li><li id="fn4"><p>Breiman, L. (2001). Statistical modeling: The two cultures. Statistical science, 16(3), 199-231.</p></li></ol></aside></section>
+<aside><ol class="aside-footnotes"><li id="fn5"><p>a kernel is a weighting function used in non-parametric estimation techniques.</p></li><li id="fn6"><p>p (hypothesis|Data)=p(hypothesis)*p(Data|hypothesis)/ p(Data) </p></li><li id="fn7"><p>Breiman, L. (2001). Statistical modeling: The two cultures. Statistical science, 16(3), 199-231.</p></li></ol></aside></section>
 <section id="classictraditional-regression-model-scholastic" class="slide level3">
 <h3>Classic/traditional Regression Model: Scholastic</h3>
 <ul>
 <li class="fragment">Scholastic (randomized sample with a known x to y function) data models
 <ul>
-<li class="fragment">linear, logistic, and Cox survival analysis <sup>1</sup></li>
-<li class="fragment">can construct simple, understandable x-y relationship, with each predictors’ importance revealed (by coefficients)</li>
-<li class="fragment">problem: multiple models could equally well fit the data <sup>2</sup>, but they yield different (inaccurate) conclusions.</li>
+<li class="fragment">Linear, logistic, and Cox survival analysis <sup>1</sup></li>
+<li class="fragment">Can construct simple, understandable x-y relationship, with each predictors’ importance revealed (by coefficients)</li>
+<li class="fragment">Problem: multiple models could equally well fit the data <sup>2</sup>, but they yield different (inaccurate) conclusions.</li>
 </ul></li>
 </ul>
-<aside><ol class="aside-footnotes"><li id="fn5"><p>Poisson regression has count/rate outcome; Cox regression has time (between origin and event) outcome based on hazard/fail-risk factors</p></li><li id="fn6"><p>based on goodness-of-fit test and residual plots that give arbitrary yes vs no model fit answers. A better way to gauge fit is to compare the agreement between predicted with observed y (as long as not over-fitting with too many predictors). Cross-validation can gauge fit AND avoid the over-fitting problem: 1) Calculate validation loss next to training loss. When your validation loss is decreasing, the model is still underfit. 2) When your validation loss is increasing, the model is overfit.</p></li></ol></aside></section>
-<section id="newer-regression-model-algorithmic" class="slide level3">
-<h3>Newer Regression Model: Algorithmic</h3>
+<aside><ol class="aside-footnotes"><li id="fn8"><p>Poisson regression has count/rate outcome; Cox regression has time (between origin and event) outcome based on hazard/fail-risk factors</p></li><li id="fn9"><p>based on goodness-of-fit test and residual plots that give arbitrary yes vs no model fit answers. A better way to gauge fit is to compare the agreement between predicted with observed y (as long as not over-fitting with too many predictors). Cross-validation can gauge fit AND avoid the over-fitting problem: 1) Calculate validation loss next to training loss. When your validation loss is decreasing, the model is still underfit. 2) When your validation loss is increasing, the model is overfit.</p></li></ol></aside></section>
+<section id="newer-regression-model-algorithmicmachine-learning" class="slide level3">
+<h3>Newer Regression Model: Algorithmic/machine-learning</h3>
 <ul>
 <li class="fragment">Algorithmic (unknown f(x)) data models (i.e.&nbsp;machine learning)
 <ul>
-<li class="fragment">decision tree, neural network</li>
-<li class="fragment">can produce more accurate (with more dimensions/multiplicity) prediction of y <sup>1</sup>: by aggregating multiple models together which can reduce unstable/different conclusions (i.e. non-accurate preduction). <sup>2</sup></li>
-<li class="fragment">but a black box (i.e.&nbsp;x-y relationship)</li>
-<li class="fragment">application: nonlinear/complex recognition/prediction where traditional equation/model can’t fit to the data</li>
+<li class="fragment">Decision Tree, Neural Network，Support vector machine <sup>1</sup></li>
+<li class="fragment">Application: nonlinear/complex recognition/prediction where traditional equation/model can’t fit to the data</li>
+<li class="fragment">Can produce more accurate (with more dimensions/multiplicity) prediction of y <sup>2</sup>: by aggregating/en-sembling multiple predictors and/or functions/models together. Meanwhile, not overfitting (since even though there is no variable deletion, it can extract variable importance information from the data) which can reduce unstable/different conclusions (i.e. non-accurate preduction). <sup>3</sup></li>
+<li class="fragment">But usually a black box (i.e.&nbsp;x-y relationship); Although Decision Trees have a good interpret-ability based on their “nodes” that divide paths to different outcomes, they are not as accurate (in term of prediction with a lower low test set error in cross-validation) as the less interpret-able Random Forest.</li>
 </ul></li>
 </ul>
-<aside><ol class="aside-footnotes"><li id="fn7"><p>“Aggregating overa large set of competing models can reduce the non-uniqueness while improving accuracy</p></li><li id="fn8"><p>if only measure model fit with test error or residual-sum-of-squares, we can easily get different models (and after different sets of co-variates get removed, get different conclusions)</p></li></ol></aside></section>
+<aside><ol class="aside-footnotes"><li id="fn10"><p>support vectors are the data points that have the smallest Euclidean metric/distance (in a M-dimension space, the real distance of two points or the length of a vector from the original point) from the optimal hyperplane (that separating classes in y outcomes). “Optimal” here is defined as meaning that the distance of the hyperplane to any prediction vector is maximal</p></li><li id="fn11"><p>“Aggregating overa large set of competing models can reduce the non-uniqueness while improving accuracy</p></li><li id="fn12"><p>if only measure model fit with test error or residual-sum-of-squares, we can easily get different models (and after different sets of co-variates get removed, get different conclusions)</p></li></ol></aside></section>
+<section id="different-ways-to-reducing-dimensionality" class="slide level3">
+<h3>Different Ways to Reducing Dimensionality</h3>
+<ul>
+<li class="fragment">Traditionally way to select/remove variables in a data model: the standardized coefficient that a predictor has (i.e.&nbsp;equals to value of coefficient/ standard error) decide whether to remove the predictor (i.e.&nbsp;importance/ strength of the predictor)</li>
+<li class="fragment">Another way to select model: randomly combine different predictors to construct model could find multiple subsets that have a lower deviance. This can be solved/improved by random forest which randomly select variables and calculate the importance of a predictor by measuring the noise raise if removing the predictor.</li>
+</ul>
+</section>
 <section id="big-data-algorithmic-model-problem" class="slide level3">
 <h3>Big Data (Algorithmic model) Problem</h3>
 <ul>
@@ -479,7 +502,7 @@ Linli
 <li class="fragment">Solution: cross-validation: build (algorithmic) model with big data and verify with a small sample; select a small sample to read (human-based) to help understand algorithmic models (and maybe also build rules to help iterate algorithmic models)</li>
 </ul></li>
 </ul>
-<aside><ol class="aside-footnotes"><li id="fn9"><p>Yu-Sung Su, Reboot the Debate on Social Science Research Paradigm, 2022 Peking Education Economics Research Institute</p></li></ol></aside></section>
+<aside><ol class="aside-footnotes"><li id="fn13"><p>Yu-Sung Su, Reboot the Debate on Social Science Research Paradigm, 2022 Peking Education Economics Research Institute</p></li></ol></aside></section>
 
 <section id="big-names-in-the-field" class="title-slide slide level2 center">
 <h2>Big Names in the field</h2>
@@ -488,10 +511,6 @@ Linli
 <li class="fragment">Classic (Pearson/Neyman) vs Baysian methods</li>
 <li class="fragment">Student’s</li>
 </ul>
-<div class="column-margin">
-<hr>
-<p>Posterior probability: updating prior probability with a likelihood function (calculated from applying the Bayes’ conditional probability inference rule)</p>
-</div>
 </section>
 
 <section id="linear-models" class="title-slide slide level2 center">

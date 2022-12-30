@@ -77,19 +77,14 @@ linear models, logistic and ordinal regression, and survival analysis.
 :::
 
 
-## Basic Principles for data modeling
+## Why data models?
 - make predictive regression models and let it guide your data collection
+
 ### 1. Regression > Hypothesis testing
 
 ::: nonincremental
 -   Regression (i.e. "predictive modeling") is better than hypothesis
-    testing ^[There are two types of hypothesis testing: 1) Parametric/rank test
-that assume sample comes from a certain probability distribution and
-calculate p-value as the probability of the occurrence of a given test
-statistic; and 2) Permutation test that randomly sample (without
-replacement) possible permutations and calculate p-value as the
-proportion of samples that have a test statistic more extreme than our
-initial/observed test statistic]
+    testing
     -   more than test significance of a statistics, but also estimate
         magnitudes of effects
     -   models may be used to incorporate complex sampling/ measurements
@@ -128,28 +123,42 @@ initial/observed test statistic]
 
 
 ## Choosing Data Models
+### Basic principle for choosing data models
+- Choose model based on the __types of outcomes__ (ordinal do NOT polytomous/multi-nomial model; continuous do NOT logistic model)
 
--   Develop a model __empirically__ (validate different model accuracy
-    between predictions and observations) and based on the __types of outcomes__ (ordinal do NOT polytomous/multi-nomial model; continuous do NOT logistic model)
+-   Develop a model __empirically__ (validate different model accuracy ^[i.e. measure generalization error or infinite test set error which indicate prediction accuracy])
+    based on the differences between the predicted value (in the training set, often bagged ^[bag (bootstrap aggregate) is to "random sample" the training set for k times, each time get a f(x) function. For a regression model, the bagged predictors are the average over the 1th to kth f(x). For a classification model, the bagged predictor is the class that has the plurity/most vote from the 1th to kth f(x).] or boosted ^[instead of random sampling the training set, altering weights on he training set to ensemble predictors in a classification model]) and the observed value (in the test set)
+
 - Understand pros and cons of different types of data models (Scholastic vs Algorithmic)
 
 ### Types of models
 
--   Parametric (assume probability distribution) vs Non-parametric
-    regression models [^2]
-- Scholastic vs Algorithmic ^[Breiman, L. (2001). Statistical modeling: The two cultures. Statistical science, 16(3), 199-231.]
+- __Parametric/frequentist__ (assume probability distribution) vs __Non-parametric/ Bayesian__ regression models [^2]
+  - Frequentist approach assumes a random/stochastic sample and aims to estimate null hypothesis (fixed unknown population parameter) based on maximizing the likelihood (p-value, probability to reject the bull hypothesis) built on a known population distribution.
+  - Bayesian approach is based on the Bayes’ theorem: the posterior probability (the probability of this hypothesis about a population parameter is true after seeing the data) = prior probability (a first belief about how likely this hypothesis is true) * the probability of getting the data under the condition that the hypothesis is true / probability of getting the data regardless of hypothesis is true or false ^[p (hypothesis|Data)=p(hypothesis)*p(Data|hypothesis)/ p(Data) ]
+  
+- Accordingly, there are two types of hypothesis testing: 
+  - Parametric/rank test assumes sample comes from a certain probability distribution and calculates p-value as the probability of the occurrence of a given test statistic
+  - Permutation test: randomly samples (without
+replacement) possible permutations and calculates p-value as the
+proportion of samples that have a test statistic more extreme than our
+initial/observed test statistic.
+  
+- Scholastic vs Algorithmic - see the following slides ^[Breiman, L. (2001). Statistical modeling: The two cultures. Statistical science, 16(3), 199-231.]
 
 [^2]: a kernel is a weighting function used in non-parametric estimation
     techniques. 
+
+
     
 ### Classic/traditional Regression Model: Scholastic
 
 -   Scholastic (randomized sample with a known x to y function) data
     models
-    -   linear, logistic, and Cox survival analysis [^3]
-    -   can construct simple, understandable x-y relationship, with each
+    -   Linear, logistic, and Cox survival analysis [^3]
+    -   Can construct simple, understandable x-y relationship, with each
         predictors' importance revealed (by coefficients)
-    -   problem: multiple models could equally well fit the data [^4],
+    -   Problem: multiple models could equally well fit the data [^4],
         but they yield different (inaccurate) conclusions.
 
 [^3]: Poisson regression has count/rate outcome; Cox regression has time
@@ -164,17 +173,17 @@ initial/observed test statistic]
     decreasing, the model is still underfit. 2) When your validation
     loss is increasing, the model is overfit.
 
-### Newer Regression Model: Algorithmic
+### Newer Regression Model: Algorithmic/machine-learning
 
 -   Algorithmic (unknown f(x)) data models (i.e. machine learning)
-    -   decision tree, neural network
-    -   can produce more accurate (with more dimensions/multiplicity)
-        prediction of y [^5]: by aggregating multiple models together
+    -   Decision Tree, Neural Network，Support vector machine ^[support vectors are the data points that have the smallest Euclidean metric/distance (in a M-dimension space, the real distance of two points or the length of a vector from the original point) from the optimal hyperplane (that separating classes in y outcomes). "Optimal" here is defined as meaning that the distance of the hyperplane to any prediction vector is maximal]
+    -   Application: nonlinear/complex recognition/prediction where
+        traditional equation/model can't fit to the data
+    -   Can produce more accurate (with more dimensions/multiplicity)
+        prediction of y [^5]: by aggregating/en-sembling multiple predictors and/or functions/models together. Meanwhile, not overfitting (since even though there is no variable deletion, it can extract variable importance information from the data)
         which can reduce unstable/different conclusions (i.e.
         non-accurate preduction). [^6]
-    -   but a black box (i.e. x-y relationship)
-    -   application: nonlinear/complex recognition/prediction where
-        traditional equation/model can't fit to the data
+    -   But usually a black box (i.e. x-y relationship); Although Decision Trees have a good interpret-ability based on their "nodes" that divide paths to different outcomes, they are not as accurate (in term of prediction with a lower low test set error in cross-validation) as the less interpret-able Random Forest. 
 
 [^5]: "Aggregating overa large set of competing models can reduce the
     non-uniqueness while improving accuracy
@@ -183,6 +192,10 @@ initial/observed test statistic]
     residual-sum-of-squares, we can easily get different models (and
     after different sets of co-variates get removed, get different
     conclusions)
+
+### Different Ways to Reducing Dimensionality
+- Traditionally way to select/remove variables in a data model: the standardized coefficient that a predictor has (i.e. equals to value of coefficient/ standard error) decide whether to remove the predictor (i.e. importance/ strength of the predictor)
+- Another way to select model: randomly combine different predictors to construct model could find multiple subsets that have a lower deviance. This can be solved/improved by random forest which randomly select variables and calculate the importance of a predictor by measuring the noise raise if removing the predictor. 
 
 ### Big Data (Algorithmic model) Problem
 
@@ -211,14 +224,6 @@ initial/observed test statistic]
 -   Classic (Pearson/Neyman) vs Baysian methods
 -   Student's
 
-::: column-margin
-
-------------------------------------------------------------------------
-
-Posterior probability: updating prior probability with a likelihood
-function (calculated from applying the Bayes' conditional probability
-inference rule)
-:::
 
 ## Linear models
 

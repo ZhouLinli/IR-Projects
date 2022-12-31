@@ -110,18 +110,19 @@ linear models, logistic and ordinal regression, and survival analysis.
     continuous variables over categorical ones (which reduces
     measurement errors)
 
-### 3. Model-guided Data Collection
 
+
+## Choosing Data Models
+### Model-guided Data Collection
 -   Design data collection with prediction model in mind
-    -   cover all important predictors - preferably with their baseline
+    -   stratified sampling (with weights that are representative to the population)
+    - cover all important predictors - preferably with their baseline
         measurements
     -   define variables - with reliable and valid measurements verified
     -   specify in-dependency/interaction as well as distribution
         assumption
     -   plans for reducing missing data
-
-## Choosing Data Models
-
+    
 ### Basic principle for choosing data models
 
 -   Choose model based on the **types of outcomes** (ordinal do NOT
@@ -190,6 +191,7 @@ linear models, logistic and ordinal regression, and survival analysis.
         predictors' importance revealed (by coefficients)
     -   Problem: multiple models could equally well fit the data [^9],
         but they yield different (inaccurate) conclusions.
+    - solution: LASSO (least absolute shrinkage and selection operator)  regression analysis method to reduce variable selection ^[penalize absolute values of weight]
 
 [^8]: Poisson regression has count/rate outcome; Cox regression has time
     (between origin and event) outcome based on hazard/fail-risk factors
@@ -268,6 +270,9 @@ linear models, logistic and ordinal regression, and survival analysis.
 
 [^13]: Yu-Sung Su, Reboot the Debate on Social Science Research
     Paradigm, 2022 Peking Education Economics Research Institute
+### Example ^[Using Software Development & Machine Learning for Equity in Large-Scale Data Collection & Linkage, 2022 NCES STATS-DC Data Conference] of human-in-the-loop algorithmic models
+- a group of human to rate the data sources (i.e. how to use the source for different research/analysis/measurement goals), identify possible important predictors, 
+- human suggestions to build model
 
 ## Big Names in the field
 

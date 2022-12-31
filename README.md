@@ -26,7 +26,7 @@ In this folder, you will find R scripts/markdown I developed for cleaning and an
 - Analysis of program/ events surveys to improve institutional programming. 
 
 ## Data Science Ed
-In this folder, you will find resources for learn data science. I made presentation slides based on several data science books I read. This educational folder covers the following data science topics:
+In this folder, you will find resources for learning data science. I made presentation slides based on several data science books I read. This educational folder covers the following data science topics:
 - How to choose a data model; pros and cons of different types of data models
 - Multivariate regression, predictive modeling, Baysian models
 - Algothrimic/ machine-learning modeling

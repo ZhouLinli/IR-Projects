@@ -65,7 +65,6 @@ models
     (similarity) unlabeled input measures
 :::
 
-
 # Regression Modeling Strategies
 
 ::: column-margin
@@ -76,11 +75,12 @@ Frank, E. H. (2015). Regression modeling strategies with applications to
 linear models, logistic and ordinal regression, and survival analysis.
 :::
 
-
 ## Why data models?
-- make predictive regression models and let it guide your data collection
 
-### 1. Regression > Hypothesis testing
+-   make predictive regression models and let it guide your data
+    collection
+
+### 1. Regression \> Hypothesis testing
 
 ::: nonincremental
 -   Regression (i.e. "predictive modeling") is better than hypothesis
@@ -98,8 +98,7 @@ linear models, logistic and ordinal regression, and survival analysis.
     absolute effects of the variable of interest.
 :::
 
-
-### 2. Prediction > Classification
+### 2. Prediction \> Classification
 
 -   Prediction model regards outcomes on a **continuum**, while
     classification model forces **dichotomous** outcomes which cause
@@ -121,50 +120,81 @@ linear models, logistic and ordinal regression, and survival analysis.
         assumption
     -   plans for reducing missing data
 
-
 ## Choosing Data Models
+
 ### Basic principle for choosing data models
-- Choose model based on the __types of outcomes__ (ordinal do NOT polytomous/multi-nomial model; continuous do NOT logistic model)
 
--   Develop a model __empirically__ (validate different model accuracy ^[i.e. measure generalization error or infinite test set error which indicate prediction accuracy])
-    based on the differences between the predicted value (in the training set, often bagged ^[bag (bootstrap aggregate) is to "random sample" the training set for k times, each time get a f(x) function. For a regression model, the bagged predictors are the average over the 1th to kth f(x). For a classification model, the bagged predictor is the class that has the plurity/most vote from the 1th to kth f(x).] or boosted ^[instead of random sampling the training set, altering weights on he training set to ensemble predictors in a classification model]) and the observed value (in the test set)
+-   Choose model based on the **types of outcomes** (ordinal do NOT
+    polytomous/multi-nomial model; continuous do NOT logistic model)
 
-- Understand pros and cons of different types of data models (Scholastic vs Algorithmic)
+-   Develop a model **empirically** (validate different model accuracy
+    [^2]) based on the differences between the predicted value (in the
+    training set, often bagged [^3] or boosted [^4]) and the observed
+    value (in the test set)
+
+-   Understand pros and cons of different types of data models
+    (Stochastic vs Algorithmic)
+
+[^2]: i.e. measure generalization error or infinite test set error which
+    indicate prediction accuracy
+
+[^3]: bag (bootstrap aggregate) is to "random sample" the training set
+    for k times, each time get a f(x) function. For a regression model,
+    the bagged predictors are the average over the 1th to kth f(x). For
+    a classification model, the bagged predictor is the class that has
+    the plurity/most vote from the 1th to kth f(x).
+
+[^4]: instead of random sampling the training set, altering weights on
+    he training set to ensemble predictors in a classification model
 
 ### Types of models
 
-- __Parametric/frequentist__ (assume probability distribution) vs __Non-parametric/ Bayesian__ regression models [^2]
-  - Frequentist approach assumes a random/stochastic sample and aims to estimate null hypothesis (fixed unknown population parameter) based on maximizing the likelihood (p-value, probability to reject the bull hypothesis) built on a known population distribution.
-  - Bayesian approach is based on the Bayes’ theorem: the posterior probability (the probability of this hypothesis about a population parameter is true after seeing the data) = prior probability (a first belief about how likely this hypothesis is true) * the probability of getting the data under the condition that the hypothesis is true / probability of getting the data regardless of hypothesis is true or false ^[p (hypothesis|Data)=p(hypothesis)*p(Data|hypothesis)/ p(Data) ]
-  
-- Accordingly, there are two types of hypothesis testing: 
-  - Parametric/rank test assumes sample comes from a certain probability distribution and calculates p-value as the probability of the occurrence of a given test statistic
-  - Permutation test: randomly samples (without
-replacement) possible permutations and calculates p-value as the
-proportion of samples that have a test statistic more extreme than our
-initial/observed test statistic.
-  
-- Scholastic vs Algorithmic - see the following slides ^[Breiman, L. (2001). Statistical modeling: The two cultures. Statistical science, 16(3), 199-231.]
+-   **Parametric/frequentist** (assume probability distribution) vs
+    **Non-parametric/ Bayesian** regression models [^5]
+    -   Frequentist approach assumes a random/stochastic sample and aims
+        to estimate null hypothesis (fixed unknown population parameter)
+        based on maximizing the likelihood (p-value, probability to
+        reject the bull hypothesis) built on a known population
+        distribution.
+    -   Bayesian approach is based on the Bayes' theorem: the posterior
+        probability (the probability of this hypothesis about a
+        population parameter is true after seeing the data) = prior
+        probability (a first belief about how likely this hypothesis is
+        true) \* the probability of getting the data under the condition
+        that the hypothesis is true / probability of getting the data
+        regardless of hypothesis is true or false [^6]
+-   Accordingly, there are two types of hypothesis testing:
+    -   Parametric/rank test assumes sample comes from a certain
+        probability distribution and calculates p-value as the
+        probability of the occurrence of a given test statistic
+    -   Permutation test: randomly samples (without replacement)
+        possible permutations and calculates p-value as the proportion
+        of samples that have a test statistic more extreme than our
+        initial/observed test statistic.
+-   Stochastic vs Algorithmic - see the following slides [^7]
 
-[^2]: a kernel is a weighting function used in non-parametric estimation
-    techniques. 
+[^5]: a kernel is a weighting function used in non-parametric estimation
+    techniques.
 
+[^6]: p (hypothesis\|Data)=p(hypothesis)\*p(Data\|hypothesis)/ p(Data)
 
-    
-### Classic/traditional Regression Model: Scholastic
+[^7]: Breiman, L. (2001). Statistical modeling: The two cultures.
+    Statistical science, 16(3), 199-231.
 
--   Scholastic (randomized sample with a known x to y function) data
+### Classic/traditional Regression Model: Stochastic
+
+-   Stochastic (randomized sample with a known x to y function) data
     models
-    -   Linear, logistic, and Cox survival analysis [^3]
+    -   Linear, logistic, and Cox survival analysis [^8]
     -   Can construct simple, understandable x-y relationship, with each
         predictors' importance revealed (by coefficients)
-    -   Problem: multiple models could equally well fit the data [^4],
+    -   Problem: multiple models could equally well fit the data [^9],
         but they yield different (inaccurate) conclusions.
 
-[^3]: Poisson regression has count/rate outcome; Cox regression has time
+[^8]: Poisson regression has count/rate outcome; Cox regression has time
     (between origin and event) outcome based on hazard/fail-risk factors
 
-[^4]: based on goodness-of-fit test and residual plots that give
+[^9]: based on goodness-of-fit test and residual plots that give
     arbitrary yes vs no model fit answers. A better way to gauge fit is
     to compare the agreement between predicted with observed y (as long
     as not over-fitting with too many predictors). Cross-validation can
@@ -176,26 +206,48 @@ initial/observed test statistic.
 ### Newer Regression Model: Algorithmic/machine-learning
 
 -   Algorithmic (unknown f(x)) data models (i.e. machine learning)
-    -   Decision Tree, Neural Network，Support vector machine ^[support vectors are the data points that have the smallest Euclidean metric/distance (in a M-dimension space, the real distance of two points or the length of a vector from the original point) from the optimal hyperplane (that separating classes in y outcomes). "Optimal" here is defined as meaning that the distance of the hyperplane to any prediction vector is maximal]
+    -   Decision Tree, Neural Network，Support vector machine [^10]
     -   Application: nonlinear/complex recognition/prediction where
         traditional equation/model can't fit to the data
     -   Can produce more accurate (with more dimensions/multiplicity)
-        prediction of y [^5]: by aggregating/en-sembling multiple predictors and/or functions/models together. Meanwhile, not overfitting (since even though there is no variable deletion, it can extract variable importance information from the data)
-        which can reduce unstable/different conclusions (i.e.
-        non-accurate preduction). [^6]
-    -   But usually a black box (i.e. x-y relationship); Although Decision Trees have a good interpret-ability based on their "nodes" that divide paths to different outcomes, they are not as accurate (in term of prediction with a lower low test set error in cross-validation) as the less interpret-able Random Forest. 
+        prediction of y [^11]: by aggregating/en-sembling multiple
+        predictors and/or functions/models together. Meanwhile, not
+        overfitting (since even though there is no variable deletion, it
+        can extract variable importance information from the data) which
+        can reduce unstable/different conclusions (i.e. non-accurate
+        preduction). [^12]
+    -   But usually a black box (i.e. x-y relationship); Although
+        Decision Trees have a good interpret-ability based on their
+        "nodes" that divide paths to different outcomes, they are not as
+        accurate (in term of prediction with a lower low test set error
+        in cross-validation) as the less interpret-able Random Forest.
 
-[^5]: "Aggregating overa large set of competing models can reduce the
+[^10]: support vectors are the data points that have the smallest
+    Euclidean metric/distance (in a M-dimension space, the real distance
+    of two points or the length of a vector from the original point)
+    from the optimal hyperplane (that separating classes in y outcomes).
+    "Optimal" here is defined as meaning that the distance of the
+    hyperplane to any prediction vector is maximal
+
+[^11]: "Aggregating overa large set of competing models can reduce the
     non-uniqueness while improving accuracy
 
-[^6]: if only measure model fit with test error or
+[^12]: if only measure model fit with test error or
     residual-sum-of-squares, we can easily get different models (and
     after different sets of co-variates get removed, get different
     conclusions)
 
 ### Different Ways to Reducing Dimensionality
-- Traditionally way to select/remove variables in a data model: the standardized coefficient that a predictor has (i.e. equals to value of coefficient/ standard error) decide whether to remove the predictor (i.e. importance/ strength of the predictor)
-- Another way to select model: randomly combine different predictors to construct model could find multiple subsets that have a lower deviance. This can be solved/improved by random forest which randomly select variables and calculate the importance of a predictor by measuring the noise raise if removing the predictor. 
+
+-   Traditionally way to select/remove variables in a data model: the
+    standardized coefficient that a predictor has (i.e. equals to value
+    of coefficient/ standard error) decide whether to remove the
+    predictor (i.e. importance/ strength of the predictor)
+-   Another way to select model: randomly combine different predictors
+    to construct model could find multiple subsets that have a lower
+    deviance. This can be solved/improved by random forest which
+    randomly select variables and calculate the importance of a
+    predictor by measuring the noise raise if removing the predictor.
 
 ### Big Data (Algorithmic model) Problem
 
@@ -205,7 +257,7 @@ initial/observed test statistic.
 -   Problem: big data representation
 
     -   Solution: multilevel regression and "borrow predictive strength
-        from demographically similar cells that have richer data" [^7]
+        from demographically similar cells that have richer data" [^13]
 
 -   Problem: black box cannot understand the clusters and associations
 
@@ -214,16 +266,14 @@ initial/observed test statistic.
         read (human-based) to help understand algorithmic models (and
         maybe also build rules to help iterate algorithmic models)
 
-[^7]: Yu-Sung Su, Reboot the Debate on Social Science Research Paradigm,
-    2022 Peking Education Economics Research Institute
-
+[^13]: Yu-Sung Su, Reboot the Debate on Social Science Research
+    Paradigm, 2022 Peking Education Economics Research Institute
 
 ## Big Names in the field
 
 -   Fisher regression model/specification
 -   Classic (Pearson/Neyman) vs Baysian methods
 -   Student's
-
 
 ## Linear models
 

@@ -10,6 +10,9 @@ Several projects are developed to support university's strategic planning:
 ## Impact of courses requirement for course restructuring 
 - The CourseReq.Rmd file used [WebSraping using rvest package](https://rvest.tidyverse.org/) to compile dataset from HTML. This project systematically scrapped university website focusing on courses requirements for 54 majors.
 
- ## Learning Management System (Canvas) for student advising improvement 
+## Review Coure Performances
+- The aacCourse_Report.pdf file reviewed students enrollment, GPA, and pass rate for several key courses. The report also examines the impact of retaking those courses on students' pass rate.
+
+## Learning Management System (Canvas) for student advising improvement 
 - The report_grade_aligning.Rmd contains codes to make [a full project report](https://github.com/ZhouLinli/IR-Projects/blob/main/Program%20Evaluation/report_grade_aligning.pdf) for assessing the data integrity, accuracy, and validity of Canvas database. I compared Canvas' grade discrepancies with Registrar measured by exact/slight/significant differences metrics.
 - The dataprep_clean_merge_grades_2021-2022.Rmd contains data cleaning process for Canvas versus Registrar database.

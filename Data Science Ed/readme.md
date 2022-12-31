@@ -1,5 +1,5 @@
-# Data Science Books/Articles Notes
-Welcome! This repository holds presentation slides that I made for learning data science.
+# Data Science Ed
+Welcome! This repository holds presentation slides I made based on articles and books on data science that I read.
 
 The data science books/articles covers the following contents:
 

@@ -12,6 +12,7 @@ Several projects are developed to support university's strategic planning:
 
 ## Review Coure Performances
 - The aacCourse_Report.pdf file reviewed students enrollment, GPA, and pass rate for several key courses. The report also examines the impact of retaking those courses on students' pass rate.
+- The CoreCourseReview_cleandf.Rmd and CoreCourseRev_report.qmd files include R codes to clean and report course data for a 5-year course enrollment and student performance review.
 
 ## Learning Management System (Canvas) for student advising improvement 
 - The report_grade_aligning.Rmd contains codes to make [a full project report](https://github.com/ZhouLinli/IR-Projects/blob/main/Program%20Evaluation/report_grade_aligning.pdf) for assessing the data integrity, accuracy, and validity of Canvas database. I compared Canvas' grade discrepancies with Registrar measured by exact/slight/significant differences metrics.

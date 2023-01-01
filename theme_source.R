@@ -42,7 +42,7 @@ library(ranger)#random forest
 library(tidylog)#see process of random forest
 #data models
 library(rstan)
-library("rmcelreath/rethinking")
+library(rethinking)#with the help of first installing: remotes::install_github("stan-dev/cmdstanr")
 
 
 

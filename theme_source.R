@@ -40,7 +40,9 @@ library(performance)#calculate intra class correlation
 library(caret)#creating predictive models: e.g. partitioning training vs test datasets
 library(ranger)#random forest
 library(tidylog)#see process of random forest
-
+#data models
+library(rstan)
+library("rmcelreath/rethinking")
 
 
 

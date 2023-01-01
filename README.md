@@ -1,32 +1,32 @@
-# Institutional Research Projects
-Welcome! This repository holds R codes for institutional research (IR) projects, including data cleaning, analysis, and reporting of higher education data. I organized my IR work into three categories: 
+# Data Projects
+Welcome! This repository holds R codes for data projects, including data cleaning, analysis, and reporting of higher education data. I organized my works into three categories: 
 
 ## Data Reporting
-In this folder, you will find R scripts/markdowns for reporting to external agencies:
+In this folder, you will find R scripts/markdowns for reporting to educational agencies:
 - The Integrated Postsecondary Education Data System (IPEDS)
 - Common Datast (CDS)
 - National Student Clearinghouse (NSC)
 - US News, Princeton Reviews Rankings
 
-I also developed programming for internal reporting:
+I also developed programming for internal university reporting:
 - Assessment of course placement methods; Analysis of faculty tenure paths
 - Data freeze between internal databases (datamart and Registrar's database)
 
 ## Program Evaluation
-In this folder, you will find R scripts/markdown I developed for evaluating higher education programs. Projects include:
+In this folder, you will find R scripts/markdown I developed for evaluating university programs:
 - Course performance review
 - Tracking alumni career and further education outcomes
 - Evaluating impact of courses requirement for strategically planning restructuring courses
 - Assessing the data integrity, accuracy, and validity of the Learning Management System (Canvas) for student advising improvement
 
 ## Survey Assessment
-In this folder, you will find R scripts/markdown I developed for cleaning and analyzing major surveys:
+In this folder, you will find R scripts/markdown I developed for cleaning and analyzing major large-scale surveys:
 - A historical comparison study with data from the National Survey of Student Engagement
 - Analysis of satisfactions surveys (i.e. the Student satisfaction survey, Quarterly parent survey, First impression survey, etc.) to improve institutional services and supports.
 - Analysis of program/ events surveys to improve institutional programming. 
 
 ## Data Science Ed
-In this folder, you will find resources for learning data science. I made presentation slides based on several data science books I read (each specific sources are noted in the slides). This educational folder covers the following data science topics:
+In this folder, you will find resources (i.e. presentation slides) I made for learning data science of the following topics:
 - How to choose a data model; pros and cons of different types of data models
 - Multivariate regression, predictive modeling, Baysian models
 - Algothrimic/ machine-learning modeling
@@ -38,4 +38,4 @@ Some templates files are also included in this repository:
 - lasell.report.template.docx is a template file when producing a docx format output. This file can make the R docx output file to have the same format as the template. 
 
 # Note
-This repository contains R codes for doing institutional research. No raw data points (unless fake data is used) are released. All R codes and their corresponding projects followed guidelines of [Institutional Review Board (IRB)](https://irb.research.chop.edu/criteria-irb-approval), [Family Educational Rights & Privacy Act (FERPA)](https://www.jhsph.edu/offices-and-services/student-affairs/ferpa.html#:~:text=What%20is%20FERPA%3F,of%20information%20from%20the%20records.), and [protection of data ownership](https://www.techopedia.com/definition/29059/data-ownership#:~:text=Explains%20Data%20Ownership-,What%20Does%20Data%20Ownership%20Mean%3F,implemented%20by%20the%20data%20owner.).
+All projects in this repository contains R codes for cleaning, analyzing, and presenting educational data related research. No raw data points (unless fake data is used) are released. All R codes and their corresponding projects followed guidelines of [Institutional Review Board (IRB)](https://irb.research.chop.edu/criteria-irb-approval), [Family Educational Rights & Privacy Act (FERPA)](https://www.jhsph.edu/offices-and-services/student-affairs/ferpa.html#:~:text=What%20is%20FERPA%3F,of%20information%20from%20the%20records.), and [protection of data ownership](https://www.techopedia.com/definition/29059/data-ownership#:~:text=Explains%20Data%20Ownership-,What%20Does%20Data%20Ownership%20Mean%3F,implemented%20by%20the%20data%20owner.).

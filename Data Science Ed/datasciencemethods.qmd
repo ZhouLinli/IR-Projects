@@ -110,19 +110,20 @@ linear models, logistic and ordinal regression, and survival analysis.
     continuous variables over categorical ones (which reduces
     measurement errors)
 
-
-
 ## Choosing Data Models
+
 ### Model-guided Data Collection
+
 -   Design data collection with prediction model in mind
-    -   stratified sampling (with weights that are representative to the population)
-    - cover all important predictors - preferably with their baseline
+    -   stratified sampling (with weights that are representative to the
+        population)
+    -   cover all important predictors - preferably with their baseline
         measurements
     -   define variables - with reliable and valid measurements verified
     -   specify in-dependency/interaction as well as distribution
         assumption
     -   plans for reducing missing data
-    
+
 ### Basic principle for choosing data models
 
 -   Choose model based on the **types of outcomes** (ordinal do NOT
@@ -191,7 +192,9 @@ linear models, logistic and ordinal regression, and survival analysis.
         predictors' importance revealed (by coefficients)
     -   Problem: multiple models could equally well fit the data [^9],
         but they yield different (inaccurate) conclusions.
-    - solution: LASSO (least absolute shrinkage and selection operator)  regression analysis method to reduce variable selection ^[penalize absolute values of weight]
+    -   solution: LASSO (least absolute shrinkage and selection
+        operator) regression analysis method to reduce variable
+        selection [^10]
 
 [^8]: Poisson regression has count/rate outcome; Cox regression has time
     (between origin and event) outcome based on hazard/fail-risk factors
@@ -205,36 +208,38 @@ linear models, logistic and ordinal regression, and survival analysis.
     decreasing, the model is still underfit. 2) When your validation
     loss is increasing, the model is overfit.
 
+[^10]: penalize absolute values of weight
+
 ### Newer Regression Model: Algorithmic/machine-learning
 
 -   Algorithmic (unknown f(x)) data models (i.e. machine learning)
-    -   Decision Tree, Neural Network，Support vector machine [^10]
+    -   Decision Tree, Neural Network，Support vector machine [^11]
     -   Application: nonlinear/complex recognition/prediction where
         traditional equation/model can't fit to the data
     -   Can produce more accurate (with more dimensions/multiplicity)
-        prediction of y [^11]: by aggregating/en-sembling multiple
+        prediction of y [^12]: by aggregating/en-sembling multiple
         predictors and/or functions/models together. Meanwhile, not
         overfitting (since even though there is no variable deletion, it
         can extract variable importance information from the data) which
         can reduce unstable/different conclusions (i.e. non-accurate
-        preduction). [^12]
+        preduction). [^13]
     -   But usually a black box (i.e. x-y relationship); Although
         Decision Trees have a good interpret-ability based on their
         "nodes" that divide paths to different outcomes, they are not as
         accurate (in term of prediction with a lower low test set error
         in cross-validation) as the less interpret-able Random Forest.
 
-[^10]: support vectors are the data points that have the smallest
+[^11]: support vectors are the data points that have the smallest
     Euclidean metric/distance (in a M-dimension space, the real distance
     of two points or the length of a vector from the original point)
     from the optimal hyperplane (that separating classes in y outcomes).
     "Optimal" here is defined as meaning that the distance of the
     hyperplane to any prediction vector is maximal
 
-[^11]: "Aggregating overa large set of competing models can reduce the
+[^12]: "Aggregating overa large set of competing models can reduce the
     non-uniqueness while improving accuracy
 
-[^12]: if only measure model fit with test error or
+[^13]: if only measure model fit with test error or
     residual-sum-of-squares, we can easily get different models (and
     after different sets of co-variates get removed, get different
     conclusions)
@@ -259,7 +264,7 @@ linear models, logistic and ordinal regression, and survival analysis.
 -   Problem: big data representation
 
     -   Solution: multilevel regression and "borrow predictive strength
-        from demographically similar cells that have richer data" [^13]
+        from demographically similar cells that have richer data" [^14]
 
 -   Problem: black box cannot understand the clusters and associations
 
@@ -268,27 +273,45 @@ linear models, logistic and ordinal regression, and survival analysis.
         read (human-based) to help understand algorithmic models (and
         maybe also build rules to help iterate algorithmic models)
 
-[^13]: Yu-Sung Su, Reboot the Debate on Social Science Research
-    Paradigm, 2022 Peking Education Economics Research Institute
-### Example ^[Using Software Development & Machine Learning for Equity in Large-Scale Data Collection & Linkage, 2022 NCES STATS-DC Data Conference] of human-in-the-loop algorithmic models
-- a group of human to rate the data sources (i.e. how to use the source for different research/analysis/measurement goals), identify possible important predictors, 
-- human suggestions to build model
+[^14]: Yu-Sung Su, Reboot the Debate on Social Science Research
+    Paradigm, 2022 Peking Education Economics Research Institute \###
+    Example [^15] of human-in-the-loop algorithmic models - a group of
+    human to rate the data sources (i.e. how to use the source for
+    different research/analysis/measurement goals), identify possible
+    important predictors, - human suggestions to build model
 
+
+# Statistical rethinking: a Bayesian course with examples in R and Stan
+::: column-margin
+--------
+McElreath, R. (2020). Statistical rethinking: A Bayesian course with examples in R and Stan. Chapman and Hall/CRC.
+:::
+
+## Rethinking Statistics as Engineering 
+- Engineering ^["Statistics is neither mathematics nor a science, but rather a branch of engineering" McElreath (2020)]: designing, building, and refining statistical procedures 
+- along with defining research __objectives__ and interpret statistical results (which requires understandings the relationship between statistical model and __hypothesis__/ assumptions/ limitations and natural mechanisms of interest) 
+
+## What is a proper statistical objective?
+- Karl Popper (1959) ^[Popper, K. R. (1959). The logic of scientific discovery. University Press.] argued that certainty can be obtained only when theories are falsified (i.e. we are certain the falsified is false, while we cannot be certain if a proved-evidence is true). 
+
+- In other words, falsification focuses on deductive reasoning (that TEST hypothesis based on observations and make __appropriate__ interpretation) ^[deductive reasoning: use theory to form hypothesis and then confirm with observations] that reverts the classic inductive reasoning (that try to summarize a general "truth" based on some observations) ^[inductive reasoning: derive theory from observation, which can be problematic as we cannot make general by observing particulars]. 
+
+- Falsification formed a "critique" culture of science called "critical rationalism". The culture helps us progressively approach the truth (but we can never be certain that we have the final explanation). Science may progresses, as we falsify an old theory, a new theory may come up (to be tested and falsified continuously).
+
+## Rethinking Falsification
+- Rethinking NHST (Null hypothesis significance test)
+- impossible because hypothesis does not equals to models and measurement errors
+- 
+
+#other notes
 ## Big Names in the field
 
 -   Fisher regression model/specification
 -   Classic (Pearson/Neyman) vs Baysian methods
 -   Student's
 
-## Linear models
 
-## Logistic models
-
-## Ordinal regression
-
-## Survival analysis
-
-# Hidden slides {visibility="hidden"}
+## Hidden slides {visibility="hidden"}
 
 ```{r image}
 #![](image1.png){.r-stretch}

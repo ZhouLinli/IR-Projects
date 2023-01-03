@@ -299,9 +299,15 @@ McElreath, R. (2020). Statistical rethinking: A Bayesian course with examples in
 - Falsification formed a "critique" culture of science called "critical rationalism". The culture helps us progressively approach the truth (but we can never be certain that we have the final explanation). Science may progresses, as we falsify an old theory, a new theory may come up (to be tested and falsified continuously).
 
 ## Rethinking Falsification
-- Rethinking NHST (Null hypothesis significance test)
-- impossible because hypothesis does not equals to models and measurement errors
-- 
+- Rethinking NHST (Null hypothesis significance test): Usually NHST falsifies a null hypothesis (that only indicate one specific way of thinking), not the actual research hypothesis (that needs both accurate models that implies the answers to the research objective)
+  - Hypothesis does not equals to models/theories ^[most-frequently used model are (parametric) distribution theories in the exponential family including normal, bi-normal, Poisson distribution]: Hypotheses do not imply unique models/theories, and models/theories do not imply unique hypotheses ^[Examples of "Hypothesis does not equals to models/theories": 1. if hypothesis H1 can be proven/falsified by observing O, other hypothesis could also lead to observation O; so finding observation O tells nothing about the original hypothesis/theory. 2. Also the model fitting/relating hypothesis and observation could be multiple as well. 3. observation O2 might be the key instead of observation O]
+
+- Falsification maybe impossible due to measurement errors in the following ways: falsification is consensual/subjective; falsification is hard for degree of existence (i.e. 80% of swan are white); observations difficulty/uncertainty
+
+## Topics Overview
+- Bayesian data analysis
+- Multilevel models
+- Model comparison using information criteria
 
 #other notes
 ## Big Names in the field

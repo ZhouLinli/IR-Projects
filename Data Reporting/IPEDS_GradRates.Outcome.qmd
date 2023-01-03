@@ -211,6 +211,8 @@ coh14%>%mutate(stillenroll22fall=if_else(
 ## completion 6-8yr= graduated during 2020fall(December) to 2022spring(May)/summer(August)) 
 ```
 
+## dgsknew14-15
+
 ```{r load.enroll14fall/15spring}
 #full year degree seeking students include: degree-seeking, entering/new students in 2014 fall and 2015 spring backup data
 
@@ -220,7 +222,6 @@ enroll14fall<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registra
   
 enroll15spring<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2015 Spring/UG/UGSpringFinal2015BackUpDataReport.xlsx",skip = 3)
 ```
-
 
 ```{r dgsknew.enroll14fall.s/15spring.s}
 ##enroll14fall.s
@@ -264,12 +265,16 @@ enroll14_15<-full_join(enroll14fall.s,enroll15spring.s_new)
 #check: enroll14_15%>%count(`People Code Id`)%>%count(n)#unqiue 622 students
 ```
 
-```{r load.finaid14_15}
+## adding finaid cols
+
+```{r loadselect.finaid14_15.s}
 finaid14_15<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Fin Aid Sharing/14-15 final.xlsx")
-finaid14_15.s<-finaid14_15%>%select(`Student Ssn`,`Stafford Paid`,`Pell Award Calc`,`Last Name`,`First Name`)
+finaid14_15.s<-finaid14_15%>%select(`Student Ssn`,`Stafford Paid`,`Pell Award Calc`,`Last Name`,`First Name`,`Cohort year`)
+#checkfinaid14_15.s%>%count(`Student Ssn`)%>%count()#yes, unique ssns
+
 ```
 
-```{r enroll14_15.ssn}
+```{r loadselect.dmt14_15.s}
 #finaid cols ready to be mutated into enroll14_15
 #however, we need to find the matching-var which is ssn
 
@@ -279,22 +284,144 @@ finaid14_15.s<-finaid14_15%>%select(`Student Ssn`,`Stafford Paid`,`Pell Award Ca
 dmt14fall<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/Test Run of Data Mart/Fall 2014/Undergrad_Fall_2014_12312014.xlsx")
 dmt15spring<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Datamart Files/Test Run of Data Mart/Spring 2015/Spring 2015 02052014.xlsx")
 dmt14_15<-full_join(dmt14fall,dmt15spring)
-dmt14_15.s<-dmt14_15%>%select(SSN,PC_ID)
+dmt14_15.s<-dmt14_15%>%select(SSN,PC_ID)%>%unique()#removed duplication
+```
+
+```{r enroll14_15.dmt(ssn)}
 #using PCID to match
 enroll14_15.dmt<-left_join(enroll14_15,dmt14_15.s,by=c("People Code Id"="PC_ID"))
-#check: enroll14_15.dmt%>%count(SSN)%>%count(n) #no NA, but most ssn appeared four times
+#check: enroll14_15.dmt%>%count(SSN)%>%count(n) #no duplication no NA, good
 ```
-
 
 ```{r enroll14_15.finaid}
-enroll14_15.fin<-left_join(enroll14_15,finaid14_15,by=c(=`Student Ssn`))
+#now we found all ssn col to enroll14_15 (based on dmt), we can then mutate finaid cols by matching ssn
+
+#first we need to convert SSN to the same NUMERIC type (numeric will remove the starting zeros in the ssn!)
+#check: str(enroll14_15.dmt$SSN)#character
+enroll14_15.dmt$SSN<-as.numeric(enroll14_15.dmt$SSN)#now numeric
+#check: class(finaid14_15.s$`Student Ssn`)#numeric
+
+#ready to match (to mutate finaid cols based on ssn)
+enroll14_15.fin<-left_join(enroll14_15.dmt,finaid14_15.s,by=c("SSN"="Student Ssn"))
+#check:enroll14_15.fin%>%count(is.na(`Stafford Paid`))#580 out of 622 students received finaid (matched in finaid)
+
+#check: all cohort 2014 students should find a ssn match in the enroll1415 data
+# finaid14_15%>%filter(`Cohort year`==2014)%>%nrow()#485 students, sounds good
+
+
 ```
 
+```{r factorize for convnience reporting}
+#for convnience of reporting, construct pell vs nonpell col
+enroll14_15.fin<-enroll14_15.fin%>%
+  #if>0 then received pell, if na or =0 then non-pell
+  mutate(pell=case_when(`Pell Award Calc`>0~"pell",
+                        `Pell Award Calc`==0~"non-pell",
+                        is.na(`Pell Award Calc`)~"non-pell"))#check: %>%count(pell,`Pell Award Calc`)%>%View()
 
-```{r}
+#factorizing/ recoding
+enroll14_15.fin<-enroll14_15.fin%>%
+  mutate(pell=factor(pell,levels=c("pell","non-pell")),
+         `Transfer YN`=recode(`Transfer YN`,"Y"="Nonfirsttime/Transfer","N"="Firsttime"))
+```
+
+## adding completion
+
+```{r loadselect.complete14_22.s}
+#load (ReportManager- Final List of Graduates By Date Range 11/1/2014-9/1/2022) 
+complete14_22<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Graduation Rates/Final List of Graduates By Date Range%2DIncluding Certs.csv")
+complete14_22.s<-complete14_22%>%select(textbox41,DEGREE,textbox4,last_name)%>%unique()%>%
+  rename(ppid=textbox41,graddate=textbox4,name=last_name,degreeawarded=DEGREE)
+#check:complete14_22.s%>%count(textbox41)%>%count() #unique
+```
+
+```{r enroll14_15.complete}
+enroll14_15.complete<-left_join(enroll14_15.fin,complete14_22.s,by=c("People Code Id"="ppid")) #only find 416 graduated students, meaning 226 not received a degree from lasell, which is similar to last year's reporting number, reasonable
+
+# from 622 to 642, meaning 20 students received both UG and GD degree
+#check: enroll14_15.complete%>%count(degreeawarded)
+enroll14_15.complete<-enroll14_15.complete%>%filter(! grepl("^M",degreeawarded))
+#check:%>% count(degreeawarded)
+```
+
+```{r col.completeyear}
+#create col: completion year for 2014 cohort 
+enroll14_15.complete<-enroll14_15.complete%>%mutate(graddate=mdy(graddate))%>%#convert to date first
+  mutate(completeyr=case_when(
+##completion <=4yr: graduated during 2014fall(December) to 2018spring(May)/summer(August)
+    graddate<"2018-09-01" ~"within 4yr",
+    
+##completion 4-6yr= graduated during 2018fall(December) to 2020spring(May)/summer(August)
+    graddate>"2018-09-01"&graddate<"2020-09-01" ~"4-6yr",
+
+##completion 6-8yr= graduated during 2020fall(December) to 2022spring(May)/summer(August)
+    graddate>"2020-09-01"&graddate<"2022-09-01" ~"6-8yr",
+
+    is.na(graddate) ~ "no grad date"))#check: %>%count(graddate,completeyr)
+```
+
+```{r compyr.conviniencereporting}
+enroll14_15.complete<-enroll14_15.complete%>%
+  mutate(comp4yr=if_else(completeyr=="within 4yr","yes4yr","no4yr"),
+         comp6yr=if_else(completeyr %in% c("within 4yr","4-6yr"),"yes6yr","no6yr"),
+         comp8yr=if_else(completeyr %in% c("within 4yr","4-6yr","6-8yr"),"yes8yr","no8yr"))
+```
+
+## still enroll
+
+```{r stillenroll14_15}
+#loadenroll22fall: enroll22fall<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Fall/Fall 2022 UG Backup Data Report.xlsx")
+#still enroll in 22fall
+enroll14_15.complete<-enroll14_15.complete%>%
+  mutate(stillenroll22fall=if_else(
+  enroll14_15.complete$`People Code Id` %in% enroll22fall$`People Code Id`,
+  "Yes","No"))#check:%>%count(stillenroll22fall)#one still enroll in 2022 fall
+```
+
+## transfer: await transfer data from clearinghouse
+
+## save outcome measure dfs
+
+```{r save.enroll14_15withfinaid}
+wb<-createWorkbook()
+addWorksheet(wb,"enroll14_15.complete"); writeData(wb,"enroll14_15.complete", x = enroll14_15.complete)
+addWorksheet(wb,"enroll14_15.fin"); writeData(wb,"enroll14_15.fin", x = enroll14_15.fin)
+addWorksheet(wb,"rawenroll14_15.ssn"); writeData(wb,"rawenroll14_15.ssn", x = enroll14_15.dmt)
+addWorksheet(wb,"rawfinaid14_15"); writeData(wb,"rawfinaid14_15", x = finaid14_15.s)
+saveWorkbook(wb,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/IPEDS/2022-2023/Graduation Rates/enroll14_15withfinaid.xlsx",overwrite = TRUE)
+```
+
+# Report Outcome Measure: establishing cohorts
+
+```{r establishingcohort}
 #transfer and FT/PT determines the four subgroups:
-#FTFT
-#FTPT
-#NFTFT
-#NFTPT
+#FTFT: nontransfer, fulltime
+#FTPT: nontransfer, parttime
+#NFTFT: transfer, fulltime
+#NFTPT: transfer, parttime
+#and by pell/non-pell col
+
+enroll14_15.fin%>%group_by(`Transfer YN`,`FT/PT`,pell,.drop = FALSE)%>%count()
+```
+
+```{r awardstatus4yr}
+#check: enroll14_15.complete%>%count(completeyr)
+enroll14_15.complete%>%filter(comp4yr=="yes4yr")%>%
+  group_by(`Transfer YN`,`FT/PT`,pell,.drop = FALSE)%>%count()
+```
+
+```{r awardstatuswithin6yr}
+enroll14_15.complete%>%filter(comp6yr=="yes6yr")%>%
+  group_by(`Transfer YN`,`FT/PT`,pell,.drop = FALSE)%>%count()
+```
+
+```{r awardstatuswithin8yr}
+enroll14_15.complete%>%filter(comp8yr=="yes8yr")%>%
+  group_by(`Transfer YN`,`FT/PT`,pell,.drop = FALSE)%>%count()
+```
+
+```{r stillenroll}
+#check: enroll14_15.complete%>%count(stillenroll22fall)
+enroll14_15.complete%>%filter(stillenroll22fall=="Yes")%>%
+  group_by(`Transfer YN`,`FT/PT`,pell,.drop = FALSE)%>%count()
 ```

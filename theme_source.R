@@ -85,6 +85,19 @@ cf_color<-function(x,
           x>d,col3,#if <50% but >30%, then col3;
           col4)))))}#if <30%, then col4
 
+cf_color_blue<-function(x,
+                       a=.9,b=.8,c=.5,d=.3,
+                       col1=color_blue_lasell,#great
+                       col2=color_blue,#good
+                       col3=color_bluelight,#avg
+                       col4=color_greylight){#ignore
+  if_else(is.na(x),"white",if_else(
+    x>a,col1,if_else(#if not na and >90%, then col1;
+      x>b,col2,ifelse(#if <90% but >80%, then col2;
+        x>c,col3,ifelse(#if <80% but >50%, then col3;
+          x>d,col4,#if <50% but >30%, then col4;
+          "white")))))}#if <30%, then col4
+
 #usage: 
 #tab<-table%>%kable()
 #column_spec(tab,column=2,

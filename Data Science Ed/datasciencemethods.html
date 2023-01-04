@@ -414,15 +414,21 @@ Linli
 <section id="prediction-classification" class="slide level3">
 <h3>2. Prediction &gt; Classification</h3>
 <ul>
-<li class="fragment">Prediction model regards outcomes on a <strong>continuum</strong>, while classification model forces <strong>dichotomous</strong> outcomes which cause information loss <sup>1</sup></li>
+<li class="fragment">Prediction model regards outcomes on a <strong>continuum</strong>, while classification model forces <strong>dichotomous</strong> outcomes which cause information loss <a href="#/footnotes" class="footnote-ref" id="fnref1" role="doc-noteref" data-footnote-href="#/fn1" onclick=""><sup>1</sup></a></li>
 <li class="fragment">Prediction model may be a necessary first step for building classification rules (for a classification model)</li>
 </ul>
-<aside><ol class="aside-footnotes"><li id="fn1"><p>This also applies to data collection state. We may always use continuous variables over categorical ones (which reduces measurement errors)</p></li></ol></aside></section>
+<aside></aside></section>
+
+<section id="choosing-data-models" class="title-slide slide level2 center">
+<h2>Choosing Data Models</h2>
+
+</section>
 <section id="model-guided-data-collection" class="slide level3">
-<h3>3. Model-guided Data Collection</h3>
+<h3>Model-guided Data Collection</h3>
 <ul>
 <li class="fragment">Design data collection with prediction model in mind
 <ul>
+<li class="fragment">stratified sampling (with weights that are representative to the population)</li>
 <li class="fragment">cover all important predictors - preferably with their baseline measurements</li>
 <li class="fragment">define variables - with reliable and valid measurements verified</li>
 <li class="fragment">specify in-dependency/interaction as well as distribution assumption</li>
@@ -430,58 +436,54 @@ Linli
 </ul></li>
 </ul>
 </section>
-
-<section id="choosing-data-models" class="title-slide slide level2 center">
-<h2>Choosing Data Models</h2>
-
-</section>
 <section id="basic-principle-for-choosing-data-models" class="slide level3">
 <h3>Basic principle for choosing data models</h3>
 <ul>
 <li class="fragment"><p>Choose model based on the <strong>types of outcomes</strong> (ordinal do NOT polytomous/multi-nomial model; continuous do NOT logistic model)</p></li>
-<li class="fragment"><p>Develop a model <strong>empirically</strong> (validate different model accuracy <sup>1</sup>) based on the differences between the predicted value (in the training set, often bagged <sup>2</sup> or boosted <sup>3</sup>) and the observed value (in the test set)</p></li>
-<li class="fragment"><p>Understand pros and cons of different types of data models (Scholastic vs Algorithmic)</p></li>
+<li class="fragment"><p>Develop a model <strong>empirically</strong> (validate different model accuracy <a href="#/footnotes" class="footnote-ref" id="fnref2" role="doc-noteref" data-footnote-href="#/fn2" onclick=""><sup>2</sup></a>) based on the differences between the predicted value (in the training set, often bagged <a href="#/footnotes" class="footnote-ref" id="fnref3" role="doc-noteref" data-footnote-href="#/fn3" onclick=""><sup>3</sup></a> or boosted <a href="#/footnotes" class="footnote-ref" id="fnref4" role="doc-noteref" data-footnote-href="#/fn4" onclick=""><sup>4</sup></a>) and the observed value (in the test set)</p></li>
+<li class="fragment"><p>Understand pros and cons of different types of data models (Stochastic vs Algorithmic)</p></li>
 </ul>
-<aside><ol class="aside-footnotes"><li id="fn2"><p>i.e.&nbsp;measure generalization error or infinite test set error which indicate prediction accuracy</p></li><li id="fn3"><p>bag (bootstrap aggregate) is to “random sample” the training set for k times, each time get a f(x) function. For a regression model, the bagged predictors are the average over the 1th to kth f(x). For a classification model, the bagged predictor is the class that has the plurity/most vote from the 1th to kth f(x).</p></li><li id="fn4"><p>instead of random sampling the training set, altering weights on he training set to ensemble predictors in a classification model</p></li></ol></aside></section>
+<aside></aside></section>
 <section id="types-of-models" class="slide level3">
 <h3>Types of models</h3>
 <ul>
-<li class="fragment"><strong>Parametric/frequentist</strong> (assume probability distribution) vs <strong>Non-parametric/ Bayesian</strong> regression models <sup>1</sup>
+<li class="fragment"><strong>Parametric/frequentist</strong> (assume probability distribution) vs <strong>Non-parametric/ Bayesian</strong> regression models <a href="#/footnotes" class="footnote-ref" id="fnref5" role="doc-noteref" data-footnote-href="#/fn5" onclick=""><sup>5</sup></a>
 <ul>
 <li class="fragment">Frequentist approach assumes a random/stochastic sample and aims to estimate null hypothesis (fixed unknown population parameter) based on maximizing the likelihood (p-value, probability to reject the bull hypothesis) built on a known population distribution.</li>
-<li class="fragment">Bayesian approach is based on the Bayes’ theorem: the posterior probability (the probability of this hypothesis about a population parameter is true after seeing the data) = prior probability (a first belief about how likely this hypothesis is true) * the probability of getting the data under the condition that the hypothesis is true / probability of getting the data regardless of hypothesis is true or false <sup>2</sup></li>
+<li class="fragment">Bayesian approach is based on the Bayes’ theorem: the posterior probability (the probability of this hypothesis about a population parameter is true after seeing the data) = prior probability (a first belief about how likely this hypothesis is true) * the probability of getting the data under the condition that the hypothesis is true / probability of getting the data regardless of hypothesis is true or false <a href="#/footnotes" class="footnote-ref" id="fnref6" role="doc-noteref" data-footnote-href="#/fn6" onclick=""><sup>6</sup></a></li>
 </ul></li>
 <li class="fragment">Accordingly, there are two types of hypothesis testing:
 <ul>
 <li class="fragment">Parametric/rank test assumes sample comes from a certain probability distribution and calculates p-value as the probability of the occurrence of a given test statistic</li>
 <li class="fragment">Permutation test: randomly samples (without replacement) possible permutations and calculates p-value as the proportion of samples that have a test statistic more extreme than our initial/observed test statistic.</li>
 </ul></li>
-<li class="fragment">Scholastic vs Algorithmic - see the following slides <sup>3</sup></li>
+<li class="fragment">Stochastic vs Algorithmic - see the following slides <a href="#/footnotes" class="footnote-ref" id="fnref7" role="doc-noteref" data-footnote-href="#/fn7" onclick=""><sup>7</sup></a></li>
 </ul>
-<aside><ol class="aside-footnotes"><li id="fn5"><p>a kernel is a weighting function used in non-parametric estimation techniques.</p></li><li id="fn6"><p>p (hypothesis|Data)=p(hypothesis)*p(Data|hypothesis)/ p(Data) </p></li><li id="fn7"><p>Breiman, L. (2001). Statistical modeling: The two cultures. Statistical science, 16(3), 199-231.</p></li></ol></aside></section>
-<section id="classictraditional-regression-model-scholastic" class="slide level3">
-<h3>Classic/traditional Regression Model: Scholastic</h3>
+<aside></aside></section>
+<section id="classictraditional-regression-model-stochastic" class="slide level3">
+<h3>Classic/traditional Regression Model: Stochastic</h3>
 <ul>
-<li class="fragment">Scholastic (randomized sample with a known x to y function) data models
+<li class="fragment">Stochastic (randomized sample with a known x to y function) data models
 <ul>
-<li class="fragment">Linear, logistic, and Cox survival analysis <sup>1</sup></li>
+<li class="fragment">Linear, logistic, and Cox survival analysis <a href="#/footnotes" class="footnote-ref" id="fnref8" role="doc-noteref" data-footnote-href="#/fn8" onclick=""><sup>8</sup></a></li>
 <li class="fragment">Can construct simple, understandable x-y relationship, with each predictors’ importance revealed (by coefficients)</li>
-<li class="fragment">Problem: multiple models could equally well fit the data <sup>2</sup>, but they yield different (inaccurate) conclusions.</li>
+<li class="fragment">Problem: multiple models could equally well fit the data <a href="#/footnotes" class="footnote-ref" id="fnref9" role="doc-noteref" data-footnote-href="#/fn9" onclick=""><sup>9</sup></a>, but they yield different (inaccurate) conclusions.</li>
+<li class="fragment">solution: LASSO (least absolute shrinkage and selection operator) regression analysis method to reduce variable selection <a href="#/footnotes" class="footnote-ref" id="fnref10" role="doc-noteref" data-footnote-href="#/fn10" onclick=""><sup>10</sup></a></li>
 </ul></li>
 </ul>
-<aside><ol class="aside-footnotes"><li id="fn8"><p>Poisson regression has count/rate outcome; Cox regression has time (between origin and event) outcome based on hazard/fail-risk factors</p></li><li id="fn9"><p>based on goodness-of-fit test and residual plots that give arbitrary yes vs no model fit answers. A better way to gauge fit is to compare the agreement between predicted with observed y (as long as not over-fitting with too many predictors). Cross-validation can gauge fit AND avoid the over-fitting problem: 1) Calculate validation loss next to training loss. When your validation loss is decreasing, the model is still underfit. 2) When your validation loss is increasing, the model is overfit.</p></li></ol></aside></section>
+<aside></aside></section>
 <section id="newer-regression-model-algorithmicmachine-learning" class="slide level3">
 <h3>Newer Regression Model: Algorithmic/machine-learning</h3>
 <ul>
 <li class="fragment">Algorithmic (unknown f(x)) data models (i.e.&nbsp;machine learning)
 <ul>
-<li class="fragment">Decision Tree, Neural Network，Support vector machine <sup>1</sup></li>
+<li class="fragment">Decision Tree, Neural Network，Support vector machine <a href="#/footnotes" class="footnote-ref" id="fnref11" role="doc-noteref" data-footnote-href="#/fn11" onclick=""><sup>11</sup></a></li>
 <li class="fragment">Application: nonlinear/complex recognition/prediction where traditional equation/model can’t fit to the data</li>
-<li class="fragment">Can produce more accurate (with more dimensions/multiplicity) prediction of y <sup>2</sup>: by aggregating/en-sembling multiple predictors and/or functions/models together. Meanwhile, not overfitting (since even though there is no variable deletion, it can extract variable importance information from the data) which can reduce unstable/different conclusions (i.e. non-accurate preduction). <sup>3</sup></li>
+<li class="fragment">Can produce more accurate (with more dimensions/multiplicity) prediction of y <a href="#/footnotes" class="footnote-ref" id="fnref12" role="doc-noteref" data-footnote-href="#/fn12" onclick=""><sup>12</sup></a>: by aggregating/en-sembling multiple predictors and/or functions/models together. Meanwhile, not overfitting (since even though there is no variable deletion, it can extract variable importance information from the data) which can reduce unstable/different conclusions (i.e.&nbsp;non-accurate preduction). <a href="#/footnotes" class="footnote-ref" id="fnref13" role="doc-noteref" data-footnote-href="#/fn13" onclick=""><sup>13</sup></a></li>
 <li class="fragment">But usually a black box (i.e.&nbsp;x-y relationship); Although Decision Trees have a good interpret-ability based on their “nodes” that divide paths to different outcomes, they are not as accurate (in term of prediction with a lower low test set error in cross-validation) as the less interpret-able Random Forest.</li>
 </ul></li>
 </ul>
-<aside><ol class="aside-footnotes"><li id="fn10"><p>support vectors are the data points that have the smallest Euclidean metric/distance (in a M-dimension space, the real distance of two points or the length of a vector from the original point) from the optimal hyperplane (that separating classes in y outcomes). “Optimal” here is defined as meaning that the distance of the hyperplane to any prediction vector is maximal</p></li><li id="fn11"><p>“Aggregating overa large set of competing models can reduce the non-uniqueness while improving accuracy</p></li><li id="fn12"><p>if only measure model fit with test error or residual-sum-of-squares, we can easily get different models (and after different sets of co-variates get removed, get different conclusions)</p></li></ol></aside></section>
+<aside></aside></section>
 <section id="different-ways-to-reducing-dimensionality" class="slide level3">
 <h3>Different Ways to Reducing Dimensionality</h3>
 <ul>
@@ -495,15 +497,75 @@ Linli
 <li class="fragment"><p>Convenient data collection: web survey or extract data from web posts</p></li>
 <li class="fragment"><p>Problem: big data representation</p>
 <ul>
-<li class="fragment">Solution: multilevel regression and “borrow predictive strength from demographically similar cells that have richer data” <sup>1</sup></li>
+<li class="fragment">Solution: multilevel regression and “borrow predictive strength from demographically similar cells that have richer data” <a href="#/footnotes" class="footnote-ref" id="fnref14" role="doc-noteref" data-footnote-href="#/fn14" onclick=""><sup>14</sup></a></li>
 </ul></li>
 <li class="fragment"><p>Problem: black box cannot understand the clusters and associations</p>
 <ul>
 <li class="fragment">Solution: cross-validation: build (algorithmic) model with big data and verify with a small sample; select a small sample to read (human-based) to help understand algorithmic models (and maybe also build rules to help iterate algorithmic models)</li>
 </ul></li>
 </ul>
-<aside><ol class="aside-footnotes"><li id="fn13"><p>Yu-Sung Su, Reboot the Debate on Social Science Research Paradigm, 2022 Peking Education Economics Research Institute</p></li></ol></aside></section>
+<aside></aside></section>
+</section>
+<section>
+<section id="statistical-rethinking-a-bayesian-course-with-examples-in-r-and-stan" class="title-slide slide level1 center">
+<h1>Statistical rethinking: a Bayesian course with examples in R and Stan</h1>
+<div class="column-margin">
+<hr>
+<p>McElreath, R. (2020). Statistical rethinking: A Bayesian course with examples in R and Stan. Chapman and Hall/CRC.</p>
+</div>
+</section>
+<section id="rethinking-statistics-as-engineering" class="title-slide slide level2 center">
+<h2>Rethinking Statistics as Engineering</h2>
+<ul>
+<li class="fragment">Engineering <a href="#/footnotes" class="footnote-ref" id="fnref15" role="doc-noteref" data-footnote-href="#/fn15" onclick=""><sup>15</sup></a>: designing, building, and refining statistical procedures</li>
+<li class="fragment">along with defining research <strong>objectives</strong> and interpret statistical results (which requires understandings the relationship between statistical model and <strong>hypothesis</strong>/ assumptions/ limitations and natural mechanisms of interest)</li>
+</ul>
+<aside></aside></section>
 
+<section id="what-is-a-proper-statistical-objective" class="title-slide slide level2 center">
+<h2>What is a proper statistical objective?</h2>
+<ul>
+<li class="fragment"><p>Karl Popper (1959) <a href="#/footnotes" class="footnote-ref" id="fnref16" role="doc-noteref" data-footnote-href="#/fn16" onclick=""><sup>16</sup></a> argued that certainty can be obtained only when theories are falsified (i.e.&nbsp;we are certain the falsified is false, while we cannot be certain if a proved-evidence is true).</p></li>
+<li class="fragment"><p>In other words, falsification focuses on deductive reasoning (that TEST hypothesis based on observations and make <strong>appropriate</strong> interpretation) <a href="#/footnotes" class="footnote-ref" id="fnref17" role="doc-noteref" data-footnote-href="#/fn17" onclick=""><sup>17</sup></a> that reverts the classic inductive reasoning (that try to summarize a general “truth” based on some observations) <a href="#/footnotes" class="footnote-ref" id="fnref18" role="doc-noteref" data-footnote-href="#/fn18" onclick=""><sup>18</sup></a>.</p></li>
+<li class="fragment"><p>Falsification formed a “critique” culture of science called “critical rationalism”. The culture helps us progressively approach the truth (but we can never be certain that we have the final explanation). Science may progresses, as we falsify an old theory, a new theory may come up (to be tested and falsified continuously).</p></li>
+</ul>
+<aside></aside></section>
+
+<section id="rethinking-falsification" class="title-slide slide level2 center">
+<h2>Rethinking Falsification</h2>
+<ul>
+<li class="fragment">Rethinking NHST (Null hypothesis significance test): Usually NHST falsifies a null hypothesis (that only indicate one specific way of thinking), not the actual research hypothesis (that needs both accurate models that implies the answers to the research objective)
+<ul>
+<li class="fragment">Hypothesis does not equals to models/theories <a href="#/footnotes" class="footnote-ref" id="fnref19" role="doc-noteref" data-footnote-href="#/fn19" onclick=""><sup>19</sup></a>: Hypotheses do not imply unique models/theories, and models/theories do not imply unique hypotheses <a href="#/footnotes" class="footnote-ref" id="fnref20" role="doc-noteref" data-footnote-href="#/fn20" onclick=""><sup>20</sup></a></li>
+</ul></li>
+<li class="fragment">Falsification maybe impossible due to measurement errors in the following ways: falsification is consensual/subjective; falsification is hard for degree of existence (i.e.&nbsp;80% of swan are white); observations difficulty/uncertainty</li>
+</ul>
+<aside></aside></section>
+
+<section id="topics-overview-baysian" class="title-slide slide level2 center">
+<h2>Topics Overview: Baysian</h2>
+<ul>
+<li class="fragment">Bayesian data analysis
+<ul>
+<li class="fragment">Frequentists focuses on the distribution of a statistics calculated from repeated re-samples from the population. Probability is identified with <strong>frequency</strong> of a statistics appeared in a “random/stochastic” sampling distribution. But this won’t work if we don’t have enough to re-sample (so each sample is the same)</li>
+<li class="fragment">Bayesian focuses on the theoretical posterior probability distribution/ model parameters, a conditional probability, logically inferred (i.e.&nbsp;using the likelihood function <a href="#/footnotes" class="footnote-ref" id="fnref21" role="doc-noteref" data-footnote-href="#/fn21" onclick=""><sup>21</sup></a> or the Bayes’s theorem/ inverse probability) based on 1) observed data and 2) prior prior probability distribution/ model parameters. Probability is degree of belief based on counting events, or updating model parameters. But application of Baysian methods remain computationally expensive, so alternatives/approximations to Baysian inference are valuable.</li>
+</ul></li>
+</ul>
+<aside></aside></section>
+
+<section id="topics-overview-multilevel" class="title-slide slide level2 center">
+<h2>Topics Overview: Multilevel</h2>
+<ul>
+<li class="fragment">Multilevel models</li>
+<li class="fragment">Model comparison using information criteria</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="other-notes" class="title-slide slide level1 center">
+<h1>other notes</h1>
+
+</section>
 <section id="big-names-in-the-field" class="title-slide slide level2 center">
 <h2>Big Names in the field</h2>
 <ul>
@@ -513,29 +575,34 @@ Linli
 </ul>
 </section>
 
-<section id="linear-models" class="title-slide slide level2 center">
-<h2>Linear models</h2>
 
 </section>
+<section id="footnotes" class="footnotes footnotes-end-of-document smaller scrollable" role="doc-endnotes"><h3>Footnotes</h3>
 
-<section id="logistic-models" class="title-slide slide level2 center">
-<h2>Logistic models</h2>
-
+<ol>
+<li id="fn1"><p>This also applies to data collection state. We may always use continuous variables over categorical ones (which reduces measurement errors)</p></li>
+<li id="fn2"><p>i.e.&nbsp;measure generalization error or infinite test set error which indicate prediction accuracy</p></li>
+<li id="fn3"><p>bag (bootstrap aggregate) is to “random sample” the training set for k times, each time get a f(x) function. For a regression model, the bagged predictors are the average over the 1th to kth f(x). For a classification model, the bagged predictor is the class that has the plurity/most vote from the 1th to kth f(x).</p></li>
+<li id="fn4"><p>instead of random sampling the training set, altering weights on he training set to ensemble predictors in a classification model</p></li>
+<li id="fn5"><p>a kernel is a weighting function used in non-parametric estimation techniques.</p></li>
+<li id="fn6"><p>p (hypothesis|Data)=p(hypothesis)*p(Data|hypothesis)/ p(Data)</p></li>
+<li id="fn7"><p>Breiman, L. (2001). Statistical modeling: The two cultures. Statistical science, 16(3), 199-231.</p></li>
+<li id="fn8"><p>Poisson regression has count/rate outcome; Cox regression has time (between origin and event) outcome based on hazard/fail-risk factors</p></li>
+<li id="fn9"><p>based on goodness-of-fit test and residual plots that give arbitrary yes vs no model fit answers. A better way to gauge fit is to compare the agreement between predicted with observed y (as long as not over-fitting with too many predictors). Cross-validation can gauge fit AND avoid the over-fitting problem: 1) Calculate validation loss next to training loss. When your validation loss is decreasing, the model is still underfit. 2) When your validation loss is increasing, the model is overfit.</p></li>
+<li id="fn10"><p>penalize absolute values of weight</p></li>
+<li id="fn11"><p>support vectors are the data points that have the smallest Euclidean metric/distance (in a M-dimension space, the real distance of two points or the length of a vector from the original point) from the optimal hyperplane (that separating classes in y outcomes). “Optimal” here is defined as meaning that the distance of the hyperplane to any prediction vector is maximal</p></li>
+<li id="fn12"><p>“Aggregating overa large set of competing models can reduce the non-uniqueness while improving accuracy</p></li>
+<li id="fn13"><p>if only measure model fit with test error or residual-sum-of-squares, we can easily get different models (and after different sets of co-variates get removed, get different conclusions)</p></li>
+<li id="fn14"><p>Yu-Sung Su, Reboot the Debate on Social Science Research Paradigm, 2022 Peking Education Economics Research Institute ### Example [^15] of human-in-the-loop algorithmic models - a group of human to rate the data sources (i.e.&nbsp;how to use the source for different research/analysis/measurement goals), identify possible important predictors, - human suggestions to build model</p></li>
+<li id="fn15"><p>“Statistics is neither mathematics nor a science, but rather a branch of engineering” McElreath (2020)</p></li>
+<li id="fn16"><p>Popper, K. R. (1959). The logic of scientific discovery. University Press.</p></li>
+<li id="fn17"><p>deductive reasoning: use theory to form hypothesis and then confirm with observations</p></li>
+<li id="fn18"><p>inductive reasoning: derive theory from observation, which can be problematic as we cannot make general by observing particulars</p></li>
+<li id="fn19"><p>most-frequently used model are (parametric) distribution theories in the exponential family including normal, bi-normal, Poisson distribution</p></li>
+<li id="fn20"><p>Examples of “Hypothesis does not equals to models/theories”: 1. if hypothesis H1 can be proven/falsified by observing O, other hypothesis could also lead to observation O; so finding observation O tells nothing about the original hypothesis/theory. 2. Also the model fitting/relating hypothesis and observation could be multiple as well. 3. observation O2 might be the key instead of observation O</p></li>
+<li id="fn21"><p>likelihood function: represents the probability of random variable realizations conditional on particular values of the statistical parameters.</p></li>
+</ol>
 </section>
-
-<section id="ordinal-regression" class="title-slide slide level2 center">
-<h2>Ordinal regression</h2>
-
-</section>
-
-<section id="survival-analysis" class="title-slide slide level2 center">
-<h2>Survival analysis</h2>
-
-</section>
-</section>
-
-
-
     </div>
   </div>
 

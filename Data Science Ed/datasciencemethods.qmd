@@ -5,9 +5,12 @@ author: Linli
 format: 
   revealjs:
     slide-level: 3
+    reference-location: document
+    
     smaller: true
     scrollable: true
     incremental: true
+    
     theme: default
     width: 1050
     margin: 0.1
@@ -304,12 +307,16 @@ McElreath, R. (2020). Statistical rethinking: A Bayesian course with examples in
 
 - Falsification maybe impossible due to measurement errors in the following ways: falsification is consensual/subjective; falsification is hard for degree of existence (i.e. 80% of swan are white); observations difficulty/uncertainty
 
-## Topics Overview
-- Bayesian data analysis
+## Topics Overview: Baysian
+- Bayesian data analysis 
+  - Frequentists focuses on the distribution of a statistics calculated from repeated re-samples from the population. Probability is identified with __frequency__ of a statistics appeared in a "random/stochastic" sampling distribution. But this won't work if we don't have enough to re-sample (so each sample is the same)
+  - Bayesian focuses on the theoretical posterior probability distribution/ model parameters, a conditional probability, logically inferred (i.e. using the likelihood function ^[likelihood function: represents the probability of random variable realizations conditional on particular values of the statistical parameters.] or the Bayes's theorem/ inverse probability) based on 1) observed data and 2) prior prior probability distribution/ model parameters. Probability is degree of belief based on counting events, or updating model parameters. But application of Baysian methods remain computationally expensive, so alternatives/approximations to Baysian inference are valuable.
+
+## Topics Overview: Multilevel
 - Multilevel models
 - Model comparison using information criteria
 
-#other notes
+# other notes
 ## Big Names in the field
 
 -   Fisher regression model/specification

@@ -328,9 +328,13 @@ ugsatis22.quan<-ugsatis22%>%select(!starts_with("qual."))#%>%names()#80
 ugsatis22.qual<-ugsatis22%>%select(starts_with("qual."))#%>%names()#24
 ```
 
-```{r save_ugsatis22quanqual}
+```{r hide.save_ugsatis22quanqual}
 #wb<-createWorkbook()
 #addWorksheet(wb,"ugsatis22.quan");writeData(wb,sheet = "ugsatis22.quan",x=ugsatis22.quan)
 #addWorksheet(wb,"ugsatis22.qual");writeData(wb,sheet = "ugsatis22.qual",x=ugsatis22.qual)
 #saveWorkbook(wb,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Student Satisfaction Survey/2022-2023/working.xlsx",overwrite = TRUE)
+```
+
+```{r ugsatis22.long}
+ugsatis22.long<-ugsatis22.quan%>%
 ```

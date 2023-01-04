@@ -310,11 +310,18 @@ McElreath, R. (2020). Statistical rethinking: A Bayesian course with examples in
 ## Topics Overview: Baysian
 - Bayesian data analysis 
   - Frequentists focuses on the distribution of a statistics calculated from repeated re-samples from the population. Probability is identified with __frequency__ of a statistics appeared in a "random/stochastic" sampling distribution. But this won't work if we don't have enough to re-sample (so each sample is the same)
-  - Bayesian focuses on the theoretical posterior probability distribution/ model parameters, a conditional probability, logically inferred (i.e. using the likelihood function ^[likelihood function: represents the probability of random variable realizations conditional on particular values of the statistical parameters.] or the Bayes's theorem/ inverse probability) based on 1) observed data and 2) prior prior probability distribution/ model parameters. Probability is degree of belief based on counting events, or updating model parameters. But application of Baysian methods remain computationally expensive, so alternatives/approximations to Baysian inference are valuable.
+  - Bayesian focuses on the theoretical posterior probability distribution/ model parameters, a conditional probability, logically inferred (i.e. using the likelihood function ^[likelihood function: represents the probability of random variable realizations conditional on particular values of the statistical parameters.] or the Bayes's theorem/ inverse probability) based on 1) observed data and 2) prior prior probability distribution/ model parameters. Probability is degree of belief based on counts of different plausible appearance of events (which are standardized into probabilities ^[possibility: the plausibility of all events that make all plausibility sum to one]), or updating model parameters. But application of Baysian methods remain computationally expensive (i.e. cost of info gathering and processing), so alternatives/approximations (i.e. heuristic adaptive shortcuts) to Baysian inference are valuable.
 
 ## Topics Overview: Multilevel
-- Multilevel models
+- Multilevel models, also called "hierarchical, random effects, varying effects, or mixed effects" models
 - Model comparison using information criteria
+
+## Baysian key concepts
+- A conjectured proportion p is a parameter value indexing possible explanations of the data.
+- Likelihood: number of ways that a parameter can produce the data. The likelihood of a conjecture is calculated by: multiplying 1) the number of ways we could get the first marble in the first conjecture (i.e. the first-time take out a marble) with 2) the number of ways we could get the second marble in the first conjecture with 3)... third marble, etc.
+- Prior probability: prior plausibility of any specific p is usually called the
+- Posterior probability: plausibility of any specific p updated by new observations.
+
 
 # other notes
 ## Big Names in the field

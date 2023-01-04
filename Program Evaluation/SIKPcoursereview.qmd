@@ -1,0 +1,219 @@
+---
+title: "Science and Inquiry Knowledge and Perspectives (SIKP) Courses"
+subtitle: "Review of Major Distribution"
+format: html
+editor: visual
+---
+
+```{r yaml notes, include=FALSE}
+#change format: html (for render in Viewer) 
+#to the following for the word doc. version report
+#format: 
+#  docx:
+#    reference-doc: /Users/linlizhou/Documents/Rprojects/lasell.report.IN-USE.docx
+#    prefer-html: true
+
+```
+
+```{r load.stucrs_1822allcrs, include=FALSE}
+#load all necessary packages and themes, global optin chunk
+source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
+
+#the following df are created from "/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R" 
+
+#grades of core courses: contains "curriculum", "GPA"/C("grade") for each "coursegroup" and "coursecode" by "term"(18fall-22spring)
+stucrs_1822allcrs<-read_xlsx("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Data and Analyses/Program Review/2022 Core Curriculum/data files/StudentInfoCourse_1822allcrs.xlsx")
+
+#mutate term
+stucrs_1822allcrs<-stucrs_1822allcrs%>%
+  mutate(term=paste(academic_year,academic_term,sep=" "),
+         term=factor(term,levels = c("2018 FALL","2019 SPRING","2019 FALL","2020 SPRING","2020 FALL","2021 SPRING","2021 FALL","2022 SPRING")))
+
+#recode term
+stucrs_1822allcrs$term<-
+  recode(stucrs_1822allcrs$term,
+         "2018 FALL"="2018 Fall","2019 SPRING"="2019 Spring",
+         "2019 FALL"="2019 Fall","2020 SPRING"="2020 Spring",
+         "2020 FALL"="2020 Fall","2021 SPRING"="2021 Spring",
+         "2021 FALL"="2021 Fall","2022 SPRING"="2022 Spring")
+
+#check: stucrs_1822allcrs%>%count(term); stucrs_1822allcrs%>%count(coursecode); stucrs_1822allcrs%>%count(curriculum)%>%View()
+```
+
+```{r filter.stucrs.si}
+#focus on course group "Scientific Inquiry & Problem Solving/Science and Inquiry Knowledge and Perspectives (SIKP)" 
+stucrs.si<-stucrs_1822allcrs%>%
+  filter(stucrs_1822allcrs$coursecode %in% 
+        c("BIO101", "BIO102", "BIO107", "BIO113", 
+          "CHEM105", "CHEM203", 
+          "ENV206", "ENV211", "ENV220", 
+          "MATH109", 
+          "CJ205",
+          "PHYS107","PHYS108","PHYS111", "PHYS112", 
+          "SCI103", "SCI104", "SCI105", "SCI106", "SCI107", "SCI114", "SCI115", "SCI117", "SCI118", "SCI119"))%>%unique()
+```
+
+```{r mutate.coursegrp}
+stucrs.si<-stucrs.si%>%mutate(coursegrp=case_when(
+  grepl("^BIO",coursecode)~"BIO",
+  grepl("^CHEM",coursecode)~"CHEM",
+  grepl("^ENV",coursecode)~"ENV",
+  grepl("^MATH",coursecode)~"MATH",
+  grepl("^CJ",coursecode)~"CJ",
+  grepl("^PHYS",coursecode)~"PHYS",
+  grepl("^SCI",coursecode)~"SCI"))#check:%>%count(coursegrp,coursecode)%>%View()
+```
+
+# Students Enrolled in SIKP Courses by Term
+
+```{r crscnt}
+#how many observation appeared for each course in each term:  
+tab.crscnt<-stucrs.si%>%count(term,coursecode)%>%
+pivot_wider(names_from="term",values_from="n",values_fill =0)%>%
+  select(coursecode,`2018 Fall`,`2019 Spring`,`2019 Fall`,`2020 Spring`,`2020 Fall`,`2021 Spring`,`2021 Fall`,`2022 Spring`)%>%arrange(coursecode)
+#check: are these appeared observations valid (unique and not drop and have a valid grade) students
+#stucrs.si%>%count(Add_Drop); stucrs.si%>%count(Final_Grade)# all add and valid grades
+#stucrs.si%>%count(term,coursecode,people_code_id)%>%count()#unique
+
+#format table as viz (format beautifully with kbl functions)
+viz.crscnt<-tab.crscnt%>%arrange(coursecode)%>%
+kbl(align = "c",booktabs = T,label="tab.label", caption = "SIKP Course Enrollment by Semester", col.names =c("",str_wrap(names(tab.crscnt)[2:ncol(tab.crscnt)],width = 5))) %>%
+#set in-text reference label, table title , header names
+kable_styling(latex_options = c('hold_position'), full_width = F, fixed_thead = T, font_size = 12, bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
+#set overall style
+row_spec(0,align = "c",color="black")%>%
+column_spec(1, bold = T, border_right = F, background = "white", width = "4em",color="black")
+
+#conditional formatting
+cutraw<-stucrs.si%>%count(term,coursecode)%>%select(n)
+cut1<-(max(cutraw)-min(cutraw))*.6+min(cutraw)
+cut2<-(max(cutraw)-min(cutraw))*.4+min(cutraw)
+cut3<-(max(cutraw)-min(cutraw))*.2+min(cutraw)
+cut4<-1
+
+for (i in 2:ncol(tab.crscnt)){
+viz.crscnt<-
+column_spec(kable_input=viz.crscnt,column=i, width = "3em",color="white",
+            background =cf_color_blue(tab.crscnt[i],a=cut1,b=cut2,c=cut3,d=cut4))
+i=i+1; viz.crscnt}
+```
+
+```{r show.crscnt, include=TRUE}
+viz.crscnt
+```
+
+# Distributions of the Major of Enrolled Students in SIKP Courses
+
+Plots below summarize distributions of students' major for each SIKP course groups. Plots are created using aggregated data across academic year 2018-2022. All plots below excluded majors with less than 2% percentage.
+
+```{r request notes}
+#count major (with toal row&col) for each coursecode across 18-22
+stucrs.si%>%group_by(coursegrp,curriculum)%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%select(-n)%>%
+  pivot_wider(names_from="coursegrp",values_from="prt",values_fill =0)%>%View()#too complicated, must 1) organize by course category 2)merge all terms into one
+
+#optional: GPA/grades changes by term; GAP/grades by major
+```
+
+```{r viz_bio.major}
+viz_bio.major<-stucrs.si%>%filter(grepl("^BIO",coursecode))%>%#check: %>%count(coursecode)
+  group_by(curriculum)%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%arrange(-prt)%>%#check:View()
+  select(-n)%>%filter(prt>.02)%>%
+
+ggplot(aes(y=reorder(curriculum,prt), x = prt)) +  #y=factor(itemvar/yvar, levels = setyorder$yorder, ordered = TRUE), 
+  geom_bar(stat="identity",position = position_dodge(),width=0.9,fill=color_bluelight)+#position = position_stack(),width=0.9
+    scale_x_continuous(labels = scales::percent)+
+  geom_text(aes(label=if_else(prt>0.02,as.character(percent(prt,digits = 0)),"")),#do not show anything less than error terms, to avoid overlapping labels as well
+                     size=3,vjust=0.5,hjust=0.7,fontface="bold",position = position_dodge(0.9))+
+   labs(title="BIO Courses",x="",y="")+ theme_lz()+theme(axis.text.y = element_text())
+```
+
+```{r viz_chem.major}
+viz_chem.major<-stucrs.si%>%filter(grepl("^CHEM",coursecode))%>%#check: %>%count(coursecode)
+  group_by(curriculum)%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%arrange(-prt)%>%#check:View()
+  select(-n)%>%filter(prt>.02)%>%
+
+ggplot(aes(y=reorder(curriculum,prt), x = prt)) +  #y=factor(itemvar/yvar, levels = setyorder$yorder, ordered = TRUE), 
+  geom_bar(stat="identity",position = position_dodge(),width=0.9,fill=color_bluelight)+#position = position_stack(),width=0.9
+    scale_x_continuous(labels = scales::percent)+
+  geom_text(aes(label=if_else(prt>0.02,as.character(percent(prt,digits = 0)),"")),#do not show anything less than error terms, to avoid overlapping labels as well
+                     size=3,vjust=0.5,hjust=0.7,fontface="bold",position = position_dodge(0.9))+
+   labs(title="CHEM Courses",x="",y="")+ theme_lz()+theme(axis.text.y = element_text())
+```
+
+```{r viz_env.major}
+viz_env.major<-stucrs.si%>%filter(grepl("^ENV",coursecode))%>%#check: %>%count(coursecode)
+  group_by(curriculum)%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%arrange(-prt)%>%#check:View()
+  select(-n)%>%filter(prt>.02)%>%
+
+ggplot(aes(y=reorder(curriculum,prt), x = prt)) +  #y=factor(itemvar/yvar, levels = setyorder$yorder, ordered = TRUE), 
+  geom_bar(stat="identity",position = position_dodge(),width=0.9,fill=color_bluelight)+#position = position_stack(),width=0.9
+    scale_x_continuous(labels = scales::percent)+
+  geom_text(aes(label=if_else(prt>0.02,as.character(percent(prt,digits = 0)),"")),#do not show anything less than error terms, to avoid overlapping labels as well
+                     size=3,vjust=0.5,hjust=0.7,fontface="bold",position = position_dodge(0.9))+
+   labs(title="ENV Courses",x="",y="")+ theme_lz()+theme(axis.text.y = element_text())
+```
+
+```{r viz_phys.major}
+viz_phys.major<-stucrs.si%>%filter(grepl("^PHYS",coursecode))%>%#check: %>%count(coursecode)
+  group_by(curriculum)%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%arrange(-prt)%>%#check:View()
+  select(-n)%>%filter(prt>.02)%>%
+
+ggplot(aes(y=reorder(curriculum,prt), x = prt)) +  #y=factor(itemvar/yvar, levels = setyorder$yorder, ordered = TRUE), 
+  geom_bar(stat="identity",position = position_dodge(),width=0.9,fill=color_bluelight)+#position = position_stack(),width=0.9
+    scale_x_continuous(labels = scales::percent)+
+  geom_text(aes(label=if_else(prt>0.02,as.character(percent(prt,digits = 0)),"")),#do not show anything less than error terms, to avoid overlapping labels as well
+                     size=3,vjust=0.5,hjust=0.7,fontface="bold",position = position_dodge(0.9))+
+   labs(title="PHYS Courses",x="",y="")+ theme_lz()+theme(axis.text.y = element_text())
+```
+
+```{r viz_sci.major}
+viz_sci.major<-stucrs.si%>%filter(grepl("^SCI",coursecode))%>%#check: %>%count(coursecode)
+  group_by(curriculum)%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%arrange(-prt)%>%#check:View()
+  select(-n)%>%filter(prt>.02)%>%
+
+ggplot(aes(y=reorder(curriculum,prt), x = prt)) +  #y=factor(itemvar/yvar, levels = setyorder$yorder, ordered = TRUE), 
+  geom_bar(stat="identity",position = position_dodge(),width=0.9,fill=color_bluelight)+#position = position_stack(),width=0.9
+    scale_x_continuous(labels = scales::percent)+
+  geom_text(aes(label=if_else(prt>0.02,as.character(percent(prt,digits = 0)),"")),#do not show anything less than error terms, to avoid overlapping labels as well
+                     size=3,vjust=0.5,hjust=0.7,fontface="bold",position = position_dodge(0.9))+
+   labs(title="SCI Courses",x="",y="")+ theme_lz()+theme(axis.text.y = element_text())
+```
+
+```{r viz_cj.major}
+viz_cj.major<-stucrs.si%>%filter(grepl("^CJ",coursecode))%>%#check: %>%count(coursecode)
+  group_by(curriculum)%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%arrange(-prt)%>%#check:View()
+  select(-n)%>%filter(prt>.02)%>%
+
+ggplot(aes(y=reorder(curriculum,prt), x = prt)) +  #y=factor(itemvar/yvar, levels = setyorder$yorder, ordered = TRUE), 
+  geom_bar(stat="identity",position = position_dodge(),width=0.9,fill=color_bluelight)+#position = position_stack(),width=0.9
+    scale_x_continuous(labels = scales::percent)+
+  geom_text(aes(label=if_else(prt>0.02,as.character(percent(prt,digits = 0)),"")),#do not show anything less than error terms, to avoid overlapping labels as well
+                     size=3,vjust=0.5,hjust=0.7,fontface="bold",position = position_dodge(0.9))+
+   labs(title="CJ Courses",x="",y="")+ theme_lz()+theme(axis.text.y = element_text())
+```
+
+```{r longdisplay.viz_major,fig.height=6,include=TRUE}
+gridExtra::grid.arrange(viz_env.major,#19
+                        viz_sci.major,#18
+                        nrow=1, widths=c(1,1))
+```
+
+
+```{r middisplay.viz_major,fig.height=4,include=TRUE}
+gridExtra::grid.arrange(viz_bio.major,#12
+                        viz_chem.major,#12
+                        nrow=1, widths=c(1,1))
+```
+
+```{r shortdisplay.viz_major,fig.height=2.8,include=TRUE}
+gridExtra::grid.arrange(viz_cj.major,#3
+                        viz_phys.major, #9
+                        nrow=1, widths=c(1,1))
+```
+
+```{r explaincurriculumacyname}
+#stucrs_1822allcrs%>%count(curriculum,Major)%>%filter(!is.na(Major))%>%View()
+```
+
+
+

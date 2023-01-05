@@ -39,7 +39,7 @@ editor: visual
 #to the following for the word doc. version report
 #format: 
 #  docx:
-#    reference-doc: /Users/linlizhou/Documents/Rprojects/lasell.report.IN-USE.docx
+#    reference-doc: /Users/linlizhou/Documents/Rprojects/IR-Projects/lasell.report.template.docx
 #    prefer-html: true
 
 ```
@@ -130,19 +130,58 @@ i=i+1; viz.crscnt}
 viz.crscnt
 ```
 
-# Distributions of the Major of Enrolled Students in SIKP Courses
+# Distributions of the Major of Enrolled Students
 
-Plots below summarize distributions of students' major for each SIKP
-course groups. Plots are created using aggregated data across academic
-year 2018-2022. All plots below excluded majors with less than 2%
-percentage and observations that has a missing major value.
+Table @tbl-simple summarizes distributions of students'
+major for each SIKP course groups. The table uses aggregated
+data across academic year 2018-2022, and excludes majors
+with less than 1% percentage observations or missing a major
+value.
 
 ```{r request notes}
-#count major (with toal row&col) for each coursecode across 18-22
-stucrs.si%>%group_by(coursegrp,Major)%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%select(-n)%>%
-  pivot_wider(names_from="coursegrp",values_from="prt",values_fill =0)%>%View()#too complicated, must 1) organize by course category 2)merge all terms into one
-
 #optional: GPA/grades changes by term; GAP/grades by major
+```
+
+```{r mjcnt}
+#count major (with toal row&col) for each coursecode across 18-22
+tab.mjcnt<-stucrs.si%>%group_by(coursegrp,Major)%>%
+  summarise(n=n())%>%mutate(prt=n/sum(n))%>%select(-n)%>%
+  filter(prt>.01 & !is.na(Major))%>%
+  pivot_wider(names_from=coursegrp,values_from=prt,values_fill=0)%>%
+  mutate(across(BIO:SCI, function(x) percent(x, digit=0)))  #make numbers percentage
+
+#format table as viz (format beautifully with kbl functions)
+viz.mjcnt<-tab.mjcnt%>%
+kbl(align = "c",booktabs = T, col.names =c("",str_wrap(names(tab.mjcnt)[2:ncol(tab.mjcnt)],width = 3))) %>%
+#set in-text reference label, table title , header names
+kable_styling(latex_options = c('hold_position'), full_width = F, fixed_thead = T, font_size = 12,bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
+#set overall style
+column_spec(1, bold = F, border_right = F, background = "white", width = "20em",color="black")
+
+#conditional formatting
+cutraw<-tab.mjcnt%>%pivot_longer(cols=c(BIO:SCI),names_to="coursegrp",values_to="prt")%>%select(prt)
+cut1<-(max(cutraw)-min(cutraw))*.6+min(cutraw)
+cut2<-(max(cutraw)-min(cutraw))*.2+min(cutraw)
+cut3<-0.075
+cut4<-0
+
+for (i in 2:ncol(tab.mjcnt)){
+viz.mjcnt<-
+column_spec(kable_input=viz.mjcnt,column=i, width = "3em",color="white",
+            background =cf_color_blue(tab.mjcnt[i],a=cut1,b=cut2,c=cut3,d=cut4))
+i=i+1; viz.mjcnt}
+```
+
+```{r show.mjcnt, fig.width=8,include=TRUE}
+#| label: tbl-simple
+#| tbl-cap: "SIKP Course Enrollment by Semester"
+viz.mjcnt
+```
+
+
+
+```{r explainhiddenplots}
+#Plots below summarize distributions of students' major for each SIKP course groups. Plots are created using aggregated data across academic year 2018-2022. All plots below excluded majors with less than 2% percentage and observations that has a missing major value.
 ```
 
 ```{r viz_bio.major}
@@ -223,19 +262,19 @@ ggplot(aes(y=reorder(Major,prt), x = prt)) +  #y=factor(itemvar/yvar, levels = s
    labs(title="CJ Courses",x="",y="")+ theme_lz()+theme(axis.text.y = element_text())
 ```
 
-```{r longdisplay.viz_major,fig.height=6,include=TRUE}
+```{r longdisplay.viz_major,fig.height=6}
 gridExtra::grid.arrange(viz_env.major,#19
                         viz_sci.major,#18
                         nrow=1, widths=c(1,1))
 ```
 
-```{r middisplay.viz_major,fig.height=4,include=TRUE}
+```{r middisplay.viz_major,fig.height=4}
 gridExtra::grid.arrange(viz_bio.major,#12
                         viz_chem.major,#12
                         nrow=1, widths=c(1,1))
 ```
 
-```{r shortdisplay.viz_major,fig.height=2.8,include=TRUE}
+```{r shortdisplay.viz_major,fig.height=2.8}
 gridExtra::grid.arrange(viz_cj.major,#3
                         viz_phys.major, #9
                         nrow=1, widths=c(1,1))

@@ -302,16 +302,11 @@ kable_styling(latex_options = c('HOLD_position'), full_width = F, fixed_thead = 
 column_spec(1, bold = F, border_right = F, background = "white", width = "20em",color="black")
 
 #conditional formatting
-cutraw<-stucrs.si%>%filter(grepl("^BIO",coursecode))%>%group_by(coursecode,Major)%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%ungroup()%>%select(prt)
-cut1<-(max(cutraw)-min(cutraw))*.6+min(cutraw)
-cut2<-(max(cutraw)-min(cutraw))*.2+min(cutraw)
-cut3<-(max(cutraw)-min(cutraw))*.1+min(cutraw)
-cut4<-0
 
 for (i in 2:ncol(tab.biocnt)){
 viz.biocnt<-
 column_spec(kable_input=viz.biocnt,column=i, width = "4em",color="white",
-            background =cf_color_blue(tab.biocnt[i],a=cut1,b=cut2,c=cut3,d=cut4))
+            background =cf_color_blue(tab.biocnt[i],a=.2,b=.1,c=.075,d=0))
 i=i+1; viz.biocnt}
 ```
 
@@ -341,16 +336,11 @@ kable_styling(latex_options = c('HOLD_position'), full_width = F, fixed_thead = 
 column_spec(1, bold = F, border_right = F, background = "white", width = "20em",color="black")
 
 #conditional formatting
-cutraw<-stucrs.si%>%filter(grepl("^CHEM",coursecode))%>%group_by(coursecode,Major)%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%ungroup()%>%select(prt)
-cut1<-(max(cutraw)-min(cutraw))*.6+min(cutraw)
-cut2<-(max(cutraw)-min(cutraw))*.2+min(cutraw)
-cut3<-(max(cutraw)-min(cutraw))*.1+min(cutraw)
-cut4<-0
 
 for (i in 2:ncol(tab.chemcnt)){
 viz.chemcnt<-
 column_spec(kable_input=viz.chemcnt,column=i, width = "4em",color="white",
-            background =cf_color_blue(tab.chemcnt[i],a=cut1,b=cut2,c=cut3,d=cut4))
+            background =cf_color_blue(tab.chemcnt[i],a=.2,b=.1,c=.075,d=0))
 i=i+1; viz.chemcnt}
 ```
 
@@ -380,16 +370,11 @@ kable_styling(latex_options = c('HOLD_position'), full_width = F, fixed_thead = 
 column_spec(1, bold = F, border_right = F, background = "white", width = "20em",color="black")
 
 #conditional formatting
-cutraw<-stucrs.si%>%filter(grepl("^ENV",coursecode))%>%group_by(coursecode,Major)%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%ungroup()%>%select(prt)
-cut1<-(max(cutraw)-min(cutraw))*.6+min(cutraw)
-cut2<-(max(cutraw)-min(cutraw))*.2+min(cutraw)
-cut3<-(max(cutraw)-min(cutraw))*.1+min(cutraw)
-cut4<-0
 
 for (i in 2:ncol(tab.envcnt)){
 viz.envcnt<-
 column_spec(kable_input=viz.envcnt,column=i, width = "4em",color="white",
-            background =cf_color_blue(tab.envcnt[i],a=cut1,b=cut2,c=cut3,d=cut4))
+            background =cf_color_blue(tab.envcnt[i],a=.2,b=.1,c=.075,d=0))
 i=i+1; viz.envcnt}
 ```
 
@@ -419,16 +404,11 @@ kable_styling(latex_options = c('HOLD_position'), full_width = F, fixed_thead = 
 column_spec(1, bold = F, border_right = F, background = "white", width = "20em",color="black")
 
 #conditional formatting
-cutraw<-stucrs.si%>%filter(grepl("^PHYS",coursecode))%>%group_by(coursecode,Major)%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%ungroup()%>%select(prt)
-cut1<-(max(cutraw)-min(cutraw))*.6+min(cutraw)
-cut2<-(max(cutraw)-min(cutraw))*.2+min(cutraw)
-cut3<-(max(cutraw)-min(cutraw))*.1+min(cutraw)
-cut4<-0
 
 for (i in 2:ncol(tab.physcnt)){
 viz.physcnt<-
 column_spec(kable_input=viz.physcnt,column=i, width = "4.5em",color="white",
-            background =cf_color_blue(tab.physcnt[i],a=cut1,b=cut2,c=cut3,d=cut4))
+            background =cf_color_blue(tab.physcnt[i],a=.2,b=.1,c=.075,d=0))
 i=i+1; viz.physcnt}
 ```
 
@@ -458,16 +438,11 @@ kable_styling(latex_options = c('HOLD_position'), full_width = F, fixed_thead = 
 column_spec(1, bold = F, border_right = F, background = "white", width = "20em",color="black")
 
 #conditional formatting
-cutraw<-stucrs.si%>%filter(grepl("^SCI10",coursecode))%>%group_by(coursecode,Major)%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%ungroup()%>%select(prt)
-cut1<-(max(cutraw)-min(cutraw))*.6+min(cutraw)
-cut2<-(max(cutraw)-min(cutraw))*.2+min(cutraw)
-cut3<-(max(cutraw)-min(cutraw))*.1+min(cutraw)
-cut4<-0
 
 for (i in 2:ncol(tab.scicnt10)){
 viz.scicnt10<-
 column_spec(kable_input=viz.scicnt10,column=i, width = "3em",color="white",
-            background =cf_color_blue(tab.scicnt10[i],a=cut1,b=cut2,c=cut3,d=cut4))
+            background =cf_color_blue(tab.scicnt10[i],a=.2,b=.1,c=.075,d=0))
 i=i+1; viz.scicnt10}
 ```
 
@@ -498,16 +473,11 @@ kable_styling(latex_options = c('HOLD_position'), full_width = F, fixed_thead = 
 column_spec(1, bold = F, border_right = F, background = "white", width = "20em",color="black")
 
 #conditional formatting
-cutraw<-stucrs.si%>%filter(grepl("^SCI11",coursecode))%>%group_by(coursecode,Major)%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%ungroup()%>%select(prt)
-cut1<-(max(cutraw)-min(cutraw))*.6+min(cutraw)
-cut2<-(max(cutraw)-min(cutraw))*.2+min(cutraw)
-cut3<-(max(cutraw)-min(cutraw))*.1+min(cutraw)
-cut4<-0
 
 for (i in 2:ncol(tab.scicnt11)){
 viz.scicnt11<-
 column_spec(kable_input=viz.scicnt11,column=i, width = "4em",color="white",
-            background =cf_color_blue(tab.scicnt11[i],a=cut1,b=cut2,c=cut3,d=cut4))
+            background =cf_color_blue(tab.scicnt11[i],a=.2,b=.1,c=.075,d=0))
 i=i+1; viz.scicnt11}
 ```
 
@@ -539,16 +509,11 @@ kable_styling(latex_options = c('HOLD_position'), full_width = F, fixed_thead = 
 column_spec(1, bold = F, border_right = F, background = "white", width = "20em",color="black")
 
 #conditional formatting
-cutraw<-stucrs.si%>%filter(grepl("^CJ",coursecode))%>%group_by(coursecode,Major)%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%ungroup()%>%select(prt)
-cut1<-(max(cutraw)-min(cutraw))*.6+min(cutraw)
-cut2<-(max(cutraw)-min(cutraw))*.2+min(cutraw)
-cut3<-(max(cutraw)-min(cutraw))*.1+min(cutraw)
-cut4<-0
 
 for (i in 2:ncol(tab.cjcnt)){
 viz.cjcnt<-
 column_spec(kable_input=viz.cjcnt,column=i, width = "4em",color="white",
-            background =cf_color_blue(tab.cjcnt[i],a=cut1,b=cut2,c=cut3,d=cut4))
+            background =cf_color_blue(tab.cjcnt[i],a=.2,b=.1,c=.075,d=0))
 i=i+1; viz.cjcnt}
 ```
 

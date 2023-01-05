@@ -548,7 +548,7 @@ Linli
 <li class="fragment">Bayesian data analysis
 <ul>
 <li class="fragment">Frequentists focuses on the distribution of a statistics calculated from repeated re-samples from the population. Probability is identified with <strong>frequency</strong> of a statistics appeared in a “random/stochastic” sampling distribution. But this won’t work if we don’t have enough to re-sample (so each sample is the same)</li>
-<li class="fragment">Bayesian focuses on the theoretical posterior probability distribution/ model parameters, a conditional probability, logically inferred (i.e.&nbsp;using the likelihood function <a href="#/footnotes" class="footnote-ref" id="fnref21" role="doc-noteref" data-footnote-href="#/fn21" onclick=""><sup>21</sup></a> or the Bayes’s theorem/ inverse probability) based on 1) observed data and 2) prior prior probability distribution/ model parameters. Probability is degree of belief based on counting events, or updating model parameters. But application of Baysian methods remain computationally expensive, so alternatives/approximations to Baysian inference are valuable.</li>
+<li class="fragment">Bayesian focuses on the theoretical posterior probability distribution/ model parameters, a conditional probability, logically inferred (i.e.&nbsp;using the likelihood function <a href="#/footnotes" class="footnote-ref" id="fnref21" role="doc-noteref" data-footnote-href="#/fn21" onclick=""><sup>21</sup></a> or the Bayes’s theorem/ inverse probability) based on 1) observed data and 2) prior prior probability distribution/ model parameters. Probability is degree of belief based on counts of different plausible appearance of events (which are standardized into probabilities <a href="#/footnotes" class="footnote-ref" id="fnref22" role="doc-noteref" data-footnote-href="#/fn22" onclick=""><sup>22</sup></a>), or updating model parameters. But application of Baysian methods remain computationally expensive (i.e.&nbsp;cost of info gathering and processing), so alternatives/approximations (i.e.&nbsp;heuristic adaptive shortcuts) to Baysian inference are valuable.</li>
 </ul></li>
 </ul>
 <aside></aside></section>
@@ -556,8 +556,18 @@ Linli
 <section id="topics-overview-multilevel" class="title-slide slide level2 center">
 <h2>Topics Overview: Multilevel</h2>
 <ul>
-<li class="fragment">Multilevel models</li>
+<li class="fragment">Multilevel models, also called “hierarchical, random effects, varying effects, or mixed effects” models</li>
 <li class="fragment">Model comparison using information criteria</li>
+</ul>
+</section>
+
+<section id="baysian-key-concepts" class="title-slide slide level2 center">
+<h2>Baysian key concepts</h2>
+<ul>
+<li class="fragment">A conjectured proportion p is a parameter value indexing possible explanations of the data.</li>
+<li class="fragment">Likelihood: number of ways that a parameter can produce the data. The likelihood of a conjecture is calculated by: multiplying 1) the number of ways we could get the first marble in the first conjecture (i.e.&nbsp;the first-time take out a marble) with 2) the number of ways we could get the second marble in the first conjecture with 3)… third marble, etc.</li>
+<li class="fragment">Prior probability: prior plausibility of any specific p is usually called the</li>
+<li class="fragment">Posterior probability: plausibility of any specific p updated by new observations.</li>
 </ul>
 </section>
 </section>
@@ -601,6 +611,7 @@ Linli
 <li id="fn19"><p>most-frequently used model are (parametric) distribution theories in the exponential family including normal, bi-normal, Poisson distribution</p></li>
 <li id="fn20"><p>Examples of “Hypothesis does not equals to models/theories”: 1. if hypothesis H1 can be proven/falsified by observing O, other hypothesis could also lead to observation O; so finding observation O tells nothing about the original hypothesis/theory. 2. Also the model fitting/relating hypothesis and observation could be multiple as well. 3. observation O2 might be the key instead of observation O</p></li>
 <li id="fn21"><p>likelihood function: represents the probability of random variable realizations conditional on particular values of the statistical parameters.</p></li>
+<li id="fn22"><p>possibility: the plausibility of all events that make all plausibility sum to one</p></li>
 </ol>
 </section>
     </div>

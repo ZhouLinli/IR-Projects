@@ -23,14 +23,11 @@ format:
 editor: visual
 ---
 
-```{r yaml notes}
-#globally making all lines in all slides appear increamentally
-#format: 
-#  revealjs:
-#    incremental: true #bullet point appear one by one
-#    smaller: true #slide title is smaller
-#    scrollable: true #long bullet point can scroll down
-```
+
+::: {.cell}
+
+:::
+
 
 # The Elements of Statistical Learning: Data Mining, Inference, and Prediction
 
@@ -418,36 +415,15 @@ examples in R and Stan. Chapman and Hall/CRC.
 
 ## Hidden slides {visibility="hidden"}
 
-```{r image}
-#![](image1.png){.r-stretch}
 
-#![](image2.png){.absolute top=50 right=50 width="450" height="250"}
+::: {.cell}
 
-#![](image3.png){.absolute bottom=0 right=50 width="300" height="300"}
-```
+:::
 
-```{r sidebysidecols}
-#:::: {.columns}
+::: {.cell}
 
-#::: {.column width="50%"}
-#- First Left column
-#:::
+:::
 
-#::: {.column width="50%"}
-#- Big Text
-#:::
+::: {.cell}
 
-#::::
-```
-
-```{r making-notes}
-#::: {.notes}
-#self notes here: 
-#:::
-
-#::: aside
-#See more at...
-#:::
-
-#some text ^[A footnote]
-```
+:::

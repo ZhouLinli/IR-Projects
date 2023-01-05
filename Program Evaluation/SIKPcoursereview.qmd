@@ -148,7 +148,7 @@ tab.mjcnt<-stucrs.si%>%group_by(coursegrp,Major)%>%
   summarise(n=n())%>%mutate(prt=n/sum(n))%>%select(-n)%>%
   filter(prt>.02 & !is.na(Major))%>%
   pivot_wider(names_from=coursegrp,values_from=prt,values_fill=0)%>%
-  mutate(across(BIO:SCI, function(x) percent(x, digit=0)))  #make numbers percentage
+  mutate(across(BIO:SCI, function(x) percent(x, digit=0)))%>%arrange(Major)  #make numbers percentage
 
 #format table as viz (format beautifully with kbl functions)
 viz.mjcnt<-tab.mjcnt%>%
@@ -171,6 +171,11 @@ column_spec(kable_input=viz.mjcnt,column=i, width = "3em",color="white",
             background =cf_color_blue(tab.mjcnt[i],a=cut1,b=cut2,c=cut3,d=cut4))
 i=i+1; viz.mjcnt}
 ```
+
+```{r allothermajor}
+
+```
+
 
 ```{r show.mjcnt, fig.width=8,include=TRUE}
 #| label: tbl-mjcnt
@@ -291,7 +296,7 @@ tab.biocnt<-stucrs.si%>%filter(grepl("^BIO",coursecode))%>%
   filter(prt>.02 & !is.na(Major))%>%
   pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)
 tab.biocnt<-tab.biocnt%>%
-  mutate(across(names(tab.biocnt)[-1], function(x) percent(x, digit=0)))  #make numbers percentage
+  mutate(across(names(tab.biocnt)[-1], function(x) percent(x, digit=0)))%>%arrange(Major)  #make numbers percentage
 
 #format table as viz (format beautifully with kbl functions)
 viz.biocnt<-tab.biocnt%>%
@@ -325,7 +330,7 @@ tab.chemcnt<-stucrs.si%>%filter(grepl("^CHEM",coursecode))%>%
   filter(prt>.02 & !is.na(Major))%>%
   pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)
 tab.chemcnt<-tab.chemcnt%>%
-  mutate(across(names(tab.chemcnt)[-1], function(x) percent(x, digit=0)))  #make numbers percentage
+  mutate(across(names(tab.chemcnt)[-1], function(x) percent(x, digit=0)))%>%arrange(Major)  #make numbers percentage
 
 #format table as viz (format beautifully with kbl functions)
 viz.chemcnt<-tab.chemcnt%>%
@@ -359,7 +364,7 @@ tab.envcnt<-stucrs.si%>%filter(grepl("^ENV",coursecode))%>%
   filter(prt>.02 & !is.na(Major))%>%
   pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)
 tab.envcnt<-tab.envcnt%>%
-  mutate(across(names(tab.envcnt)[-1], function(x) percent(x, digit=0)))  #make numbers percentage
+  mutate(across(names(tab.envcnt)[-1], function(x) percent(x, digit=0)))%>%arrange(Major)  #make numbers percentage
 
 #format table as viz (format beautifully with kbl functions)
 viz.envcnt<-tab.envcnt%>%
@@ -393,7 +398,7 @@ tab.physcnt<-stucrs.si%>%filter(grepl("^PHYS",coursecode))%>%
   filter(prt>.02 & !is.na(Major))%>%
   pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)
 tab.physcnt<-tab.physcnt%>%
-  mutate(across(names(tab.physcnt)[-1], function(x) percent(x, digit=0)))  #make numbers percentage
+  mutate(across(names(tab.physcnt)[-1], function(x) percent(x, digit=0)))%>%arrange(Major)  #make numbers percentage
 
 #format table as viz (format beautifully with kbl functions)
 viz.physcnt<-tab.physcnt%>%
@@ -427,7 +432,7 @@ tab.scicnt10<-stucrs.si%>%filter(grepl("^SCI10",coursecode))%>%
   filter(prt>.02 & !is.na(Major))%>%
   pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)
 tab.scicnt10<-tab.scicnt10%>%
-  mutate(across(names(tab.scicnt10)[-1], function(x) percent(x, digit=0)))  #make numbers percentage
+  mutate(across(names(tab.scicnt10)[-1], function(x) percent(x, digit=0)))%>%arrange(Major)  #make numbers percentage
 
 #format table as viz (format beautifully with kbl functions)
 viz.scicnt10<-tab.scicnt10%>%
@@ -462,7 +467,7 @@ tab.scicnt11<-stucrs.si%>%filter(grepl("^SCI11",coursecode))%>%
   filter(prt>.02 & !is.na(Major))%>%
   pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)
 tab.scicnt11<-tab.scicnt11%>%
-  mutate(across(names(tab.scicnt11)[-1], function(x) percent(x, digit=0)))  #make numbers percentage
+  mutate(across(names(tab.scicnt11)[-1], function(x) percent(x, digit=0)))%>%arrange(Major)  #make numbers percentage
 
 #format table as viz (format beautifully with kbl functions)
 viz.scicnt11<-tab.scicnt11%>%
@@ -498,7 +503,7 @@ tab.cjcnt<-stucrs.si%>%filter(grepl("^CJ",coursecode))%>%
   filter(prt>.02 & !is.na(Major))%>%
   pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)
 tab.cjcnt<-tab.cjcnt%>%
-  mutate(across(names(tab.cjcnt)[-1], function(x) percent(x, digit=0)))  #make numbers percentage
+  mutate(across(names(tab.cjcnt)[-1], function(x) percent(x, digit=0)))%>%arrange(Major)  #make numbers percentage
 
 #format table as viz (format beautifully with kbl functions)
 viz.cjcnt<-tab.cjcnt%>%

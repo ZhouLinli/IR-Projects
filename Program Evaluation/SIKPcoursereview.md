@@ -51,7 +51,7 @@ editor: visual
 
 ::: {.cell}
 ::: {.cell-output-display}
-\begin{table}[!h]
+\begin{table}[H]
 
 \caption{\label{tab:tab.label}SIKP Course Enrollment by Semester}
 \centering
@@ -115,7 +115,7 @@ value.
 
 ::: {#tbl-mjcnt .cell tbl-cap='Distributions of Majors by Course Groups'}
 ::: {.cell-output-display}
-\begin{table}[!h]
+\begin{table}[H]
 \centering\begingroup\fontsize{12}{14}\selectfont
 
 \begin{tabular}[t]{>{\centering\arraybackslash}p{20em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}}
@@ -207,10 +207,10 @@ value.
 
 ::: {#tbl-biocnt .cell tbl-cap='Distributions of Majors for BIO Courses'}
 ::: {.cell-output-display}
-\begin{table}[!h]
+\begin{table}[H]
 \centering\begingroup\fontsize{12}{14}\selectfont
 
-\begin{tabular}[t]{>{\centering\arraybackslash}p{20em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}}
+\begin{tabular}[t]{>{\centering\arraybackslash}p{20em}>{\centering\arraybackslash}p{4em}>{\centering\arraybackslash}p{4em}>{\centering\arraybackslash}p{4em}>{\centering\arraybackslash}p{4em}}
 \toprule
  & BIO101 & BIO102 & BIO107 & BIO113\\
 \midrule
@@ -273,10 +273,10 @@ value.
 
 ::: {#tbl-chemcnt .cell tbl-cap='Distributions of Majors for CHEM Courses'}
 ::: {.cell-output-display}
-\begin{table}[!h]
+\begin{table}[H]
 \centering\begingroup\fontsize{12}{14}\selectfont
 
-\begin{tabular}[t]{>{\centering\arraybackslash}p{20em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}}
+\begin{tabular}[t]{>{\centering\arraybackslash}p{20em}>{\centering\arraybackslash}p{4em}>{\centering\arraybackslash}p{4em}}
 \toprule
  & CHEM105 & CHEM203\\
 \midrule
@@ -323,10 +323,10 @@ value.
 
 ::: {#tbl-envcnt .cell tbl-cap='Distributions of Majors for ENV Courses'}
 ::: {.cell-output-display}
-\begin{table}[!h]
+\begin{table}[H]
 \centering\begingroup\fontsize{12}{14}\selectfont
 
-\begin{tabular}[t]{>{\centering\arraybackslash}p{20em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}}
+\begin{tabular}[t]{>{\centering\arraybackslash}p{20em}>{\centering\arraybackslash}p{4em}>{\centering\arraybackslash}p{4em}>{\centering\arraybackslash}p{4em}}
 \toprule
  & ENV206 & ENV211 & ENV220\\
 \midrule
@@ -388,7 +388,7 @@ value.
 
 ::: {#tbl-physcnt .cell tbl-cap='Distributions of Majors for PHYS Courses'}
 ::: {.cell-output-display}
-\begin{table}[!h]
+\begin{table}[H]
 \centering\begingroup\fontsize{12}{14}\selectfont
 
 \begin{tabular}[t]{>{\centering\arraybackslash}p{20em}>{\centering\arraybackslash}p{4.5em}>{\centering\arraybackslash}p{4.5em}>{\centering\arraybackslash}p{4.5em}>{\centering\arraybackslash}p{4.5em}}
@@ -440,13 +440,13 @@ value.
 :::
 
 
-## SCI10
+## SCI
 
 
 
-::: {#tbl-scicnt10 .cell tbl-cap='Distributions of Majors for SCI10 Courses'}
+::: {#tbl-scicnt10 .cell tbl-cap='Distributions of Majors for SCI103-106 Courses'}
 ::: {.cell-output-display}
-\begin{table}[!h]
+\begin{table}[H]
 \centering\begingroup\fontsize{12}{14}\selectfont
 
 \begin{tabular}[t]{>{\centering\arraybackslash}p{20em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}}
@@ -507,68 +507,108 @@ value.
 :::
 
 
-## SCI11
 
-
-
-::: {#tbl-scicnt11 .cell tbl-cap='Distributions of Majors for SCI11 Courses'}
+::: {#tbl-scicnt11 .cell tbl-cap='Distributions of Majors for SCI114 and 118 Courses'}
 ::: {.cell-output-display}
-\begin{table}[!h]
+\begin{table}[H]
 \centering\begingroup\fontsize{12}{14}\selectfont
 
-\begin{tabular}[t]{>{\centering\arraybackslash}p{20em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}>{\centering\arraybackslash}p{3em}}
+\begin{tabular}[t]{>{\centering\arraybackslash}p{20em}>{\centering\arraybackslash}p{4em}>{\centering\arraybackslash}p{4em}}
 \toprule
- & SCI114 & SCI115 & SCI118\\
+ & SCI114 & SCI118\\
 \midrule
-\cellcolor{white}{\textcolor{black}{Accounting}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
-\cellcolor{white}{\textcolor{black}{Applied Forensic Science}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
-\cellcolor{white}{\textcolor{black}{Com Concentration Unknown}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{1\%}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
-\cellcolor{white}{\textcolor{black}{Communication Concentration}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{1\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
-\cellcolor{white}{\textcolor{black}{Communication Creative Advertising}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{1\%}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
+\cellcolor{white}{\textcolor{black}{Accounting}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
+\cellcolor{white}{\textcolor{black}{Applied Forensic Science}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
+\cellcolor{white}{\textcolor{black}{Com Concentration Unknown}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{1\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
+\cellcolor{white}{\textcolor{black}{Communication Concentration}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{1\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
+\cellcolor{white}{\textcolor{black}{Communication Creative Advertising}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{1\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
 \addlinespace
-\cellcolor{white}{\textcolor{black}{Communication Radio Video Production}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{1\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
-\cellcolor{white}{\textcolor{black}{Criminal Justice}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{6\%}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{6\%}} & \cellcolor[HTML]{5c88da}{\textcolor{white}{16\%}}\\
-\cellcolor{white}{\textcolor{black}{Cybersecurity}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{1\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
-\cellcolor{white}{\textcolor{black}{English}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
-\cellcolor{white}{\textcolor{black}{Entertainment Media}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
+\cellcolor{white}{\textcolor{black}{Communication Radio Video Production}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{1\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
+\cellcolor{white}{\textcolor{black}{Criminal Justice}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{6\%}} & \cellcolor[HTML]{5c88da}{\textcolor{white}{16\%}}\\
+\cellcolor{white}{\textcolor{black}{Cybersecurity}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{1\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
+\cellcolor{white}{\textcolor{black}{English}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\cellcolor{white}{\textcolor{black}{Entertainment Media}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
 \addlinespace
-\cellcolor{white}{\textcolor{black}{Event Management}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
-\cellcolor{white}{\textcolor{black}{Fashion and Retail Merchandising}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{4\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{7\%}}\\
-\cellcolor{white}{\textcolor{black}{Fashion Communication \& Promotion}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{1\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
-\cellcolor{white}{\textcolor{black}{Fashion Design and Production}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
-\cellcolor{white}{\textcolor{black}{Fashion Media and Marketing}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
+\cellcolor{white}{\textcolor{black}{Event Management}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\cellcolor{white}{\textcolor{black}{Fashion and Retail Merchandising}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{4\%}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{7\%}}\\
+\cellcolor{white}{\textcolor{black}{Fashion Communication \& Promotion}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{1\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\cellcolor{white}{\textcolor{black}{Fashion Design and Production}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\cellcolor{white}{\textcolor{black}{Fashion Media and Marketing}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
 \addlinespace
-\cellcolor{white}{\textcolor{black}{Finance}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{7\%}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
-\cellcolor{white}{\textcolor{black}{Graphic Design}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
-\cellcolor{white}{\textcolor{black}{Hospitality Management}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}}\\
-\cellcolor{white}{\textcolor{black}{Information Technology}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{1\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
-\cellcolor{white}{\textcolor{black}{International Business}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
+\cellcolor{white}{\textcolor{black}{Finance}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{7\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
+\cellcolor{white}{\textcolor{black}{Graphic Design}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
+\cellcolor{white}{\textcolor{black}{Hospitality Management}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}}\\
+\cellcolor{white}{\textcolor{black}{Information Technology}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{1\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\cellcolor{white}{\textcolor{black}{International Business}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
 \addlinespace
-\cellcolor{white}{\textcolor{black}{Journalism and Media Writing}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
-\cellcolor{white}{\textcolor{black}{Law and Public Affairs}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
-\cellcolor{white}{\textcolor{black}{Management}} & \cellcolor[HTML]{5c88da}{\textcolor{white}{11\%}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}}\\
-\cellcolor{white}{\textcolor{black}{Marketing}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{4\%}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{5\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
-\cellcolor{white}{\textcolor{black}{Psychology}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{6\%}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{8\%}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{10\%}}\\
+\cellcolor{white}{\textcolor{black}{Journalism and Media Writing}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\cellcolor{white}{\textcolor{black}{Law and Public Affairs}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
+\cellcolor{white}{\textcolor{black}{Management}} & \cellcolor[HTML]{5c88da}{\textcolor{white}{11\%}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}}\\
+\cellcolor{white}{\textcolor{black}{Marketing}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{4\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
+\cellcolor{white}{\textcolor{black}{Psychology}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{6\%}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{10\%}}\\
 \addlinespace
-\cellcolor{white}{\textcolor{black}{Public Relations}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
-\cellcolor{white}{\textcolor{black}{Sociology}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{1\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
-\cellcolor{white}{\textcolor{black}{Sport Communication}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor[HTML]{5c88da}{\textcolor{white}{17\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
-\cellcolor{white}{\textcolor{black}{Sport Management}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{8\%}} & \cellcolor[HTML]{5c88da}{\textcolor{white}{16\%}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}}\\
-\cellcolor{white}{\textcolor{black}{Undeclared Option}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{6\%}}\\
+\cellcolor{white}{\textcolor{black}{Public Relations}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
+\cellcolor{white}{\textcolor{black}{Sociology}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{1\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
+\cellcolor{white}{\textcolor{black}{Sport Communication}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\cellcolor{white}{\textcolor{black}{Sport Management}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{8\%}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}}\\
+\cellcolor{white}{\textcolor{black}{Undeclared Option}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{6\%}}\\
 \addlinespace
-\cellcolor{white}{\textcolor{black}{Business Management}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
-\cellcolor{white}{\textcolor{black}{Exercise Science}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
-\cellcolor{white}{\textcolor{black}{Fashion Merchandising and Management}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}}\\
-\cellcolor{white}{\textcolor{black}{Fitness Management}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
-\cellcolor{white}{\textcolor{black}{Global Studies}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
+\cellcolor{white}{\textcolor{black}{Entrepreneurship}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}}\\
+\cellcolor{white}{\textcolor{black}{Fashion Merchandising and Management}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}}\\
+\cellcolor{white}{\textcolor{black}{History}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\cellcolor{white}{\textcolor{black}{IDS Curriculum \& Instruction}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\cellcolor{white}{\textcolor{black}{Non Matriculated}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{5c88da}{\textcolor{white}{17\%}}\\
+\bottomrule
+\end{tabular}
+\endgroup{}
+\end{table}
+:::
+:::
+
+
+
+::: {#tbl-scicntsingle .cell tbl-cap='Distributions of Majors for SCI115 Courses'}
+::: {.cell-output-display}
+\begin{table}[H]
+\centering\begingroup\fontsize{12}{14}\selectfont
+
+\begin{tabular}[t]{>{\centering\arraybackslash}p{20em}>{\centering\arraybackslash}p{4em}}
+\toprule
+ & SCI115\\
+\midrule
+\cellcolor{white}{\textcolor{black}{Accounting}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\cellcolor{white}{\textcolor{black}{Business Management}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\cellcolor{white}{\textcolor{black}{Com Concentration Unknown}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{3\%}}\\
+\cellcolor{white}{\textcolor{black}{Communication Concentration}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\cellcolor{white}{\textcolor{black}{Communication Creative Advertising}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{3\%}}\\
 \addlinespace
-\cellcolor{white}{\textcolor{black}{Health Science}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
-\cellcolor{white}{\textcolor{black}{History}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
-\cellcolor{white}{\textcolor{black}{Journalism and Media Writing - Sport Communication}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
-\cellcolor{white}{\textcolor{black}{Entrepreneurship}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{3\%}}\\
-\cellcolor{white}{\textcolor{black}{IDS Curriculum \& Instruction}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\cellcolor{white}{\textcolor{black}{Criminal Justice}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{6\%}}\\
+\cellcolor{white}{\textcolor{black}{Event Management}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\cellcolor{white}{\textcolor{black}{Exercise Science}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\cellcolor{white}{\textcolor{black}{Fashion and Retail Merchandising}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\cellcolor{white}{\textcolor{black}{Fashion Media and Marketing}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{3\%}}\\
 \addlinespace
-\cellcolor{white}{\textcolor{black}{Non Matriculated}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{5c88da}{\textcolor{white}{17\%}}\\
+\cellcolor{white}{\textcolor{black}{Fashion Merchandising and Management}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\cellcolor{white}{\textcolor{black}{Finance}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{3\%}}\\
+\cellcolor{white}{\textcolor{black}{Fitness Management}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\cellcolor{white}{\textcolor{black}{Global Studies}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\cellcolor{white}{\textcolor{black}{Graphic Design}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{3\%}}\\
+\addlinespace
+\cellcolor{white}{\textcolor{black}{Health Science}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\cellcolor{white}{\textcolor{black}{History}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\cellcolor{white}{\textcolor{black}{Hospitality Management}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\cellcolor{white}{\textcolor{black}{Journalism and Media Writing}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\cellcolor{white}{\textcolor{black}{Journalism and Media Writing - Sport Communication}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\addlinespace
+\cellcolor{white}{\textcolor{black}{Law and Public Affairs}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\cellcolor{white}{\textcolor{black}{Management}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{3\%}}\\
+\cellcolor{white}{\textcolor{black}{Marketing}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{5\%}}\\
+\cellcolor{white}{\textcolor{black}{Psychology}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{8\%}}\\
+\cellcolor{white}{\textcolor{black}{Public Relations}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\addlinespace
+\cellcolor{white}{\textcolor{black}{Sport Communication}} & \cellcolor[HTML]{5c88da}{\textcolor{white}{17\%}}\\
+\cellcolor{white}{\textcolor{black}{Sport Management}} & \cellcolor[HTML]{5c88da}{\textcolor{white}{16\%}}\\
+\cellcolor{white}{\textcolor{black}{Undeclared Option}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
 \bottomrule
 \end{tabular}
 \endgroup{}
@@ -585,10 +625,10 @@ value.
 
 ::: {#tbl-cjcnt .cell tbl-cap='Distributions of Majors for CJ Courses'}
 ::: {.cell-output-display}
-\begin{table}[!h]
+\begin{table}[H]
 \centering\begingroup\fontsize{12}{14}\selectfont
 
-\begin{tabular}[t]{>{\centering\arraybackslash}p{20em}>{\centering\arraybackslash}p{3em}}
+\begin{tabular}[t]{>{\centering\arraybackslash}p{20em}>{\centering\arraybackslash}p{4em}}
 \toprule
  & CJ205\\
 \midrule

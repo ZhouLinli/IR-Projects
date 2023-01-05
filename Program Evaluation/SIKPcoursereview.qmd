@@ -108,7 +108,7 @@ pivot_wider(names_from="term",values_from="n",values_fill =0)%>%
 viz.crscnt<-tab.crscnt%>%
 kbl(align = "c",booktabs = T,label="tab.label", caption = "SIKP Course Enrollment by Semester", col.names =c("",str_wrap(names(tab.crscnt)[2:ncol(tab.crscnt)],width = 3))) %>%
 #set in-text reference label, table title , header names
-kable_styling(latex_options = c('hold_position'), full_width = F, fixed_thead = T, font_size = 12,bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
+kable_styling(latex_options = c('HOLD_position'), full_width = F, fixed_thead = T, font_size = 12,bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
 #set overall style
 column_spec(1, bold = F, border_right = F, background = "white", width = "5em",color="black")
 
@@ -154,7 +154,7 @@ tab.mjcnt<-stucrs.si%>%group_by(coursegrp,Major)%>%
 viz.mjcnt<-tab.mjcnt%>%
 kbl(align = "c",booktabs = T, col.names =c("",str_wrap(names(tab.mjcnt)[2:ncol(tab.mjcnt)],width = 3))) %>%
 #set in-text reference label, table title , header names
-kable_styling(latex_options = c('hold_position'), full_width = F, fixed_thead = T, font_size = 12,bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
+kable_styling(latex_options = c('HOLD_position'), full_width = F, fixed_thead = T, font_size = 12,bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
 #set overall style
 column_spec(1, bold = F, border_right = F, background = "white", width = "20em",color="black")
 
@@ -295,7 +295,7 @@ tab.biocnt<-tab.biocnt%>%
 viz.biocnt<-tab.biocnt%>%
 kbl(align = "c",booktabs = T, col.names =c("",str_wrap(names(tab.biocnt)[2:ncol(tab.biocnt)],width = 3))) %>%
 #set in-text reference label, table title , header names
-kable_styling(latex_options = c('hold_position'), full_width = F, fixed_thead = T, font_size = 12,bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
+kable_styling(latex_options = c('HOLD_position'), full_width = F, fixed_thead = T, font_size = 12,bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
 #set overall style
 column_spec(1, bold = F, border_right = F, background = "white", width = "20em",color="black")
 
@@ -308,7 +308,7 @@ cut4<-0
 
 for (i in 2:ncol(tab.biocnt)){
 viz.biocnt<-
-column_spec(kable_input=viz.biocnt,column=i, width = "3em",color="white",
+column_spec(kable_input=viz.biocnt,column=i, width = "4em",color="white",
             background =cf_color_blue(tab.biocnt[i],a=cut1,b=cut2,c=cut3,d=cut4))
 i=i+1; viz.biocnt}
 ```
@@ -334,7 +334,7 @@ tab.chemcnt<-tab.chemcnt%>%
 viz.chemcnt<-tab.chemcnt%>%
 kbl(align = "c",booktabs = T, col.names =c("",str_wrap(names(tab.chemcnt)[2:ncol(tab.chemcnt)],width = 3))) %>%
 #set in-text reference label, table title , header names
-kable_styling(latex_options = c('hold_position'), full_width = F, fixed_thead = T, font_size = 12,bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
+kable_styling(latex_options = c('HOLD_position'), full_width = F, fixed_thead = T, font_size = 12,bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
 #set overall style
 column_spec(1, bold = F, border_right = F, background = "white", width = "20em",color="black")
 
@@ -347,7 +347,7 @@ cut4<-0
 
 for (i in 2:ncol(tab.chemcnt)){
 viz.chemcnt<-
-column_spec(kable_input=viz.chemcnt,column=i, width = "3em",color="white",
+column_spec(kable_input=viz.chemcnt,column=i, width = "4em",color="white",
             background =cf_color_blue(tab.chemcnt[i],a=cut1,b=cut2,c=cut3,d=cut4))
 i=i+1; viz.chemcnt}
 ```
@@ -373,7 +373,7 @@ tab.envcnt<-tab.envcnt%>%
 viz.envcnt<-tab.envcnt%>%
 kbl(align = "c",booktabs = T, col.names =c("",str_wrap(names(tab.envcnt)[2:ncol(tab.envcnt)],width = 3))) %>%
 #set in-text reference label, table title , header names
-kable_styling(latex_options = c('hold_position'), full_width = F, fixed_thead = T, font_size = 12,bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
+kable_styling(latex_options = c('HOLD_position'), full_width = F, fixed_thead = T, font_size = 12,bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
 #set overall style
 column_spec(1, bold = F, border_right = F, background = "white", width = "20em",color="black")
 
@@ -386,7 +386,7 @@ cut4<-0
 
 for (i in 2:ncol(tab.envcnt)){
 viz.envcnt<-
-column_spec(kable_input=viz.envcnt,column=i, width = "3em",color="white",
+column_spec(kable_input=viz.envcnt,column=i, width = "4em",color="white",
             background =cf_color_blue(tab.envcnt[i],a=cut1,b=cut2,c=cut3,d=cut4))
 i=i+1; viz.envcnt}
 ```
@@ -412,7 +412,7 @@ tab.physcnt<-tab.physcnt%>%
 viz.physcnt<-tab.physcnt%>%
 kbl(align = "c",booktabs = T, col.names =c("",str_wrap(names(tab.physcnt)[2:ncol(tab.physcnt)],width = 3))) %>%
 #set in-text reference label, table title , header names
-kable_styling(latex_options = c('hold_position'), full_width = F, fixed_thead = T, font_size = 12,bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
+kable_styling(latex_options = c('HOLD_position'), full_width = F, fixed_thead = T, font_size = 12,bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
 #set overall style
 column_spec(1, bold = F, border_right = F, background = "white", width = "20em",color="black")
 
@@ -436,7 +436,7 @@ i=i+1; viz.physcnt}
 viz.physcnt
 ```
 
-## SCI10
+## SCI
 ```{r scicnt10}
 #count major (with toal row&col) for each coursecode across 18-22
 tab.scicnt10<-stucrs.si%>%filter(grepl("^SCI10",coursecode))%>%
@@ -451,7 +451,7 @@ tab.scicnt10<-tab.scicnt10%>%
 viz.scicnt10<-tab.scicnt10%>%
 kbl(align = "c",booktabs = T, col.names =c("",str_wrap(names(tab.scicnt10)[2:ncol(tab.scicnt10)],width = 3))) %>%
 #set in-text reference label, table title , header names
-kable_styling(latex_options = c('hold_position'), full_width = F, fixed_thead = T, font_size = 12,bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
+kable_styling(latex_options = c('HOLD_position'), full_width = F, fixed_thead = T, font_size = 12,bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
 #set overall style
 column_spec(1, bold = F, border_right = F, background = "white", width = "20em",color="black")
 
@@ -475,10 +475,11 @@ i=i+1; viz.scicnt10}
 viz.scicnt10
 ```
 
-## SCI11
+
+
 ```{r scicnt11}
 #count major (with toal row&col) for each coursecode across 18-22
-tab.scicnt11<-stucrs.si%>%filter(grepl("^SCI11",coursecode))%>%
+tab.scicnt11<-stucrs.si%>%filter(grepl("^SCI114|SCI118",coursecode))%>%
   group_by(coursecode,Major)%>%
   summarise(n=n())%>%mutate(prt=n/sum(n))%>%select(-n)%>%
   filter(prt>.01 & !is.na(Major))%>%
@@ -490,7 +491,7 @@ tab.scicnt11<-tab.scicnt11%>%
 viz.scicnt11<-tab.scicnt11%>%
 kbl(align = "c",booktabs = T, col.names =c("",str_wrap(names(tab.scicnt11)[2:ncol(tab.scicnt11)],width = 3))) %>%
 #set in-text reference label, table title , header names
-kable_styling(latex_options = c('hold_position'), full_width = F, fixed_thead = T, font_size = 12,bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
+kable_styling(latex_options = c('HOLD_position'), full_width = F, fixed_thead = T, font_size = 12,bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
 #set overall style
 column_spec(1, bold = F, border_right = F, background = "white", width = "20em",color="black")
 
@@ -503,15 +504,53 @@ cut4<-0
 
 for (i in 2:ncol(tab.scicnt11)){
 viz.scicnt11<-
-column_spec(kable_input=viz.scicnt11,column=i, width = "3em",color="white",
+column_spec(kable_input=viz.scicnt11,column=i, width = "4em",color="white",
             background =cf_color_blue(tab.scicnt11[i],a=cut1,b=cut2,c=cut3,d=cut4))
 i=i+1; viz.scicnt11}
 ```
 
 ```{r show.scicnt11, fig.width=8,include=TRUE}
 #| label: tbl-scicnt11
-#| tbl-cap: "Distributions of Majors for SCI114,115,118 Courses"
+#| tbl-cap: "Distributions of Majors for SCI114 and 118 Courses"
 viz.scicnt11
+```
+
+```{r scicntsingle}
+#count major (with toal row&col) for each coursecode across 18-22
+tab.scicntsingle<-stucrs.si%>%filter(grepl("^SCI115",coursecode))%>%
+  group_by(coursecode,Major)%>%
+  summarise(n=n())%>%mutate(prt=n/sum(n))%>%select(-n)%>%
+  filter(prt>.01 & !is.na(Major))%>%
+  pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)
+tab.scicntsingle<-tab.scicntsingle%>%
+  mutate(across(names(tab.scicntsingle)[-1], function(x) percent(x, digit=0)))  #make numbers percentage
+
+#format table as viz (format beautifully with kbl functions)
+viz.scicntsingle<-tab.scicntsingle%>%
+kbl(align = "c",booktabs = T, col.names =c("",str_wrap(names(tab.scicntsingle)[2:ncol(tab.scicntsingle)],width = 3))) %>%
+#set in-text reference label, table title , header names
+kable_styling(latex_options = c('HOLD_position'), full_width = F, fixed_thead = T, font_size = 12,bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
+#set overall style
+column_spec(1, bold = F, border_right = F, background = "white", width = "20em",color="black")
+
+#conditional formatting
+cutraw<-stucrs.si%>%filter(grepl("^SCI115",coursecode))%>%group_by(coursecode,Major)%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%ungroup()%>%select(prt)
+cut1<-(max(cutraw)-min(cutraw))*.6+min(cutraw)
+cut2<-(max(cutraw)-min(cutraw))*.2+min(cutraw)
+cut3<-(max(cutraw)-min(cutraw))*.1+min(cutraw)
+cut4<-0
+
+for (i in 2:ncol(tab.scicntsingle)){
+viz.scicntsingle<-
+column_spec(kable_input=viz.scicntsingle,column=i, width = "4em",color="white",
+            background =cf_color_blue(tab.scicntsingle[i],a=cut1,b=cut2,c=cut3,d=cut4))
+i=i+1; viz.scicntsingle}
+```
+
+```{r show.scicntsingle, fig.width=8,include=TRUE}
+#| label: tbl-scicntsingle
+#| tbl-cap: "Distributions of Majors for SCI115 Courses"
+viz.scicntsingle
 ```
 
 
@@ -531,7 +570,7 @@ tab.cjcnt<-tab.cjcnt%>%
 viz.cjcnt<-tab.cjcnt%>%
 kbl(align = "c",booktabs = T, col.names =c("",str_wrap(names(tab.cjcnt)[2:ncol(tab.cjcnt)],width = 3))) %>%
 #set in-text reference label, table title , header names
-kable_styling(latex_options = c('hold_position'), full_width = F, fixed_thead = T, font_size = 12,bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
+kable_styling(latex_options = c('HOLD_position'), full_width = F, fixed_thead = T, font_size = 12,bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
 #set overall style
 column_spec(1, bold = F, border_right = F, background = "white", width = "20em",color="black")
 
@@ -544,7 +583,7 @@ cut4<-0
 
 for (i in 2:ncol(tab.cjcnt)){
 viz.cjcnt<-
-column_spec(kable_input=viz.cjcnt,column=i, width = "3em",color="white",
+column_spec(kable_input=viz.cjcnt,column=i, width = "4em",color="white",
             background =cf_color_blue(tab.cjcnt[i],a=cut1,b=cut2,c=cut3,d=cut4))
 i=i+1; viz.cjcnt}
 ```

@@ -135,7 +135,7 @@ viz.crscnt
 Table @tbl-mjcnt summarizes distributions of students'
 major for each SIKP course groups. The table uses aggregated
 data across academic year 2018-2022, and excludes majors
-with less than 1% percentage observations or missing a major
+with less than 2% percentage observations or missing a major
 value.
 
 ```{r request notes}
@@ -146,7 +146,7 @@ value.
 #count major (with toal row&col) for each coursecode across 18-22
 tab.mjcnt<-stucrs.si%>%group_by(coursegrp,Major)%>%
   summarise(n=n())%>%mutate(prt=n/sum(n))%>%select(-n)%>%
-  filter(prt>.01 & !is.na(Major))%>%
+  filter(prt>.02 & !is.na(Major))%>%
   pivot_wider(names_from=coursegrp,values_from=prt,values_fill=0)%>%
   mutate(across(BIO:SCI, function(x) percent(x, digit=0)))  #make numbers percentage
 
@@ -286,7 +286,7 @@ gridExtra::grid.arrange(viz_cj.major,#3
 tab.biocnt<-stucrs.si%>%filter(grepl("^BIO",coursecode))%>%
   group_by(coursecode,Major)%>%
   summarise(n=n())%>%mutate(prt=n/sum(n))%>%select(-n)%>%
-  filter(prt>.01 & !is.na(Major))%>%
+  filter(prt>.02 & !is.na(Major))%>%
   pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)
 tab.biocnt<-tab.biocnt%>%
   mutate(across(names(tab.biocnt)[-1], function(x) percent(x, digit=0)))  #make numbers percentage
@@ -325,7 +325,7 @@ viz.biocnt
 tab.chemcnt<-stucrs.si%>%filter(grepl("^CHEM",coursecode))%>%
   group_by(coursecode,Major)%>%
   summarise(n=n())%>%mutate(prt=n/sum(n))%>%select(-n)%>%
-  filter(prt>.01 & !is.na(Major))%>%
+  filter(prt>.02 & !is.na(Major))%>%
   pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)
 tab.chemcnt<-tab.chemcnt%>%
   mutate(across(names(tab.chemcnt)[-1], function(x) percent(x, digit=0)))  #make numbers percentage
@@ -364,7 +364,7 @@ viz.chemcnt
 tab.envcnt<-stucrs.si%>%filter(grepl("^ENV",coursecode))%>%
   group_by(coursecode,Major)%>%
   summarise(n=n())%>%mutate(prt=n/sum(n))%>%select(-n)%>%
-  filter(prt>.01 & !is.na(Major))%>%
+  filter(prt>.02 & !is.na(Major))%>%
   pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)
 tab.envcnt<-tab.envcnt%>%
   mutate(across(names(tab.envcnt)[-1], function(x) percent(x, digit=0)))  #make numbers percentage
@@ -403,7 +403,7 @@ viz.envcnt
 tab.physcnt<-stucrs.si%>%filter(grepl("^PHYS",coursecode))%>%
   group_by(coursecode,Major)%>%
   summarise(n=n())%>%mutate(prt=n/sum(n))%>%select(-n)%>%
-  filter(prt>.01 & !is.na(Major))%>%
+  filter(prt>.02 & !is.na(Major))%>%
   pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)
 tab.physcnt<-tab.physcnt%>%
   mutate(across(names(tab.physcnt)[-1], function(x) percent(x, digit=0)))  #make numbers percentage
@@ -442,7 +442,7 @@ viz.physcnt
 tab.scicnt10<-stucrs.si%>%filter(grepl("^SCI10",coursecode))%>%
   group_by(coursecode,Major)%>%
   summarise(n=n())%>%mutate(prt=n/sum(n))%>%select(-n)%>%
-  filter(prt>.01 & !is.na(Major))%>%
+  filter(prt>.02 & !is.na(Major))%>%
   pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)
 tab.scicnt10<-tab.scicnt10%>%
   mutate(across(names(tab.scicnt10)[-1], function(x) percent(x, digit=0)))  #make numbers percentage
@@ -479,10 +479,10 @@ viz.scicnt10
 
 ```{r scicnt11}
 #count major (with toal row&col) for each coursecode across 18-22
-tab.scicnt11<-stucrs.si%>%filter(grepl("^SCI114|SCI118",coursecode))%>%
+tab.scicnt11<-stucrs.si%>%filter(grepl("^SCI11",coursecode))%>%
   group_by(coursecode,Major)%>%
   summarise(n=n())%>%mutate(prt=n/sum(n))%>%select(-n)%>%
-  filter(prt>.01 & !is.na(Major))%>%
+  filter(prt>.02 & !is.na(Major))%>%
   pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)
 tab.scicnt11<-tab.scicnt11%>%
   mutate(across(names(tab.scicnt11)[-1], function(x) percent(x, digit=0)))  #make numbers percentage
@@ -511,46 +511,8 @@ i=i+1; viz.scicnt11}
 
 ```{r show.scicnt11, fig.width=8,include=TRUE}
 #| label: tbl-scicnt11
-#| tbl-cap: "Distributions of Majors for SCI114 and 118 Courses"
+#| tbl-cap: "Distributions of Majors for SCI114, 115, 118 Courses"
 viz.scicnt11
-```
-
-```{r scicntsingle}
-#count major (with toal row&col) for each coursecode across 18-22
-tab.scicntsingle<-stucrs.si%>%filter(grepl("^SCI115",coursecode))%>%
-  group_by(coursecode,Major)%>%
-  summarise(n=n())%>%mutate(prt=n/sum(n))%>%select(-n)%>%
-  filter(prt>.01 & !is.na(Major))%>%
-  pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)
-tab.scicntsingle<-tab.scicntsingle%>%
-  mutate(across(names(tab.scicntsingle)[-1], function(x) percent(x, digit=0)))  #make numbers percentage
-
-#format table as viz (format beautifully with kbl functions)
-viz.scicntsingle<-tab.scicntsingle%>%
-kbl(align = "c",booktabs = T, col.names =c("",str_wrap(names(tab.scicntsingle)[2:ncol(tab.scicntsingle)],width = 3))) %>%
-#set in-text reference label, table title , header names
-kable_styling(latex_options = c('HOLD_position'), full_width = F, fixed_thead = T, font_size = 12,bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
-#set overall style
-column_spec(1, bold = F, border_right = F, background = "white", width = "20em",color="black")
-
-#conditional formatting
-cutraw<-stucrs.si%>%filter(grepl("^SCI115",coursecode))%>%group_by(coursecode,Major)%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%ungroup()%>%select(prt)
-cut1<-(max(cutraw)-min(cutraw))*.6+min(cutraw)
-cut2<-(max(cutraw)-min(cutraw))*.2+min(cutraw)
-cut3<-(max(cutraw)-min(cutraw))*.1+min(cutraw)
-cut4<-0
-
-for (i in 2:ncol(tab.scicntsingle)){
-viz.scicntsingle<-
-column_spec(kable_input=viz.scicntsingle,column=i, width = "4em",color="white",
-            background =cf_color_blue(tab.scicntsingle[i],a=cut1,b=cut2,c=cut3,d=cut4))
-i=i+1; viz.scicntsingle}
-```
-
-```{r show.scicntsingle, fig.width=8,include=TRUE}
-#| label: tbl-scicntsingle
-#| tbl-cap: "Distributions of Majors for SCI115 Courses"
-viz.scicntsingle
 ```
 
 
@@ -561,7 +523,7 @@ viz.scicntsingle
 tab.cjcnt<-stucrs.si%>%filter(grepl("^CJ",coursecode))%>%
   group_by(coursecode,Major)%>%
   summarise(n=n())%>%mutate(prt=n/sum(n))%>%select(-n)%>%
-  filter(prt>.01 & !is.na(Major))%>%
+  filter(prt>.02 & !is.na(Major))%>%
   pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)
 tab.cjcnt<-tab.cjcnt%>%
   mutate(across(names(tab.cjcnt)[-1], function(x) percent(x, digit=0)))  #make numbers percentage

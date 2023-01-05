@@ -100,12 +100,12 @@ Spring\\
 :::
 
 
-# Distributions of Majors
+# Distributions of Majors by Course Group
 
 Table @tbl-mjcnt summarizes distributions of students'
 major for each SIKP course groups. The table uses aggregated
 data across academic year 2018-2022, and excludes majors
-with less than 1% percentage observations or missing a major
+with less than 2% percentage observations or missing a major
 value.
 
 
@@ -184,6 +184,8 @@ value.
 
 
 
+
+# Distributions of Majors by Individual Courses
 
 ## BIO
 

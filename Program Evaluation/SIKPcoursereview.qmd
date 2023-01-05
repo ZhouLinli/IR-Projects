@@ -130,7 +130,7 @@ i=i+1; viz.crscnt}
 viz.crscnt
 ```
 
-# Distributions of Majors
+# Distributions of Majors by Course Group
 
 Table @tbl-mjcnt summarizes distributions of students'
 major for each SIKP course groups. The table uses aggregated
@@ -279,6 +279,8 @@ gridExtra::grid.arrange(viz_cj.major,#3
                         viz_phys.major, #9
                         nrow=1, widths=c(1,1))
 ```
+
+# Distributions of Majors by Individual Courses
 
 ## BIO
 ```{r biocnt}

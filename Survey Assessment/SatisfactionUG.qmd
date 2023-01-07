@@ -323,6 +323,18 @@ ugsatis22.quan<-ugsatis22%>%select(!starts_with("qual."))#%>%names()#80
 ugsatis22.qual<-ugsatis22%>%select(starts_with("qual."))#%>%names()#24
 ```
 
+```{r mutate.grpdiffvars}
+#see previous year's report seeking grpvars: gender, sex, res/com; ethnicity, school, year, GPA
+#goal: multivariate regression: where (e.g. sections of food stais, etc.) are the differences (e.g. by years, demographics, etc.
+
+#load mutating data
+enroll22f<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Registrar Reports/2022 Fall/Fall 2022 UG Backup Data Report.xlsx")
+#select mutate-vars and cleannames
+enroll22f.s<-enroll22f%>%select(`People Code Id`,Degree,Curriculum,`Class level`,`College Attend`,`Transfer YN`,`Cohort Id`,`FT/PT`,Ethnicity)%>%janitor::clean_names()
+#mutate now
+ugsatis22.quan<-left_join(ugsatis22.quan,enroll22f.s,by=c("ppid"="people_code_id"))
+```
+
 ```{r hide.save_ugsatis22quanqual}
 #wb<-createWorkbook()
 #addWorksheet(wb,"ugsatis22.quan");writeData(wb,sheet = "ugsatis22.quan",x=ugsatis22.quan)
@@ -334,15 +346,12 @@ ugsatis22.qual<-ugsatis22%>%select(starts_with("qual."))#%>%names()#24
 ugsatis22.quan<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Student Satisfaction Survey/2022-2023/working.xlsx")
 ```
 
-```{r mutate.grpdiffvars}
-
-```
 
 ```{r sec.names}
 #what are basic groupdiff cols
 #names(ugsatis22.quan)#identify basic sections (that will be groupdiff vars for all df.sec) 
 #found: df[1-3], demography(3); mutate degree/year from 2022fall backup/enrolled
-sec.grpdiff.names<-names(cbind(ugsatis22.quan[1:3],ugsatis22.quan[78:ncol(ugsatis22.quan)]))#the first cols and the ending mutated cols
+gpvar.names<-names(cbind(ugsatis22.quan[1:3],ugsatis22.quan[78:ncol(ugsatis22.quan)]))#the first cols and the ending mutated cols
 
 #how many sections: approach 1: simpler version
 sec.names<-names(ugsatis22.quan)%>%str_extract("[a-z]+\\.")%>%as.tibble()%>%filter(!value %in% c("demography.",NA))%>%unique()
@@ -358,12 +367,19 @@ sec.names<-names(ugsatis22.quan)%>%str_extract("[a-z]+\\.")%>%as.tibble()%>%filt
 #plan (logical and itemnum-sum): overall3+reenro5; crs7+advisor3; LASELL:service12; support8+edresource2; community12; social6+food3; timeopt 6+timehr7
 ```
 
-# Overall
+# Historical Response Rate
+```{r}
+#15-21: 42,44,30,22,35,50,36,
+```
+
+# Overall (Historical 18-22)
+
+
+# Each service (Historical 18-22)
 
 all the questions: 2019-2021 historical data
 
-multivariate regression: where (e.g. sections of food stais, etc.) are
-the differences (e.g. by years, demographics, etc.
+
 
 the three overall questions at the beginning : compare historical however
 far back we have

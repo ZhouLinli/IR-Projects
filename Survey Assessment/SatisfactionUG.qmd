@@ -372,20 +372,70 @@ sec.names<-names(ugsatis22.quan)%>%str_extract("[a-z]+\\.")%>%as.tibble()%>%filt
 #15-21: 42,44,30,22,35,50,36,
 ```
 
-# Overall (Historical 18-22)
+## Overall Satisfaction
 
-
-# Each service (Historical 18-22)
-
-all the questions: 2019-2021 historical data
-
-
-
-the three overall questions at the beginning : compare historical however
-far back we have
-
-```{r sec1}
+```{r sec1.long&factorize}
 #check same answers: lapply(ugsatis22.quan%>%select(starts_with(sec.names[1])), unique)
 ugsatis22.overall<-ugsatis22.quan%>%
+  select(all_of(gpvar.names),starts_with(sec.names[1]))%>%#check: str()
+  pivot_longer(cols=starts_with(sec.names[1]),names_to=sec.names[1],values_to=paste0(sec.names[1],"value"))#check:%>%str()
+ugsatis22.overall<-ugsatis22.overall%>%
+  mutate(overall.value=factor(overall.value,levels=c("Poor","Acceptable","Good","Excellent")))
 ```
+
+```{r viz_overall22}
+#set the right order of values
+setyorder<-ugsatis22.overall%>%
+  filter(!is.na(overall.value))%>%
+  group_by(overall.,overall.value)%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%
+  filter(overall.value=="Excellent")%>%arrange(prt)%>%mutate(yorder=factor(overall.))
+
+#tbl
+viz_overall22<-ugsatis22.overall%>%
+  filter(!is.na(overall.value))%>%
+  group_by(overall.,overall.value)%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%
+#viz
+ggplot(aes(y=factor(overall., levels = setyorder$yorder, ordered = TRUE),
+           x = prt, fill=overall.value)) + 
+  geom_bar(stat="identity",position = position_dodge(),width=0.9)+#position = position_stack(),width=0.9
+  scale_fill_manual(values = c("grey",color_bluelight,color_blue,color_blue_lasell))+#guide = guide_legend(reverse = TRUE)
+  scale_y_discrete(labels=c("Service","Facility","Experience"))+#1st label at bottom
+  geom_text(aes(label=if_else(prt>0.03,as.character(percent(prt,digits = 0)),"")),#do not show anything less than error terms, to avoid overlapping labels as well
+                     size=3,vjust=0.5,hjust=0.7,fontface="bold",position = position_dodge(0.9))+#position = position_stack(0), vjust=0.5,hjust=0
+    labs(title="",x="",y="",fill="")+theme_lz()+theme(axis.text.x = element_text(),legend.position = "bottom")+coord_flip()
+```
+
+## Overall Satisfaction (2018-2022)
+
+```{r viz_overall.hist}
+#load historical overall.prt
+overall.his<-tibble(overall.=c("overall.facility","overall.services","overall.exp"),
+       `2018`=c(.72,.68,.75),
+       `2019`=c(.69,.71,.76),
+       `2020`=c(.73,.72,.72),
+       `2021`=c(.63,.67,.71))%>%
+  pivot_longer(cols=c(`2018`:`2021`),names_to="year",values_to="prt.pos")
+
+#merge 2022 overall prt
+ugsatis22.overall%>%filter(!is.na(overall.value))%>%
+  group_by(overall.,overall.value)%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%
+  filter(overall.value%in%c("Good","Excellent"))%>%ungroup()%>%
+  group_by(overall.)%>%mutate(prt.pos=sum(prt))%>%
+  ungroup()%>%select(overall.,prt.pos)%>%unique()%>%
+  mutate(year="2022")%>%full_join(overall.his)%>%arrange(overall.,year)%>%
+#viz
+  ggplot(aes(y = prt.pos, x=year, fill=year ))+
+  geom_bar(stat="identity",position = position_dodge(),width=0.9)+
+  scale_fill_manual(values =c("grey60","grey70","grey80","grey90",color_blue))+
+  scale_y_discrete(labels=c("Experience","Service","Facility"))+#1st label at bottom
+  labs(title="",x="",y="",fill="") + theme_lz()+
+  geom_text(aes(label= percent(prt.pos,digits = 0)),size=3,vjust=1.5,fontface="bold",position = position_dodge(0.9))+
+  
+  facet_wrap(~overall.,nrow=1, strip.position="bottom") +
+  geom_line(aes(y = prt.pos, x=year, group=overall.), 
+                color="grey50", linetype="dashed",stat="identity", show.legend = F)
+```
+
+
+
 

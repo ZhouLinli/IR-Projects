@@ -144,11 +144,14 @@ value.
 
 ```{r mjcnt}
 #count major (with toal row&col) for each coursecode across 18-22
-tab.mjcnt<-stucrs.si%>%group_by(coursegrp,Major)%>%
-  summarise(n=n())%>%mutate(prt=n/sum(n))%>%select(-n)%>%
-  filter(prt>.02 & !is.na(Major))%>%
-  pivot_wider(names_from=coursegrp,values_from=prt,values_fill=0)%>%
-  mutate(across(BIO:SCI, function(x) percent(x, digit=0)))%>%arrange(Major)  #make numbers percentage
+tab.mjcnt<-stucrs.si%>%group_by(coursegrp,Major)%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%
+  select(-n)%>%filter(prt>.02 & !is.na(Major))%>%#only show a portion
+  pivot_wider(names_from=coursegrp,values_from=prt,values_fill=0)%>%arrange(Major)#reorder
+
+tab.mjcnt<-tab.mjcnt%>%  
+  #other majors: 
+  rbind(c(Major="Other Majors",1-colSums(tab.mjcnt[-1])))%>%#check:tail(2)
+  mutate(across(names(tab.mjcnt)[-1], function(x) percent(x, digit=0)))#change prt to %
 
 #format table as viz (format beautifully with kbl functions)
 viz.mjcnt<-tab.mjcnt%>%
@@ -170,12 +173,10 @@ viz.mjcnt<-
 column_spec(kable_input=viz.mjcnt,column=i, width = "3em",color="white",
             background =cf_color_blue(tab.mjcnt[i],a=cut1,b=cut2,c=cut3,d=cut4))
 i=i+1; viz.mjcnt}
+
+#correct the other major row
+viz.mjcnt<-viz.mjcnt%>%row_spec(nrow(tab.mjcnt),color = color_grey,background = "white")
 ```
-
-```{r allothermajor}
-
-```
-
 
 ```{r show.mjcnt, fig.width=8,include=TRUE}
 #| label: tbl-mjcnt
@@ -294,9 +295,11 @@ tab.biocnt<-stucrs.si%>%filter(grepl("^BIO",coursecode))%>%
   group_by(coursecode,Major)%>%
   summarise(n=n())%>%mutate(prt=n/sum(n))%>%select(-n)%>%
   filter(prt>.02 & !is.na(Major))%>%
-  pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)
-tab.biocnt<-tab.biocnt%>%
-  mutate(across(names(tab.biocnt)[-1], function(x) percent(x, digit=0)))%>%arrange(Major)  #make numbers percentage
+  pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)%>%arrange(Major)
+
+tab.biocnt<-tab.biocnt%>%rbind(c(Major="Other Majors",1-colSums(tab.biocnt[-1])))%>%
+  #check:tail(2) add "others" row
+  mutate(across(names(tab.biocnt)[-1], function(x) percent(x, digit=0)))  #make numbers percentage
 
 #format table as viz (format beautifully with kbl functions)
 viz.biocnt<-tab.biocnt%>%
@@ -313,6 +316,9 @@ viz.biocnt<-
 column_spec(kable_input=viz.biocnt,column=i, width = "4em",color="white",
             background =cf_color_blue(tab.biocnt[i],a=.2,b=.1,c=.075,d=0))
 i=i+1; viz.biocnt}
+
+#correct the other major row
+viz.biocnt<-viz.biocnt%>%row_spec(nrow(tab.biocnt),color = color_grey,background = "white")
 ```
 
 ```{r show.biocnt, fig.width=8,include=TRUE}
@@ -328,9 +334,11 @@ tab.chemcnt<-stucrs.si%>%filter(grepl("^CHEM",coursecode))%>%
   group_by(coursecode,Major)%>%
   summarise(n=n())%>%mutate(prt=n/sum(n))%>%select(-n)%>%
   filter(prt>.02 & !is.na(Major))%>%
-  pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)
-tab.chemcnt<-tab.chemcnt%>%
-  mutate(across(names(tab.chemcnt)[-1], function(x) percent(x, digit=0)))%>%arrange(Major)  #make numbers percentage
+  pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)%>%arrange(Major)
+
+tab.chemcnt<-tab.chemcnt%>%rbind(c(Major="Other Majors",1-colSums(tab.chemcnt[-1])))%>%
+  #check:tail(2) add "others" row
+  mutate(across(names(tab.chemcnt)[-1], function(x) percent(x, digit=0)))  #make numbers percentage
 
 #format table as viz (format beautifully with kbl functions)
 viz.chemcnt<-tab.chemcnt%>%
@@ -347,6 +355,9 @@ viz.chemcnt<-
 column_spec(kable_input=viz.chemcnt,column=i, width = "4em",color="white",
             background =cf_color_blue(tab.chemcnt[i],a=.2,b=.1,c=.075,d=0))
 i=i+1; viz.chemcnt}
+
+#correct the other major row
+viz.chemcnt<-viz.chemcnt%>%row_spec(nrow(tab.chemcnt),color = color_grey,background = "white")
 ```
 
 ```{r show.chemcnt, fig.width=8,include=TRUE}
@@ -362,9 +373,11 @@ tab.envcnt<-stucrs.si%>%filter(grepl("^ENV",coursecode))%>%
   group_by(coursecode,Major)%>%
   summarise(n=n())%>%mutate(prt=n/sum(n))%>%select(-n)%>%
   filter(prt>.02 & !is.na(Major))%>%
-  pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)
-tab.envcnt<-tab.envcnt%>%
-  mutate(across(names(tab.envcnt)[-1], function(x) percent(x, digit=0)))%>%arrange(Major)  #make numbers percentage
+  pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)%>%arrange(Major)
+
+tab.envcnt<-tab.envcnt%>%rbind(c(Major="Other Majors",1-colSums(tab.envcnt[-1])))%>%
+  #check:tail(2) add "others" row
+  mutate(across(names(tab.envcnt)[-1], function(x) percent(x, digit=0)))  #make numbers percentage
 
 #format table as viz (format beautifully with kbl functions)
 viz.envcnt<-tab.envcnt%>%
@@ -381,6 +394,9 @@ viz.envcnt<-
 column_spec(kable_input=viz.envcnt,column=i, width = "4em",color="white",
             background =cf_color_blue(tab.envcnt[i],a=.2,b=.1,c=.075,d=0))
 i=i+1; viz.envcnt}
+
+#correct the other major row
+viz.envcnt<-viz.envcnt%>%row_spec(nrow(tab.envcnt),color = color_grey,background = "white")
 ```
 
 ```{r show.envcnt, fig.width=8,include=TRUE}
@@ -396,9 +412,11 @@ tab.physcnt<-stucrs.si%>%filter(grepl("^PHYS",coursecode))%>%
   group_by(coursecode,Major)%>%
   summarise(n=n())%>%mutate(prt=n/sum(n))%>%select(-n)%>%
   filter(prt>.02 & !is.na(Major))%>%
-  pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)
-tab.physcnt<-tab.physcnt%>%
-  mutate(across(names(tab.physcnt)[-1], function(x) percent(x, digit=0)))%>%arrange(Major)  #make numbers percentage
+  pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)%>%arrange(Major)
+
+tab.physcnt<-tab.physcnt%>%rbind(c(Major="Other Majors",1-colSums(tab.physcnt[-1])))%>%
+  #check:tail(2) add "others" row
+  mutate(across(names(tab.physcnt)[-1], function(x) percent(x, digit=0)))  #make numbers percentage
 
 #format table as viz (format beautifully with kbl functions)
 viz.physcnt<-tab.physcnt%>%
@@ -415,6 +433,9 @@ viz.physcnt<-
 column_spec(kable_input=viz.physcnt,column=i, width = "4.5em",color="white",
             background =cf_color_blue(tab.physcnt[i],a=.2,b=.1,c=.075,d=0))
 i=i+1; viz.physcnt}
+
+#correct the other major row
+viz.physcnt<-viz.physcnt%>%row_spec(nrow(tab.physcnt),color = color_grey,background = "white")
 ```
 
 ```{r show.physcnt, fig.width=8,include=TRUE}
@@ -430,9 +451,11 @@ tab.scicnt10<-stucrs.si%>%filter(grepl("^SCI10",coursecode))%>%
   group_by(coursecode,Major)%>%
   summarise(n=n())%>%mutate(prt=n/sum(n))%>%select(-n)%>%
   filter(prt>.02 & !is.na(Major))%>%
-  pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)
-tab.scicnt10<-tab.scicnt10%>%
-  mutate(across(names(tab.scicnt10)[-1], function(x) percent(x, digit=0)))%>%arrange(Major)  #make numbers percentage
+  pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)%>%arrange(Major)
+
+tab.scicnt10<-tab.scicnt10%>%rbind(c(Major="Other Majors",1-colSums(tab.scicnt10[-1])))%>%
+  #check:tail(2) add "others" row
+  mutate(across(names(tab.scicnt10)[-1], function(x) percent(x, digit=0)))  #make numbers percentage
 
 #format table as viz (format beautifully with kbl functions)
 viz.scicnt10<-tab.scicnt10%>%
@@ -449,6 +472,9 @@ viz.scicnt10<-
 column_spec(kable_input=viz.scicnt10,column=i, width = "3em",color="white",
             background =cf_color_blue(tab.scicnt10[i],a=.2,b=.1,c=.075,d=0))
 i=i+1; viz.scicnt10}
+
+#correct the other major row
+viz.scicnt10<-viz.scicnt10%>%row_spec(nrow(tab.scicnt10),color = color_grey,background = "white")
 ```
 
 ```{r show.scicnt10, fig.width=8,include=TRUE}
@@ -465,9 +491,11 @@ tab.scicnt11<-stucrs.si%>%filter(grepl("^SCI11",coursecode))%>%
   group_by(coursecode,Major)%>%
   summarise(n=n())%>%mutate(prt=n/sum(n))%>%select(-n)%>%
   filter(prt>.02 & !is.na(Major))%>%
-  pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)
-tab.scicnt11<-tab.scicnt11%>%
-  mutate(across(names(tab.scicnt11)[-1], function(x) percent(x, digit=0)))%>%arrange(Major)  #make numbers percentage
+  pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)%>%arrange(Major)
+
+tab.scicnt11<-tab.scicnt11%>%rbind(c(Major="Other Majors",1-colSums(tab.scicnt11[-1])))%>%
+  #check:tail(2) add "others" row
+  mutate(across(names(tab.scicnt11)[-1], function(x) percent(x, digit=0)))  #make numbers percentage
 
 #format table as viz (format beautifully with kbl functions)
 viz.scicnt11<-tab.scicnt11%>%
@@ -484,6 +512,9 @@ viz.scicnt11<-
 column_spec(kable_input=viz.scicnt11,column=i, width = "4em",color="white",
             background =cf_color_blue(tab.scicnt11[i],a=.2,b=.1,c=.075,d=0))
 i=i+1; viz.scicnt11}
+
+#correct the other major row
+viz.scicnt11<-viz.scicnt11%>%row_spec(nrow(tab.scicnt11),color = color_grey,background = "white")
 ```
 
 ```{r show.scicnt11, fig.width=8,include=TRUE}
@@ -501,9 +532,11 @@ tab.cjcnt<-stucrs.si%>%filter(grepl("^CJ",coursecode))%>%
   group_by(coursecode,Major)%>%
   summarise(n=n())%>%mutate(prt=n/sum(n))%>%select(-n)%>%
   filter(prt>.02 & !is.na(Major))%>%
-  pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)
-tab.cjcnt<-tab.cjcnt%>%
-  mutate(across(names(tab.cjcnt)[-1], function(x) percent(x, digit=0)))%>%arrange(Major)  #make numbers percentage
+  pivot_wider(names_from=coursecode,values_from=prt,values_fill=0)%>%arrange(Major)
+
+tab.cjcnt<-tab.cjcnt%>%rbind(c(Major="Other Majors",1-colSums(tab.cjcnt[-1])))%>%
+  #check:tail(2) add "others" row
+  mutate(across(names(tab.cjcnt)[-1], function(x) percent(x, digit=0)))  #make numbers percentage
 
 #format table as viz (format beautifully with kbl functions)
 viz.cjcnt<-tab.cjcnt%>%
@@ -520,6 +553,9 @@ viz.cjcnt<-
 column_spec(kable_input=viz.cjcnt,column=i, width = "4em",color="white",
             background =cf_color_blue(tab.cjcnt[i],a=.2,b=.1,c=.075,d=0))
 i=i+1; viz.cjcnt}
+
+#correct the other major row
+viz.cjcnt<-viz.cjcnt%>%row_spec(nrow(tab.cjcnt),color = color_grey,background = "white")
 ```
 
 ```{r show.cjcnt, fig.width=8,include=TRUE}

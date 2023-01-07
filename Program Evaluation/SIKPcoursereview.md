@@ -113,8 +113,6 @@ value.
 
 
 
-
-
 ::: {#tbl-mjcnt .cell tbl-cap='Distributions of Majors by Course Groups'}
 ::: {.cell-output-display}
 \begin{table}[H]
@@ -159,6 +157,8 @@ value.
 \cellcolor{white}{\textcolor{black}{Sport Communication}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{3\%}}\\
 \cellcolor{white}{\textcolor{black}{Sport Management}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{3\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{5\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{5\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{6\%}}\\
 \cellcolor{white}{\textcolor{black}{Undeclared Option}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{8\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{3\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{3\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{3\%}}\\
+\addlinespace
+\cellcolor{white}{\textcolor[HTML]{aaaaaa}{Other Majors}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{28\%}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{15\%}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{17\%}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{29\%}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{17\%}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{28\%}}\\
 \bottomrule
 \end{tabular}
 \endgroup{}
@@ -229,6 +229,7 @@ value.
 \cellcolor{white}{\textcolor{black}{Sport Communication}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{6\%}}\\
 \cellcolor{white}{\textcolor{black}{Sport Management}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{5\%}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{18\%}}\\
 \cellcolor{white}{\textcolor{black}{Undeclared Option}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{12\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{6\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
+\cellcolor{white}{\textcolor[HTML]{aaaaaa}{Other Majors}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{16\%}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{13\%}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{25\%}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{6\%}}\\
 \bottomrule
 \end{tabular}
 \endgroup{}
@@ -270,6 +271,7 @@ value.
 \addlinespace
 \cellcolor{white}{\textcolor{black}{Psychology}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
 \cellcolor{white}{\textcolor{black}{Undeclared Option}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{5\%}}\\
+\cellcolor{white}{\textcolor[HTML]{aaaaaa}{Other Majors}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{9\%}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{9\%}}\\
 \bottomrule
 \end{tabular}
 \endgroup{}
@@ -329,6 +331,7 @@ value.
 \addlinespace
 \cellcolor{white}{\textcolor{black}{Sport Management}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{3\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{6\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{5\%}}\\
 \cellcolor{white}{\textcolor{black}{Undeclared Option}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{3\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{4\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}}\\
+\cellcolor{white}{\textcolor[HTML]{aaaaaa}{Other Majors}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{6\%}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{29\%}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{0\%}}\\
 \bottomrule
 \end{tabular}
 \endgroup{}
@@ -376,6 +379,7 @@ value.
 \addlinespace
 \cellcolor{white}{\textcolor{black}{Sport Management}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{14\%}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{12\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{2\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
 \cellcolor{white}{\textcolor{black}{Undeclared Option}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{8\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{6\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
+\cellcolor{white}{\textcolor[HTML]{aaaaaa}{Other Majors}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{22\%}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{0\%}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{1\%}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{0\%}}\\
 \bottomrule
 \end{tabular}
 \endgroup{}
@@ -425,6 +429,7 @@ value.
 \cellcolor{white}{\textcolor{black}{Sport Communication}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{3\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{4\%}}\\
 \cellcolor{white}{\textcolor{black}{Sport Management}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{6\%}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{11\%}}\\
 \cellcolor{white}{\textcolor{black}{Undeclared Option}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{4\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{4\%}} & \cellcolor{white}{\textcolor{white}{0\%}}\\
+\cellcolor{white}{\textcolor[HTML]{aaaaaa}{Other Majors}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{17\%}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{2\%}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{27\%}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{16\%}}\\
 \bottomrule
 \end{tabular}
 \endgroup{}
@@ -474,6 +479,7 @@ value.
 \cellcolor{white}{\textcolor{black}{Sport Management}} & \cellcolor[HTML]{a7d2f0}{\textcolor{white}{8\%}} & \cellcolor[HTML]{69b3e7}{\textcolor{white}{16\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{3\%}}\\
 \addlinespace
 \cellcolor{white}{\textcolor{black}{Undeclared Option}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{3\%}} & \cellcolor{white}{\textcolor{white}{0\%}} & \cellcolor[HTML]{cccccc}{\textcolor{white}{6\%}}\\
+\cellcolor{white}{\textcolor[HTML]{aaaaaa}{Other Majors}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{22\%}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{29\%}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{30\%}}\\
 \bottomrule
 \end{tabular}
 \endgroup{}
@@ -499,6 +505,7 @@ value.
 \midrule
 \cellcolor{white}{\textcolor{black}{Applied Forensic Science}} & \cellcolor[HTML]{5c88da}{\textcolor{white}{23\%}}\\
 \cellcolor{white}{\textcolor{black}{Criminal Justice}} & \cellcolor[HTML]{5c88da}{\textcolor{white}{60\%}}\\
+\cellcolor{white}{\textcolor[HTML]{aaaaaa}{Other Majors}} & \cellcolor{white}{\textcolor[HTML]{aaaaaa}{17\%}}\\
 \bottomrule
 \end{tabular}
 \endgroup{}

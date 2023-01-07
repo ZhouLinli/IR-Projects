@@ -46,11 +46,6 @@ source("/Users/linlizhou/Documents/Rprojects/IR-Projects/theme_source.R")
 #    prefer-html: true
 ```
 
-all the questions: 2019-2021 historical data
-
-the three overall questions at the ebgining : compare historical however
-far back we have
-
 ```{r load.raw}
 raw<-read_csv("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Student Satisfaction Survey/2022-2023/20230103143331-SurveyExport.csv")
 #investigate
@@ -335,6 +330,46 @@ ugsatis22.qual<-ugsatis22%>%select(starts_with("qual."))#%>%names()#24
 #saveWorkbook(wb,"/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Student Satisfaction Survey/2022-2023/working.xlsx",overwrite = TRUE)
 ```
 
-```{r ugsatis22.long}
-ugsatis22.long<-ugsatis22.quan%>%
+```{r load.saveddf}
+ugsatis22.quan<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Student Satisfaction Survey/2022-2023/working.xlsx")
 ```
+
+```{r mutate.grpdiffvars}
+
+```
+
+```{r sec.names}
+#what are basic groupdiff cols
+#names(ugsatis22.quan)#identify basic sections (that will be groupdiff vars for all df.sec) 
+#found: df[1-3], demography(3); mutate degree/year from 2022fall backup/enrolled
+sec.grpdiff.names<-names(cbind(ugsatis22.quan[1:3],ugsatis22.quan[78:ncol(ugsatis22.quan)]))#the first cols and the ending mutated cols
+
+#how many sections: approach 1: simpler version
+sec.names<-names(ugsatis22.quan)%>%str_extract("[a-z]+\\.")%>%as.tibble()%>%filter(!value %in% c("demography.",NA))%>%unique()
+
+#how many sections: approach 2 (so that number of item in each section can be calculated)
+##sec.raw<-names(ugsatis22.quan)%>%str_extract("[a-z]+\\.")#extract any number (+) of noncapitalized letter ([a-z]), followed by a period (\\.)
+##sec.names<-sec.raw[!sec.raw %in% c("demography.",NA)]%>%unique()#remove NA, identified basic sections, and duplications #check: length(sec.names) #12 sections
+
+#how many items in each section
+##for (i in 1:length(sec.names)){
+##  itemnum[i]<-sec.raw[sec.raw%in%sec.names[i]]%>%length();i=i+1;itemnum}
+##tibble(sec.names,itemnum)
+#plan (logical and itemnum-sum): overall3+reenro5; crs7+advisor3; LASELL:service12; support8+edresource2; community12; social6+food3; timeopt 6+timehr7
+```
+
+# Overall
+
+all the questions: 2019-2021 historical data
+
+multivariate regression: where (e.g. sections of food stais, etc.) are
+the differences (e.g. by years, demographics, etc.
+
+the three overall questions at the beginning : compare historical however
+far back we have
+
+```{r sec1}
+#check same answers: lapply(ugsatis22.quan%>%select(starts_with(sec.names[1])), unique)
+ugsatis22.overall<-ugsatis22.quan%>%
+```
+

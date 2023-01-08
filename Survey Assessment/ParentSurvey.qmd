@@ -1,5 +1,6 @@
 ---
 title: "2022 Fall Parent Survey Results \\vspace{-3cm}" 
+date: "`r Sys.Date()`"
 format: 
   pdf:
     documentclass: article

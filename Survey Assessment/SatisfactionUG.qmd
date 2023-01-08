@@ -366,9 +366,13 @@ sec.names<-names(ugsatis22.quan)%>%str_extract("[a-z]+\\.")%>%as_tibble()%>%filt
 #plan (logical and itemnum-sum): overall3+reenro5; crs7+advisor3; LASELL:service12; support8+edresource2; community12; social6+food3; timeopt 6+timehr7
 ```
 
-# Historical Response Rate
-```{r}
+# Response Rate
+```{r hist.rate}
 #15-21: 42,44,30,22,35,50,36,
+```
+
+```{r demographyNs}
+
 ```
 
 ## Overall Satisfaction

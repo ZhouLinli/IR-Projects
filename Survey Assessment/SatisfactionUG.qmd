@@ -424,14 +424,14 @@ ugsatis22.overall%>%filter(!is.na(overall.value))%>%
   ungroup()%>%select(overall.,prt.pos)%>%unique()%>%
   mutate(year="2022")%>%full_join(overall.his)%>%arrange(overall.,year)%>%
 #viz
-  ggplot(aes(y = prt.pos, x=year, fill=year ))+
+  ggplot(aes(y=prt.pos, x=year, fill=year ))+
   geom_bar(stat="identity",position = position_dodge(),width=0.9)+
   scale_fill_manual(values =c("grey60","grey70","grey80","grey90",color_blue))+
-  scale_y_discrete(labels=c("Experience","Service","Facility"))+#1st label at bottom
   labs(title="",x="",y="",fill="") + theme_lz()+
   geom_text(aes(label= percent(prt.pos,digits = 0)),size=3,vjust=1.5,fontface="bold",position = position_dodge(0.9))+
   
-  facet_wrap(~overall.,nrow=1, strip.position="bottom") +
+  facet_wrap(~factor(overall., levels = setyorder$yorder,labels=c("Facility","Service","Experience")),
+             nrow=1, strip.position="bottom") +
   geom_line(aes(y = prt.pos, x=year, group=overall.), 
                 color="grey50", linetype="dashed",stat="identity", show.legend = F)
 ```

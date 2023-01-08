@@ -367,6 +367,10 @@ examples in R and Stan. Chapman and Hall/CRC.
         appeared in a "random/stochastic" sampling distribution. But
         this won't work if we don't have enough to re-sample (so each
         sample is the same)
+    -   30 observations are needed before one can use a Gaussian
+        distribution because of asymptotic behavior (i.e. model performs
+        best at a large sample)
+    -   need to choose an estimator or a likelihood function
     -   Bayesian focuses on the theoretical posterior probability
         distribution/ model parameters, a conditional probability,
         logically inferred (i.e. using the likelihood function [^21] or
@@ -379,6 +383,12 @@ examples in R and Stan. Chapman and Hall/CRC.
         (i.e. cost of info gathering and processing), so
         alternatives/approximations (i.e. heuristic adaptive shortcuts)
         to Baysian inference are valuable.
+    -   Bayesian estimates are valid for any sample size, because the
+        estimates have a clear and valid interpretation (no matter the
+        sample size) based on the prior probability and the observed
+        data. Bayesian model's power is thus dependent upon the
+        initial/prior estimates/plausibility/probability.
+    -   need to choose a prior or loss function
 
 [^21]: likelihood function: represents the probability of random
     variable realizations conditional on particular values of the
@@ -393,20 +403,55 @@ examples in R and Stan. Chapman and Hall/CRC.
     varying effects, or mixed effects" models
 -   Model comparison using information criteria
 
-## Baysian key concepts
+## Bayesian key concepts
 
--   A conjectured proportion p is a parameter value indexing possible
-    explanations of the data.
--   Likelihood: number of ways that a parameter can produce the data.
-    The likelihood of a conjecture is calculated by: multiplying 1) the
-    number of ways we could get the first marble in the first conjecture
-    (i.e. the first-time take out a marble) with 2) the number of ways
-    we could get the second marble in the first conjecture with 3)...
-    third marble, etc.
--   Prior probability: prior plausibility of any specific p is usually
-    called the
--   Posterior probability: plausibility of any specific p updated by new
-    observations.
+-   Likelihood (both for Bayesian and Frequentist models): a
+    mathematical formula that specifies the plausibility/relative number
+    of ways/probability to see the data w (the count of event occurs),
+    given values for p (probability of an event occurs) and n (number of
+    observations or the sample size). (i.e. the probability of any
+    possible observation could occur given a parameter; the number of
+    ways that a parameter can produce the data). The likelihood of a
+    conjecture is calculated by: multiplying 1) the number of ways we
+    could get the first marble in the first conjecture (i.e. the
+    first-time take out a marble) with 2) the number of ways we could
+    get the second marble in the first conjecture with 3)... third
+    marble, etc.
+-   Parameters represent the different conjectures for causes or
+    explanations of the data. p, w, n and other
+    research-question-oriented estimates/parameters that can appear in a
+    likelihood function \^\[average difference between treatment groups;
+    association between a treatment and an outcome; variation among
+    groups\] can all be parameters (depending on what 2 are known,
+    leaving the third a parameter). Bayesian model can tell you what the
+    data say about any parameter, once you tell it the likelihood and
+    which bits have been observed. For example, a conjectured proportion
+    p is a parameter value indexing possible explanations of the data.
+-   Prior probability: initial set of plausibilities/estimates/info for
+    estimating parameters. The prior can be seen as a probability
+    distribution \^\[probabilities in probability distribution must sum
+    to 1\] for the parameter. That probability distribution is usually a
+    flat line specifying equal plausibility for every possible value; or
+    even even better regularizing or weakly informative priors
+    \^\[equivalent to frequentists' penalized likelihood\], which can
+    improve inferences by guarding against inferring strong associations
+    between variables.
+-   Posterior probability: The resulting estimates/relative
+    plausibility/probability of parameter-values, updated by
+    /conditional on new observations/data. The logic of the posterior
+    distribution is Bayes' theorem \^\[non-Bayesian also use Bayes
+    theorem since calculation elements are frequencies of
+    observations\]: the probability of any particular parameter value of
+    p considering/conditional-on the data, Pr(p\|w), is equal to the
+    product of the likelihood Pr(w\|p) and prior Pr(p), divided by the
+    average likelihood \^\[average likelihood Pr(w) is also called the
+    "evidence" or the "probability of the data"\] Pr(w). The average
+    likelihood or the marginal likelihood is averaged over the prior to
+    standardize the posterior, to ensure it sums (integrates) to one
+-   conditioning engines: how (i.e. the numerical techniques for
+    computing posterior distributions) the model is fit to data. Three
+    types: (1) Grid approximation (2) Quadratic approximation (3) Markov
+    chain Monte Carlo (MCMC).
 
 # other notes
 

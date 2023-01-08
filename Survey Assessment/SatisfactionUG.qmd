@@ -346,7 +346,6 @@ ugsatis22.quan<-left_join(ugsatis22.quan,enroll22f.s,by=c("ppid"="people_code_id
 ugsatis22.quan<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Surveys/Lasell Internal/Student Satisfaction Survey/2022-2023/working.xlsx")
 ```
 
-
 ```{r sec.names}
 #what are basic groupdiff cols
 #names(ugsatis22.quan)#identify basic sections (that will be groupdiff vars for all df.sec) 
@@ -354,7 +353,7 @@ ugsatis22.quan<-read_excel("/Volumes/lasellshare/Faculty_Staff_Shares$/IR/Survey
 gpvar.names<-names(cbind(ugsatis22.quan[1:3],ugsatis22.quan[78:ncol(ugsatis22.quan)]))#the first cols and the ending mutated cols
 
 #how many sections: approach 1: simpler version
-sec.names<-names(ugsatis22.quan)%>%str_extract("[a-z]+\\.")%>%as.tibble()%>%filter(!value %in% c("demography.",NA))%>%unique()
+sec.names<-names(ugsatis22.quan)%>%str_extract("[a-z]+\\.")%>%as_tibble()%>%filter(!value %in% c("demography.",NA))%>%unique()
 
 #how many sections: approach 2 (so that number of item in each section can be calculated)
 ##sec.raw<-names(ugsatis22.quan)%>%str_extract("[a-z]+\\.")#extract any number (+) of noncapitalized letter ([a-z]), followed by a period (\\.)
@@ -375,10 +374,10 @@ sec.names<-names(ugsatis22.quan)%>%str_extract("[a-z]+\\.")%>%as.tibble()%>%filt
 ## Overall Satisfaction
 
 ```{r sec1.long&factorize}
-#check same answers: lapply(ugsatis22.quan%>%select(starts_with(sec.names[1])), unique)
+#check same answers: lapply(ugsatis22.quan%>%select(starts_with(sec.names$value[1])), unique)
 ugsatis22.overall<-ugsatis22.quan%>%
-  select(all_of(gpvar.names),starts_with(sec.names[1]))%>%#check: str()
-  pivot_longer(cols=starts_with(sec.names[1]),names_to=sec.names[1],values_to=paste0(sec.names[1],"value"))#check:%>%str()
+  select(all_of(gpvar.names),starts_with(sec.names$value[1]))%>%#check: str()
+  pivot_longer(cols=starts_with(sec.names$value[1]),names_to=sec.names$value[1],values_to=paste0(sec.names$value[1],"value"))#check:%>%str()
 ugsatis22.overall<-ugsatis22.overall%>%
   mutate(overall.value=factor(overall.value,levels=c("Poor","Acceptable","Good","Excellent")))
 ```
@@ -402,10 +401,8 @@ ggplot(aes(y=factor(overall., levels = setyorder$yorder, ordered = TRUE),
   scale_y_discrete(labels=c("Service","Facility","Experience"))+#1st label at bottom
   geom_text(aes(label=if_else(prt>0.03,as.character(percent(prt,digits = 0)),"")),#do not show anything less than error terms, to avoid overlapping labels as well
                      size=3,vjust=0.5,hjust=0.7,fontface="bold",position = position_dodge(0.9))+#position = position_stack(0), vjust=0.5,hjust=0
-    labs(title="",x="",y="",fill="")+theme_lz()+theme(axis.text.x = element_text(),legend.position = "bottom")+coord_flip()
+    labs(title="Overall Satisfaction in 2022 Fall",x="",y="",fill="")+theme_lz()+theme(axis.text.x = element_text(),legend.position = "bottom",legend.margin=margin(t=-15))+coord_flip()
 ```
-
-## Overall Satisfaction (2018-2022)
 
 ```{r viz_overall.hist}
 #load historical overall.prt
@@ -417,7 +414,7 @@ overall.his<-tibble(overall.=c("overall.facility","overall.services","overall.ex
   pivot_longer(cols=c(`2018`:`2021`),names_to="year",values_to="prt.pos")
 
 #merge 2022 overall prt
-ugsatis22.overall%>%filter(!is.na(overall.value))%>%
+viz_overall.hist<-ugsatis22.overall%>%filter(!is.na(overall.value))%>%
   group_by(overall.,overall.value)%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%
   filter(overall.value%in%c("Good","Excellent"))%>%ungroup()%>%
   group_by(overall.)%>%mutate(prt.pos=sum(prt))%>%
@@ -427,13 +424,22 @@ ugsatis22.overall%>%filter(!is.na(overall.value))%>%
   ggplot(aes(y=prt.pos, x=year, fill=year ))+
   geom_bar(stat="identity",position = position_dodge(),width=0.9)+
   scale_fill_manual(values =c("grey60","grey70","grey80","grey90",color_blue))+
-  labs(title="",x="",y="",fill="") + theme_lz()+
+  labs(title="Historical Comparision of Overall Satisfaction",x="",y="",fill="") + theme_lz()+
+  theme(legend.position = "bottom")+
   geom_text(aes(label= percent(prt.pos,digits = 0)),size=3,vjust=1.5,fontface="bold",position = position_dodge(0.9))+
   
   facet_wrap(~factor(overall., levels = setyorder$yorder,labels=c("Facility","Service","Experience")),
              nrow=1, strip.position="bottom") +
   geom_line(aes(y = prt.pos, x=year, group=overall.), 
                 color="grey50", linetype="dashed",stat="identity", show.legend = F)
+```
+
+```{r viz_overall.grpdiff}
+
+```
+
+```{r showviz_overall, include=TRUE}
+gridExtra::grid.arrange(viz_overall22,viz_overall.hist, nrow=1)
 ```
 
 

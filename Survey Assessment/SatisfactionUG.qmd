@@ -367,6 +367,7 @@ sec.names<-names(ugsatis22.quan)%>%str_extract("[a-z]+\\.")%>%as_tibble()%>%filt
 ```
 
 # Response Rate
+
 ```{r hist.rate}
 #15-21: 42,44,30,22,35,50,36,
 ```
@@ -446,6 +447,13 @@ viz_overall.hist<-ugsatis22.overall%>%filter(!is.na(overall.value))%>%
 gridExtra::grid.arrange(viz_overall22,viz_overall.hist, nrow=1)
 ```
 
+# Group Difference Regression
 
-
-
+```{r ugsatis22.grp}
+#construct a df for regression analysis
+ugsatis22.grp<-ugsatis22.quan%>%
+  recode("Excellment"=4)%>%#recode all qual to score
+  mutate(score_overall=overall...+overall..)%>%# add score together for each section
+  
+  select(all_of(gpvar.names),socre_secs)#select aggregated scores and grpvars
+```

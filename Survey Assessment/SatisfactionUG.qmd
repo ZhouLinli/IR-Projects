@@ -368,11 +368,39 @@ sec.names<-names(ugsatis22.quan)%>%str_extract("[a-z]+\\.")%>%as_tibble()%>%filt
 
 # Response Rate
 
-```{r hist.rate}
-#15-21: 42,44,30,22,35,50,36,
+```{r viz_hist.rate}
+#22 response rate: nrow(ugsatis22.quan)/nrow(enroll22f)
+#15-21: 42,44,30,   22,35,50,36
+viz_hist.rate<-tibble(year=c(2017,2018,2019,2020,2021,2022),
+       resprate=c(.3,.22,.35,.5,.36,nrow(ugsatis22.quan)/nrow(enroll22f)))%>%
+  ggplot(aes(x=year,y=resprate,group=1))+
+  geom_line()+
+  scale_color_manual(values = c(color_blue))+
+  geom_text_repel(aes(label= if_else(year==2022,as.character(percent(resprate,digits=0)),"")),size=3, hjust=1,vjust=0, color="black",fontface="bold")+
+  geom_text_repel(aes(label= if_else(!year==2022,as.character(percent(resprate,digits=0)),"")),size=3, hjust=-.5,vjust=0,color="grey40")+
+  annotate("text",x=2022,y=.24,hjust=0.7,size=3,fontface="bold",label="(330 responses)")+
+  labs(x="", y="")+ theme_lz()+theme(axis.text.x = element_text())
 ```
 
-```{r demographyNs}
+```{r tbl_demographyNs}
+#basics in a for loop constructed
+gpvar1.tbl<-ugsatis22.quan%>%
+  group_by(ugsatis22.quan[,gpvar.names[1]])%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%
+  mutate(section=gpvar.names[1])%>%rename(type=gpvar.names[1])%>%select(section,type,prt)
+
+  
+#for loop
+gpvar.tbl<-tibble()
+
+for (i in 1:length(gpvar.names)){
+  gpvar.tbl_i<-ugsatis22.quan%>%
+  group_by(ugsatis22.quan[,gpvar.names[i]])%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%
+  mutate(section=gpvar.names[i])%>%rename(type=gpvar.names[i])%>%select(section,type,prt)
+  i=i+1
+  gpvar.tbl<-gpvar.tbl%>%rbind(gpvar.tbl_i)}
+
+gpvar.tbl%>%filter(!section%in%c("status","ppid","demography.sex","curriculum","cohort_id","college_attend"),
+    !is.na(type),!type%in%c("Not applicable","Prefer not to say","Prefer to self-describe (Please specify):"))
 
 ```
 

@@ -368,19 +368,22 @@ sec.names<-names(ugsatis22.quan)%>%str_extract("[a-z]+\\.")%>%as_tibble()%>%filt
 
 # Response Rate
 
-```{r viz_hist.rate}
+```{r show.viz_responserate, fig.height=2, include=TRUE}
 #22 response rate: nrow(ugsatis22.quan)/nrow(enroll22f)
 #15-21: 42,44,30,   22,35,50,36
-viz_hist.rate<-tibble(year=c(2017,2018,2019,2020,2021,2022),
-       resprate=c(.3,.22,.35,.5,.36,nrow(ugsatis22.quan)/nrow(enroll22f)))%>%
+tibble(year=c(2015,2016,2017,2018,2019,2020,2021,2022),
+       resprate=c(.42,.44,.3,.22,.35,.5,.36,nrow(ugsatis22.quan)/nrow(enroll22f)))%>%
   ggplot(aes(x=year,y=resprate,group=1))+
   geom_line()+
   scale_color_manual(values = c(color_blue))+
   geom_text_repel(aes(label= if_else(year==2022,as.character(percent(resprate,digits=0)),"")),size=3, hjust=1,vjust=0, color="black",fontface="bold")+
   geom_text_repel(aes(label= if_else(!year==2022,as.character(percent(resprate,digits=0)),"")),size=3, hjust=-.5,vjust=0,color="grey40")+
-  annotate("text",x=2022,y=.24,hjust=0.7,size=3,fontface="bold",label="(330 responses)")+
-  labs(x="", y="")+ theme_lz()+theme(axis.text.x = element_text())
+  annotate("text",x=2022,y=.2,hjust=0.7,size=3,fontface="bold",label="(330 responses)")+
+  labs(x="", y="")+ theme_lz()+theme(axis.text.x = element_text(vjust = -5))+
+  scale_x_continuous(breaks=seq(2015, 2022, 1))
 ```
+
+# Student Characteristics
 
 ```{r gpvar.tbl_sample}
 #construct a for loop
@@ -454,7 +457,7 @@ tbl_samvspop<-tbl_samvspop%>%arrange(section,type,-Sample)%>%
   mutate(tblnum=case_when(section%in%c("demography.gender","ethnicity")~"1.personal",
          section%in%c("degree","class_level")~"2.university",
          section%in%c("ft_pt","transfer_yn","rescom")~"3.concentrate"))%>%
-  mutate(Diff=Sample-Population)%>%select(type,Sample,Population,Diff)
+  mutate(Difference=percent(Sample-Population,digits = 1))%>%select(type,Sample,Population,Difference)
 ```
 
 ```{r viz.tbl_samvspop}
@@ -463,14 +466,20 @@ kbl(align = "c",booktabs = T,col.names =c("",str_wrap(names(tbl_samvspop)[2:ncol
 #set in-text reference label, table title , header names
 kable_styling(latex_options = c('HOLD_position'), full_width = F, fixed_thead = T, font_size = 12, bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
 #set overall style
-column_spec(1, bold = T, border_right = F, background = "white", width = "5em",color="black")
+column_spec(1, bold = T, border_right = F, background = "white", width = "6em",color="black")
 
 #conditional formatting set up: 
-cut1=.5;cut2=.3;cut3=.1;cut4=.03
-for (i in 2:ncol(tbl_samvspop)){viz.tbl_samvspop<-column_spec(kable_input=viz.tbl_samvspop,column=i, width = "3em",color="white", background =cf_color_blue(tbl_samvspop[i],a=cut1,b=cut2,c=cut3,d=cut4)); i=i+1;viz.tbl_samvspop}
+cut1=.5;cut2=.3;cut3=.1;cut4=.015
+for (i in 2:ncol(tbl_samvspop)){viz.tbl_samvspop<-column_spec(kable_input=viz.tbl_samvspop,column=i, width = "5em",color="white", background =cf_color_blue_abs(tbl_samvspop[i],a=cut1,b=cut2,c=cut3,d=cut4)); i=i+1;viz.tbl_samvspop}
+```
 
+```{r show_viz.tbl_samvspop,include=TRUE}
+#| label: tbl-samvspop
+#| tbl-cap: "Student Characteristics in Sample (Survey Respondents) and Population (All Undergraduate Students)"
 viz.tbl_samvspop
 ```
+
+Table @tbl-samvspop shows...
 
 ## Overall Satisfaction
 
@@ -545,9 +554,9 @@ gridExtra::grid.arrange(viz_overall22,viz_overall.hist, nrow=1, widths=c(1,2))
 
 ```{r ugsatis22.grp}
 #construct a df for regression analysis
-ugsatis22.grp<-ugsatis22.quan%>%
-  recode("Excellment"=4)%>%#recode all qual to score
-  mutate(score_overall=overall...+overall..)%>%# add score together for each section
+#ugsatis22.grp<-ugsatis22.quan%>%
+#  recode("Excellment"=4)%>%#recode all qual to score
+#  mutate(score_overall=overall...+overall..)%>%# add score together for each section
   
-  select(all_of(gpvar.names),socre_secs)#select aggregated scores and grpvars
+#  select(all_of(gpvar.names),socre_secs)#select aggregated scores and grpvars
 ```

@@ -382,26 +382,67 @@ viz_hist.rate<-tibble(year=c(2017,2018,2019,2020,2021,2022),
   labs(x="", y="")+ theme_lz()+theme(axis.text.x = element_text())
 ```
 
-```{r tbl_demographyNs}
-#basics in a for loop constructed
-gpvar1.tbl<-ugsatis22.quan%>%
-  group_by(ugsatis22.quan[,gpvar.names[1]])%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%
-  mutate(section=gpvar.names[1])%>%rename(type=gpvar.names[1])%>%select(section,type,prt)
-
-  
-#for loop
+```{r gpvar.tbl_sample}
+#construct a for loop
+#initialize the output
 gpvar.tbl<-tibble()
-
+#each tbl bind to each other and output the mutated tbl
 for (i in 1:length(gpvar.names)){
-  gpvar.tbl_i<-ugsatis22.quan%>%
-  group_by(ugsatis22.quan[,gpvar.names[i]])%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%
+  #each newly constructed tbl
+  gpvar.tbl_i<-
+    #the basic tbl
+  ugsatis22.quan%>%group_by(ugsatis22.quan[,gpvar.names[i]])%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%
+    #transform names and order/select the vars to show in tbl
   mutate(section=gpvar.names[i])%>%rename(type=gpvar.names[i])%>%select(section,type,prt)
+  #the next tbl
   i=i+1
+  #mutate the new tbl to the initialized/previously-mutated tbl
   gpvar.tbl<-gpvar.tbl%>%rbind(gpvar.tbl_i)}
 
-gpvar.tbl%>%filter(!section%in%c("status","ppid","demography.sex","curriculum","cohort_id","college_attend"),
-    !is.na(type),!type%in%c("Not applicable","Prefer not to say","Prefer to self-describe (Please specify):"))
 
+#remove unnecessary groupvars to show in table
+gpvar.tbl_sample<-gpvar.tbl%>%
+filter(!section%in%c("status","ppid","demography.sex","curriculum","cohort_id","college_attend"),!is.na(type),!type%in%c("Not applicable","Prefer not to say","Prefer to self-describe (Please specify):"))%>%
+  mutate(prt=percent(prt,digits=0))%>%rename(Sample=prt)
+
+```
+
+```{r gpvar.tbl_population}
+enroll22f.pop<-enroll22f%>%clean_names()%>%
+  rename(rescom=res_comm,demography.gender=gender)
+
+enroll22f.pop$rescom<-recode(enroll22f.pop$rescom,C="Commuter student",R="Residential student")  
+enroll22f.pop$demography.gender<-recode(enroll22f.pop$demography.gender,F="Man",M="Woman")
+
+gpvar.names_pop<-gpvar.names[gpvar.names %in% names(enroll22f.pop) ]
+  
+#construct a for loop
+#initialize the output
+gpvar.tblpop<-tibble()
+#each tbl bind to each other and output the mutated tbl
+for (i in 1:length(gpvar.names_pop)){
+  #each newly constructed tbl
+  gpvar.tblpop_i<-
+    #the basic tbl
+  enroll22f.pop%>%group_by(enroll22f.pop[,gpvar.names_pop[i]])%>%summarise(n=n())%>%mutate(prt=n/sum(n))%>%
+    #transform names and order/select the vars to show in tbl
+  mutate(section=gpvar.names_pop[i])%>%rename(type=gpvar.names_pop[i])%>%select(section,type,prt)
+  #the next tbl
+  i=i+1
+  #mutate the new tbl to the initialized/previously-mutated tbl
+  gpvar.tblpop<-gpvar.tblpop%>%rbind(gpvar.tblpop_i)}
+
+
+#remove unnecessary groupvars to show in table
+gpvar.tbl_population<-gpvar.tblpop%>%filter(type %in% gpvar.tbl_sample$type)%>%select(type,prt)%>%mutate(prt=percent(prt,digits=0))%>%rename(Population=prt)
+```
+
+```{r tbl_samvspop}
+tbl_samvspop<-left_join(gpvar.tbl_sample,gpvar.tbl_population)%>%filter(!is.na(Population),Population>.015)
+
+tbl_samvspop$type<-recode(tbl_samvspop$type,Y="Transfer",N="Not-transfer",
+                          FT="Full-time",PT="Part-time",
+                          FR="1st-year",JR="3rd-year",SO="2nd-year",SR="4th-year")
 ```
 
 ## Overall Satisfaction

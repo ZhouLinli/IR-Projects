@@ -132,11 +132,10 @@ viz.crscnt
 
 # Distributions of Majors by Course Group
 
-Table @tbl-mjcnt summarizes distributions of students'
-major for each SIKP course groups. The table uses aggregated
-data across academic year 2018-2022, and excludes majors
-with less than 2% percentage observations or missing a major
-value.
+Table @tbl-mjcnt summarizes distributions of students' major for each
+SIKP course groups. The table uses aggregated data across academic year
+2018-2022, and excludes majors with less than 2% percentage observations
+or missing a major value.
 
 ```{r request notes}
 #optional: GPA/grades changes by term; GAP/grades by major
@@ -183,8 +182,6 @@ viz.mjcnt<-viz.mjcnt%>%row_spec(nrow(tab.mjcnt),color = color_grey,background = 
 #| tbl-cap: "Distributions of Majors by Course Groups"
 viz.mjcnt
 ```
-
-
 
 ```{r explainhiddenplots}
 #Plots below summarize distributions of students' major for each SIKP course groups. Plots are created using aggregated data across academic year 2018-2022. All plots below excluded majors with less than 2% percentage and observations that has a missing major value.
@@ -289,6 +286,7 @@ gridExtra::grid.arrange(viz_cj.major,#3
 # Distributions of Majors by Individual Courses
 
 ## BIO
+
 ```{r biocnt}
 #count major (with toal row&col) for each coursecode across 18-22
 tab.biocnt<-stucrs.si%>%filter(grepl("^BIO",coursecode))%>%
@@ -328,6 +326,7 @@ viz.biocnt
 ```
 
 ## CHEM
+
 ```{r chemcnt}
 #count major (with toal row&col) for each coursecode across 18-22
 tab.chemcnt<-stucrs.si%>%filter(grepl("^CHEM",coursecode))%>%
@@ -367,6 +366,7 @@ viz.chemcnt
 ```
 
 ## ENV
+
 ```{r envcnt}
 #count major (with toal row&col) for each coursecode across 18-22
 tab.envcnt<-stucrs.si%>%filter(grepl("^ENV",coursecode))%>%
@@ -406,6 +406,7 @@ viz.envcnt
 ```
 
 ## PHYS
+
 ```{r physcnt}
 #count major (with toal row&col) for each coursecode across 18-22
 tab.physcnt<-stucrs.si%>%filter(grepl("^PHYS",coursecode))%>%
@@ -445,6 +446,7 @@ viz.physcnt
 ```
 
 ## SCI
+
 ```{r scicnt10}
 #count major (with toal row&col) for each coursecode across 18-22
 tab.scicnt10<-stucrs.si%>%filter(grepl("^SCI10",coursecode))%>%
@@ -482,8 +484,6 @@ viz.scicnt10<-viz.scicnt10%>%row_spec(nrow(tab.scicnt10),color = color_grey,back
 #| tbl-cap: "Distributions of Majors for SCI103-106 Courses"
 viz.scicnt10
 ```
-
-
 
 ```{r scicnt11}
 #count major (with toal row&col) for each coursecode across 18-22
@@ -523,9 +523,8 @@ viz.scicnt11<-viz.scicnt11%>%row_spec(nrow(tab.scicnt11),color = color_grey,back
 viz.scicnt11
 ```
 
-
-
 ## CJ
+
 ```{r cjcnt}
 #count major (with toal row&col) for each coursecode across 18-22
 tab.cjcnt<-stucrs.si%>%filter(grepl("^CJ",coursecode))%>%
